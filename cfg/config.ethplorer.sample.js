@@ -1,3 +1,3 @@
 var testnet = true;
-var urlEthplorer = '';
+var urlEthplorer = '127.0.0.1';
 var urlEtherscan = 'http://' + (testnet ? 'testnet.' : '') + 'etherscan.io/';
