@@ -5,13 +5,13 @@ Mainnet and testnet are supported.
 
 [Online version at Ethplorer.io](https://ethplorer.io)
 
-# Instalation
+# Installation
 
 Clone repository into separate webserver's directory.
 ```
 cd /var/www
 mkdir ethplorer
-git clone https://github.com/amilabs/ethplorer.git cp-tools
+git clone https://github.com/amilabs/ethplorer.git ethplorer
 ```
 
 Make sure your web server supports .htaccess and mod_rewrite.
