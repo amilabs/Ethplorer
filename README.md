@@ -16,12 +16,7 @@ git clone https://github.com/amilabs/ethplorer.git ethplorer
 
 Make sure your web server supports .htaccess and mod_rewrite.
 
-# Configure RPC
+# Configure
 
-Copy cfg/config.tools.sample.php to cfg/config.tools.php and specify RPC addresses.
-
-Use composer to install dependencies.
-```
-php composer.phar install
-```
+Copy cfg/config.ethplorer.sample.js to cfg/config.ethplorer.js and specify service addresses.
 
