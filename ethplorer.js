@@ -4,6 +4,10 @@ $(document).ready(function(){
     if(resRegExp && resRegExp.length > 0){
         txHash = resRegExp[1];
     }
+    if(!urlEthplorer){
+        console.log('Ethplorer service URL not found.');
+        return;
+    }
     $.jsonRPC.setup({
         endPoint: urlEthplorer,
         namespace: ''
@@ -18,11 +22,6 @@ function processTxDetailsForm(){
 }
 
 function getTxDetails(txHash, abi){
-    if(!urlEthplorer){
-        console.log('Ethplorer service URL not found.');
-        return;
-    }
-
     $.jsonRPC.request('getTransactionDetails', {
         params : [txHash, abi],
         success : function(data){
