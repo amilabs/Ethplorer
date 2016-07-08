@@ -4,6 +4,10 @@ $(document).ready(function(){
     if(resRegExp && resRegExp.length > 0){
         txHash = resRegExp[1];
     }
+    $.jsonRPC.setup({
+        endPoint: urlEthplorer,
+        namespace: ''
+    });
     if(txHash){
         getTxDetails(txHash);
     }
@@ -18,13 +22,16 @@ function getTxDetails(txHash, abi){
         console.log('Ethplorer service URL not found.');
         return;
     }
-    $.get(urlEthplorer + '?hash=' + txHash + (abi ? ('&abi=' + encodeURIComponent(abi)) : ''), {}, function(json){
-        if(json){
-            var txData = JSON.parse(json);
-            showTxDetails(txHash, txData);
+
+    $.jsonRPC.request('getTransactionDetails', {
+        params : [txHash, abi],
+        success : function(data){
+            console.log(JSON.stringify(data));
+            showTxDetails(txHash, data.result);
+        },
+        error : function(data){
+            console.log('There was an error ' + JSON.stringify(data));
         }
-    }).fail(function(){
-        console.log('Request failed.');
     });
 }
 
