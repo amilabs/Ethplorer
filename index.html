@@ -5,83 +5,128 @@
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
-    <style>
-        body {
-            padding: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="/css/ethplorer.css">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="cache-control" content="max-age=0" />
-    <meta http-equiv="cache-control" content="no-cache" />
-    <meta http-equiv="expires" content="0" />
-    <meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
-    <meta http-equiv="pragma" content="no-cache" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="js/jquery.jsonrpc.js"></script>
-    <script src="cfg/config.ethplorer.js"></script>
-    <script src="ethplorer.js"></script>
+    <script src="/js/jquery.jsonrpc.js"></script>
+    <script src="/js/ethplorer.js"></script>
+    <script src="/js/ethplorer.utils.js"></script>
+    <script src="/cfg/config.ethplorer.js"></script>    
 </head>
 <body>
-    <div id="txs">
-        <table id="txList" class="table">
-            <tbody id="txListBody">
-                <tr>
-                    <td></td><td id="tdBlockchain"></td>
-                </tr>
-                <tr>
-                    <td>Tx</td><td id="tdTx"></td>
-                </tr>
-                <tr>
-                    <td>Token</td><td id="tdToken"></td>
-                </tr>
-                <tr>
-                    <td>Contract</td><td id="tdContract"></td>
-                </tr>
-                <tr>
-                    <td>From</td><td id="tdFrom"></td>
-                </tr>
-                <tr>
-                    <td>To</td><td id="tdTo"></td>
-                </tr>
-                <tr>
-                    <td>Value</td><td id="tdValue"></td>
-                </tr>
-                <tr>
-                    <td>Symbol</td><td id="tdSymbol"></td>
-                </tr>
-                <tr>
-                    <td>Success</td><td id="tdSuccess"></td>
-                </tr>
-            </tbody>
-        </table>
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div id="navbar" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li data-page="txDetails" class="active"><a>TX Details</a></li>
+                    <li data-page="txSearchForm"><a>TX Form</a></li>
+                    <!--
+                    <li data-page="broadcast"><a>Broadcast TX</a></li>
+                    <li data-page="utils"><a>Utils</a></li>
+                    -->
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    <li style="padding-top:8px;">
+                        <span id="network"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>    
+    
+    <div class="container">
+        <div class="starter-template">
+            <div id="page-create" class="page">    
+    
+                <div id="loader" class="text-center">
+                    <div id="scroller"></div>
+                    <i class="fa fa-search"></i>
+                    <div id="searchInProgressText">Searching...</div>
+                    <div id="pleaseWaitText">please wait</div>
+                </div>
+
+                <div id="error" class="content-page text-center">
+                    <h1 class="text-danger">ERROR</h1>
+                    <h3 id="error-reason" class="text-danger"></h3>
+                </div>
+                
+                <div id="txDetails" class="content-page">
+                    <h1>Transaction details</h1>                    
+                    <div id="txs">
+                        <table id="txList" class="table">
+                            <tbody id="txListBody">
+                                <tr>
+                                    <td>Tx</td>
+                                    <td id="tdTx" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Token</td>
+                                    <td id="tdToken" class="list-field list-field-token"></td>
+                                </tr>
+                                <tr>
+                                    <td>Contract</td>
+                                    <td id="tdContract" class="list-field list-field-token"></td>
+                                </tr>
+                                <tr>
+                                    <td>From</td>
+                                    <td id="tdFrom" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>To</td>
+                                    <td id="tdTo" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Value</td>
+                                    <td id="tdValue" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Symbol</td>
+                                    <td id="tdSymbol" class="list-field list-field-token"></td>
+                                </tr>
+                                <tr>
+                                    <td>Input Data</td>
+                                    <td id="tdData" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Status</td>
+                                    <td id="tdSuccess" class="list-field"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="txSearchForm" class="content-page">
+                    <h1>Get Transaction Details</h1>
+                    <form id="getTxDetails" role="form">
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="hash">Tx Hash</label>
+                              <input type="text" class="form-control" id="hash" name="hash" value=""/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <label for="abi">ABI</label>
+                              <textarea rows="4" cols="50" class="form-control" id="abi" name="abi"></textarea>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-xs-6">
+                                <button type="button" class="btn btn-primary btn-block" onClick="processTxDetailsForm();">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+    
+            </div>
+        </div>
     </div>
-    <hr/>
-    <div id="txForm">
-    <h4>Get Transaction Details</h4>
-    <form id="getTxDetails" role="form">
-        <div class="row">
-            <div class="form-group col-xs-6">
-            <label for="hash">Tx Hash</label>
-              <input type="text" class="form-control" id="hash" name="hash" value=""/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-xs-6">
-            <label for="abi">ABI</label>
-              <textarea rows="4" cols="50" class="form-control" id="abi" name="abi"></textarea>
-            </div>
-        </div>
-        <div class="row">
-            <div class="form-group col-xs-6">
-            <button type="button" class="btn btn-primary btn-block" onClick="processTxDetailsForm();">Submit</button>
-            </div>
-        </div>
-     </div>
-    </form>
-    </div>
+    
+    
 </body>
 </html>

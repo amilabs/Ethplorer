@@ -1,0 +1,99 @@
+body {
+    padding: 20px;
+    padding-top: 50px;
+    padding-bottom: 120px;
+    background-color: #eee;
+}
+
+#network {
+    color: white;
+    line-height: 34px;
+}
+
+.content-page {
+    display: none;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+#loader {
+    margin-top: 40px;
+    padding: 40px;
+    background-color: white;
+    width: 300px;
+    height: 300px;
+    border-radius: 150px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#loader .fa {
+    margin-top: 40px;
+    margin-left: -30px;
+    font-size: 60px;
+    position: absolute;
+    -webkit-animation: kroot 2s linear infinite;
+       -moz-animation: kroot 2s linear infinite;
+         -o-animation: kroot 2s linear infinite;
+            animation: kroot 2s linear infinite;
+}
+
+@-webkit-keyframes kroot {
+    from { -webkit-transform: rotate(0deg) translateX(20px) rotate(0deg); }
+    to   { -webkit-transform: rotate(360deg) translateX(20px) rotate(-360deg); }
+}
+
+@-moz-keyframes kroot {
+    from { -moz-transform: rotate(0deg) translateX(20px) rotate(0deg); }
+    to   { -moz-transform: rotate(360deg) translateX(20px) rotate(-360deg); }
+}
+
+@-o-keyframes kroot {
+    from { -o-transform: rotate(0deg) translateX(20px) rotate(0deg); }
+    to   { -o-transform: rotate(360deg) translateX(20px) rotate(-360deg); }
+}
+
+@keyframes kroot {
+    from { transform: rotate(0deg) translateX(20px) rotate(0deg); }
+    to   { transform: rotate(360deg) translateX(20px) rotate(-360deg); }
+}
+
+#loader #scroller {
+    width:300px;
+    margin-left: auto;
+    margin-right: auto;
+    height: 50px;
+    position: relative;
+    overflow: hidden;
+    top: 90px;
+    left: -40px;   
+}
+#scroller .letter {
+    font-family: sans-serif;
+    font-size: 12px;
+    font-weight: bold;
+    position: absolute;
+    top: -100px; 
+    left: -100px;
+}
+
+#loader #searchInProgressText {
+    font-size: 24px;
+    position: relative;
+    top: -40px;
+}
+
+#loader #pleaseWaitText {
+    position: relative;
+    top: 100px;   
+}
+
+#tdData pre {
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
