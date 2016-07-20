@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Transaction Details</title>
+    <title>Ethplorer</title>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
@@ -22,9 +22,10 @@
         <div class="container">
             <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
+                    <input id="search" class="form-control" style="width: 200px;" placeholder="Search..." />
+                    <!--                    
                     <li data-page="txDetails" class="active"><a>TX Details</a></li>
                     <li data-page="txSearchForm"><a>TX Form</a></li>
-                    <!--
                     <li data-page="broadcast"><a>Broadcast TX</a></li>
                     <li data-page="utils"><a>Utils</a></li>
                     -->
@@ -55,48 +56,266 @@
                 </div>
                 
                 <div id="txDetails" class="content-page">
-                    <h1>Transaction details</h1>                    
-                    <div id="txs">
-                        <table id="txList" class="table">
-                            <tbody id="txListBody">
-                                <tr>
-                                    <td>Tx</td>
-                                    <td id="tdTx" class="list-field"></td>
-                                </tr>
-                                <tr>
-                                    <td>Token</td>
-                                    <td id="tdToken" class="list-field list-field-token"></td>
-                                </tr>
-                                <tr>
-                                    <td>Contract</td>
-                                    <td id="tdContract" class="list-field list-field-token"></td>
-                                </tr>
-                                <tr>
-                                    <td>From</td>
-                                    <td id="tdFrom" class="list-field"></td>
-                                </tr>
-                                <tr>
-                                    <td>To</td>
-                                    <td id="tdTo" class="list-field"></td>
-                                </tr>
-                                <tr>
-                                    <td>Value</td>
-                                    <td id="tdValue" class="list-field"></td>
-                                </tr>
-                                <tr>
-                                    <td>Symbol</td>
-                                    <td id="tdSymbol" class="list-field list-field-token"></td>
-                                </tr>
-                                <tr>
-                                    <td>Input Data</td>
-                                    <td id="tdData" class="list-field"></td>
-                                </tr>
-                                <tr>
-                                    <td>Status</td>
-                                    <td id="tdSuccess" class="list-field"></td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="col-xs-12 col-md-6 token-related">
+                        <div class="block">
+                            <h3>Token Transfer</h3>
+                            <table class="table">
+                            <tr class="todo">
+                                <td>Date</td>
+                                <td>2016-05-12 12:23:43</td>
+                            </tr>                               
+                            <tr>
+                                <td>From</td>
+                                <td id="txTokenFrom" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>To</td>
+                                <td id="txTokenTo" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Value</td>
+                                <td id="txTokenValue" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Status</td>
+                                <td id="txTokenStatus" class="list-field"></td>
+                            </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6 token-related">
+                        <div class="block">
+                            <h3>Token Information</h3>
+                            <table class="table">
+                            <tr>
+                                <td>Token</td>
+                                <td id="tokenName" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Contract</td>
+                                <td id="tokenContract" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Symbol</td>
+                                <td id="tokenSymbol" class="list-field"></td>
+                            </tr>
+                            <tr class="todo">
+                                <td>Decimals</td>
+                                <td>4</td>
+                            </tr>
+                            <tr class="todo">
+                                <td>Owner</td>
+                                <td>0xdeadbeefcafe000000000000000</td>
+                            </tr>
+                            <tr class="todo">
+                                <td>Total Supply</td>
+                                <td>100000000</td>
+                            </tr>
+                            <tr class="poka-hz">
+                                <td>Total Transactions</td>
+                                <td>1000</td>
+                            </tr>
+                            <tr class="poka-hz">
+                                <td>Last Activity</td>
+                                <td>2016-01-02 15:55:66 (block #1002322)</td>
+                            </tr>
+                            </table>                           
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="block">
+                            <h3>Transaction details</h3>
+                            <table class="table">
+                            <tr>
+                                <td>Tx</td>
+                                <td id="txHash" class="list-field"></td>
+                            </tr>
+                            <tr class="todo">
+                                <td>Date</td>
+                                <td>2016-05-12 12:23:43</td>
+                            </tr>
+                            <tr class="todo">
+                                <td>Block</td>
+                                <td>1919050 (72 confirmations)</td>
+                            </tr>                            
+                            <tr>
+                                <td>From</td>
+                                <td id="txEthFrom" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>To</td>
+                                <td id="txEthTo" class="list-field"></td>
+                            </tr>
+                            <tr class="todo">
+                                <td>Value</td>
+                                <td id="txEthValue">0.002 Ether ($0.02)</td>
+                            </tr>
+                            <tr class="todo">
+                                <td>Gas Limit</td>
+                                <td>100000</td>
+                            </tr>
+                            <tr class="todo">
+                                <td>Gas Used</td>
+                                <td>14043</td>
+                            </tr>
+                            <tr class="todo">
+                                <td>Gas Price</td>
+                                <td>0.00000002 Ether</td>
+                            </tr>
+                            <tr class="todo">
+                                <td>TX Fee</td>
+                                <td>0.00028086 Ether</td>
+                            </tr>
+                            <tr class="todo">
+                                <td>Nonce</td>
+                                <td>12312</td>
+                            </tr>                            
+                            <tr>
+                                <td>Input Data</td>
+                                <td id="txEthData" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Status</td>
+                                <td id="txEthStatus" class="list-field"></td>
+                            </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="addressDetails" class="content-page">
+                    <div class="col-xs-12 col-md-6">
+                        <div class="block">
+                            <h3>Address Information</h3>
+                            <table class="table">
+                            <tr>
+                                <td>Balance</td>
+                                <td>0.006 Ether</td>
+                            </tr>                               
+                            <tr>
+                                <td>Transactions</td>
+                                <td>12</td>
+                            </tr>
+                            <tr>
+                                <td>Last Activity</td>
+                                <td>2016-01-02 15:55:66 (block #1002322)</td>
+                            </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="col-xs-12 col-md-6">
+                        <div class="block">
+                            <h3>Token Balances</h3>
+                            <table class="table">
+                            <tr>
+                                <td>ETHDEMO</td>
+                                <td>2100.3400</td>
+                            </tr>
+                            <tr>
+                                <td>ETHTHB</td>
+                                <td>200.12</td>
+                            </tr>
+                            <tr>
+                                <td>TOKEN2</td>
+                                <td>212123</td>
+                            </tr>
+                            </table>                           
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="block poka-hz">
+                            <h3>Last Transactions</h3>
+                            <table class="table">
+                            <tr>
+                                <td>2016-01-02 15:55:66</td>
+                                <td>1002322</td>
+                                <td>0xba5a7edd010a6b2b88ba51daf360dee611d9ce5505c7ae420879334df2cdf7f2</td>
+                            </tr>
+                            <tr>
+                                <td>2016-01-02 15:55:66</td>
+                                <td>1002322</td>
+                                <td>0xba5a7edd010a6b2b88ba51daf360dee611d9ce5505c7ae420879334df2cdf7f2</td>
+                            </tr>                            
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tokenDetails" class="content-page">
+                    <div class="col-xs-12 col-md-12">
+                        <div class="block">
+                            <h3>Token Information</h3>
+                            <table class="table">
+                            <tr>
+                                <td>Token</td>
+                                <td>ETHDEMO</td>
+                            </tr>
+                            <tr>
+                                <td>Contract</td>
+                                <td>0x203ccf4a405f4ed72d2ae700d9b1899e9f9af1e1</td>
+                            </tr>
+                            <tr>
+                                <td>Symbol</td>
+                                <td>☃</td>
+                            </tr>
+                            <tr>
+                                <td>Decimals</td>
+                                <td>4</td>
+                            </tr>
+                            <tr>
+                                <td>Owner</td>
+                                <td>0xdeadbeefcafe000000000000000</td>
+                            </tr>
+                            <tr>
+                                <td>Total Supply</td>
+                                <td>100000000</td>
+                            </tr>
+                            <tr class="poka-hz">
+                                <td>Total Transactions</td>
+                                <td>1000</td>
+                            </tr>
+                            <tr class="poka-hz">
+                                <td>Last Activity</td>
+                                <td>2016-01-02 15:55:66 (block #1002322)</td>
+                            </tr>
+                            </table>                           
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="block poka-hz">
+                            <h3>Holders</h3>
+                            <table class="table">
+                            <tr>
+                                <td>0xdeadbeefcafe000000000000000</td>
+                                <td>2100.3400</td>
+                            </tr>
+                            <tr>
+                                <td>0xdeadbeefcafe000000000000000</td>
+                                <td>200.12</td>
+                            </tr>
+                            <tr>
+                                <td>0xdeadbeefcafe000000000000000</td>
+                                <td>212123</td>
+                            </tr>
+                            </table>                           
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="block poka-hz">
+                            <h3>Last Transactions</h3>
+                            <table class="table">
+                            <tr>
+                                <td>2016-01-02 15:55:66</td>
+                                <td>1002322</td>
+                                <td>0xba5a7edd010a6b2b88ba51daf360dee611d9ce5505c7ae420879334df2cdf7f2</td>
+                            </tr>
+                            <tr>
+                                <td>2016-01-02 15:55:66</td>
+                                <td>1002322</td>
+                                <td>0xba5a7edd010a6b2b88ba51daf360dee611d9ce5505c7ae420879334df2cdf7f2</td>
+                            </tr>                            
+                            </table>
+                        </div>
                     </div>
                 </div>
 

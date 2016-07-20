@@ -25,11 +25,13 @@ Ethplorer = {
                 getTxDetails(pathData.arg);
                 break;
             case 'address':
+                showAddressDetails(pathData.arg);
                 break;
             case 'token':
+                showTokenDetails(pathData.arg);
                 break;
             default:
-                // Home
+                Ethplorer.error('Oops, nothing to do');
         }
     },
     scroller: function(){
@@ -105,44 +107,52 @@ function getTxDetails(txHash, abi){
 function showTxDetails(txHash, txData){
     console.log(txData);
     var urlEtherscan = Ethplorer.Utils.getEtherscanAddress();
-    $('#txList .list-field').empty();
-    $('#tdData').parent().hide();
-    $('#tdTx').html('<a target="_blank" href="' + urlEtherscan + 'tx/' + txHash + '">' + txHash + '</a>');
-    $('.list-field-token').parent()[txData.token ? 'show' : 'hide']();
+    var ast = '<a target="_blank" href="' + urlEtherscan + 'address/';
+
+    $('.list-field').empty();
+    $('#txEthData').parent().hide();
+    $('#txHash').html('<a target="_blank" href="' + urlEtherscan + 'tx/' + txHash + '">' + txHash + '</a>');
+    $('.token-related')[txData.token ? 'show' : 'hide']();
     if(txData.token){
-        $('#tdToken').html(txData.token);
-        $('#tdContract').html('<a target="_blank" href="' + urlEtherscan + 'address/' + txData.contract + '">' + txData.contract + '</a>');
-        $('#tdSymbol').html(txData.symbol);
+        $('#tokenName').html(txData.token);
+        $('#tokenContract, #txEthTo').html('<a target="_blank" href="' + urlEtherscan + 'address/' + txData.contract + '">' + txData.contract + '</a>');
+        $('#tokenSymbol').html(txData.symbol);
         if(!isNaN(txData.value) && !isNaN(txData.decimals)){
             var k = Math.pow(10, txData.decimals);
-            $('#tdValue').html(Ethplorer.Utils.formatNum(parseInt(txData.value) / k, true, txData.decimals) + ' ' + txData.symbol);
+            $('#txTokenValue').html(Ethplorer.Utils.formatNum(parseInt(txData.value) / k, true, txData.decimals) + ' ' + txData.symbol);
         }
+        $('#txTokenTo').html(ast + txData.to + '">' + txData.to + '</a>');
     }else{
-        $('#tdValue').html(txData.value + ' Ether');
+        $('#txEthValue').html(txData.value + ' Ether');
+        $('#txEthTo').html(ast + txData.to + '">' + txData.to + '</a>');    
     }
+    $('#txTokenFrom, #txEthFrom').html(ast + txData.from + '">' + txData.from + '</a>');
 
     var data = txData.data ? txData.data.replace('0x', '').toUpperCase() : false;
     if(data){
-        var split = data.match(/.{2}/g);
-        var rdata = '';
-        for(var i = 0; i<split.length; i++){
-            rdata += split[i];
-            rdata += ' ';
-        }
-        
-        $('#tdData').html('<pre>' + rdata + '</pre>');
-        $('#tdData').parent().show();
+        $('#txEthData').html('<pre>' + data + '</pre>');
+        $('#txEthData').parent().show();
     }
-    
-    var ast = '<a target="_blank" href="' + urlEtherscan + 'address/';
-    $('#tdFrom').html(ast + txData.from + '">' + txData.from + '</a>');
-    $('#tdTo').html(ast + txData.to + '">' + txData.to + '</a>');    
 
-    $('#tdSuccess').html(txData.success ? 'Success' : 'Failed' + (txData.failedReason ? (': ' + Ethplorer.getTxErrorReason(txData.failedReason)) : ''));
+    $('#txTokenStatus').html(txData.success ? 'Success' : 'Failed' + (txData.failedReason ? (': ' + Ethplorer.getTxErrorReason(txData.failedReason)) : ''));
     if(!txData.success){
-        $('#tdSuccess')[txData.success ? 'removeClass' : 'addClass']('text-danger');
+        $('#txTokenStatus')[txData.success ? 'removeClass' : 'addClass']('text-danger');
     }
 
     $('#loader').hide();
     $('#txDetails').show();
+
+    $('.token-related .block').height(Math.max($('.token-related:eq(0) .block').height(), $('.token-related:eq(1) .block').height()));
+}
+
+function showAddressDetails(address){
+    $('#loader').hide();
+    $('#addressDetails').show();
+    $('#addressDetails .block:eq(0),#addressDetails .block:eq(1)').height(Math.max($('#addressDetails .block:eq(0)').height(), $('#addressDetails .block:eq(1)').height()));
+}
+
+function showTokenDetails(address){
+    $('#loader').hide();
+    $('#tokenDetails').show();
+//  $('#tokenDetails .block:eq(0),#tokenDetails .block:eq(1)').height(Math.max($('#tokenDetails .block:eq(0)').height(), $('#tokenDetails .block:eq(1)').height()));
 }

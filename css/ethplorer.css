@@ -8,14 +8,22 @@ body {
 #network {
     color: white;
     line-height: 34px;
+    margin-right: 30px;
 }
 
 .content-page {
     display: none;
+}
+
+.content-page .block {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
     margin-top: 20px;
+}
+
+.block h3 {
+    margin-top: 0px;
 }
 
 #loader {
@@ -90,10 +98,23 @@ body {
     top: 100px;   
 }
 
-#tdData pre {
+#txEthData pre {
     white-space: pre-wrap;       /* Since CSS 2.1 */
     white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
     white-space: -pre-wrap;      /* Opera 4-6 */
     white-space: -o-pre-wrap;    /* Opera 7 */
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+
+.poka-hz {
+    background-color: #fc8c84 !important;
+}
+
+.todo {
+    background-color: #d5f5b2;
+}
+
+#search {
+    margin-top: 8px;
+    margin-left: 20px;
 }

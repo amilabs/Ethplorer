@@ -44,6 +44,7 @@ Ethplorer.Utils = {
         }
         return res;
     },
+    
     /**
      * Parses URL path
      * @returns {string}
