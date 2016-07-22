@@ -2,7 +2,7 @@
 
 Ethereum tokens and transactions viewer.
 
-View tokens developed with Ethereum's' [ERC20 (before known as EIP20)](https://github.com/ethereum/EIPs/issues/20) standard.
+View tokens developed with Ethereum's [ERC20 (before known as EIP20)](https://github.com/ethereum/EIPs/issues/20) standard.
 
 Explore sender, receiver and amount of transaction in token units.
 
