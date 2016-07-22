@@ -80,8 +80,7 @@ function getTxDetails(txHash, abi){
     if(!/^0x[0-9a-f]{64}$/i.test(txHash)){
         Ethplorer.error('Invalid transaction hash');
         return;
-    }
-    
+    }    
     
     $.jsonRPC.request('getTransactionDetails', {
         params : [txHash, abi],
@@ -104,6 +103,35 @@ function getTxDetails(txHash, abi){
     });
 }
 
+function getAddressDetails(address){
+    // Check Address format first
+    address = address.toLowerCase();
+    if(!/^0x[0-9a-f]{40}$/i.test(address)){
+        Ethplorer.error('Invalid address format');
+        return;
+    }    
+    
+    $.jsonRPC.request('getAddressDetails', {
+        params : [address],
+        success : function(data){
+            console.log(JSON.stringify(data));
+            showAddressDetails(address, data.result);
+        },
+        error : function(data){
+            console.log('There was an error ' + JSON.stringify(data));
+            if(data && data.error){
+                var errorMessage = '';
+                switch(data.error.code){
+                    case -32603:
+                        errorMessage = 'Address data was not found';
+                        break;
+                }
+                Ethplorer.error(errorMessage);
+            }
+        }
+    });
+}
+
 function showTxDetails(txHash, txData){
     console.log(txData);
     var urlEtherscan = Ethplorer.Utils.getEtherscanAddress();
@@ -114,7 +142,7 @@ function showTxDetails(txHash, txData){
     $('#txHash').html('<a target="_blank" href="' + urlEtherscan + 'tx/' + txHash + '">' + txHash + '</a>');
     $('.token-related')[txData.token ? 'show' : 'hide']();
     if(txData.token){
-        $('#tokenName').html(txData.token);
+        $('.token-name').html(txData.token);
         $('#tokenContract, #txEthTo').html('<a target="_blank" href="' + urlEtherscan + 'address/' + txData.contract + '">' + txData.contract + '</a>');
         $('#tokenSymbol').html(txData.symbol);
         if(!isNaN(txData.value) && !isNaN(txData.decimals)){
@@ -145,7 +173,7 @@ function showTxDetails(txHash, txData){
     $('.token-related .block').height(Math.max($('.token-related:eq(0) .block').height(), $('.token-related:eq(1) .block').height()));
 }
 
-function showAddressDetails(address){
+function showAddressDetails(address, data){
     $('#loader').hide();
     $('#addressDetails').show();
     $('#addressDetails .block:eq(0),#addressDetails .block:eq(1)').height(Math.max($('#addressDetails .block:eq(0)').height(), $('#addressDetails .block:eq(1)').height()));
