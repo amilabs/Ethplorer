@@ -63,7 +63,10 @@ Ethplorer.Utils = {
         }
         return res;
     },
-    
+    /**
+     * 
+     * @returns {String}
+     */
     getEtherscanAddress: function(){
         return 'https://' + (Ethplorer.Config.testnet ? 'testnet.' : '') + 'etherscan.io/';
     }
