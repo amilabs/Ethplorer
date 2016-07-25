@@ -24,6 +24,15 @@ Ethplorer.Utils = {
         cutZeroes = !!cutZeroes;
         withDecimals = !!withDecimals;
         decimals = decimals || 2;
+        if((num.toString().indexOf("e-") > 0) && withDecimals){
+            var parts = num.toString().split("e-");
+            var res = parts[0];
+            for(var i=0; i<(parseInt(parts[1]) - parts[0].length); i++){
+                res = '0' + res;
+            }
+            return '0.' + res;
+        }
+        
         if(withDecimals){
             num = math('round', num, decimals);
         }
@@ -69,5 +78,40 @@ Ethplorer.Utils = {
      */
     getEtherscanAddress: function(){
         return 'https://' + (Ethplorer.Config.testnet ? 'testnet.' : '') + 'etherscan.io/';
+    },
+    
+    getEtherscanLink: function(data, text, isContract){
+        text = text || data;
+        var urlEtherscan = Ethplorer.Utils.getEtherscanAddress();
+        if(!data.match(/^0x/)){
+            return text;
+        }
+        var isTx = data.match(/^0x[0-9a-f]{64}/);
+        var res = '<a target="_blank" href="' + urlEtherscan;
+        res += (isTx ? 'tx' : 'address');
+        res += ('/' + data + '">' + text + '</a>');
+        if(isContract){
+            res = 'Contract ' + res;
+        }        
+        return res;
+    },
+
+    // Date with fixed GMT to local date
+    ts2date: function(ts, withGMT){
+        withGMT = withGMT || true;
+        ts *= 1000;
+        function padZero(s){
+            return (s < 10) ? '0' + s : s.toString();
+        }        
+        var offset = -Math.round(new Date().getTimezoneOffset() / 60);
+        var res = '';
+        var dt = new Date(ts);
+        res += (dt.getFullYear() + '-' + padZero((dt.getMonth() + 1)) + '-' + padZero(dt.getDate()));
+        res += ' ';
+        res += (padZero(dt.getHours()) + ':' + padZero(dt.getMinutes()) + ':' + padZero(dt.getSeconds()));
+        if(withGMT){
+            res += (' (GMT' + (offset > 0 ? '+' : '-') + offset + ')');
+        }
+        return res;
     }
 };

@@ -134,37 +134,60 @@ function getAddressDetails(address){
 
 function showTxDetails(txHash, txData){
     console.log(txData);
-    var urlEtherscan = Ethplorer.Utils.getEtherscanAddress();
-    var ast = '<a target="_blank" href="' + urlEtherscan + 'address/';
-
     $('.list-field').empty();
     $('#txEthData').parent().hide();
-    $('#txHash').html('<a target="_blank" href="' + urlEtherscan + 'tx/' + txHash + '">' + txHash + '</a>');
+    $('#txHash').html(Ethplorer.Utils.getEtherscanLink(txHash));
     $('.token-related')[txData.token ? 'show' : 'hide']();
-    if(txData.token){
-        $('.token-name').html(txData.token);
-        $('#tokenContract, #txEthTo').html('<a target="_blank" href="' + urlEtherscan + 'address/' + txData.contract + '">' + txData.contract + '</a>');
-        $('#tokenSymbol').html(txData.symbol);
-        if(!isNaN(txData.value) && !isNaN(txData.decimals)){
-            var k = Math.pow(10, txData.decimals);
-            $('#txTokenValue').html(Ethplorer.Utils.formatNum(parseInt(txData.value) / k, true, txData.decimals) + ' ' + txData.symbol);
-        }
-        $('#txTokenTo').html(ast + txData.to + '">' + txData.to + '</a>');
-    }else{
-        $('#txEthValue').html(txData.value + ' Ether');
-        $('#txEthTo').html(ast + txData.to + '">' + txData.to + '</a>');    
-    }
-    $('#txTokenFrom, #txEthFrom').html(ast + txData.from + '">' + txData.from + '</a>');
+    
+    var oTx = txData.tx;
+    $('#txEthValue').html(oTx.value + ' ETHER');
+    $('#txEthTo').html(Ethplorer.Utils.getEtherscanLink(oTx.to, oTx.to, txData.contracts.indexOf(oTx.to) >= 0));
 
-    var data = txData.data ? txData.data.replace('0x', '').toUpperCase() : false;
+    $('#txEthNonce').html(oTx.nonce);
+    if(oTx.blockNumber){
+        $('#txEthBlock').html(oTx.blockNumber + ' (' + oTx.confirmations + ')');
+        $('#txEthStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
+        $('#txEthStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');
+        $('#txEthStatus').html(oTx.success ? 'Success' : 'Failed' + (oTx.failedReason ? (': ' + Ethplorer.getTxErrorReason(oTx.failedReason)) : ''));
+    }else{
+        $('#txEthStatus').removeClass('text-danger text-success');
+        $('#txEthStatus').html('Pending');
+    }
+
+    $('#txEthGasLimit').html(oTx.gasLimit);
+    $('#txEthGasUsed').html(oTx.gasUsed);
+    $('#txEthGasPrice').html(Ethplorer.Utils.formatNum(oTx.gasPrice, true) + ' ETHER');
+    $('#txEthFee').html(oTx.fee + ' ETHER');
+
+    if(txData.token){
+        var oToken = txData.token;
+        $('.token-name').html(oToken.name);
+
+        $('#tokenContract, #txEthTo').html(Ethplorer.Utils.getEtherscanLink(oToken.contract, oToken.contract, true));
+        $('#tokenSymbol').html(oToken.symbol);
+        $('#tokenDecimals').html(oToken.decimals);
+        $('#tokenOwner').html(Ethplorer.Utils.getEtherscanLink(oToken.owner, oToken.owner));
+        $('#tokenSupply').html(Ethplorer.Utils.formatNum(oToken.totalSupply, true, oToken.decimals, true));
+        
+        if(txData.send){
+            var oSend = txData.send;
+            if(!isNaN(oSend.value) && !isNaN(oToken.decimals)){
+                var k = Math.pow(10, oToken.decimals);
+                $('#txTokenValue').html(Ethplorer.Utils.formatNum(parseInt(oSend.value) / k, true, oToken.decimals) + ' ' + oToken.symbol);
+            }
+            $('#txTokenTo').html(Ethplorer.Utils.getEtherscanLink(oSend.to, oSend.to, txData.contracts.indexOf(oSend.to) >= 0));
+            $('#txTokenStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
+            $('#txTokenStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');           
+            $('#txTokenStatus').html(oSend.success ? 'Success' : 'Failed' + (oSend.failedReason ? (': ' + Ethplorer.getTxErrorReason(oSend.failedReason)) : ''));
+        }
+    }
+    $('#txTokenDate, #txEthDate').html(Ethplorer.Utils.ts2date(oTx.timestamp));
+    $('#txTokenFrom, #txEthFrom').html(Ethplorer.Utils.getEtherscanLink(oTx.from, oTx.from, txData.contracts.indexOf(oTx.from) >= 0));
+
+    var data = oTx.data ? oTx.data.replace('0x', '').toUpperCase() : false;
     if(data){
         $('#txEthData').html('<pre>' + data + '</pre>');
         $('#txEthData').parent().show();
-    }
-
-    $('#txTokenStatus').html(txData.success ? 'Success' : 'Failed' + (txData.failedReason ? (': ' + Ethplorer.getTxErrorReason(txData.failedReason)) : ''));
-    if(!txData.success){
-        $('#txTokenStatus')[txData.success ? 'removeClass' : 'addClass']('text-danger');
     }
 
     $('#loader').hide();
