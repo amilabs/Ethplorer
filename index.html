@@ -14,7 +14,6 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="/js/jquery.jsonrpc.js"></script>
     <script src="/js/ethplorer.js"></script>
-    <script src="/js/ethplorer.utils.js"></script>
     <script src="/cfg/config.ethplorer.js"></script>    
 </head>
 <body>
@@ -182,17 +181,17 @@
                 <div id="addressDetails" class="content-page">
                     <div class="col-xs-12 col-md-6">
                         <div class="block">
-                            <h3>Address Information</h3>
+                            <h3><span id="address-type"></span> Information</h3>
                             <table class="table">
                             <tr>
                                 <td>Balance</td>
-                                <td>0.006 Ether</td>
+                                <td id="address-balance" data-type="ether"></td>
                             </tr>                               
                             <tr>
                                 <td>Transactions</td>
-                                <td>12</td>
+                                <td id="address-txCount" data-type="int"></td>
                             </tr>
-                            <tr>
+                            <tr class="poka-hz">
                                 <td>Last Activity</td>
                                 <td>2016-01-02 15:55:66 (block #1002322)</td>
                             </tr>
@@ -200,23 +199,39 @@
                         </div>
                     </div>
                     <div class="col-xs-12 col-md-6">
-                        <div class="block">
+                        <div class="block" id="address-token-balances">
                             <h3>Token Balances</h3>
+                            <table class="table"></table>                           
+                        </div>
+                        <div class="block" id="address-token-details">
+                            <h3>Token <span id="address-token-name"></span> Information</h3>
                             <table class="table">
                             <tr>
-                                <td>ETHDEMO</td>
-                                <td>2100.3400</td>
+                                <td>Symbol</td>
+                                <td id="address-token-symbol" class="list-field"></td>
                             </tr>
                             <tr>
-                                <td>ETHTHB</td>
-                                <td>200.12</td>
+                                <td>Decimals</td>
+                                <td id="address-token-decimals"></td>
                             </tr>
                             <tr>
-                                <td>TOKEN2</td>
-                                <td>212123</td>
+                                <td>Owner</td>
+                                <td id="address-token-owner" data-type="etherscan"></td>
+                            </tr>
+                            <tr>
+                                <td>Total Supply</td>
+                                <td id="address-token-totalSupply" data-type="int"></td>
+                            </tr>
+                            <tr class="poka-hz">
+                                <td>Total Transactions</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr class="poka-hz">
+                                <td>Last Activity</td>
+                                <td>N/A</td>
                             </tr>
                             </table>                           
-                        </div>
+                        </div>                        
                     </div>
                     <div class="col-xs-12">
                         <div class="block poka-hz">
