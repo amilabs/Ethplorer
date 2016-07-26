@@ -61,19 +61,19 @@
                             <table class="table">
                             <tr>
                                 <td>Date</td>
-                                <td id="txTokenDate"></td>
+                                <td id="transfer-tx-timestamp" data-type="localdate" class="list-field"></td>
                             </tr>                               
                             <tr>
                                 <td>From</td>
-                                <td id="txTokenFrom" class="list-field"></td>
+                                <td id="transfer-send-from" data-type="etherscan" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>To</td>
-                                <td id="txTokenTo" class="list-field"></td>
+                                <td id="transfer-send-to" data-type="etherscan" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Value</td>
-                                <td id="txTokenValue" class="list-field"></td>
+                                <td id="transfer-send-value" data-type="etherscan" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Status</td>
@@ -88,23 +88,23 @@
                             <table class="table">
                             <tr>
                                 <td>Contract</td>
-                                <td id="tokenContract" class="list-field"></td>
+                                <td id="transaction-token-contract" class="list-field" data-type="etherscan" data-options="no-contract"></td>
                             </tr>
                             <tr>
                                 <td>Symbol</td>
-                                <td id="tokenSymbol" class="list-field"></td>
+                                <td id="transaction-token-symbol" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Decimals</td>
-                                <td id="tokenDecimals">4</td>
+                                <td id="transaction-token-decimals" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Owner</td>
-                                <td id="tokenOwner"></td>
+                                <td id="transaction-token-owner" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Total Supply</td>
-                                <td id="tokenSupply"></td>
+                                <td id="transaction-token-totalSupply" class="list-field" data-type="float"></td>
                             </tr>
                             <tr class="poka-hz">
                                 <td>Total Transactions</td>
@@ -123,51 +123,55 @@
                             <table class="table">
                             <tr>
                                 <td>Tx</td>
-                                <td id="txHash" class="list-field"></td>
+                                <td id="transaction-tx-hash" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Date</td>
-                                <td id="txEthDate"></td>
+                                <td id="transaction-tx-timestamp" data-type="localdate" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Block</td>
-                                <td id="txEthBlock"></td>
+                                <td id="transaction-tx-block">
+                                    <span id="transaction-tx-blockNumber" class="list-field"></span> (<span id="transaction-tx-confirmations" class="list-field"></span> confirmations)
+                                </td>
                             </tr>                            
                             <tr>
                                 <td>From</td>
-                                <td id="txEthFrom" class="list-field"></td>
+                                <td id="transaction-tx-from" class="list-field" data-type="etherscan"></td>
                             </tr>
                             <tr>
                                 <td>To</td>
-                                <td id="txEthTo" class="list-field"></td>
+                                <td id="transaction-tx-to" class="list-field" data-type="etherscan"></td>
                             </tr>
                             <tr>
                                 <td>Value</td>
-                                <td id="txEthValue"></td>
+                                <td id="transaction-tx-value" class="list-field" data-type="ether"></td>
                             </tr>
                             <tr>
                                 <td>Gas Limit</td>
-                                <td id="txEthGasLimit"></td>
+                                <td id="transaction-tx-gasLimit" class="list-field" data-type="int"></td>
                             </tr>
                             <tr>
                                 <td>Gas Used</td>
-                                <td id="txEthGasUsed"></td>
+                                <td id="transaction-tx-gasUsed" class="list-field" data-type="int"></td>
                             </tr>
                             <tr>
                                 <td>Gas Price</td>
-                                <td id="txEthGasPrice"></td>
+                                <td id="transaction-tx-gasPrice" class="list-field" data-type="ether"></td>
                             </tr>
                             <tr>
                                 <td>TX Fee</td>
-                                <td id="txEthFee"></td>
+                                <td id="transaction-tx-fee" class="list-field" data-type="ether"></td>
                             </tr>
                             <tr>
                                 <td>Nonce</td>
-                                <td id="txEthNonce"></td>
+                                <td id="transaction-tx-nonce" class="list-field"></td>
                             </tr>                            
                             <tr>
                                 <td>Input Data</td>
-                                <td id="txEthData" class="list-field"></td>
+                                <td>
+                                    <pre id="transaction-tx-data" class="list-field"></pre>
+                                </td>
                             </tr>
                             <tr>
                                 <td>Status</td>
@@ -185,11 +189,11 @@
                             <table class="table">
                             <tr>
                                 <td>Balance</td>
-                                <td id="address-balance" data-type="ether"></td>
+                                <td id="address-balance" data-type="ether" class="list-field"></td>
                             </tr>                               
                             <tr>
                                 <td>Transactions</td>
-                                <td id="address-txCount" data-type="int"></td>
+                                <td id="address-txCount" data-type="int" class="list-field"></td>
                             </tr>
                             <tr class="poka-hz">
                                 <td>Last Activity</td>
@@ -212,15 +216,15 @@
                             </tr>
                             <tr>
                                 <td>Decimals</td>
-                                <td id="address-token-decimals"></td>
+                                <td id="address-token-decimals" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Owner</td>
-                                <td id="address-token-owner" data-type="etherscan"></td>
+                                <td id="address-token-owner" data-type="etherscan" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Total Supply</td>
-                                <td id="address-token-totalSupply" data-type="int"></td>
+                                <td id="address-token-totalSupply" data-type="int" class="list-field"></td>
                             </tr>
                             <tr class="poka-hz">
                                 <td>Total Transactions</td>
@@ -232,80 +236,6 @@
                             </tr>
                             </table>                           
                         </div>                        
-                    </div>
-                    <div class="col-xs-12">
-                        <div class="block poka-hz">
-                            <h3>Last Transactions</h3>
-                            <table class="table">
-                            <tr>
-                                <td>2016-01-02 15:55:66</td>
-                                <td>1002322</td>
-                                <td>0xba5a7edd010a6b2b88ba51daf360dee611d9ce5505c7ae420879334df2cdf7f2</td>
-                            </tr>
-                            <tr>
-                                <td>2016-01-02 15:55:66</td>
-                                <td>1002322</td>
-                                <td>0xba5a7edd010a6b2b88ba51daf360dee611d9ce5505c7ae420879334df2cdf7f2</td>
-                            </tr>                            
-                            </table>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="tokenDetails" class="content-page">
-                    <div class="col-xs-12 col-md-12">
-                        <div class="block">
-                            <h3>Token <span class="token-name"></span></h3>
-                            <table class="table">
-                            <tr>
-                                <td>Contract</td>
-                                <td>0x203ccf4a405f4ed72d2ae700d9b1899e9f9af1e1</td>
-                            </tr>
-                            <tr>
-                                <td>Symbol</td>
-                                <td>☃</td>
-                            </tr>
-                            <tr>
-                                <td>Decimals</td>
-                                <td>4</td>
-                            </tr>
-                            <tr>
-                                <td>Owner</td>
-                                <td>0xdeadbeefcafe000000000000000</td>
-                            </tr>
-                            <tr>
-                                <td>Total Supply</td>
-                                <td>100000000</td>
-                            </tr>
-                            <tr class="poka-hz">
-                                <td>Total Transactions</td>
-                                <td>1000</td>
-                            </tr>
-                            <tr class="poka-hz">
-                                <td>Last Activity</td>
-                                <td>2016-01-02 15:55:66 (block #1002322)</td>
-                            </tr>
-                            </table>                           
-                        </div>
-                    </div>
-                    <div class="col-xs-12">
-                        <div class="block poka-hz">
-                            <h3>Holders</h3>
-                            <table class="table">
-                            <tr>
-                                <td>0xdeadbeefcafe000000000000000</td>
-                                <td>2100.3400</td>
-                            </tr>
-                            <tr>
-                                <td>0xdeadbeefcafe000000000000000</td>
-                                <td>200.12</td>
-                            </tr>
-                            <tr>
-                                <td>0xdeadbeefcafe000000000000000</td>
-                                <td>212123</td>
-                            </tr>
-                            </table>                           
-                        </div>
                     </div>
                     <div class="col-xs-12">
                         <div class="block poka-hz">

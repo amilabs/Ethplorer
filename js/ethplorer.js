@@ -26,9 +26,11 @@ Ethplorer = {
             case 'address':
                 Ethplorer.getAddressDetails(pathData.arg);
                 break;
+            /*
             case 'token':
                 showTokenDetails(pathData.arg);
                 break;
+            */
             default:
                 Ethplorer.error('Oops, nothing to do');
         }
@@ -75,19 +77,17 @@ Ethplorer = {
         Ethplorer.Utils.request('getTransactionDetails', [txHash, abi], 'showTxDetails');
     },
 
+    knownContracts: [],
+
     showTxDetails: function(txHash, txData){
         $('.list-field').empty();
-        $('#txEthData').parent().hide();
-        $('#txHash').html(Ethplorer.Utils.getEtherscanLink(txHash));
+        $('#transaction-tx-hash').html(Ethplorer.Utils.getEtherscanLink(txHash));
         $('.token-related')[txData.token ? 'show' : 'hide']();
 
-        var oTx = txData.tx;
-        $('#txEthValue').html(oTx.value + ' ETHER');
-        $('#txEthTo').html(Ethplorer.Utils.getEtherscanLink(oTx.to, oTx.to, txData.contracts.indexOf(oTx.to) >= 0));
+        Ethplorer.knownContracts = txData.contracts ? txData.contracts : [];
 
-        $('#txEthNonce').html(oTx.nonce);
+        var oTx = txData.tx;
         if(oTx.blockNumber){
-            $('#txEthBlock').html(oTx.blockNumber + ' (' + oTx.confirmations + ')');
             $('#txEthStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
             $('#txEthStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');
             $('#txEthStatus').html(oTx.success ? 'Success' : 'Failed' + (oTx.failedReason ? (': ' + Ethplorer.getTxErrorReason(oTx.failedReason)) : ''));
@@ -96,52 +96,37 @@ Ethplorer = {
             $('#txEthStatus').html('Pending');
         }
 
-        $('#txEthGasLimit').html(oTx.gasLimit);
-        $('#txEthGasUsed').html(oTx.gasUsed);
-        $('#txEthGasPrice').html(Ethplorer.Utils.formatNum(oTx.gasPrice, true) + ' ETHER');
-        $('#txEthFee').html(oTx.fee + ' ETHER');
+        Ethplorer.fillValues('transaction', txData, ['tx', 'tx.from', 'tx.to', 'tx.value', 'tx.timestamp', 'tx.gasLimit', 'tx.gasUsed', 'tx.gasPrice', 'tx.fee', 'tx.nonce', 'tx.blockNumber', 'tx.confirmations', 'tx.data']);
 
         if(txData.token){
+            $('.token-name').html(txData.token.name);
             var oToken = txData.token;
-            $('.token-name').html(oToken.name);
-
-            $('#tokenContract, #txEthTo').html(Ethplorer.Utils.getEtherscanLink(oToken.contract, oToken.contract, true));
-            $('#tokenSymbol').html(oToken.symbol);
-            $('#tokenDecimals').html(oToken.decimals);
-            $('#tokenOwner').html(Ethplorer.Utils.getEtherscanLink(oToken.owner, oToken.owner));
-            $('#tokenSupply').html(Ethplorer.Utils.formatNum(oToken.totalSupply, true, oToken.decimals, true));
-
+            if(!isNaN(oToken.decimals)){
+                oToken.totalSupply = oToken.totalSupply / Math.pow(10, oToken.decimals);
+            }
+            Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
             if(txData.send){
                 var oSend = txData.send;
                 if(!isNaN(oSend.value) && !isNaN(oToken.decimals)){
-                    var k = Math.pow(10, oToken.decimals);
-                    $('#txTokenValue').html(Ethplorer.Utils.formatNum(parseInt(oSend.value) / k, true, oToken.decimals) + ' ' + oToken.symbol);
+                    oSend.value = Ethplorer.Utils.formatNum(parseInt(oSend.value) / Math.pow(10, oToken.decimals), true, oToken.decimals) + ' ' + oToken.symbol;
                 }
-                $('#txTokenTo').html(Ethplorer.Utils.getEtherscanLink(oSend.to, oSend.to, txData.contracts.indexOf(oSend.to) >= 0));
+                Ethplorer.fillValues('transfer', txData, ['tx', 'tx.timestamp']);
+                Ethplorer.fillValues('transfer', txData, ['send', 'send.from', 'send.to', 'send.value']);
                 $('#txTokenStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
                 $('#txTokenStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');           
                 $('#txTokenStatus').html(oSend.success ? 'Success' : 'Failed' + (oSend.failedReason ? (': ' + Ethplorer.getTxErrorReason(oSend.failedReason)) : ''));
             }
         }
-        $('#txTokenDate, #txEthDate').html(Ethplorer.Utils.ts2date(oTx.timestamp));
-        $('#txTokenFrom, #txEthFrom').html(Ethplorer.Utils.getEtherscanLink(oTx.from, oTx.from, txData.contracts.indexOf(oTx.from) >= 0));
-
-        var data = oTx.data ? oTx.data.replace('0x', '').toUpperCase() : false;
-        if(data){
-            $('#txEthData').html('<pre>' + data + '</pre>');
-            $('#txEthData').parent().show();
-        }
-
+        Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
         $('#txDetails').show();
-
-        $('.token-related .block').height(Math.max($('.token-related:eq(0) .block').height(), $('.token-related:eq(1) .block').height()));
+        Ethplorer.Utils.adjustHeight('#txDetails .block:eq(0)', '#txDetails .block:eq(1)');
     },
 
     getAddressDetails: function(address){
         // Check Address format first
         address = address.toLowerCase();
-        if(!/^0x[0-9a-f]{40}$/i.test(address)){
+        if(!Ethplorer.Utils.isAddress(address)){
             Ethplorer.error('Invalid address format');
             return;
         }    
@@ -168,10 +153,10 @@ Ethplorer = {
                 $('#address-token-balances table').append(row);
             }
         }
-        
+        Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
         $('#addressDetails').show();
-        $('#addressDetails .block:eq(0),#addressDetails .block:eq(1)').height(Math.max($('#addressDetails .block:eq(0)').height(), $('#addressDetails .block:eq(1)').height()));
+        Ethplorer.Utils.adjustHeight('#addressDetails .block:eq(0)', '#addressDetails .block:eq(1)');
     },
 
     showTokenDetails: function(address){
@@ -185,8 +170,6 @@ Ethplorer = {
             if(keys.indexOf(key) >= 0){
                 if('object' == typeof(data[key])){
                     for(var sub in data[key]){
-                        console.log('Search ' + key + '.' + sub + ' into keys');
-                        console.log(keys);
                         if(keys.indexOf(key + '.' + sub) >= 0){
                             Ethplorer.fillValue(prefix + '-' + key + '-' + sub , data[key][sub]);
                         }
@@ -199,15 +182,22 @@ Ethplorer = {
     },
 
     fillValue: function(id, value){
-        var type = $('#' + id).attr('data-type');
-        if('int' === type){
-            value = Ethplorer.Utils.formatNum(value, false);
-        }
-        if('ether' === type){
-            value = Ethplorer.Utils.formatNum(value, true, 16, true) + ' ETHER';
-        }
-        if('etherscan' === type){
-            value = Ethplorer.Utils.getEtherscanLink(value);
+        var type = $('#' + id).attr('data-type') || 'none';
+        var options = $('#' + id).attr('data-options') ? $('#' + id).attr('data-options').split('|') : [];
+        switch(type){
+            case 'int':
+            case 'float':
+                value = Ethplorer.Utils.formatNum(value, 'float' === type);
+                break;
+            case 'ether':
+                value = Ethplorer.Utils.formatNum(value, true, 18, true) + ' ETHER';
+                break;
+            case 'etherscan':
+                value = Ethplorer.Utils.getEtherscanLink(value, value, (options.indexOf('no-contract') < 0) ? Ethplorer.knownContracts.indexOf(value) >= 0 : false);
+                break;
+            case 'localdate':
+                value = Ethplorer.Utils.ts2date(value, true);
+                break;
         }
         $('#' + id).html(value);
     },
@@ -249,8 +239,8 @@ Ethplorer = {
             decimals = decimals || 2;
             if((num.toString().indexOf("e-") > 0) && withDecimals){
                 var parts = num.toString().split("e-");
-                var res = parts[0];
-                for(var i=0; i<(parseInt(parts[1]) - parts[0].length); i++){
+                var res = parts[0].replace('.', '');
+                for(var i=1; i<parseInt(parts[1]); i++){
                     res = '0' + res;
                 }
                 return '0.' + res;
@@ -302,14 +292,19 @@ Ethplorer = {
         getEtherscanAddress: function(){
             return 'https://' + (Ethplorer.Config.testnet ? 'testnet.' : '') + 'etherscan.io/';
         },
-
+        isAddress: function(address){
+            return address.toString().toLowerCase().match(/^0x[0-9a-f]{40}/);
+        },
+        isTx: function(hash){
+            return hash.toString().toLowerCase().match(/^0x[0-9a-f]{64}/);
+        },
         getEtherscanLink: function(data, text, isContract){
             text = text || data;
             var urlEtherscan = Ethplorer.Utils.getEtherscanAddress();
             if(!data.match(/^0x/)){
                 return text;
             }
-            var isTx = data.match(/^0x[0-9a-f]{64}/);
+            var isTx = Ethplorer.Utils.isTx(data);
             var res = '<a target="_blank" href="' + urlEtherscan;
             res += (isTx ? 'tx' : 'address');
             res += ('/' + data + '">' + text + '</a>');
@@ -324,7 +319,7 @@ Ethplorer = {
             if(!data.match(/^0x/)){
                 return text;
             }
-            var isTx = data.match(/^0x[0-9a-f]{64}/);
+            var isTx = Ethplorer.Utils.isTx(data);
             var res = '<a href="/';
             res += (isTx ? 'tx' : 'address');
             res += ('/' + data + '">' + text + '</a>');
@@ -351,6 +346,15 @@ Ethplorer = {
                 res += (' (GMT' + (offset > 0 ? '+' : '-') + offset + ')');
             }
             return res;
+        },
+
+        adjustHeight: function(selector1, selector2){
+            $(selector1 + ',' + selector2).height(Math.max($(selector1).height(), $(selector2).height()));            
+        },
+
+        hideEmptyFields: function(){
+            $('.list-field').parents('TR').show();
+            $('.list-field:empty').parents('TR').hide();
         },
 
         request: function(method, params, successMethod){   
