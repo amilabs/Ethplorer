@@ -184,6 +184,7 @@ Ethplorer = {
     },
 
     search: function(value){
+        value = value.replace(/^\s+/, '').replace(/\s+$/, '');
         if(Ethplorer.Utils.isAddress(value)){
             document.location.href = '/address/' + value;
             return;
@@ -333,10 +334,10 @@ Ethplorer = {
             return 'https://' + (Ethplorer.Config.testnet ? 'testnet.' : '') + 'etherscan.io/';
         },
         isAddress: function(address){
-            return address.toString().toLowerCase().match(/^0x[0-9a-f]{40}/);
+            return /^0x[0-9a-f]{40}/.test(address.toString().toLowerCase());
         },
         isTx: function(hash){
-            return hash.toString().toLowerCase().match(/^0x[0-9a-f]{64}/);
+            return /^0x[0-9a-f]{64}/.test(hash.toString().toLowerCase());
         },
         getEtherscanLink: function(data, text, isContract){
             text = text || data;
