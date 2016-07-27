@@ -139,6 +139,7 @@ Ethplorer = {
         $('#address-token-balances, #address-token-details').hide();
         if(data.isContract){
             $('#address-token-details').show();
+            var oToken = data.token;
             if(oToken.decimals){
                 token.totalSupply = token.totalSupply / Math.pow(10, oToken.decimals);
             }
