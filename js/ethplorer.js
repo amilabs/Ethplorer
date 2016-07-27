@@ -405,7 +405,7 @@ Ethplorer = {
             $('.list-field:empty').parents('TR').hide();
         },
 
-        ascii2hex: function(data){
+        ascii2hex: function(text){
             var res = [];
             for (var i=0; i<text.length; i++){
 		var hex = Number(text.charCodeAt(i)).toString(16);
