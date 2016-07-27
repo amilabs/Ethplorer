@@ -141,7 +141,7 @@ Ethplorer = {
             $('#address-token-details').show();
             var oToken = data.token;
             if(oToken.decimals){
-                token.totalSupply = token.totalSupply / Math.pow(10, oToken.decimals);
+                oToken.totalSupply = oToken.totalSupply / Math.pow(10, oToken.decimals);
             }
             Ethplorer.fillValues('address', data, ['token', 'token.name', 'token.owner', 'token.totalSupply', 'token.decimals', 'token.symbol']);
         }else if(data.tokenBalances){
