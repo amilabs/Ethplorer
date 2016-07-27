@@ -159,6 +159,43 @@ Ethplorer = {
         Ethplorer.Utils.adjustHeight('#addressDetails .block:eq(0)', '#addressDetails .block:eq(1)');
     },
 
+    convert: function(id, switcher){
+        switcher = $(switcher);
+        var pre = $('#' + id);
+        var text = pre.text();
+        var mode = pre.attr('data-mode');
+        if('ascii' === mode){
+            var res = [];
+            for (var i=0; i<text.length; i++){
+		var hex = Number(text.charCodeAt(i)).toString(16);
+		res.push(hex);
+	 }
+            pre.text(res.join(''));
+            pre.attr('data-mode', 'hex');
+            switcher.text('ASCII');
+        }else{
+            var res = text.match(/.{1,2}/g).map(function(v){
+                return String.fromCharCode(parseInt(v, 16));
+            }).join('');
+            pre.text(res);
+            pre.attr('data-mode', 'ascii');
+            switcher.text('HEX');
+        }
+    },
+
+    search: function(value){
+        if(Ethplorer.Utils.isAddress(value)){
+            document.location.href = '/address/' + value;
+            return;
+        }
+        if(Ethplorer.Utils.isTx(value)){
+            document.location.href = '/tx/' + value;
+            return;
+        }
+        $('#search').val('');
+        Ethplorer.error('Nothing found');
+    },
+
     showTokenDetails: function(address){
         Ethplorer.hideLoader();
         $('#tokenDetails').show();
@@ -192,6 +229,9 @@ Ethplorer = {
             case 'ether':
                 value = Ethplorer.Utils.formatNum(value, true, 18, true) + ' ETHER';
                 break;
+            case 'ethplorer':
+                value = Ethplorer.Utils.getEthplorerLink(value, value, (options.indexOf('no-contract') < 0) ? Ethplorer.knownContracts.indexOf(value) >= 0 : false);
+                break;                
             case 'etherscan':
                 value = Ethplorer.Utils.getEtherscanLink(value, value, (options.indexOf('no-contract') < 0) ? Ethplorer.knownContracts.indexOf(value) >= 0 : false);
                 break;

@@ -109,6 +109,19 @@ body {
 
 .poka-hz {
     background-color: #fc8c84 !important;
+    display: none;
+}
+
+.pre-switcher {
+    cursor: pointer;
+    position: relative;
+    top: 18px;
+    right: 16px;
+    font-size: 10px;
+}
+
+pre.list-field {
+    padding-top: 16px;
 }
 
 .todo {

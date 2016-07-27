@@ -21,7 +21,9 @@
         <div class="container">
             <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <input id="search" class="form-control" style="width: 200px;" placeholder="Search..." />
+                    <form onsubmit="Ethplorer.search($('#search').val()); return false;">
+                        <input id="search" class="form-control" style="width: 200px;" placeholder="Search..." />
+                    </form>
                     <!--                    
                     <li data-page="txDetails" class="active"><a>TX Details</a></li>
                     <li data-page="txSearchForm"><a>TX Form</a></li>
@@ -65,11 +67,11 @@
                             </tr>                               
                             <tr>
                                 <td>From</td>
-                                <td id="transfer-send-from" data-type="etherscan" class="list-field"></td>
+                                <td id="transfer-send-from" data-type="ethplorer" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>To</td>
-                                <td id="transfer-send-to" data-type="etherscan" class="list-field"></td>
+                                <td id="transfer-send-to" data-type="ethplorer" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Value</td>
@@ -88,7 +90,7 @@
                             <table class="table">
                             <tr>
                                 <td>Contract</td>
-                                <td id="transaction-token-contract" class="list-field" data-type="etherscan" data-options="no-contract"></td>
+                                <td id="transaction-token-contract" class="list-field" data-type="ethplorer" data-options="no-contract"></td>
                             </tr>
                             <tr>
                                 <td>Symbol</td>
@@ -123,7 +125,7 @@
                             <table class="table">
                             <tr>
                                 <td>Tx</td>
-                                <td id="transaction-tx-hash" class="list-field"></td>
+                                <td id="transaction-tx-hash" class="list-field" data-type="etherscan"></td>
                             </tr>
                             <tr>
                                 <td>Date</td>
@@ -137,11 +139,11 @@
                             </tr>                            
                             <tr>
                                 <td>From</td>
-                                <td id="transaction-tx-from" class="list-field" data-type="etherscan"></td>
+                                <td id="transaction-tx-from" class="list-field" data-type="ethplorer"></td>
                             </tr>
                             <tr>
                                 <td>To</td>
-                                <td id="transaction-tx-to" class="list-field" data-type="etherscan"></td>
+                                <td id="transaction-tx-to" class="list-field" data-type="ethplorer"></td>
                             </tr>
                             <tr>
                                 <td>Value</td>
@@ -169,8 +171,9 @@
                             </tr>                            
                             <tr>
                                 <td>Input Data</td>
-                                <td>
-                                    <pre id="transaction-tx-data" class="list-field"></pre>
+                                <td class="text-right">
+                                    <a onclick="Ethplorer.convert('transaction-tx-data', this);" class="pre-switcher">ASCII</a>
+                                    <pre id="transaction-tx-data" class="list-field text-left" data-mode="hex"></pre>
                                 </td>
                             </tr>
                             <tr>
