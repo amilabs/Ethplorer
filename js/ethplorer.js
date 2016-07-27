@@ -334,10 +334,10 @@ Ethplorer = {
             return 'https://' + (Ethplorer.Config.testnet ? 'testnet.' : '') + 'etherscan.io/';
         },
         isAddress: function(address){
-            return /^0x[0-9a-f]{40}/.test(address.toString().toLowerCase());
+            return /^0x[0-9a-f]{40}$/.test(address.toString().toLowerCase());
         },
         isTx: function(hash){
-            return /^0x[0-9a-f]{64}/.test(hash.toString().toLowerCase());
+            return /^0x[0-9a-f]{64}$/.test(hash.toString().toLowerCase());
         },
         getEtherscanLink: function(data, text, isContract){
             text = text || data;
