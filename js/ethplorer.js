@@ -96,6 +96,15 @@ Ethplorer = {
             $('#txEthStatus').html('Pending');
         }
 
+        $('#tx-parsed').hide();
+        if(oTx.data.length){
+            var obj = Ethplorer.Utils.parseJData(oTx.data);
+            if(false !== obj){
+                $('#transaction-tx-parsed').text(JSON.stringify(obj, null, 4));
+                $('#tx-parsed').show();
+            }
+        }
+
         Ethplorer.fillValues('transaction', txData, ['tx', 'tx.from', 'tx.to', 'tx.value', 'tx.timestamp', 'tx.gasLimit', 'tx.gasUsed', 'tx.gasPrice', 'tx.fee', 'tx.nonce', 'tx.blockNumber', 'tx.confirmations', 'tx.data']);
 
         if(txData.token){
@@ -171,19 +180,11 @@ Ethplorer = {
         var text = pre.text();
         var mode = pre.attr('data-mode');
         if('ascii' === mode){
-            var res = [];
-            for (var i=0; i<text.length; i++){
-		var hex = Number(text.charCodeAt(i)).toString(16);
-		res.push(hex);
-	 }
-            pre.text(res.join(''));
+            pre.text(Ethplorer.Utils.ascii2hex(text));
             pre.attr('data-mode', 'hex');
             switcher.text('ASCII');
         }else{
-            var res = text.match(/.{1,2}/g).map(function(v){
-                return String.fromCharCode(parseInt(v, 16));
-            }).join('');
-            pre.text(res);
+            pre.text(Ethplorer.Utils.hex2ascii(text));
             pre.attr('data-mode', 'ascii');
             switcher.text('HEX');
         }
@@ -348,7 +349,7 @@ Ethplorer = {
         getEtherscanLink: function(data, text, isContract){
             text = text || data;
             var urlEtherscan = Ethplorer.Utils.getEtherscanAddress();
-            if(!data.match(/^0x/)){
+            if(!/^0x/.test(data)){
                 return text;
             }
             var isTx = Ethplorer.Utils.isTx(data);
@@ -363,7 +364,7 @@ Ethplorer = {
 
         getEthplorerLink: function(data, text, isContract){
             text = text || data;
-            if(!data.match(/^0x/)){
+            if(!/^0x/.test(data)){
                 return text;
             }
             var isTx = Ethplorer.Utils.isTx(data);
@@ -402,6 +403,35 @@ Ethplorer = {
         hideEmptyFields: function(){
             $('.list-field').parents('TR').show();
             $('.list-field:empty').parents('TR').hide();
+        },
+
+        ascii2hex: function(data){
+            var res = [];
+            for (var i=0; i<text.length; i++){
+		var hex = Number(text.charCodeAt(i)).toString(16);
+		res.push(hex);
+            }
+            return res.join('');
+        },
+
+        hex2ascii: function(data){
+            return data.match(/.{1,2}/g).map(function(v){
+                return String.fromCharCode(parseInt(v, 16));
+            }).join('');
+        },
+
+        parseJData: function(hex){
+            var str = Ethplorer.Utils.hex2ascii(hex);
+            var res = false;
+            var i1 = str.indexOf('{');
+            var i2 = str.indexOf('}');
+            if(i1 >= 0 && i2 >= 0 && i1 < i2){
+                var jstr = str.substr(i1, i2 - i1 + 1);
+                try {
+                    res = JSON.parse(jstr);
+                }catch(e){}
+            }
+            return res;
         },
 
         request: function(method, params, successMethod){   
