@@ -139,6 +139,9 @@ Ethplorer = {
         $('#address-token-balances, #address-token-details').hide();
         if(data.isContract){
             $('#address-token-details').show();
+            if(oToken.decimals){
+                token.totalSupply = token.totalSupply / Math.pow(10, oToken.decimals);
+            }
             Ethplorer.fillValues('address', data, ['token', 'token.name', 'token.owner', 'token.totalSupply', 'token.decimals', 'token.symbol']);
         }else if(data.tokenBalances){
             $('#address-token-balances').show();
@@ -147,8 +150,10 @@ Ethplorer = {
                 var oToken = data.tokens[token];
                 var row = $('<TR>');
                 row.append('<TD>' + Ethplorer.Utils.getEthplorerLink(oToken.contract, token, false) + '</TD>');
-                var value = balance / Math.pow(10, oToken.decimals);
-                row.append('<TD>' + Ethplorer.Utils.formatNum(value, true, oToken.decimals, false) + ' ' + oToken.symbol + '</TD>');
+                if(oToken.decimals){
+                    balance = balance / Math.pow(10, oToken.decimals);
+                }
+                row.append('<TD>' + Ethplorer.Utils.formatNum(balance, true, oToken.decimals, false) + ' ' + oToken.symbol + '</TD>');
                 row.find('td:eq(1)').addClass('text-right');
                 $('#address-token-balances table').append(row);
             }
