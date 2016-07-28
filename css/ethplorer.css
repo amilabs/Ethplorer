@@ -5,6 +5,24 @@ body {
     background-color: #000;
 }
 
+.navbar-inverse {
+	background-color: #fff;
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+
+.navbar-nav {
+	margin-right: 0px;
+}
+
+.navbar-header {
+	padding-left: 15px;
+}
+
+.navbar-brand img {
+  width: 55%;
+}
+
 #network {
     color: white;
     line-height: 34px;
@@ -164,5 +182,5 @@ pre.list-field {
 
 #search {
     margin-top: 8px;
-    margin-left: 20px;
+    margin-right: 15px !important;
 }
