@@ -106,23 +106,40 @@ Ethplorer = {
             if(false !== obj){
                 $('#transaction-tx-parsed').text(JSON.stringify(obj, null, 4));
                 $('#tx-parsed').show();
+                if(obj.description){
+                    var msg = obj.description;
+                    if(obj.link){
+                        msg = msg + ' ' + obj.link;
+                    }
+                    $('#transaction-tx-message').text(msg);
+                    var msgHTML = $('#transaction-tx-message').html();
+                    msgHTML = msgHTML.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
+                    $('#transaction-tx-message').html(msgHTML);
+                }
             }
         }
 
-        Ethplorer.fillValues('transaction', txData, ['tx', 'tx.from', 'tx.to', 'tx.value', 'tx.timestamp', 'tx.gasLimit', 'tx.gasUsed', 'tx.gasPrice', 'tx.fee', 'tx.nonce', 'tx.blockNumber', 'tx.confirmations', 'tx.data']);
+        Ethplorer.fillValues('transaction', txData, ['tx', 'tx.from', 'tx.to', 'tx.creates', 'tx.value', 'tx.timestamp', 'tx.gasLimit', 'tx.gasUsed', 'tx.gasPrice', 'tx.fee', 'tx.nonce', 'tx.blockNumber', 'tx.confirmations', 'tx.data']);
 
         if(txData.token){
             $('.token-name').html(txData.token.name);
             var oToken = txData.token;
-            if(!isNaN(oToken.decimals)){
+            if(oToken.decimals){
                 oToken.totalSupply = oToken.totalSupply / Math.pow(10, oToken.decimals);
             }
+            oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true);
+            if(oToken.symbol){
+                oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
+            }
+            
             Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
             if(txData.send){
                 var oSend = txData.send;
+                oSend.value = parseInt(oSend.value);
                 if(!isNaN(oSend.value) && !isNaN(oToken.decimals)){
-                    oSend.value = Ethplorer.Utils.formatNum(parseInt(oSend.value) / Math.pow(10, oToken.decimals), true, oToken.decimals) + ' ' + oToken.symbol;
+                    oSend.value = Ethplorer.Utils.formatNum(oSend.value / Math.pow(10, oToken.decimals), true, oToken.decimals, true) + ' ' + oToken.symbol;
                 }
+                console.log(oSend.value);
                 Ethplorer.fillValues('transfer', txData, ['tx', 'tx.timestamp']);
                 Ethplorer.fillValues('transfer', txData, ['send', 'send.from', 'send.to', 'send.value']);
                 $('#txTokenStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
@@ -155,6 +172,10 @@ Ethplorer = {
             var oToken = data.token;
             if(oToken.decimals){
                 oToken.totalSupply = oToken.totalSupply / Math.pow(10, oToken.decimals);
+            }
+            oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true);
+            if(oToken.symbol){
+                oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
             }
             Ethplorer.fillValues('address', data, ['token', 'token.name', 'token.owner', 'token.totalSupply', 'token.decimals', 'token.symbol']);
         }else if(data.tokenBalances){

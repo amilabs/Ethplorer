@@ -116,12 +116,14 @@ body {
     cursor: pointer;
     position: relative;
     top: 18px;
-    right: 16px;
+    right: 22px;
     font-size: 10px;
 }
 
 pre.list-field {
-    padding-top: 16px;
+    padding-top: 6px;
+    max-height: 200px;
+    padding-right: 36px;
 }
 
 .todo {

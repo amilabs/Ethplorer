@@ -75,7 +75,7 @@
                             </tr>
                             <tr>
                                 <td>Value</td>
-                                <td id="transfer-send-value" data-type="etherscan" class="list-field"></td>
+                                <td id="transfer-send-value" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Status</td>
@@ -106,7 +106,7 @@
                             </tr>
                             <tr>
                                 <td>Total Supply</td>
-                                <td id="transaction-token-totalSupply" class="list-field" data-type="float"></td>
+                                <td id="transaction-token-totalSupply" class="list-field"></td>
                             </tr>
                             <tr class="poka-hz">
                                 <td>Total Transactions</td>
@@ -132,6 +132,10 @@
                                 <td id="transaction-tx-timestamp" data-type="localdate" class="list-field"></td>
                             </tr>
                             <tr>
+                                <td>Message</td>
+                                <td id="transaction-tx-message" class="list-field"></td>
+                            </tr>                            
+                            <tr>
                                 <td>Block</td>
                                 <td id="transaction-tx-block">
                                     <span id="transaction-tx-blockNumber" class="list-field"></span> (<span id="transaction-tx-confirmations" class="list-field"></span> confirmations)
@@ -145,6 +149,10 @@
                                 <td>To</td>
                                 <td id="transaction-tx-to" class="list-field" data-type="ethplorer"></td>
                             </tr>
+                            <tr>
+                                <td>Creates</td>
+                                <td id="transaction-tx-creates" class="list-field" data-type="ethplorer"></td>
+                            </tr>                            
                             <tr>
                                 <td>Value</td>
                                 <td id="transaction-tx-value" class="list-field" data-type="ether"></td>
@@ -197,6 +205,10 @@
                             <h3><span id="address-type"></span> Information</h3>
                             <table class="table">
                             <tr>
+                                <td><span id="address-type"></span></td>
+                                <td id="address-address" data-type="etherscan" data-options="no-contract" class="list-field"></td>
+                            </tr>                                
+                            <tr>
                                 <td>Balance</td>
                                 <td id="address-balance" data-type="ether" class="list-field"></td>
                             </tr>                               
@@ -229,11 +241,11 @@
                             </tr>
                             <tr>
                                 <td>Owner</td>
-                                <td id="address-token-owner" data-type="etherscan" class="list-field"></td>
+                                <td id="address-token-owner" data-type="ethplorer" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Total Supply</td>
-                                <td id="address-token-totalSupply" data-type="int" class="list-field"></td>
+                                <td id="address-token-totalSupply" class="list-field"></td>
                             </tr>
                             <tr class="poka-hz">
                                 <td>Total Transactions</td>
