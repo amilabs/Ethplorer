@@ -26,13 +26,16 @@ Ethplorer = {
             case 'address':
                 Ethplorer.getAddressDetails(pathData.arg);
                 break;
+            case 'search':
+                Ethplorer.search(pathData.arg);
+                break;
             /*
             case 'token':
                 showTokenDetails(pathData.arg);
                 break;
             */
             default:
-                Ethplorer.error('Oops, nothing to do');
+                Ethplorer.error('Invalid action');
         }
     },
     scroller: function(){
