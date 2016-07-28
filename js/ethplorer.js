@@ -154,17 +154,26 @@ Ethplorer = {
                     }
                 }
                 Ethplorer.fillValues('transfer', txData, ['operation', 'operation.from', 'operation.to', 'operation.value']);
-                $('#txTokenStatus')[oOperation.success ? 'removeClass' : 'addClass']('text-danger');
-                $('#txTokenStatus')[oOperation.success ? 'addClass' : 'removeClass']('text-success');                           
-                $('#txTokenStatus').html(oOperation.success ? 'Success' : 'Failed' + (oOperation.failedReason ? (': ' + Ethplorer.getTxErrorReason(oOperation.failedReason)) : ''));
+                if(oTx.blockNumber){
+                    $('#txTokenStatus')[oOperation.success ? 'removeClass' : 'addClass']('text-danger');
+                    $('#txTokenStatus')[oOperation.success ? 'addClass' : 'removeClass']('text-success');                           
+                    $('#txTokenStatus').html(oOperation.success ? 'Success' : 'Failed' + (oOperation.failedReason ? (': ' + Ethplorer.getTxErrorReason(oOperation.failedReason)) : ''));
+                }
             }else{
                 $('.token-operation-type').text('Operation');
-                $('#txTokenStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
-                $('#txTokenStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');           
-                $('#txTokenStatus').html(oTx.success ? 'Success' : 'Failed' + (oTx.failedReason ? (': ' + Ethplorer.getTxErrorReason(oTx.failedReason)) : ''));
+                if(oTx.blockNumber){
+                    $('#txTokenStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
+                    $('#txTokenStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');           
+                    $('#txTokenStatus').html(oTx.success ? 'Success' : 'Failed' + (oTx.failedReason ? (': ' + Ethplorer.getTxErrorReason(oTx.failedReason)) : ''));
+                }
             }
+            if(!oTx.blockNumber){
+                $('#txTokenStatus').removeClass('text-danger text-success');
+                $('#txTokenStatus').html('Pending');
+            }        
             Ethplorer.fillValues('transfer', txData, ['tx', 'tx.timestamp']);
         }
+        
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
         $('#txDetails').show();
