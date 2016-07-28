@@ -2,7 +2,7 @@ body {
     padding: 20px;
     padding-top: 50px;
     padding-bottom: 120px;
-    background-color: #eee;
+    background-color: #000;
 }
 
 #network {
@@ -15,11 +15,45 @@ body {
     display: none;
 }
 
+.content-page h3 {
+	padding-left: 20px;
+	padding-top: 20px;
+}
+
 .content-page .block {
     background-color: white;
-    padding: 20px;
+    /*padding: 20px;*/
     border-radius: 8px;
     margin-top: 20px;
+}
+
+.content-page table td {
+	color: white;
+	border: 0 !important;
+}
+
+.content-page table td:first-child {
+	padding: 8px 8px 8px 28px;
+}
+
+.content-page tr:nth-child(odd) {
+	background: #0f0f0f;
+}
+
+.content-page tr:nth-child(even) {
+	background: #1a1a1a;
+}
+
+.content-page tr.blue {
+	background-color: #1396e2 !important;
+}
+
+.content-page tr.green {
+	background-color: #27ae60 !important;
+}
+
+.content-page tr.red {
+	background-color: #c0392b !important;
 }
 
 .block h3 {

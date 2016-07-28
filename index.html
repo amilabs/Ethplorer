@@ -17,7 +17,7 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="/js/jquery.jsonrpc.js"></script>
     <script src="/js/ethplorer.js"></script>
-    <script src="/cfg/config.ethplorer.js"></script>    
+    <script src="/cfg/config.ethplorer.js"></script>
 </head>
 <body>
     <nav class="navbar navbar-inverse navbar-fixed-top">
@@ -58,6 +58,10 @@
                         <div class="block">
                             <h3><span class="token-name"></span> <span class="token-operation-type"></span></h3>
                             <table class="table">
+                            <tr class="blue">
+                                <td>Value</td>
+                                <td id="transfer-operation-value" class="list-field"></td>
+                            </tr>
                             <tr>
                                 <td>Date</td>
                                 <td id="transfer-tx-timestamp" data-type="localdate" class="list-field"></td>
@@ -71,14 +75,10 @@
                                 <td id="transfer-operation-to" data-type="ethplorer" class="list-field"></td>
                             </tr>
                             <tr>
-                                <td>Value</td>
-                                <td id="transfer-operation-value" class="list-field"></td>
-                            </tr>
-                            <tr>
                                 <td>Message</td>
                                 <td id="transfer-tx-message" class="list-field"></td>
                             </tr>                            
-                            <tr>
+                            <tr class="green">
                                 <td>Status</td>
                                 <td id="txTokenStatus" class="list-field"></td>
                             </tr>
@@ -109,11 +109,11 @@
                                 <td>Total Supply</td>
                                 <td id="transaction-token-totalSupply" class="list-field"></td>
                             </tr>
-                            <tr class="poka-hz">
+                            <tr>
                                 <td>Total Transactions</td>
                                 <td>1000</td>
                             </tr>
-                            <tr class="poka-hz">
+                            <tr class="red">
                                 <td>Last Activity</td>
                                 <td>2016-01-02 15:55:66 (block #1002322)</td>
                             </tr>
