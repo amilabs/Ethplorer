@@ -1,22 +1,21 @@
 body {
-    padding: 20px;
-    padding-top: 90px;
+    padding: 0px;
     padding-bottom: 120px;
     background-color: #000;
 }
 
 .navbar-inverse {
-	background-color: #fff;
-	padding-top: 8px;
-	padding-bottom: 8px;
+    background-color: #fff;
+    padding-top: 8px;
+    padding-bottom: 8px;
 }
 
 .navbar-nav {
-	margin-right: 0px;
+    margin-right: 0px;
 }
 
 .navbar-header {
-	padding-left: 15px;
+    padding-left: 15px;
 }
 
 .navbar-brand img {
@@ -34,8 +33,8 @@ body {
 }
 
 .content-page h3 {
-	padding-left: 20px;
-	padding-top: 20px;
+    padding-left: 20px;
+    padding-top: 20px;
 }
 
 .content-page .block {
@@ -46,8 +45,8 @@ body {
 }
 
 .content-page table td {
-	color: white;
-	border: 0 !important;
+    color: white;
+    border: 0 !important;
 }
 
 .content-page table td:first-child {
