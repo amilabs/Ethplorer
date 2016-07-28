@@ -190,9 +190,10 @@ Ethplorer = {
             Ethplorer.fillValues('address', data, ['token', 'token.name', 'token.owner', 'token.totalSupply', 'token.decimals', 'token.symbol']);
         }else if(data.tokenBalances){
             $('#address-token-balances').show();
-            for(var token in data.tokenBalances){
-                var balance = data.tokenBalances[token];
-                var oToken = data.tokens[token];
+            for(var tokenAddress in data.tokenBalances){
+                var balance = data.tokenBalances[tokenAddress];
+                var oToken = data.tokens[tokenAddress];
+                var token = oToken.name;
                 var row = $('<TR>');
                 row.append('<TD>' + Ethplorer.Utils.getEthplorerLink(oToken.contract, token, false) + '</TD>');
                 if(oToken.decimals){
@@ -387,7 +388,7 @@ Ethplorer = {
                 return text;
             }
             var isTx = Ethplorer.Utils.isTx(data);
-            var res = '<a target="_blank" href="' + urlEtherscan;
+            var res = '<i class="fa fa-external-link"></i>&nbsp;<a target="_blank" href="' + urlEtherscan;
             res += (isTx ? 'tx' : 'address');
             res += ('/' + data + '">' + text + '</a>');
             if(isContract){
