@@ -114,6 +114,7 @@ Ethplorer = {
                     $('#transaction-tx-message').text(msg);
                     var msgHTML = $('#transaction-tx-message').html();
                     msgHTML = msgHTML.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
+                    msgHTML = msgHTML.replace(/\n/g, '<br />');
                     $('#transaction-tx-message').html(msgHTML);
                 }
             }
@@ -133,6 +134,12 @@ Ethplorer = {
             }
             
             Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
+            
+            if($('#transaction-tx-message').html()){
+                $('#transfer-tx-message').html($('#transaction-tx-message').html());
+                $('#transaction-tx-message').html('')
+            }
+            
             if(txData.send){
                 var oSend = txData.send;
                 oSend.value = parseInt(oSend.value);
