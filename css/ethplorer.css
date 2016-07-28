@@ -113,9 +113,8 @@ body {
 
 .pre-switcher {
     cursor: pointer;
-    position: relative;
-    top: 18px;
-    right: 22px;
+    position: absolute;
+    right: 52px;
     font-size: 10px;
 }
 

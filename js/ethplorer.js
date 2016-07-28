@@ -150,12 +150,17 @@ Ethplorer = {
                         oOperation.value = Ethplorer.Utils.formatNum(oOperation.value / Math.pow(10, oToken.decimals), true, oToken.decimals, true) + ' ' + oToken.symbol;
                     }
                 }
-                Ethplorer.fillValues('transfer', txData, ['tx', 'tx.timestamp']);
                 Ethplorer.fillValues('transfer', txData, ['operation', 'operation.from', 'operation.to', 'operation.value']);
+                $('#txTokenStatus')[oOperation.success ? 'removeClass' : 'addClass']('text-danger');
+                $('#txTokenStatus')[oOperation.success ? 'addClass' : 'removeClass']('text-success');                           
+                $('#txTokenStatus').html(oOperation.success ? 'Success' : 'Failed' + (oOperation.failedReason ? (': ' + Ethplorer.getTxErrorReason(oOperation.failedReason)) : ''));
+            }else{
+                $('.token-operation-type').text('Operation');
                 $('#txTokenStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
                 $('#txTokenStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');           
-                $('#txTokenStatus').html(oOperation.success ? 'Success' : 'Failed' + (oOperation.failedReason ? (': ' + Ethplorer.getTxErrorReason(oOperation.failedReason)) : ''));
+                $('#txTokenStatus').html(oTx.success ? 'Success' : 'Failed' + (oTx.failedReason ? (': ' + Ethplorer.getTxErrorReason(oTx.failedReason)) : ''));
             }
+            Ethplorer.fillValues('transfer', txData, ['tx', 'tx.timestamp']);
         }
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
@@ -389,9 +394,9 @@ Ethplorer = {
                 return text;
             }
             var isTx = Ethplorer.Utils.isTx(data);
-            var res = '<i class="fa fa-external-link"></i>&nbsp;<a target="_blank" href="' + urlEtherscan;
+            var res = '<a target="_blank" href="' + urlEtherscan;
             res += (isTx ? 'tx' : 'address');
-            res += ('/' + data + '">' + text + '</a>');
+            res += ('/' + data + '">' + text + '</a>&nbsp;<i class="fa fa-external-link"></i>');
             if(isContract){
                 res = 'Contract ' + res;
             }        
