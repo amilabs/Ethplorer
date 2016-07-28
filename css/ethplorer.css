@@ -1,6 +1,6 @@
 body {
     padding: 20px;
-    padding-top: 50px;
+    padding-top: 90px;
     padding-bottom: 120px;
     background-color: #000;
 }
@@ -183,4 +183,23 @@ pre.list-field {
 #search {
     margin-top: 8px;
     margin-right: 15px !important;
+}
+
+.subnav {
+    background: #0f0f0f;
+    marign: 0px;
+}
+
+.subnav .container {
+    padding: 8px;
+    color: white;
+    padding-left: 36px;
+}
+
+a {
+    text-decoration: underline;
+}
+
+a.local-link, a.local-link:visited, a.local-link:hover {
+    color: white;
 }

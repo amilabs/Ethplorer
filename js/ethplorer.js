@@ -83,6 +83,8 @@ Ethplorer = {
     knownContracts: [],
     dataFields: {},
     showTxDetails: function(txHash, txData){
+        $('#ethplorer-path').html('<b>Transaction hash</b> ' + txHash);
+        
         $('.list-field').empty();
         $('#transaction-tx-hash').html(Ethplorer.Utils.getEtherscanLink(txHash));
         $('.token-related')[txData.token ? 'show' : 'hide']();
@@ -192,6 +194,8 @@ Ethplorer = {
 
     showAddressDetails: function(address, data){
         $('.address-type').text(data.isContract ? 'Contract' : 'Address');
+        var tp = data.isContract ? 'Contract address ' : 'Address ';
+        $('#ethplorer-path').html('<b>' + tp + '</b> ' + address);
         data.address = address;
         Ethplorer.fillValues('address', data, ['address', 'balance', 'txCount']);
         $('#address-token-balances, #address-token-details').hide();
@@ -406,7 +410,7 @@ Ethplorer = {
                 return text;
             }
             var isTx = Ethplorer.Utils.isTx(data);
-            var res = '<a target="_blank" href="' + urlEtherscan;
+            var res = '<a target="_blank" class="external-link" href="' + urlEtherscan;
             res += (isTx ? 'tx' : 'address');
             res += ('/' + data + '">' + text + '</a>&nbsp;<i class="fa fa-external-link"></i>');
             if(isContract){
@@ -423,7 +427,7 @@ Ethplorer = {
             var isTx = Ethplorer.Utils.isTx(data);
             var res = '<a href="/';
             res += (isTx ? 'tx' : 'address');
-            res += ('/' + data + '">' + text + '</a>');
+            res += ('/' + data + '"  class="local-link">' + text + '</a>');
             if(isContract){
                 res = 'Contract ' + res;
             }        
