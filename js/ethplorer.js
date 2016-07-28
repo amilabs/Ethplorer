@@ -98,8 +98,9 @@ Ethplorer = {
 
         $('#tx-parsed').hide();
         if(oTx.data.length){
+            oTx.data = oTx.data.toUpperCase();
             Ethplorer.dataFields['transaction-tx-data'] = {
-                hex: oTx.data.toUpperCase(),
+                hex: oTx.data,
                 ascii: Ethplorer.Utils.hex2ascii(oTx.data)
             };
             var obj = Ethplorer.Utils.parseJData(oTx.data);
