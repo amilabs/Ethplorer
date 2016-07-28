@@ -199,7 +199,7 @@ Ethplorer = {
         data.address = address;
         Ethplorer.fillValues('address', data, ['address', 'balance', 'txCount']);
         $('#address-token-balances, #address-token-details').hide();
-        if(data.isContract){
+        if(data.isContract && data.token){
             $('#address-token-details').show();
             var oToken = data.token;
             if(oToken.decimals){
