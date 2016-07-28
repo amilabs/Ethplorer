@@ -78,7 +78,7 @@ Ethplorer = {
     },
 
     knownContracts: [],
-
+    dataFields: {},
     showTxDetails: function(txHash, txData){
         $('.list-field').empty();
         $('#transaction-tx-hash').html(Ethplorer.Utils.getEtherscanLink(txHash));
@@ -98,6 +98,10 @@ Ethplorer = {
 
         $('#tx-parsed').hide();
         if(oTx.data.length){
+            Ethplorer.dataFields['transaction-tx-data'] = {
+                hex: oTx.data.toUpperCase(),
+                ascii: Ethplorer.Utils.hex2ascii(oTx.data)
+            };
             var obj = Ethplorer.Utils.parseJData(oTx.data);
             if(false !== obj){
                 $('#transaction-tx-parsed').text(JSON.stringify(obj, null, 4));
@@ -177,14 +181,13 @@ Ethplorer = {
     convert: function(id, switcher){
         switcher = $(switcher);
         var pre = $('#' + id);
-        var text = pre.text();
         var mode = pre.attr('data-mode');
         if('ascii' === mode){
-            pre.text(Ethplorer.Utils.ascii2hex(text));
+            pre.text(Ethplorer.dataFields[id].hex);
             pre.attr('data-mode', 'hex');
             switcher.text('ASCII');
         }else{
-            pre.text(Ethplorer.Utils.hex2ascii(text));
+            pre.text(Ethplorer.dataFields[id].ascii);
             pre.attr('data-mode', 'ascii');
             switcher.text('HEX');
         }
