@@ -164,8 +164,9 @@ Ethplorer = {
     },
 
     showAddressDetails: function(address, data){
-        $('#address-type').text(data.isContract ? 'Contract' : 'Address');
-        Ethplorer.fillValues('address', data, ['balance', 'txCount']);
+        $('.address-type').text(data.isContract ? 'Contract' : 'Address');
+        data.address = address;
+        Ethplorer.fillValues('address', data, ['address', 'balance', 'txCount']);
         $('#address-token-balances, #address-token-details').hide();
         if(data.isContract){
             $('#address-token-details').show();
