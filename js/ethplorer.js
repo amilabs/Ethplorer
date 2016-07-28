@@ -140,18 +140,20 @@ Ethplorer = {
                 $('#transaction-tx-message').html('')
             }
             
-            if(txData.send){
-                var oSend = txData.send;
-                oSend.value = parseInt(oSend.value);
-                if(!isNaN(oSend.value) && !isNaN(oToken.decimals)){
-                    oSend.value = Ethplorer.Utils.formatNum(oSend.value / Math.pow(10, oToken.decimals), true, oToken.decimals, true) + ' ' + oToken.symbol;
+            if(txData.operation){
+                var oOperation = txData.operation;
+                $('.token-operation-type').text(oOperation['type']);
+                if('undefined' !== typeof(oOperation.value)){
+                    oOperation.value = parseInt(oOperation.value);
+                    if(!isNaN(oOperation.value) && !isNaN(oToken.decimals)){
+                        oOperation.value = Ethplorer.Utils.formatNum(oOperation.value / Math.pow(10, oToken.decimals), true, oToken.decimals, true) + ' ' + oToken.symbol;
+                    }
                 }
-                console.log(oSend.value);
                 Ethplorer.fillValues('transfer', txData, ['tx', 'tx.timestamp']);
-                Ethplorer.fillValues('transfer', txData, ['send', 'send.from', 'send.to', 'send.value']);
+                Ethplorer.fillValues('transfer', txData, ['operation', 'operation.from', 'operation.to', 'operation.value']);
                 $('#txTokenStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
                 $('#txTokenStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');           
-                $('#txTokenStatus').html(oSend.success ? 'Success' : 'Failed' + (oSend.failedReason ? (': ' + Ethplorer.getTxErrorReason(oSend.failedReason)) : ''));
+                $('#txTokenStatus').html(oOperation.success ? 'Success' : 'Failed' + (oOperation.failedReason ? (': ' + Ethplorer.getTxErrorReason(oOperation.failedReason)) : ''));
             }
         }
         Ethplorer.Utils.hideEmptyFields();
@@ -471,7 +473,7 @@ Ethplorer = {
                 params : params,
                 success : function(_params, _successMethod){
                     return function(data){
-                        console.log(JSON.stringify(data));
+                        // console.log(JSON.stringify(data));
                         Ethplorer[_successMethod](_params[0], data.result);
                     };
                 }(params, successMethod),
