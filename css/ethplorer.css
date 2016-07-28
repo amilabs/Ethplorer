@@ -97,7 +97,7 @@ body {
     position: relative;
     top: 100px;   
 }
-
+#transaction-tx-parsed,
 #transaction-tx-data {
     white-space: pre-wrap;       /* Since CSS 2.1 */
     white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
