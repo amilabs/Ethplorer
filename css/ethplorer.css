@@ -54,11 +54,21 @@ body {
 	padding: 8px 8px 8px 28px;
 }
 
+/*
 .content-page tr:nth-child(odd) {
 	background: #0f0f0f;
 }
 
 .content-page tr:nth-child(even) {
+	background: #1a1a1a;
+}
+*/
+
+tr.even {
+	background: #0f0f0f;
+}
+
+tr.odd {
 	background: #1a1a1a;
 }
 
