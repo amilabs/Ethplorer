@@ -47,6 +47,7 @@ body {
 .content-page table td {
     color: white;
     border: 0 !important;
+	min-width: 150px;
 }
 
 .content-page table td:first-child {
