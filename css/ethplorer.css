@@ -251,3 +251,9 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 #disqus_thread {
     margin-top: 20px;
 }
+
+td.list-field {
+    overflow: hidden;
+    max-width: 32vw;
+    text-overflow: ellipsis;
+}

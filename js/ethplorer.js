@@ -458,7 +458,9 @@ Ethplorer = {
         },
 
         adjustHeight: function(selector1, selector2){
-            $(selector1 + ',' + selector2).height(Math.max($(selector1).height(), $(selector2).height()));            
+            if($(window).width() > 640){
+                $(selector1 + ',' + selector2).height(Math.max($(selector1).height(), $(selector2).height()));            
+            }
         },
 
         hideEmptyFields: function(){
