@@ -223,7 +223,6 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 }
 
 .footer {
-    position: absolute;
     bottom: 0px;
     padding-bottom: 0px;
     margin-top: 20px;
