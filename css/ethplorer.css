@@ -1,7 +1,7 @@
 body {
     padding: 0px;
-    padding-bottom: 120px;
     background-color: #000;
+    min-height: 100vh;
 }
 
 .navbar-inverse {
@@ -220,4 +220,35 @@ a {
 
 a.local-link, a.local-link:visited, a.local-link:hover {
     color: white;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0px;
+    padding-bottom: 0px;
+    margin-top: 20px;
+    margin-bottom: 0px;
+    width: 100%;
+}
+
+.footer .copyrights {
+    position: absolute;
+    width: 150px;
+    top: 8px;
+}
+
+@media screen and (max-width: 640px) {
+    .footer {
+        line-height: 12px;
+        font-size: 12px;
+    }
+    .footer .copyrights {
+        text-align: center;
+        position:relative;
+        width: 100%;
+    }
+}
+
+#disqus_thread {
+    margin-top: 20px;
 }
