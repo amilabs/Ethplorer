@@ -319,6 +319,7 @@ Ethplorer = {
     
     hideLoader: function(){
         $('#loader').hide();
+        $('#disqus_thread').show();
         if(Ethplorer.loaderTimeout){
             clearTimeout(Ethplorer.loaderTimeout);
         }

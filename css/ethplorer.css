@@ -2,6 +2,7 @@ body {
     padding: 0px;
     background-color: #000;
     min-height: 100vh;
+    height: 100%;
 }
 
 .navbar-inverse {
@@ -16,10 +17,6 @@ body {
 
 .navbar-header {
     padding-left: 15px;
-}
-
-.navbar-brand img {
-  width: 160px;
 }
 
 #network {
@@ -223,6 +220,7 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 }
 
 .footer {
+    position: absolute;
     bottom: 0px;
     padding-bottom: 0px;
     margin-top: 20px;
@@ -250,10 +248,54 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 
 #disqus_thread {
     margin-top: 20px;
+    display: none;
 }
 
 td.list-field {
     overflow: hidden;
     max-width: 32vw;
     text-overflow: ellipsis;
+}
+
+.navbar-logo {
+    float: left;
+    height: 50px;
+    padding: 15px 15px;
+    line-height: 20px;
+    width: 160px;
+    position: absolute;
+    z-index: 10000;
+}
+
+.navbar-logo img {
+  width: 160px;
+  cursor: pointer;
+}
+
+#search {
+    width: 350px;
+}
+
+@media screen and (max-width: 767px) {
+    
+    #navbar {
+        height: 95px;
+    }
+    
+    #searchform {
+        position: absolute;
+        top: 30px;
+        right: 0px;
+        width: 100%;
+    }
+
+    #search {
+        width: 100%;
+    }    
+    
+    #topmenu {
+        position: absolute;
+        right: -15px;
+        top: -4px;
+    }
 }
