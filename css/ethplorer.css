@@ -315,3 +315,11 @@ td.list-field {
         top: -4px;
     }
 }
+
+.table tr.last td:first-child {
+    border-bottom-left-radius: 8px;
+}
+
+.table tr.last td:last-child {
+    border-bottom-right-radius: 8px;
+}

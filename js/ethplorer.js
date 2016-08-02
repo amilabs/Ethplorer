@@ -186,6 +186,7 @@ Ethplorer = {
         $('#txDetails').show();
         $("table").find("tr:visible:odd").addClass("odd");
         $("table").find("tr:visible:even").addClass("even");
+        $("table").find("tr:visible:last").addClass("last");
         Ethplorer.Utils.adjustHeight('#txDetails .block:eq(0)', '#txDetails .block:eq(1)');
     },
 
@@ -239,6 +240,7 @@ Ethplorer = {
         $('#addressDetails').show();
         $("table").find("tr:visible:odd").addClass("odd");
         $("table").find("tr:visible:even").addClass("even");
+        $("table").find("tr:visible:last").addClass("last");
         Ethplorer.Utils.adjustHeight('#addressDetails .block:eq(0)', '#addressDetails .block:eq(1)');
     },
 
