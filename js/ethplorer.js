@@ -4,7 +4,6 @@ Ethplorer = {
             endPoint: Ethplorer.Config.ethService,
             namespace: ''
         });
-        Ethplorer.scroller();
         Ethplorer.route();
         $('#network').text(Ethplorer.Config.testnet ? 'Test' : 'Modern');
         $('.navbar-nav li[data-page]').click(function(){
@@ -37,24 +36,6 @@ Ethplorer = {
             default:
                 Ethplorer.error('Invalid action');
         }
-    },
-    scroller: function(){
-        var starttime = new Date().getTime();
-        for (var i = 0; i < 34; i++) {
-            $('#scroller').append($('<div class="letter">' + (Math.random() > 0.5 ? '1' : '0') + '</div>'));
-        }
-        function run() {
-            if($('#scroller:visible').length){
-                var elapsed = new Date().getTime() - starttime;
-                var pos = elapsed * 0.05;
-                $('div.letter').each(function(index, letter) {
-                    var posx = -20 + (pos + 10 * index) % 340;
-                    var posy = 20 + Math.sin((posx + pos * 2) / 20) * 10;
-                    $(letter).css('left', posx + 'px').css('top', posy + 'px');
-                });
-            }
-        }
-        setInterval(run, 30);       
     },
     error: function(message){
         Ethplorer.hideLoader();
