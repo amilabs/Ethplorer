@@ -88,6 +88,7 @@ Ethplorer = {
         $('.list-field').empty();
         $('#transaction-tx-hash').html(Ethplorer.Utils.getEtherscanLink(txHash));
         $('.token-related')[txData.token ? 'show' : 'hide']();
+        $('#tx-status, #operation-status').removeClass('green red');
 
         Ethplorer.knownContracts = txData.contracts ? txData.contracts : [];
 
@@ -96,6 +97,7 @@ Ethplorer = {
             $('#txEthStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
             $('#txEthStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');
             $('#txEthStatus').html(oTx.success ? 'Success' : 'Failed' + (oTx.failedReason ? (': ' + Ethplorer.getTxErrorReason(oTx.failedReason)) : ''));
+            $('#tx-status').addClass(oTx.success ? 'green' : 'red');
         }else{
             $('#txEthStatus').removeClass('text-danger text-success');
             $('#txEthStatus').html('Pending');
@@ -160,6 +162,7 @@ Ethplorer = {
                     $('#txTokenStatus')[oOperation.success ? 'removeClass' : 'addClass']('text-danger');
                     $('#txTokenStatus')[oOperation.success ? 'addClass' : 'removeClass']('text-success');                           
                     $('#txTokenStatus').html(oOperation.success ? 'Success' : 'Failed' + (oOperation.failedReason ? (': ' + Ethplorer.getTxErrorReason(oOperation.failedReason)) : ''));
+                    $('#operation-status').addClass(oOperation.success ? 'green' : 'red');
                 }
             }else{
                 $('.token-operation-type').text('Operation');
@@ -167,6 +170,7 @@ Ethplorer = {
                     $('#txTokenStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
                     $('#txTokenStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');           
                     $('#txTokenStatus').html(oTx.success ? 'Success' : 'Failed' + (oTx.failedReason ? (': ' + Ethplorer.getTxErrorReason(oTx.failedReason)) : ''));
+                    $('#operation-status').addClass(oTx.success ? 'green' : 'red');
                 }
             }
             if(!oTx.blockNumber){
@@ -178,6 +182,7 @@ Ethplorer = {
         
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
+        $('#disqus_thread').show();
         $('#txDetails').show();
         $("table").find("tr:visible:odd").addClass("odd");
         $("table").find("tr:visible:even").addClass("even");
@@ -230,6 +235,7 @@ Ethplorer = {
         }
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
+        $('#disqus_thread').show();
         $('#addressDetails').show();
         $("table").find("tr:visible:odd").addClass("odd");
         $("table").find("tr:visible:even").addClass("even");
@@ -319,7 +325,6 @@ Ethplorer = {
     
     hideLoader: function(){
         $('#loader').hide();
-        $('#disqus_thread').show();
         if(Ethplorer.loaderTimeout){
             clearTimeout(Ethplorer.loaderTimeout);
         }

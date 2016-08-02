@@ -253,7 +253,7 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 
 td.list-field {
     overflow: hidden;
-    max-width: 32vw;
+    max-width: 26vw;
     text-overflow: ellipsis;
 }
 
@@ -274,6 +274,22 @@ td.list-field {
 
 #search {
     width: 350px;
+}
+
+@media screen and (min-width: 400px) and (max-width: 991px) {
+    td.list-field {
+        overflow: hidden;
+        max-width: 46vw;
+        text-overflow: ellipsis;
+    }
+}
+
+@media screen and (max-width: 399px) {
+    td.list-field {
+        overflow: hidden;
+        max-width: 34vw;
+        text-overflow: ellipsis;
+    }
 }
 
 @media screen and (max-width: 767px) {
