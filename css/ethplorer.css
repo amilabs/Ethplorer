@@ -104,7 +104,7 @@ tr.odd {
 }
 
 #loader #searchInProgressText {
-    font-size: 24px;
+    font-size: 18px;
     position: relative;
     top: -40px;
     color: white;
@@ -272,8 +272,8 @@ td.list-field {
 
 /* Timer*/
 .timer{
-    width: 24px;
-    height: 24px;
+    width: 47px;
+    height: 47px;
     background-color: transparent;
     box-shadow: inset 0px 0px 0px 2px #fff;
     border-radius: 50%;
@@ -286,10 +286,10 @@ td.list-field {
     background-color: #fff;
 }
 .timer:after{
-    width: 10px;
+    width: 20px;
     height: 2px;
-    top: 11px;
-    left: 11px;
+    top: 22px;
+    left: 22px;
     -webkit-transform-origin: 1px 1px;
        -moz-transform-origin: 1px 1px;
             transform-origin: 1px 1px;
@@ -299,10 +299,10 @@ td.list-field {
 }
 
 .timer:before{
-    width: 8px;
+    width: 16px;
     height: 2px;
-    top: 11px;
-    left: 11px;
+    top: 22px;
+    left: 22px;
     -webkit-transform-origin: 1px 1px;
        -moz-transform-origin: 1px 1px;
             transform-origin: 1px 1px;
