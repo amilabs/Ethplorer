@@ -403,7 +403,7 @@ Ethplorer = {
             var isTx = Ethplorer.Utils.isTx(data);
             var res = '<a target="_blank" class="external-link" href="' + urlEtherscan;
             res += (isTx ? 'tx' : 'address');
-            res += ('/' + data + '">' + text + '</a>&nbsp;<i class="fa fa-external-link"></i>');
+            res += ('/' + data + '"><i class="fa fa-external-link"></i>&nbsp;' + text + '</a>');
             if(isContract){
                 res = 'Contract ' + res;
             }        
