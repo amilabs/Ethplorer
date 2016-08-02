@@ -198,6 +198,7 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 }
 
 td.list-field {
+    white-space: nowrap;
     overflow: hidden;
     max-width: 26vw;
     text-overflow: ellipsis;
