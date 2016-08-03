@@ -256,7 +256,7 @@ td.list-field {
     .table tr td:first-child {
         padding-left: 8px;
     }
-    #address-issuances .table tr td:first-child {
+    .table tr td:first-child {
         max-width: 70px;
     }    
     .table tr td {
