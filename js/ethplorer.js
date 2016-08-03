@@ -197,7 +197,13 @@ Ethplorer = {
             if(oToken.symbol){
                 oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
             }
-            Ethplorer.fillValues('address', data, ['token', 'token.name', 'token.owner', 'token.totalSupply', 'token.decimals', 'token.symbol']);
+            if(oToken.description){
+                oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
+                oToken.description = oToken.description.replace(/\n/g, '<br />');                    
+            }
+            console.log(oToken.description);
+            var fields = ['token', 'token.name', 'token.description', 'token.owner', 'token.totalSupply', 'token.decimals', 'token.symbol'];
+            Ethplorer.fillValues('address', data, fields);
         }else if(data.tokenBalances){
             $('#address-token-balances').show();
             for(var tokenAddress in data.tokenBalances){

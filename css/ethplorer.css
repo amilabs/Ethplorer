@@ -337,3 +337,9 @@ td.list-field {
     0%{transform:rotate(0deg)}
     100%{transform:rotate(360deg)}
 }
+
+#transfer-tx-message,
+#transaction-tx-message,
+#address-token-description {
+    white-space: normal !important;
+}
