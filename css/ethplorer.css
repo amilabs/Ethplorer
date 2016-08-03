@@ -229,6 +229,22 @@ td.list-field {
         max-width: 46vw;
         text-overflow: ellipsis;
     }
+    
+    td.table-hash-field {
+        max-width: 26vw;
+    }
+}
+
+@media screen and (max-width: 699px) {
+    td.table-hash-field {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 499px) {
+    td.table-type-field {
+        display: none;
+    }
 }
 
 @media screen and (max-width: 399px) {
@@ -236,6 +252,19 @@ td.list-field {
         overflow: hidden;
         max-width: 34vw;
         text-overflow: ellipsis;
+    }
+    .table tr td:first-child {
+        padding-left: 8px;
+    }
+    #address-issuances .table tr td:first-child {
+        max-width: 70px;
+    }    
+    .table tr td {
+        font-size: 12px;
+    }
+    .block-header h3 {
+        font-size: 18px;
+        padding-left: 8px;
     }
 }
 
@@ -342,4 +371,10 @@ td.list-field {
 #transaction-tx-message,
 #address-token-description {
     white-space: normal !important;
+}
+
+#ethplorer-path {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100vh;
 }

@@ -182,6 +182,7 @@ Ethplorer = {
 
     showAddressDetails: function(address, data){
         $('.address-type').text(data.isContract ? 'Contract' : 'Address');
+        $('#address-issuances').hide();
         var tp = data.isContract ? 'Contract address ' : 'Address ';
         $('#ethplorer-path').html('<b>' + tp + '</b> ' + address);
         data.address = address;
@@ -203,6 +204,37 @@ Ethplorer = {
             if(oToken.description){
                 oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
                 oToken.description = oToken.description.replace(/\n/g, '<br />');                    
+            }
+            if(data.issuances && data.issuances.length){
+                $('#address-issuances').show();
+                for(var i=0; i<data.issuances.length; i++){
+                    var tx = data.issuances[i];
+                    if(tx.quantity != 0){
+                        var qty = tx.quantity;
+                        if(oToken.decimals){
+                            qty = qty / Math.pow(10, oToken.decimals);
+                        }
+                        var row = $('<tr>');
+                        var tdDate = $('<td>');
+                        var tdHash = $('<td>');
+                        var tdOpType = $('<td>');
+                        var tdQty = $('<td>');
+                        tdQty.addClass('text-right');
+                        tdHash.addClass('list-field');
+                        tdHash.addClass('table-hash-field');
+                        tdOpType.addClass('text-center');
+                        tdOpType.addClass('table-type-field');
+                        tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.hash, Ethplorer.Utils.ts2date(tx.ts / 1000, false), false));
+                        tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.hash));
+                        tdOpType.html(tx.quantity > 0 ? 'Issuance' : 'Burn');
+                        tdQty.html((tx.quantity > 0 ? '+' : '-') + Ethplorer.Utils.formatNum(qty, true, oToken.decimals ? oToken.decimals : 18, 2) + ((oToken.symbol) ? '&nbsp;' + oToken.symbol : ''));
+                        row.append(tdDate);
+                        row.append(tdHash);
+                        row.append(tdOpType);
+                        row.append(tdQty);
+                        $('#address-issuances .table').append(row);
+                    }
+                }
             }
             console.log(oToken.description);
             var fields = ['token', 'token.name', 'token.description', 'token.owner', 'token.totalSupply', 'token.decimals', 'token.symbol'];
@@ -436,7 +468,7 @@ Ethplorer = {
 
         // Date with fixed GMT to local date
         ts2date: function(ts, withGMT){
-            withGMT = withGMT || true;
+            withGMT = 'undefined' !== typeof(withGMT) ? withGMT : true;
             ts *= 1000;
             function padZero(s){
                 return (s < 10) ? '0' + s : s.toString();
