@@ -114,14 +114,18 @@ Ethplorer = {
         if(txData.token){
             $('.token-name').html(txData.token.name);
             var oToken = txData.token;
-            if(oToken.decimals){
-                oToken.totalSupply = oToken.totalSupply / Math.pow(10, oToken.decimals);
+            if(false === oToken.totalSupply){
+                oToken.totalSupply = 'N/A';
+            }else{
+                if(oToken.decimals){
+                    oToken.totalSupply = oToken.totalSupply / Math.pow(10, oToken.decimals);
+                }
+                oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true);
+                if(oToken.symbol){
+                    oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
+                }
             }
-            oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true);
-            if(oToken.symbol){
-                oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
-            }
-            
+
             Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
             
             if($('#transaction-tx-message').html()){
@@ -194,12 +198,16 @@ Ethplorer = {
         if(data.isContract && data.token){
             $('#address-token-details').show();
             var oToken = data.token;
-            if(oToken.decimals){
-                oToken.totalSupply = oToken.totalSupply / Math.pow(10, oToken.decimals);
-            }
-            oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true);
-            if(oToken.symbol){
-                oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
+            if(false === oToken.totalSupply){
+                oToken.totalSupply = 'N/A';
+            }else{
+                if(oToken.decimals){
+                    oToken.totalSupply = oToken.totalSupply / Math.pow(10, oToken.decimals);
+                }
+                oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true);
+                if(oToken.symbol){
+                    oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
+                }
             }
             if(oToken.description){
                 oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
