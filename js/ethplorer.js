@@ -185,6 +185,9 @@ Ethplorer = {
         var tp = data.isContract ? 'Contract address ' : 'Address ';
         $('#ethplorer-path').html('<b>' + tp + '</b> ' + address);
         data.address = address;
+        if(!data.txCount && data.isContract){
+            data.txCount = 'N/A';
+        }
         Ethplorer.fillValues('address', data, ['address', 'balance', 'txCount']);
         $('#address-token-balances, #address-token-details').hide();
         if(data.isContract && data.token){
