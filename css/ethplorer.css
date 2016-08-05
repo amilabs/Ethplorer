@@ -376,5 +376,5 @@ td.list-field {
 #ethplorer-path {
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 100vh;
+    max-width: 100vw;
 }
