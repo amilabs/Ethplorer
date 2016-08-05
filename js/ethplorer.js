@@ -213,6 +213,7 @@ Ethplorer = {
                 oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
                 oToken.description = oToken.description.replace(/\n/g, '<br />');                    
             }
+            $('.address-token-name').text(oToken.name);
             if(data.issuances && data.issuances.length){
                 $('#address-issuances').show();
                 for(var i=0; i<data.issuances.length; i++){
@@ -244,7 +245,6 @@ Ethplorer = {
                     }
                 }
             }
-            console.log(oToken.description);
             var fields = ['token', 'token.name', 'token.description', 'token.owner', 'token.totalSupply', 'token.decimals', 'token.symbol'];
             Ethplorer.fillValues('address', data, fields);
         }else if(data.tokenBalances){
