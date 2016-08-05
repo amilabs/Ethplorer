@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="/css/ethplorer.css">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="referrer" content="never" />
+    <meta name="referrer" content="no-referrer" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
@@ -17,35 +19,36 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="/js/jquery.jsonrpc.js"></script>
     <script src="/js/ethplorer.js"></script>
-    <script src="/cfg/config.ethplorer.js"></script>    
+    <script src="/cfg/config.ethplorer.js"></script>
 </head>
 <body>
-    <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div style="position: relative; min-height: 100vh;">
+    <nav class="navbar navbar-inverse" style="padding-bottom:0px; padding-top:0px;">
         <div class="container">
-            <div id="navbar" class="collapse navbar-collapse">
-                <ul class="nav navbar-nav">
+            <div class="navbar-header">
+              <a class="navbar-logo" href="/"><img title="Ethplorer" src="/img/ethplorer-logo-48.png"></a>
+            </div>
+            <div id="navbar" class="navbar" style="margin-bottom: 0px;">
+                <ul class="nav navbar-nav navbar-right" id="searchform">
                     <form onsubmit="Ethplorer.search($('#search').val()); return false;">
-                        <input id="search" class="form-control" style="width: 200px;" placeholder="Search..." />
+                        <input id="search" class="form-control" placeholder="Enter tx hash / contract address / sender address" />
                     </form>
                 </ul>
-                <ul class="nav navbar-nav navbar-right">
-                    <li style="padding-top:8px;">
-                        <span id="network"></span>
-                    </li>
+                <ul class="nav navbar-nav navbar-right" id="topmenu">
+                    <li style="padding:16px; cursor:pointer;" onclick="document.location.href='/about.html';">About</li>
                 </ul>
             </div>
         </div>
-    </nav>    
-    
+        <div class="subnav">
+            <div class="container" id="ethplorer-path"></div>
+        </div>
+    </nav>
     <div class="container">
         <div class="starter-template">
             <div id="page-create" class="page">    
-    
                 <div id="loader" class="text-center">
-                    <div id="scroller"></div>
-                    <i class="fa fa-search"></i>
-                    <div id="searchInProgressText">Searching...</div>
-                    <div id="pleaseWaitText">please wait</div>
+                    <div class="timer"></div>
+                    <div id="searchInProgressText">search in progress...</div>
                 </div>
 
                 <div id="error" class="content-page text-center">
@@ -56,8 +59,12 @@
                 <div id="txDetails" class="content-page">
                     <div class="col-xs-12 col-md-6 token-related">
                         <div class="block">
-                            <h3><span class="token-name"></span> <span class="token-operation-type"></span></h3>
+                            <div class="block-header"><h3><span class="token-name"></span> <span class="token-operation-type"></span></h3></div>
                             <table class="table">
+                            <tr class="blue">
+                                <td>Value</td>
+                                <td id="transfer-operation-value" class="list-field"></td>
+                            </tr>
                             <tr>
                                 <td>Date</td>
                                 <td id="transfer-tx-timestamp" data-type="localdate" class="list-field"></td>
@@ -71,14 +78,10 @@
                                 <td id="transfer-operation-to" data-type="ethplorer" class="list-field"></td>
                             </tr>
                             <tr>
-                                <td>Value</td>
-                                <td id="transfer-operation-value" class="list-field"></td>
-                            </tr>
-                            <tr>
                                 <td>Message</td>
                                 <td id="transfer-tx-message" class="list-field"></td>
                             </tr>                            
-                            <tr>
+                            <tr id="operation-status">
                                 <td>Status</td>
                                 <td id="txTokenStatus" class="list-field"></td>
                             </tr>
@@ -87,7 +90,7 @@
                     </div>
                     <div class="col-xs-12 col-md-6 token-related">
                         <div class="block">
-                            <h3>Token <span class="token-name"></span> Information</h3>
+                            <div class="block-header"><h3>Token <span class="token-name"></span> Information</h3></div>
                             <table class="table">
                             <tr>
                                 <td>Contract</td>
@@ -109,20 +112,12 @@
                                 <td>Total Supply</td>
                                 <td id="transaction-token-totalSupply" class="list-field"></td>
                             </tr>
-                            <tr class="poka-hz">
-                                <td>Total Transactions</td>
-                                <td>1000</td>
-                            </tr>
-                            <tr class="poka-hz">
-                                <td>Last Activity</td>
-                                <td>2016-01-02 15:55:66 (block #1002322)</td>
-                            </tr>
                             </table>                           
                         </div>
                     </div>
                     <div class="col-xs-12">
                         <div class="block">
-                            <h3>Transaction details</h3>
+                            <div class="block-header"><h3>Transaction details</h3></div>
                             <table class="table">
                             <tr>
                                 <td>Tx</td>
@@ -191,7 +186,7 @@
                                     <pre id="transaction-tx-data" class="list-field text-left" data-mode="hex"></pre>
                                 </td>
                             </tr>
-                            <tr>
+                            <tr id="tx-status">
                                 <td>Status</td>
                                 <td id="txEthStatus" class="list-field"></td>
                             </tr>
@@ -203,7 +198,7 @@
                 <div id="addressDetails" class="content-page">
                     <div class="col-xs-12 col-md-6">
                         <div class="block">
-                            <h3><span class="address-type"></span> Information</h3>
+                            <div class="block-header"><h3><span class="address-type"></span> Information</h3></div>
                             <table class="table">
                             <tr>
                                 <td><span class="address-type"></span></td>
@@ -217,21 +212,20 @@
                                 <td>Transactions</td>
                                 <td id="address-txCount" data-type="int" class="list-field"></td>
                             </tr>
-                            <tr class="poka-hz">
-                                <td>Last Activity</td>
-                                <td>2016-01-02 15:55:66 (block #1002322)</td>
-                            </tr>
                             </table>
                         </div>
                     </div>
                     <div class="col-xs-12 col-md-6">
                         <div class="block" id="address-token-balances">
-                            <h3>Token Balances</h3>
+                            <div class="block-header"><h3>Token Balances</h3></div>
                             <table class="table"></table>                           
                         </div>
                         <div class="block" id="address-token-details">
-                            <h3>Token <span id="address-token-name"></span> Information</h3>
+                            <div class="block-header"><h3>Token <span class="address-token-name"></span> Information</h3></div>
                             <table class="table">
+                            <tr>
+                                <td colspan="2" id="address-token-description" class="list-field"></td>
+                            </tr>                                
                             <tr>
                                 <td>Symbol</td>
                                 <td id="address-token-symbol" class="list-field"></td>
@@ -248,32 +242,13 @@
                                 <td>Total Supply</td>
                                 <td id="address-token-totalSupply" class="list-field"></td>
                             </tr>
-                            <tr class="poka-hz">
-                                <td>Total Transactions</td>
-                                <td>N/A</td>
-                            </tr>
-                            <tr class="poka-hz">
-                                <td>Last Activity</td>
-                                <td>N/A</td>
-                            </tr>
                             </table>                           
                         </div>                        
                     </div>
-                    <div class="col-xs-12">
-                        <div class="block poka-hz">
-                            <h3>Last Transactions</h3>
-                            <table class="table">
-                            <tr>
-                                <td>2016-01-02 15:55:66</td>
-                                <td>1002322</td>
-                                <td>0xba5a7edd010a6b2b88ba51daf360dee611d9ce5505c7ae420879334df2cdf7f2</td>
-                            </tr>
-                            <tr>
-                                <td>2016-01-02 15:55:66</td>
-                                <td>1002322</td>
-                                <td>0xba5a7edd010a6b2b88ba51daf360dee611d9ce5505c7ae420879334df2cdf7f2</td>
-                            </tr>                            
-                            </table>
+                    <div class="col-xs-12" id="address-issuances">
+                        <div class="block">
+                            <div class="block-header"><h3>Token <span class="address-token-name"></span> Issuances</h3></div>
+                            <table class="table"></table>
                         </div>
                     </div>
                 </div>
@@ -304,7 +279,53 @@
             </div>
         </div>
     </div>
-    
-    
+    <div id="disqus_thread" class="container"></div>
+    <script>
+
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+    /*
+    var disqus_config = function () {
+        this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document, s = d.createElement('script');
+        s.src = '//https-ethplorer-io.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>    
+    <div class="navbar navbar-inverse footer" role="navigation" style="background:#0f0f0f;">
+        <div class="container">
+            <div class="text-center">
+                    <a href="/about.html" style="color: white;">About</a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="/about.html#disqus_thread"  style="color: white;">Discuss ethplorer</a>
+                    &nbsp;&nbsp;&nbsp;
+                    <a href="https://github.com/EverexIO/Ethplorer" target="_blank">Source code</a>
+            </div>
+            <div class="copyrights">
+                <span style="color:white;">(c) 2016</span> <a href="https://everex.one" target="_blank">Everex</a>
+                &nbsp;&nbsp;&nbsp;
+                <a href="mailto://support@ethplorer.io">support@ethplorer.io</a>
+            </div>            
+        </div>
+    </div>
+    </div>
+    <script>
+        if(Ethplorer.Config.ga){
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+            ga('create', Ethplorer.Config.ga, 'auto');
+            ga('send', 'pageview');
+        }
+    </script>
 </body>
 </html>

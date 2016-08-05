@@ -4,7 +4,6 @@ Ethplorer = {
             endPoint: Ethplorer.Config.ethService,
             namespace: ''
         });
-        Ethplorer.scroller();
         Ethplorer.route();
         $('#network').text(Ethplorer.Config.testnet ? 'Test' : 'Modern');
         $('.navbar-nav li[data-page]').click(function(){
@@ -38,24 +37,6 @@ Ethplorer = {
                 Ethplorer.error('Invalid action');
         }
     },
-    scroller: function(){
-        var starttime = new Date().getTime();
-        for (var i = 0; i < 34; i++) {
-            $('#scroller').append($('<div class="letter">' + (Math.random() > 0.5 ? '1' : '0') + '</div>'));
-        }
-        function run() {
-            if($('#scroller:visible').length){
-                var elapsed = new Date().getTime() - starttime;
-                var pos = elapsed * 0.05;
-                $('div.letter').each(function(index, letter) {
-                    var posx = -20 + (pos + 10 * index) % 340;
-                    var posy = 20 + Math.sin((posx + pos * 2) / 20) * 10;
-                    $(letter).css('left', posx + 'px').css('top', posy + 'px');
-                });
-            }
-        }
-        setInterval(run, 30);       
-    },
     error: function(message){
         Ethplorer.hideLoader();
         $('.content-page').hide();
@@ -83,9 +64,12 @@ Ethplorer = {
     knownContracts: [],
     dataFields: {},
     showTxDetails: function(txHash, txData){
+        $('#ethplorer-path').html('<b>Transaction hash</b> ' + txHash);
+        
         $('.list-field').empty();
         $('#transaction-tx-hash').html(Ethplorer.Utils.getEtherscanLink(txHash));
         $('.token-related')[txData.token ? 'show' : 'hide']();
+        $('#tx-status, #operation-status').removeClass('green red');
 
         Ethplorer.knownContracts = txData.contracts ? txData.contracts : [];
 
@@ -94,6 +78,7 @@ Ethplorer = {
             $('#txEthStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
             $('#txEthStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');
             $('#txEthStatus').html(oTx.success ? 'Success' : 'Failed' + (oTx.failedReason ? (': ' + Ethplorer.getTxErrorReason(oTx.failedReason)) : ''));
+            $('#tx-status').addClass(oTx.success ? 'green' : 'red');
         }else{
             $('#txEthStatus').removeClass('text-danger text-success');
             $('#txEthStatus').html('Pending');
@@ -129,14 +114,18 @@ Ethplorer = {
         if(txData.token){
             $('.token-name').html(txData.token.name);
             var oToken = txData.token;
-            if(oToken.decimals){
-                oToken.totalSupply = oToken.totalSupply / Math.pow(10, oToken.decimals);
+            if(false === oToken.totalSupply){
+                oToken.totalSupply = 'N/A';
+            }else{
+                if(oToken.decimals){
+                    oToken.totalSupply = oToken.totalSupply / Math.pow(10, oToken.decimals);
+                }
+                oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true);
+                if(oToken.symbol){
+                    oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
+                }
             }
-            oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true);
-            if(oToken.symbol){
-                oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
-            }
-            
+
             Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
             
             if($('#transaction-tx-message').html()){
@@ -158,6 +147,7 @@ Ethplorer = {
                     $('#txTokenStatus')[oOperation.success ? 'removeClass' : 'addClass']('text-danger');
                     $('#txTokenStatus')[oOperation.success ? 'addClass' : 'removeClass']('text-success');                           
                     $('#txTokenStatus').html(oOperation.success ? 'Success' : 'Failed' + (oOperation.failedReason ? (': ' + Ethplorer.getTxErrorReason(oOperation.failedReason)) : ''));
+                    $('#operation-status').addClass(oOperation.success ? 'green' : 'red');
                 }
             }else{
                 $('.token-operation-type').text('Operation');
@@ -165,6 +155,7 @@ Ethplorer = {
                     $('#txTokenStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
                     $('#txTokenStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');           
                     $('#txTokenStatus').html(oTx.success ? 'Success' : 'Failed' + (oTx.failedReason ? (': ' + Ethplorer.getTxErrorReason(oTx.failedReason)) : ''));
+                    $('#operation-status').addClass(oTx.success ? 'green' : 'red');
                 }
             }
             if(!oTx.blockNumber){
@@ -176,8 +167,11 @@ Ethplorer = {
         
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
+        $('#disqus_thread').show();
         $('#txDetails').show();
-        Ethplorer.Utils.adjustHeight('#txDetails .block:eq(0)', '#txDetails .block:eq(1)');
+        $("table").find("tr:visible:odd").addClass("odd");
+        $("table").find("tr:visible:even").addClass("even");
+        $("table").find("tr:visible:last").addClass("last");
     },
 
     getAddressDetails: function(address){
@@ -192,20 +186,67 @@ Ethplorer = {
 
     showAddressDetails: function(address, data){
         $('.address-type').text(data.isContract ? 'Contract' : 'Address');
+        $('#address-issuances').hide();
+        var tp = data.isContract ? 'Contract address ' : 'Address ';
+        $('#ethplorer-path').html('<b>' + tp + '</b> ' + address);
         data.address = address;
+        if(!data.txCount && data.isContract){
+            data.txCount = 'N/A';
+        }
         Ethplorer.fillValues('address', data, ['address', 'balance', 'txCount']);
         $('#address-token-balances, #address-token-details').hide();
-        if(data.isContract){
+        if(data.isContract && data.token){
             $('#address-token-details').show();
             var oToken = data.token;
-            if(oToken.decimals){
-                oToken.totalSupply = oToken.totalSupply / Math.pow(10, oToken.decimals);
+            if(false === oToken.totalSupply){
+                oToken.totalSupply = 'N/A';
+            }else{
+                if(oToken.decimals){
+                    oToken.totalSupply = oToken.totalSupply / Math.pow(10, oToken.decimals);
+                }
+                oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true);
+                if(oToken.symbol){
+                    oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
+                }
             }
-            oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true);
-            if(oToken.symbol){
-                oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
+            if(oToken.description){
+                oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
+                oToken.description = oToken.description.replace(/\n/g, '<br />');                    
             }
-            Ethplorer.fillValues('address', data, ['token', 'token.name', 'token.owner', 'token.totalSupply', 'token.decimals', 'token.symbol']);
+            $('.address-token-name').text(oToken.name);
+            if(data.issuances && data.issuances.length){
+                $('#address-issuances').show();
+                for(var i=0; i<data.issuances.length; i++){
+                    var tx = data.issuances[i];
+                    if(tx.quantity != 0){
+                        var qty = tx.quantity;
+                        if(oToken.decimals){
+                            qty = qty / Math.pow(10, oToken.decimals);
+                        }
+                        var row = $('<tr>');
+                        var tdDate = $('<td>');
+                        var tdHash = $('<td>');
+                        var tdOpType = $('<td>');
+                        var tdQty = $('<td>');
+                        tdQty.addClass('text-right');
+                        tdHash.addClass('list-field');
+                        tdHash.addClass('table-hash-field');
+                        tdOpType.addClass('text-center');
+                        tdOpType.addClass('table-type-field');
+                        tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.hash, Ethplorer.Utils.ts2date(tx.ts / 1000, false), false));
+                        tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.hash));
+                        tdOpType.html(tx.quantity > 0 ? 'Issuance' : 'Burn');
+                        tdQty.html((tx.quantity > 0 ? '+' : '-') + Ethplorer.Utils.formatNum(qty, true, oToken.decimals ? oToken.decimals : 18, 2) + ((oToken.symbol) ? '&nbsp;' + oToken.symbol : ''));
+                        row.append(tdDate);
+                        row.append(tdHash);
+                        row.append(tdOpType);
+                        row.append(tdQty);
+                        $('#address-issuances .table').append(row);
+                    }
+                }
+            }
+            var fields = ['token', 'token.name', 'token.description', 'token.owner', 'token.totalSupply', 'token.decimals', 'token.symbol'];
+            Ethplorer.fillValues('address', data, fields);
         }else if(data.tokenBalances){
             $('#address-token-balances').show();
             for(var tokenAddress in data.tokenBalances){
@@ -224,8 +265,11 @@ Ethplorer = {
         }
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
+        $('#disqus_thread').show();
         $('#addressDetails').show();
-        Ethplorer.Utils.adjustHeight('#addressDetails .block:eq(0)', '#addressDetails .block:eq(1)');
+        $("table").find("tr:visible:odd").addClass("odd");
+        $("table").find("tr:visible:even").addClass("even");
+        $("table").find("tr:visible:last").addClass("last");
     },
 
     convert: function(id, switcher){
@@ -314,6 +358,7 @@ Ethplorer = {
         if(Ethplorer.loaderTimeout){
             clearTimeout(Ethplorer.loaderTimeout);
         }
+        setTimeout(function(){ $('#disqus_thread iframe').css('height', ''); }, 100);
     },
     
     Utils: {
@@ -406,9 +451,9 @@ Ethplorer = {
                 return text;
             }
             var isTx = Ethplorer.Utils.isTx(data);
-            var res = '<a target="_blank" href="' + urlEtherscan;
+            var res = '<a target="_blank" class="external-link" href="' + urlEtherscan;
             res += (isTx ? 'tx' : 'address');
-            res += ('/' + data + '">' + text + '</a>&nbsp;<i class="fa fa-external-link"></i>');
+            res += ('/' + data + '"><i class="fa fa-external-link"></i>&nbsp;' + text + '</a>');
             if(isContract){
                 res = 'Contract ' + res;
             }        
@@ -423,7 +468,7 @@ Ethplorer = {
             var isTx = Ethplorer.Utils.isTx(data);
             var res = '<a href="/';
             res += (isTx ? 'tx' : 'address');
-            res += ('/' + data + '">' + text + '</a>');
+            res += ('/' + data + '"  class="local-link">' + text + '</a>');
             if(isContract){
                 res = 'Contract ' + res;
             }        
@@ -432,7 +477,7 @@ Ethplorer = {
 
         // Date with fixed GMT to local date
         ts2date: function(ts, withGMT){
-            withGMT = withGMT || true;
+            withGMT = 'undefined' !== typeof(withGMT) ? withGMT : true;
             ts *= 1000;
             function padZero(s){
                 return (s < 10) ? '0' + s : s.toString();
@@ -447,10 +492,6 @@ Ethplorer = {
                 res += (' (GMT' + (offset > 0 ? '+' : '-') + offset + ')');
             }
             return res;
-        },
-
-        adjustHeight: function(selector1, selector2){
-            $(selector1 + ',' + selector2).height(Math.max($(selector1).height(), $(selector2).height()));            
         },
 
         hideEmptyFields: function(){

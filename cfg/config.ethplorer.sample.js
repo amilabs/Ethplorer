@@ -1,4 +1,5 @@
 Ethplorer.Config = {
     testnet: false,
-    ethService: 'https://ethereumServiceAddress'
+    ethService: 'https://ethereumServiceAddress',
+    ga: ''
 };

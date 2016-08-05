@@ -1,8 +1,22 @@
 body {
-    padding: 20px;
-    padding-top: 50px;
-    padding-bottom: 120px;
-    background-color: #eee;
+    padding: 0px;
+    background-color: #000;
+    min-height: 100vh;
+    height: 100%;
+}
+
+.navbar-inverse {
+    background-color: #fff;
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
+
+.navbar-nav {
+    margin-right: 0px;
+}
+
+.navbar-header {
+    padding-left: 15px;
 }
 
 #network {
@@ -15,11 +29,64 @@ body {
     display: none;
 }
 
+.content-page h3 {
+    padding-left: 20px;
+    padding-top: 12px;
+	margin-bottom: 0;
+}
+
 .content-page .block {
-    background-color: white;
-    padding: 20px;
+    background-color: black;
+    /*padding: 20px;*/
     border-radius: 8px;
     margin-top: 20px;
+}
+
+.content-page .block-header {
+	padding-bottom: 10px;
+	background-color:white;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+.content-page table td {
+    color: white;
+    border: 0 !important;
+	min-width: 120px;
+}
+
+.content-page table td:first-child {
+	padding: 8px 8px 8px 28px;
+}
+
+/*
+.content-page tr:nth-child(odd) {
+	background: #0f0f0f;
+}
+
+.content-page tr:nth-child(even) {
+	background: #1a1a1a;
+}
+*/
+
+tr.even {
+	background: #0f0f0f;
+}
+
+tr.odd {
+	background: #1a1a1a;
+}
+
+.content-page tr.blue {
+	background-color: #1396e2 !important;
+}
+
+.content-page tr.green {
+	background-color: #27ae60 !important;
+}
+
+.content-page tr.red {
+	background-color: #c0392b !important;
 }
 
 .block h3 {
@@ -29,7 +96,6 @@ body {
 #loader {
     margin-top: 40px;
     padding: 40px;
-    background-color: white;
     width: 300px;
     height: 300px;
     border-radius: 150px;
@@ -37,66 +103,13 @@ body {
     margin-right: auto;
 }
 
-#loader .fa {
-    margin-top: 40px;
-    margin-left: -30px;
-    font-size: 60px;
-    position: absolute;
-    -webkit-animation: kroot 2s linear infinite;
-       -moz-animation: kroot 2s linear infinite;
-         -o-animation: kroot 2s linear infinite;
-            animation: kroot 2s linear infinite;
-}
-
-@-webkit-keyframes kroot {
-    from { -webkit-transform: rotate(0deg) translateX(20px) rotate(0deg); }
-    to   { -webkit-transform: rotate(360deg) translateX(20px) rotate(-360deg); }
-}
-
-@-moz-keyframes kroot {
-    from { -moz-transform: rotate(0deg) translateX(20px) rotate(0deg); }
-    to   { -moz-transform: rotate(360deg) translateX(20px) rotate(-360deg); }
-}
-
-@-o-keyframes kroot {
-    from { -o-transform: rotate(0deg) translateX(20px) rotate(0deg); }
-    to   { -o-transform: rotate(360deg) translateX(20px) rotate(-360deg); }
-}
-
-@keyframes kroot {
-    from { transform: rotate(0deg) translateX(20px) rotate(0deg); }
-    to   { transform: rotate(360deg) translateX(20px) rotate(-360deg); }
-}
-
-#loader #scroller {
-    width:300px;
-    margin-left: auto;
-    margin-right: auto;
-    height: 50px;
-    position: relative;
-    overflow: hidden;
-    top: 90px;
-    left: -40px;   
-}
-#scroller .letter {
-    font-family: sans-serif;
-    font-size: 12px;
-    font-weight: bold;
-    position: absolute;
-    top: -100px; 
-    left: -100px;
-}
-
 #loader #searchInProgressText {
-    font-size: 24px;
+    font-size: 18px;
     position: relative;
     top: -40px;
+    color: white;
 }
 
-#loader #pleaseWaitText {
-    position: relative;
-    top: 100px;   
-}
 #transaction-tx-parsed,
 #transaction-tx-data {
     white-space: pre-wrap;       /* Since CSS 2.1 */
@@ -130,5 +143,239 @@ pre.list-field {
 
 #search {
     margin-top: 8px;
-    margin-left: 20px;
+    margin-right: 15px !important;
+}
+
+.subnav {
+    background: #0f0f0f;
+    marign: 0px;
+}
+
+.subnav .container {
+    padding: 8px;
+    color: white;
+    padding-left: 36px;
+}
+
+a {
+    text-decoration: underline;
+}
+
+a.local-link, a.local-link:visited, a.local-link:hover {
+    color: white;
+}
+
+.footer {
+    position: absolute;
+    bottom: 0px;
+    padding-bottom: 0px;
+    margin-top: 20px;
+    margin-bottom: 0px;
+    width: 100%;
+}
+
+.footer .copyrights {
+    position: absolute;
+    width: 150px;
+    top: 8px;
+}
+
+@media screen and (max-width: 640px) {
+    .footer {
+        line-height: 12px;
+        font-size: 12px;
+    }
+    .footer .copyrights {
+        text-align: center;
+        position:relative;
+        width: 100%;
+    }
+}
+
+#disqus_thread {
+    margin-top: 20px;
+    display: none;
+    padding-bottom: 70px;
+}
+
+td.list-field {
+    white-space: nowrap;
+    overflow: hidden;
+    max-width: 26vw;
+    text-overflow: ellipsis;
+}
+
+.navbar-logo {
+    float: left;
+    height: 50px;
+    padding: 15px 15px;
+    line-height: 20px;
+    width: 160px;
+    position: absolute;
+    z-index: 10000;
+}
+
+.navbar-logo img {
+  width: 160px;
+  cursor: pointer;
+}
+
+#search {
+    width: 350px;
+}
+
+@media screen and (min-width: 400px) and (max-width: 991px) {
+    td.list-field {
+        overflow: hidden;
+        max-width: 46vw;
+        text-overflow: ellipsis;
+    }
+    
+    td.table-hash-field {
+        max-width: 26vw;
+    }
+}
+
+@media screen and (max-width: 699px) {
+    td.table-hash-field {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 499px) {
+    td.table-type-field {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 399px) {
+    td.list-field {
+        overflow: hidden;
+        max-width: 34vw;
+        text-overflow: ellipsis;
+    }
+    .table tr td:first-child {
+        padding-left: 8px;
+    }
+    .table tr td:first-child {
+        max-width: 70px;
+    }    
+    .table tr td {
+        font-size: 12px;
+    }
+    .block-header h3 {
+        font-size: 18px;
+        padding-left: 8px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    
+    #navbar {
+        height: 95px;
+    }
+    
+    #searchform {
+        position: absolute;
+        top: 30px;
+        right: 0px;
+        width: 100%;
+    }
+
+    #search {
+        width: 100%;
+    }    
+    
+    #topmenu {
+        position: absolute;
+        right: -15px;
+        top: -4px;
+    }
+}
+
+.table tr.last td:first-child {
+    border-bottom-left-radius: 8px;
+}
+
+.table tr.last td:last-child {
+    border-bottom-right-radius: 8px;
+}
+
+/* Timer*/
+.timer{
+    width: 47px;
+    height: 47px;
+    background-color: transparent;
+    box-shadow: inset 0px 0px 0px 2px #fff;
+    border-radius: 50%;
+    position: relative;
+    margin: 38px auto;/* Not necessary- its only for layouting*/    
+ }
+.timer:after, .timer:before{
+    position: absolute;
+    content:"";
+    background-color: #fff;
+}
+.timer:after{
+    width: 20px;
+    height: 2px;
+    top: 22px;
+    left: 22px;
+    -webkit-transform-origin: 1px 1px;
+       -moz-transform-origin: 1px 1px;
+            transform-origin: 1px 1px;
+    -webkit-animation: minhand 2s linear infinite;
+       -moz-animation: minhand 2s linear infinite;
+            animation: minhand 2s linear infinite;
+}
+
+.timer:before{
+    width: 16px;
+    height: 2px;
+    top: 22px;
+    left: 22px;
+    -webkit-transform-origin: 1px 1px;
+       -moz-transform-origin: 1px 1px;
+            transform-origin: 1px 1px;
+    -webkit-animation: hrhand 8s linear infinite;
+       -moz-animation: hrhand 8s linear infinite;
+            animation: hrhand 8s linear infinite;
+}
+
+@-webkit-keyframes minhand{
+    0%{-webkit-transform:rotate(0deg)}
+    100%{-webkit-transform:rotate(360deg)}
+}
+@-moz-keyframes minhand{
+    0%{-moz-transform:rotate(0deg)}
+    100%{-moz-transform:rotate(360deg)}
+}
+@keyframes minhand{
+    0%{transform:rotate(0deg)}
+    100%{transform:rotate(360deg)}
+}
+
+@-webkit-keyframes hrhand{
+    0%{-webkit-transform:rotate(0deg)}
+    100%{-webkit-transform:rotate(360deg)}
+}
+@-moz-keyframes hrhand{
+    0%{-moz-transform:rotate(0deg)}
+    100%{-moz-transform:rotate(360deg)}
+}
+@keyframes hrhand{
+    0%{transform:rotate(0deg)}
+    100%{transform:rotate(360deg)}
+}
+
+#transfer-tx-message,
+#transaction-tx-message,
+#address-token-description {
+    white-space: normal !important;
+}
+
+#ethplorer-path {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100vw;
 }
