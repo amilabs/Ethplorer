@@ -358,7 +358,7 @@ Ethplorer = {
         if(Ethplorer.loaderTimeout){
             clearTimeout(Ethplorer.loaderTimeout);
         }
-        setTimeout(function(){ $(window).resize(); }, 100);
+        setTimeout(function(){ $('#disqus_thread iframe').css('height', ''); }, 100);
     },
     
     Utils: {
