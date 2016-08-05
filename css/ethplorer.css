@@ -195,7 +195,7 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 #disqus_thread {
     margin-top: 20px;
     display: none;
-    margin-bottom: 70px;
+    padding-bottom: 70px;
 }
 
 td.list-field {
