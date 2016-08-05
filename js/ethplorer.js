@@ -15,6 +15,9 @@ Ethplorer = {
                 $(this).addClass('active');
             }
         });
+        setTimeout(function(){
+            $(window).resize();
+        }, 5000)
     },
     route: function(){
         var pathData  = Ethplorer.Utils.parsePath();
