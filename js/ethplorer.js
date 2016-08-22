@@ -112,7 +112,7 @@ Ethplorer = {
         Ethplorer.fillValues('transaction', txData, ['tx', 'tx.from', 'tx.to', 'tx.creates', 'tx.value', 'tx.timestamp', 'tx.gasLimit', 'tx.gasUsed', 'tx.gasPrice', 'tx.fee', 'tx.nonce', 'tx.blockNumber', 'tx.confirmations', 'tx.data']);
 
         if(txData.token){
-            $('.token-name').html(txData.token.name);
+            $('.token-name').html(Ethplorer.Utils.getEthplorerLink(txData.tx.to, txData.token.name, false));
             var oToken = txData.token;
             if(false === oToken.totalSupply){
                 oToken.totalSupply = 'N/A';
