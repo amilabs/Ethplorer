@@ -59,16 +59,6 @@ body {
 	padding: 8px 8px 8px 28px;
 }
 
-/*
-.content-page tr:nth-child(odd) {
-	background: #0f0f0f;
-}
-
-.content-page tr:nth-child(even) {
-	background: #1a1a1a;
-}
-*/
-
 tr.even {
 	background: #0f0f0f;
 }
@@ -119,11 +109,6 @@ tr.odd {
     word-wrap: break-word;       /* Internet Explorer 5.5+ */
 }
 
-.poka-hz {
-    background-color: #fc8c84 !important;
-    display: none;
-}
-
 .pre-switcher {
     cursor: pointer;
     position: absolute;
@@ -137,13 +122,10 @@ pre.list-field {
     padding-right: 36px;
 }
 
-.todo {
-    background-color: #d5f5b2;
-}
-
 #search {
     margin-top: 8px;
     margin-right: 15px !important;
+    width: 350px;    
 }
 
 .subnav {
@@ -180,18 +162,6 @@ a.local-link, a.local-link:visited, a.local-link:hover {
     top: 8px;
 }
 
-@media screen and (max-width: 640px) {
-    .footer {
-        line-height: 12px;
-        font-size: 12px;
-    }
-    .footer .copyrights {
-        text-align: center;
-        position:relative;
-        width: 100%;
-    }
-}
-
 #disqus_thread {
     margin-top: 20px;
     display: none;
@@ -220,8 +190,77 @@ td.list-field {
   cursor: pointer;
 }
 
-#search {
-    width: 350px;
+.table tr.last td:first-child {
+    border-bottom-left-radius: 8px;
+}
+
+.table tr.last td:last-child {
+    border-bottom-right-radius: 8px;
+}
+
+#transfer-tx-message,
+#transaction-tx-message,
+#address-token-description {
+    white-space: normal !important;
+}
+
+#ethplorer-path {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100vw;
+}
+
+/* Timer*/
+.timer{
+    width: 47px;
+    height: 47px;
+    background-color: transparent;
+    box-shadow: inset 0px 0px 0px 2px #fff;
+    border-radius: 50%;
+    position: relative;
+    margin: 38px auto;/* Not necessary- its only for layouting*/    
+ }
+.timer:after, .timer:before{
+    position: absolute;
+    content:"";
+    background-color: #fff;
+}
+.timer:after{
+    width: 20px;
+    height: 2px;
+    top: 22px;
+    left: 22px;
+    -webkit-transform-origin: 1px 1px;
+       -moz-transform-origin: 1px 1px;
+            transform-origin: 1px 1px;
+    -webkit-animation: minhand 2s linear infinite;
+       -moz-animation: minhand 2s linear infinite;
+            animation: minhand 2s linear infinite;
+}
+
+.timer:before{
+    width: 16px;
+    height: 2px;
+    top: 22px;
+    left: 22px;
+    -webkit-transform-origin: 1px 1px;
+       -moz-transform-origin: 1px 1px;
+            transform-origin: 1px 1px;
+    -webkit-animation: hrhand 8s linear infinite;
+       -moz-animation: hrhand 8s linear infinite;
+            animation: hrhand 8s linear infinite;
+}
+
+@media screen and (max-width: 640px) {
+    .footer {
+        line-height: 12px;
+        font-size: 12px;
+    }
+    .footer .copyrights {
+        text-align: center;
+        position:relative;
+        width: 100%;
+    }
 }
 
 @media screen and (min-width: 400px) and (max-width: 991px) {
@@ -293,55 +332,6 @@ td.list-field {
     }
 }
 
-.table tr.last td:first-child {
-    border-bottom-left-radius: 8px;
-}
-
-.table tr.last td:last-child {
-    border-bottom-right-radius: 8px;
-}
-
-/* Timer*/
-.timer{
-    width: 47px;
-    height: 47px;
-    background-color: transparent;
-    box-shadow: inset 0px 0px 0px 2px #fff;
-    border-radius: 50%;
-    position: relative;
-    margin: 38px auto;/* Not necessary- its only for layouting*/    
- }
-.timer:after, .timer:before{
-    position: absolute;
-    content:"";
-    background-color: #fff;
-}
-.timer:after{
-    width: 20px;
-    height: 2px;
-    top: 22px;
-    left: 22px;
-    -webkit-transform-origin: 1px 1px;
-       -moz-transform-origin: 1px 1px;
-            transform-origin: 1px 1px;
-    -webkit-animation: minhand 2s linear infinite;
-       -moz-animation: minhand 2s linear infinite;
-            animation: minhand 2s linear infinite;
-}
-
-.timer:before{
-    width: 16px;
-    height: 2px;
-    top: 22px;
-    left: 22px;
-    -webkit-transform-origin: 1px 1px;
-       -moz-transform-origin: 1px 1px;
-            transform-origin: 1px 1px;
-    -webkit-animation: hrhand 8s linear infinite;
-       -moz-animation: hrhand 8s linear infinite;
-            animation: hrhand 8s linear infinite;
-}
-
 @-webkit-keyframes minhand{
     0%{-webkit-transform:rotate(0deg)}
     100%{-webkit-transform:rotate(360deg)}
@@ -366,16 +356,4 @@ td.list-field {
 @keyframes hrhand{
     0%{transform:rotate(0deg)}
     100%{transform:rotate(360deg)}
-}
-
-#transfer-tx-message,
-#transaction-tx-message,
-#address-token-description {
-    white-space: normal !important;
-}
-
-#ethplorer-path {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100vw;
 }
