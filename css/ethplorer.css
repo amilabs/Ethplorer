@@ -101,7 +101,7 @@ tr.odd {
 }
 
 #transaction-tx-parsed,
-#transaction-tx-data {
+#transaction-tx-input {
     white-space: pre-wrap;       /* Since CSS 2.1 */
     white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
     white-space: -pre-wrap;      /* Opera 4-6 */
@@ -198,6 +198,14 @@ td.list-field {
     border-bottom-right-radius: 8px;
 }
 
+.token-name a {
+    color: #333 !important;
+}
+
+.address-token-inline {
+    display: none;
+}
+
 #transfer-tx-message,
 #transaction-tx-message,
 #address-token-description {
@@ -208,6 +216,12 @@ td.list-field {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100vw;
+}
+
+.hash-from-to {
+    max-width: 50vw;
+    overflow: hidden;
+    text-overflow: ellipsis
 }
 
 /* Timer*/
@@ -263,11 +277,24 @@ td.list-field {
     }
 }
 
+@media screen and (max-width: 991px) {
+    .address-token {
+        display: none;
+    }
+    .address-token-inline {
+        display: inline;
+    }    
+}
+
 @media screen and (min-width: 400px) and (max-width: 991px) {
     td.list-field {
         overflow: hidden;
-        max-width: 46vw;
+        max-width: 44vw;
         text-overflow: ellipsis;
+    }
+
+    .hash-from-to {
+        max-width: 38vw;
     }
     
     td.table-hash-field {
@@ -276,6 +303,10 @@ td.list-field {
 }
 
 @media screen and (max-width: 699px) {
+    .hash-from-to {
+        max-width: 56vw;
+    }
+    
     td.table-hash-field {
         display: none;
     }
@@ -288,6 +319,10 @@ td.list-field {
 }
 
 @media screen and (max-width: 399px) {
+    #address-token-transfers td {
+        font-size: 11px;
+    }
+    
     td.list-field {
         overflow: hidden;
         max-width: 34vw;
@@ -308,8 +343,46 @@ td.list-field {
     }
 }
 
+.show_small {
+    display: none;
+}
+
 @media screen and (max-width: 767px) {
     
+    #address-token-transfers .block {
+        max-width: 100vw;
+        overflow: hidden;
+    }
+
+    .block-header h3 {
+        font-size: 20px;
+    }
+    
+    .hash-from-to {
+        max-width: 75vw !important;
+    }
+    
+    #address-token-transfers td {
+        font-size: 12px;
+    }
+    
+    .hide-small {
+        background: red;
+        display: none !important;
+    }
+    
+    .show_small {
+        display: initial;
+    }
+    
+    #address-transfers table tr td:nth-child(1){
+        display:none;
+    }
+
+    .address-token{
+        display: none;
+    }
+
     #navbar {
         height: 95px;
     }
