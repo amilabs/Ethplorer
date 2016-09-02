@@ -249,7 +249,7 @@ Ethplorer = {
             }
             var fields = ['token', 'token.name', 'token.description', 'token.owner', 'token.totalSupply', 'token.decimals', 'token.symbol', 'token.txsCount'];
             Ethplorer.fillValues('address', data, fields);
-        }else if(data.balances){
+        }else if(data.balances && data.balances.length){
             $('#address-token-balances').show();
             for(var k=0; k<data.balances.length; k++){
                 var balance = data.balances[k];
