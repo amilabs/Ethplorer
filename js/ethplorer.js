@@ -74,7 +74,7 @@ Ethplorer = {
             Ethplorer.error('Invalid transaction hash');
             return;
         }    
-        $.getJSON(Ethplorer.Config.phpService, {tx: txHash}, function(_txHash){
+        $.getJSON(Ethplorer.Config.phpService, {data: txHash}, function(_txHash){
             return function(data){
                 Ethplorer.showTxDetails(_txHash, data);
             }
@@ -191,7 +191,7 @@ Ethplorer = {
             Ethplorer.error('Invalid address format');
             return;
         }    
-        $.getJSON(Ethplorer.Config.phpService, {address: address}, function(_address){
+        $.getJSON(Ethplorer.Config.phpService, {data: address}, function(_address){
             return function(data){
                 Ethplorer.showAddressDetails(_address, data);
             }
@@ -204,6 +204,7 @@ Ethplorer = {
         var tp = data.isContract ? 'Contract address ' : 'Address ';
         $('#ethplorer-path').html('<b>' + tp + '</b> ' + address);
         data.address = address;
+        data.balance = parseFloat(data.balance) * 1e+18;
         Ethplorer.fillValues('address', data, ['address', 'balance']);
         $('#address-token-balances, #address-token-details').hide();
         if(data.isContract && data.token){
