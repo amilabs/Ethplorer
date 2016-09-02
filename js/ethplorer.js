@@ -92,9 +92,14 @@ Ethplorer = {
         $('.token-related')[txData.token ? 'show' : 'hide']();
         $('#tx-status, #operation-status').removeClass('green red');
 
+        var oTx = txData.tx;
+        if(false === oTx){
+            Ethplorer.error('Transaction not found');
+            return;
+        }
+
         Ethplorer.knownContracts = txData.contracts ? txData.contracts : [];
 
-        var oTx = txData.tx;
         if(oTx.blockNumber){
             $('#txEthStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
             $('#txEthStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');
