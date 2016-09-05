@@ -352,6 +352,9 @@ Ethplorer = {
         if(!oToken.name){
             oToken.name = 'N/A';
         }
+        if(!oToken.owner || (oToken.owner && ('0x' === oToken.owner))){
+            oToken.owner = '';
+        }
         oToken.prepared  = true;
         return oToken;
     },
