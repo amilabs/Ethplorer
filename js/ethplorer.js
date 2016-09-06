@@ -16,6 +16,7 @@
 
 Ethplorer = {
     init: function(){
+        BigNumber.config({ ERRORS: false });
         $.jsonRPC.setup({
             endPoint: Ethplorer.Config.ethService,
             namespace: ''
