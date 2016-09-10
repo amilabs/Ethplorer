@@ -173,6 +173,11 @@ class Etherscan {
             if(isset($tx["creates"]) && $tx["creates"]){
                 $result["contracts"][] = $tx["creates"];
             }
+            // Chainy
+            if(isset($tx['receipt']) && isset($tx['receipt']['logs']) && count($tx['receipt']['logs'])){
+                $result['log'] = $tx['receipt']['logs'][0];
+                // 0xdad5c3eecfdb62dd69e6e72053b88029e1d6277d4bc773c00fef243982adcb7d
+            }
             $fromContract = $this->getContract($tx["from"]);
             if($fromContract){
                 $result["contracts"][] = $tx["from"];
