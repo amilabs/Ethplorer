@@ -186,9 +186,9 @@ class Etherscan {
                         $result["transfers"] = $this->getTransfers($hash);
                         $result["issuances"] = $this->getIssuances($hash);
                     }
-                    if(is_array($result["issuances"]) && count($result["issuances"])){
+                    if(isset($result["issuances"]) && is_array($result["issuances"]) && count($result["issuances"])){
                         $result["operation"] = $result["issuances"][0];
-                    }elseif(is_array($result["transfers"]) && count($result["transfers"])){
+                    }elseif(isset($result["transfers"]) && is_array($result["transfers"]) && count($result["transfers"])){
                         $result["operation"] = $result["transfers"][0];
                     }
                 }
