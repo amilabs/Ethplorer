@@ -17,10 +17,6 @@
 Ethplorer = {
     init: function(){
         BigNumber.config({ ERRORS: false });
-        $.jsonRPC.setup({
-            endPoint: Ethplorer.Config.ethService,
-            namespace: ''
-        });
         Ethplorer.route();
         $('#network').text(Ethplorer.Config.testnet ? 'Test' : 'Modern');
         $('.navbar-nav li[data-page]').click(function(){
