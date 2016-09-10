@@ -198,6 +198,10 @@ td.list-field {
     border-bottom-right-radius: 8px;
 }
 
+.chainy {
+    display: none;
+}
+
 .token-name a {
     color: #333 !important;
 }

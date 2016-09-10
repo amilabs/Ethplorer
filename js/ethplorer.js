@@ -122,16 +122,39 @@ Ethplorer = {
             if(false !== obj){
                 $('#transaction-tx-parsed').text(JSON.stringify(obj, null, 4));
                 $('#tx-parsed').show();
+                var isChainy = false;
+                if(('undefined' !== typeof(obj['id'])) && ('CHAINY' === obj['id'])){
+                    // Chainy transaction
+                    var chainyTypes = {
+                        'R': 'Redirect',
+                        'T': 'Text',
+                        'H': 'Hash',
+                        'L': 'File Hash',
+                        'E': 'Encrypted'
+                    };
+                    $('#chainy-op').text(chainyTypes[obj['type']]);
+                    if('undefined' !== typeof(obj['url'])){
+                        $('#chainy-url').html('<a href="' + obj['url'] + '" target="_blank" class="external-link"><i class="fa fa-external-link"></i>&nbsp;' + obj['url'] + '</a>');
+                    }
+                    var aFields = ['hash', 'filename', 'filesize', 'description'];
+                    for(var f = 0; f < aFields.length; f++){
+                        var fld = aFields[f];
+                        if('undefined' !== typeof(obj[fld])){
+                            $('#chainy-' + fld).text(obj[fld]);
+                        }
+                    }
+                    $('.chainy').show();
+                    isChainy = true;
+                }
                 if(obj.description){
                     var msg = obj.description;
                     if(obj.link){
                         msg = msg + ' ' + obj.link;
                     }
-                    $('#transaction-tx-message').text(msg);
-                    var msgHTML = $('#transaction-tx-message').html();
-                    msgHTML = msgHTML.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
-                    msgHTML = msgHTML.replace(/\n/g, '<br />');
-                    $('#transaction-tx-message').html(msgHTML);
+                    var msgid = isChainy ? "#chainy-message" : '#transaction-tx-message';
+                    msg = msg.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
+                    msg = msg.replace(/\n/g, '<br />');
+                    $(msgid).html(msg);
                 }
             }
         }
@@ -605,10 +628,12 @@ Ethplorer = {
         },
 
         parseJData: function(hex){
-            var str = Ethplorer.Utils.hex2ascii(hex);
+            var str = Ethplorer.Utils.hex2ascii(hex.slice(8));
             var res = false;
             var i1 = str.indexOf('{');
             var i2 = str.indexOf('}');
+            console.log(i1);
+            console.log(i2);
             if(i1 >= 0 && i2 >= 0 && i1 < i2){
                 var jstr = str.substr(i1, i2 - i1 + 1);
                 try {
