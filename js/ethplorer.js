@@ -139,6 +139,15 @@ Ethplorer = {
                             $('#chainy-' + fld).text(obj[fld]);
                         }
                     }
+                    var log = txData.log;
+                    console.log(log.topics);
+                    if(log && log.topics && log.topics.length && (0 === log.topics[0].indexOf("0xdad5c"))){
+                        try {
+                            var data = log.data.slice(192).replace(/0+$/, '');
+                            var link = Ethplorer.Utils.hex2ascii(data);
+                            $('#chainy-link').html('<a href="' + link + '" target="_blank" class="local-link"><i class="fa fa-external-link"></i>&nbsp;' + link + '</a>');
+                        }catch(e){}
+                    }
                     $('.chainy').show();
                     isChainy = true;
                 }
