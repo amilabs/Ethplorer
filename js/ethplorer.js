@@ -140,7 +140,6 @@ Ethplorer = {
                         }
                     }
                     var log = txData.log;
-                    console.log(log.topics);
                     if(log && log.topics && log.topics.length && (0 === log.topics[0].indexOf("0xdad5c"))){
                         try {
                             var data = log.data.slice(192).replace(/0+$/, '');
@@ -637,8 +636,6 @@ Ethplorer = {
             var res = false;
             var i1 = str.indexOf('{');
             var i2 = str.indexOf('}');
-            console.log(i1);
-            console.log(i2);
             if(i1 >= 0 && i2 >= 0 && i1 < i2){
                 var jstr = str.substr(i1, i2 - i1 + 1);
                 try {
