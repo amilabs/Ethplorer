@@ -273,6 +273,7 @@ Ethplorer = {
                     var tdOpType = $('<td>').addClass('text-center table-type-field');
                     var tdLink = $('<td>');
                     tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.hash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
+                    tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
                     tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.hash));
                     tdOpType.html(type);
                     tdLink.html(link);
@@ -308,6 +309,7 @@ Ethplorer = {
                         var tdOpType = $('<td>').addClass('text-center table-type-field');
                         var tdQty = $('<td>').addClass('text-right');
                         tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
+                        tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
                         tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash));
                         tdOpType.html(tx.type === 'issuance' ? 'Issuance' : 'Burn');
                         tdQty.html((tx.type === 'issuance' ? '+' : '-') + Ethplorer.Utils.formatNum(qty, true, oToken.decimals ? oToken.decimals : 18, 2) + ((oToken.symbol) ? '&nbsp;' + oToken.symbol : ''));
@@ -367,7 +369,8 @@ Ethplorer = {
                         tdToken.addClass('address-token');
                         tdToken.html(token);
                         row.append(tdToken);
-                    }                    
+                    }
+                    tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
                     row.append(tdQty);
                     $('#' + tableId + ' .table').append(row);
                 }
