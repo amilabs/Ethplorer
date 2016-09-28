@@ -259,7 +259,7 @@ Ethplorer = {
                     var tdDate = $('<td>');
                     var tdHash = $('<td>').addClass('list-field table-hash-field');
                     // var tdOpType = $('<td>').addClass('text-center table-type-field');
-                    var tdLink = $('<td>').addClass('text-right');
+                    var tdLink = $('<td>');
                     tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.hash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
                     tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.hash));
                     // tdOpType.html('');
