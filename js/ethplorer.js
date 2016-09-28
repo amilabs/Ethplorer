@@ -232,6 +232,7 @@ Ethplorer = {
     },
 
     showAddressDetails: function(address, data){
+        // Temporary hack
         $('.address-type').text(data.isContract ? 'Contract' : 'Address');
         $('#address-issuances').hide();
         var tp = data.isContract ? 'Contract address ' : 'Address ';
@@ -240,6 +241,34 @@ Ethplorer = {
         data.balance = parseFloat(data.balance) * 1e+18;
         Ethplorer.fillValues('address', data, ['address', 'balance']);
         $('#address-token-balances, #address-token-details').hide();
+        console.log(data);
+        if(data.isContract && data.contract.isChainy){
+            var fields = ['contract', 'contract.txsCount'];
+            Ethplorer.fillValues('address', data, fields);
+            $('.address-type:eq(0)').text('Chainy');
+            if(data.chainy && data.chainy.length){
+                $('#address-chainy-tx').show();
+                for(var i=0; i<data.chainy.length; i++){
+                    var tx = data.chainy[i];
+                    var link = '';
+                    if(tx.link){
+                        link = Ethplorer.Utils.hex2ascii(tx.link);
+                        link = '<a href="' + link + '" target="_blank" class="external-link"><i class="fa fa-external-link"></i>&nbsp;' + link + '</a>';
+                    }
+                    var row = $('<tr>');
+                    var tdDate = $('<td>');
+                    var tdHash = $('<td>').addClass('list-field table-hash-field');
+                    // var tdOpType = $('<td>').addClass('text-center table-type-field');
+                    var tdLink = $('<td>').addClass('text-right');
+                    tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.hash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
+                    tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.hash));
+                    // tdOpType.html('');
+                    tdLink.html(link);
+                    row.append(tdDate, tdHash, /*tdOpType,*/ tdLink);
+                    $('#address-chainy-tx .table').append(row);
+                }
+            }            
+        }
         if(data.isContract && data.token){
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
@@ -632,7 +661,7 @@ Ethplorer = {
         },
 
         parseJData: function(hex){
-            var str = Ethplorer.Utils.hex2ascii(hex.slice(8));
+            var str = Ethplorer.Utils.hex2ascii(hex.slice(8)).replace('{{', '{');
             var res = false;
             var i1 = str.indexOf('{');
             var i2 = str.indexOf('}');

@@ -134,6 +134,35 @@ class Etherscan {
             $result['contract'] = $contract;
             if($token = $this->getToken($address)){
                 $result["token"] = $token;
+            }else{
+                // Temporary Chainy workaround
+                if($address === '0xf3763c30dd6986b53402d41a8552b8f7f6a6089b'){
+                    $result['contract']['isChainy'] = true;
+                    $result['chainy'] = array();
+                    $total = $this->dbs['transactions']->count(array("to" => $address));
+                    $result['contract']['txsCount'] = $total;
+                    $cursor = $this->dbs['transactions']
+                        ->find(array("to" => $address))
+                            ->sort(array("timestamp" => -1))
+                            ->limit(10);
+                    $fetches = 0;
+                    foreach($cursor as $tx){
+                        $link = substr($tx['receipt']['logs'][0]['data'], 192);
+                        $link = preg_replace("/0+$/", "", $link);
+                        if((strlen($link) % 2) !== 0){
+                            $link = $link + '0';
+                        }
+                        if($tx['hasReceipt'] && !empty($tx['receipt']['logs'])){
+                            $result['chainy'][] = array(
+                                'hash' => $tx['hash'],
+                                'timestamp' => $tx['timestamp'],
+                                'input' => $tx['input'],
+                                'link' => $link,
+                            );
+                        }
+                        $fetches++;
+                    }
+                }
             }
         }
         if($result['isContract'] && isset($result['token'])){
