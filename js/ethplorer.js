@@ -250,21 +250,33 @@ Ethplorer = {
                 $('#address-chainy-tx').show();
                 for(var i=0; i<data.chainy.length; i++){
                     var tx = data.chainy[i];
+                    var type = '';
                     var link = '';
                     if(tx.link){
+                        var obj = Ethplorer.Utils.parseJData(tx.input);
+                        if(false !== obj){
+                            var chainyTypes = {
+                                'R': 'Redirect',
+                                'T': 'Text',
+                                'H': 'Hash',
+                                'L': 'File Hash',
+                                'E': 'Encrypted'
+                            };
+                            type = chainyTypes[obj.type];
+                        }
                         link = Ethplorer.Utils.hex2ascii(tx.link);
                         link = '<a href="' + link + '" target="_blank" class="external-link"><i class="fa fa-external-link"></i>&nbsp;' + link + '</a>';
                     }
                     var row = $('<tr>');
                     var tdDate = $('<td>');
                     var tdHash = $('<td>').addClass('list-field table-hash-field');
-                    // var tdOpType = $('<td>').addClass('text-center table-type-field');
+                    var tdOpType = $('<td>').addClass('text-center table-type-field');
                     var tdLink = $('<td>');
                     tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.hash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
                     tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.hash));
-                    // tdOpType.html('');
+                    tdOpType.html(type);
                     tdLink.html(link);
-                    row.append(tdDate, tdHash, /*tdOpType,*/ tdLink);
+                    row.append(tdDate, tdHash, tdOpType, tdLink);
                     $('#address-chainy-tx .table').append(row);
                 }
             }            
@@ -361,7 +373,7 @@ Ethplorer = {
                 }
             }
         }
-
+        $('.local-time-offset').text(Ethplorer.Utils.getTZOffset());
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
         $('#disqus_thread').show();
@@ -628,16 +640,20 @@ Ethplorer = {
             function padZero(s){
                 return (s < 10) ? '0' + s : s.toString();
             }        
-            var offset = -Math.round(new Date().getTimezoneOffset() / 60);
             var res = '';
             var dt = new Date(ts);
             res += (dt.getFullYear() + '-' + padZero((dt.getMonth() + 1)) + '-' + padZero(dt.getDate()));
             res += ' ';
             res += (padZero(dt.getHours()) + ':' + padZero(dt.getMinutes()) + ':' + padZero(dt.getSeconds()));
             if(withGMT){
-                res += (' (GMT' + (offset > 0 ? '+' : '-') + offset + ')');
+                res += (' (' + Ethplorer.Utils.getTZOffset() + ')');
             }
             return res;
+        },
+
+        getTZOffset: function(){
+            var offset = -Math.round(new Date().getTimezoneOffset() / 60);
+            return 'GMT' + (offset > 0 ? '+' : '-') + offset;
         },
 
         hideEmptyFields: function(){

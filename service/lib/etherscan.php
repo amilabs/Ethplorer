@@ -152,14 +152,14 @@ class Etherscan {
                         if((strlen($link) % 2) !== 0){
                             $link = $link + '0';
                         }
-                        if($tx['hasReceipt'] && !empty($tx['receipt']['logs'])){
+                        //if($tx['hasReceipt'] && !empty($tx['receipt']['logs'])){
                             $result['chainy'][] = array(
                                 'hash' => $tx['hash'],
                                 'timestamp' => $tx['timestamp'],
                                 'input' => $tx['input'],
                                 'link' => $link,
                             );
-                        }
+                        //}
                         $fetches++;
                     }
                 }

@@ -228,6 +228,13 @@ td.list-field {
     text-overflow: ellipsis
 }
 
+small {
+    margin-top: -10px;
+    display: block;
+    padding-left: 16px;
+    color: white;
+}
+
 /* Timer*/
 .timer{
     width: 47px;
