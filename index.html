@@ -17,7 +17,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-    <script src="/js/jquery.jsonrpc.js"></script>
+    <script src="/js/bignumber.js"></script>
     <script src="/js/ethplorer.js"></script>
     <script src="/cfg/config.ethplorer.js"></script>
 </head>
@@ -57,6 +57,37 @@
                 </div>
                 
                 <div id="txDetails" class="content-page">
+                    <div class="col-xs-12 col-md-6 chainy">
+                        <div class="block">
+                            <div class="block-header"><h3>Chainy <span id="chainy-op"><span></h3></div>
+                            <table class="table">
+                            <tr>
+                                <td>URL</td>
+                                <td id="chainy-url" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>SHA256 Hash</td>
+                                <td id="chainy-hash" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Filename</td>
+                                <td id="chainy-filename" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Filesize</td>
+                                <td id="chainy-filesize" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Data</td>
+                                <td id="chainy-message" class="list-field" style="white-space: normal !important;"></td>
+                            </tr>
+                            <tr class="blue">
+                                <td>Short Link</td>
+                                <td id="chainy-link" class="list-field"></td>
+                            </tr>
+                            </table>
+                        </div>
+                    </div>
                     <div class="col-xs-12 col-md-6 token-related">
                         <div class="block">
                             <div class="block-header"><h3><span class="token-name"></span> <span class="token-operation-type"></span></h3></div>
@@ -182,8 +213,8 @@
                             <tr>
                                 <td>Input Data</td>
                                 <td class="text-right">
-                                    <a onclick="Ethplorer.convert('transaction-tx-data', this);" class="pre-switcher">ASCII</a>
-                                    <pre id="transaction-tx-data" class="list-field text-left" data-mode="hex"></pre>
+                                    <a onclick="Ethplorer.convert('transaction-tx-input', this);" class="pre-switcher">ASCII</a>
+                                    <pre id="transaction-tx-input" class="list-field text-left" data-mode="hex"></pre>
                                 </td>
                             </tr>
                             <tr id="tx-status">
@@ -210,7 +241,11 @@
                             </tr>                               
                             <tr>
                                 <td>Transactions</td>
-                                <td id="address-txCount" data-type="int" class="list-field"></td>
+                                <td id="address-token-txsCount" data-type="int" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Transactions</td>
+                                <td id="address-contract-txsCount" data-type="int" class="list-field"></td>
                             </tr>
                             </table>
                         </div>
@@ -250,32 +285,32 @@
                             <div class="block-header"><h3>Token <span class="address-token-name"></span> Issuances</h3></div>
                             <table class="table"></table>
                         </div>
+                        <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
+                    </div>
+                    <div class="col-xs-12" id="address-token-transfers" style="display:none;">
+                        <div class="block">
+                            <div class="block-header"><h3>Token <span class="address-token-name"></span> Last 50 Transfers</h3></div>
+                            <table class="table"></table>
+                            <div id="address-token-transfers-more" class="text-center"></div>
+                        </div>
+                        <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
+                    </div>
+                    <div class="col-xs-12" id="address-transfers" style="display:none;">
+                        <div class="block">
+                            <div class="block-header"><h3>Last 50 Transfers</h3></div>
+                            <table class="table"></table>
+                            <div id="address-transfers-more" class="text-center"></div>
+                        </div>
+                        <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
+                    </div>
+                    <div class="col-xs-12" id="address-chainy-tx" style="display:none;">
+                        <div class="block">
+                            <div class="block-header"><h3>Last 50 Chainy Transactions</h3></div>
+                            <table class="table"></table>
+                        </div>
+                        <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
                     </div>
                 </div>
-
-                <div id="txSearchForm" class="content-page">
-                    <h1>Get Transaction Details</h1>
-                    <form id="getTxDetails" role="form">
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="hash">Tx Hash</label>
-                              <input type="text" class="form-control" id="hash" name="hash" value=""/>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <label for="abi">ABI</label>
-                              <textarea rows="4" cols="50" class="form-control" id="abi" name="abi"></textarea>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="form-group col-xs-6">
-                                <button type="button" class="btn btn-primary btn-block" onClick="processTxDetailsForm();">Submit</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-    
             </div>
         </div>
     </div>
