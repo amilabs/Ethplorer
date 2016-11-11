@@ -144,7 +144,7 @@ class Etherscan {
                     $cursor = $this->dbs['transactions']
                         ->find(array("to" => $address))
                             ->sort(array("timestamp" => -1))
-                            ->limit(10);
+                            ->limit(50);
                     $fetches = 0;
                     foreach($cursor as $tx){
                         $link = substr($tx['receipt']['logs'][0]['data'], 192);
@@ -166,8 +166,8 @@ class Etherscan {
             }
         }
         if($result['isContract'] && isset($result['token'])){
-            $result["transfers"] = $this->getContractTransfers($address);
-            $result["issuances"] = $this->getContractIssuances($address);
+            $result["transfers"] = $this->getContractTransfers($address, 50);
+            $result["issuances"] = $this->getContractIssuances($address, 50);
         }
         if(!isset($result['token'])){
             // Get balances
@@ -179,7 +179,7 @@ class Etherscan {
                     $result["tokens"][$balance["contract"]] = $balanceToken;
                 }
             }
-            $result["transfers"] = $this->getAddressTransfers($address);
+            $result["transfers"] = $this->getAddressTransfers($address, 50);
         }
         return $result;
     }

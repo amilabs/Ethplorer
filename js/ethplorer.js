@@ -375,6 +375,9 @@ Ethplorer = {
                     $('#' + tableId + ' .table').append(row);
                 }
             }
+            if(50 == data.transfers.length){
+                $('#address-transfers-more').html(Ethplorer.Utils.getEtherscanLink(address, 'View full history', false));
+            }
         }
         $('.local-time-offset').text(Ethplorer.Utils.getTZOffset());
         Ethplorer.Utils.hideEmptyFields();
