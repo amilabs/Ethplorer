@@ -376,7 +376,7 @@ Ethplorer = {
                 }
             }
             if(50 == data.transfers.length){
-                $('#address-transfers-more').html(Ethplorer.Utils.getEtherscanLink(address, 'View full history', false));
+                $('#address-transfers-more, #address-token-transfers-more').html(Ethplorer.Utils.getEtherscanLink(address, 'View full history', false));
             }
         }
         $('.local-time-offset').text(Ethplorer.Utils.getTZOffset());
