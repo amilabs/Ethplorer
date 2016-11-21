@@ -677,9 +677,13 @@ Ethplorer = {
         },
 
         hex2ascii: function(data){
-            return data.match(/.{1,2}/g).map(function(v){
-                return String.fromCharCode(parseInt(v, 16));
-            }).join('');
+            var res = '';
+            try {
+                res = data.match(/.{1,2}/g).map(function(v){
+                    return String.fromCharCode(parseInt(v, 16));
+                }).join('');
+            } catch(e) {}
+            return res;
         },
 
         parseJData: function(hex){
