@@ -229,7 +229,7 @@ class Etherscan {
             }
         }
         if(is_array($result) && is_array($tx)){
-            $result['tx']['confirmations'] = $this->oCache->get('lastBlock') - $tx['blockNumber'];
+            $result['tx']['confirmations'] = $this->oCache->get('lastBlock') - $tx['blockNumber'] + 1;
         }
         return $result;
     }
