@@ -241,7 +241,7 @@ Ethplorer = {
         data.balance = parseFloat(data.balance) * 1e+18;
         Ethplorer.fillValues('address', data, ['address', 'balance']);
         $('#address-token-balances, #address-token-details').hide();
-        console.log(data);
+        // console.log(data);
         if(data.isContract && data.contract.isChainy){
             var fields = ['contract', 'contract.txsCount'];
             Ethplorer.fillValues('address', data, fields);
@@ -547,6 +547,11 @@ Ethplorer = {
             cutZeroes = !!cutZeroes;
             withDecimals = !!withDecimals;
             decimals = decimals || 2;
+            
+            if((num.toString().indexOf("e+") > 0)){
+                return num.toString();
+            }
+            
             if((num.toString().indexOf("e-") > 0) && withDecimals){
                 var parts = num.toString().split("e-");
                 var res = parts[0].replace('.', '');
@@ -665,6 +670,11 @@ Ethplorer = {
         hideEmptyFields: function(){
             $('.list-field').parents('TR').show();
             $('.list-field:empty').parents('TR').hide();
+            // Hide zero decimals
+            var decimals = parseInt($('#address-token-decimals').text());
+            if(!decimals){
+                $('#address-token-decimals').parent().hide();
+            }
         },
 
         ascii2hex: function(text){
