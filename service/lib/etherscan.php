@@ -20,6 +20,16 @@ require_once __DIR__ . '/profiler.php';
 
 class Etherscan {
 
+    /**
+     * Chainy contract address
+     */
+    const ADDRESS_CHAINY = '0xf3763c30dd6986b53402d41a8552b8f7f6a6089b';
+
+    /**
+     * Settings
+     *
+     * @var array
+     */
     protected $aSettings = array();
 
     /**
@@ -71,9 +81,11 @@ class Etherscan {
                 'blocks'       => $oDB->{"everex.eth.blocks"},
                 'contracts'    => $oDB->{"everex.eth.contracts"},
                 'tokens'       => $oDB->{"everex.erc20.contracts"},
+                'operations'   => $oDB->{"everex.erc20.operations"},
+                'balances'     => $oDB->{"everex.erc20.balances"},
+
                 'transfers'    => $oDB->{"everex.erc20.transfers"},
                 'issuances'    => $oDB->{"everex.erc20.issuances"},
-                'balances'     => $oDB->{"everex.erc20.balances"},
             );
         }else{
             throw new Exception("MongoClient class not found, php_mongo extension required");
@@ -116,12 +128,22 @@ class Etherscan {
     }
 
     /**
+     * Returns true if provided string is a chainy contract address.
+     *
+     * @param type $address
+     * @return bool
+     */
+    public function isChainyAddress($address){
+        return ($address === self::ADDRESS_CHAINY);
+    }
+
+    /**
      * Returns advanced address details.
      *
      * @param string $address
      * @return array
      */
-    public function getAddressDetails($address){
+    public function getAddressDetails($address, $limit = 50){
         $result = array(
             "isContract"    => false,
             "balance"       => $this->getBalance($address),
@@ -134,40 +156,13 @@ class Etherscan {
             $result['contract'] = $contract;
             if($token = $this->getToken($address)){
                 $result["token"] = $token;
-            }else{
-                // Temporary Chainy workaround
-                if($address === '0xf3763c30dd6986b53402d41a8552b8f7f6a6089b'){
-                    $result['contract']['isChainy'] = true;
-                    $result['chainy'] = array();
-                    $total = $this->dbs['transactions']->count(array("to" => $address));
-                    $result['contract']['txsCount'] = $total;
-                    $cursor = $this->dbs['transactions']
-                        ->find(array("to" => $address))
-                            ->sort(array("timestamp" => -1))
-                            ->limit(50);
-                    $fetches = 0;
-                    foreach($cursor as $tx){
-                        $link = substr($tx['receipt']['logs'][0]['data'], 192);
-                        $link = preg_replace("/0+$/", "", $link);
-                        if((strlen($link) % 2) !== 0){
-                            $link = $link + '0';
-                        }
-                        //if($tx['hasReceipt'] && !empty($tx['receipt']['logs'])){
-                            $result['chainy'][] = array(
-                                'hash' => $tx['hash'],
-                                'timestamp' => $tx['timestamp'],
-                                'input' => $tx['input'],
-                                'link' => $link,
-                            );
-                        //}
-                        $fetches++;
-                    }
-                }
+            }elseif($this->isChainyAddress($address)){
+                $result['chainy'] = $this->getChainyTransactions($limit);
             }
         }
         if($result['isContract'] && isset($result['token'])){
-            $result["transfers"] = $this->getContractTransfers($address, 50);
-            $result["issuances"] = $this->getContractIssuances($address, 50);
+            $result["transfers"] = $this->getContractTransfers($address, $limit);
+            $result["issuances"] = $this->getContractIssuances($address, $limit);
         }
         if(!isset($result['token'])){
             // Get balances
@@ -179,7 +174,7 @@ class Etherscan {
                     $result["tokens"][$balance["contract"]] = $balanceToken;
                 }
             }
-            $result["transfers"] = $this->getAddressTransfers($address, 50);
+            $result["transfers"] = $this->getAddressTransfers($address, $limit);
         }
         return $result;
     }
@@ -202,10 +197,8 @@ class Etherscan {
             if(isset($tx["creates"]) && $tx["creates"]){
                 $result["contracts"][] = $tx["creates"];
             }
-            // Chainy
             if(isset($tx['receipt']) && isset($tx['receipt']['logs']) && count($tx['receipt']['logs'])){
                 $result['log'] = $tx['receipt']['logs'][0];
-                // 0xdad5c3eecfdb62dd69e6e72053b88029e1d6277d4bc773c00fef243982adcb7d
             }
             $fromContract = $this->getContract($tx["from"]);
             if($fromContract){
@@ -215,15 +208,16 @@ class Etherscan {
                 $toContract = $this->getContract($tx["to"]);
                 if($toContract){
                     $result["contracts"][] = $tx["to"];
-                    if($token = $this->getToken($tx["to"])){
-                        $result["token"] = $token;
-                        $result["transfers"] = $this->getTransfers($hash);
-                        $result["issuances"] = $this->getIssuances($hash);
-                    }
-                    if(isset($result["issuances"]) && is_array($result["issuances"]) && count($result["issuances"])){
-                        $result["operation"] = $result["issuances"][0];
-                    }elseif(isset($result["transfers"]) && is_array($result["transfers"]) && count($result["transfers"])){
-                        $result["operation"] = $result["transfers"][0];
+                    $result["operations"] = $this->getOperations($hash);
+                    if(is_array($result["operations"]) && count($result["operations"])){
+                        foreach($result["operations"] as $operation){
+                            if($token = $this->getToken($operation['contract'])){
+                                $operation['type'] = ucfirst($operation['type']);
+                                $result["operation"] = $operation;
+                                $result["token"] = $token;
+                                break;
+                            }
+                        }
                     }
                 }
             }
@@ -271,6 +265,31 @@ class Etherscan {
         return $result;
     }
 
+
+    /**
+     * Returns list of transfers in specified transaction.
+     *
+     * @param string  $tx  Transaction hash
+     * @return array
+     */
+    public function getOperations($tx, $type = FALSE){
+        // evxProfiler::checkpoint('getOperations START [hash=' . $tx . ']');
+        $search = array("transactionHash" => $tx);
+        if($type){
+            $search['type'] = $type;
+        }
+        $cursor = $this->dbs['operations']->find($search);
+        $result = array();
+        while($cursor->hasNext()){
+            $res = $cursor->getNext();
+            unset($res["_id"]);
+            $res["success"] = true;
+            $result[] = $res;
+        }
+        // evxProfiler::checkpoint('getOperations FINISH [hash=' . $tx . ']');
+        return $result;
+    }
+
     /**
      * Returns list of transfers in specified transaction.
      *
@@ -278,18 +297,7 @@ class Etherscan {
      * @return array
      */
     public function getTransfers($tx){
-        // evxProfiler::checkpoint('getTransfer START [hash=' . $tx . ']');
-        $cursor = $this->dbs['transfers']->find(array("transactionHash" => $tx));
-        $result = array();
-        while($cursor->hasNext()){
-            $res = $cursor->getNext();
-            unset($res["_id"]);
-            $res["success"] = true;
-            $res["type"] = "transfer";
-            $result[] = $res;
-        }
-        // evxProfiler::checkpoint('getTransfer FINISH [hash=' . $tx . ']');
-        return $result;
+        return $this->getOperations($tx, 'transfer');
     }
 
     /**
@@ -299,18 +307,7 @@ class Etherscan {
      * @return array
      */
     public function getIssuances($tx){
-        // evxProfiler::checkpoint('getIssuances START [hash=' . $tx . ']');
-        $cursor = $this->dbs['issuances']->find(array("transactionHash" => $tx));
-        $result = array();
-        while($cursor->hasNext()){
-            $res = $cursor->getNext();
-            unset($res["_id"]);
-            $res["success"] = true;
-            $res["type"] = "issuance";
-            $result[] = $res;
-        }
-        // evxProfiler::checkpoint('getIssuances FINISH [hash=' . $tx . ']');
-        return $result;
+        return $this->getOperations($tx, 'issuance');
     }
 
     /**
@@ -341,10 +338,20 @@ class Etherscan {
      * @return array
      */
     public function getToken($address){
+        $aCustomTokens = array(
+            '0xc66ea802717bfb9833400264dd12c2bceaa34a6d' => array('name' => 'MKR', 'decimals' => 18),
+            '0x5c543e7ae0a1104f78406c340e9c64fd9fce5170' => array('name' => 'vSlice', 'decimals' => 18)
+        );
         // evxProfiler::checkpoint('getToken START [address=' . $address . ']');
         $aTokens = $this->getTokens();
         $result = isset($aTokens[$address]) ? $aTokens[$address] : false;
+        if(isset($aCustomTokens[$address])){
+            $result = array_merge($result, $aCustomTokens[$address]);
+        }
         if($result) unset($result["_id"]);
+        if(isset($result['decimals']) && !((int)$result['decimals'])){
+            // $result['decimals'] = 18;
+        }
         // evxProfiler::checkpoint('getToken FINISH [address=' . $address . ']');
         return $result;
     }
@@ -359,7 +366,13 @@ class Etherscan {
         // evxProfiler::checkpoint('getContract START [address=' . $address . ']');
         $cursor = $this->dbs['contracts']->find(array("address" => $address));
         $result = $cursor->hasNext() ? $cursor->getNext() : false;
-        if($result) unset($result["_id"]);
+        if($result){
+            unset($result["_id"]);
+            $result['txsCount'] = $this->dbs['transactions']->count(array("to" => $address));
+            if($this->isChainyAddress($address)){
+                $result['isChainy'] = true;
+            }
+        }
         // evxProfiler::checkpoint('getContract FINISH [address=' . $address . ']');
         return $result;
     }
@@ -372,7 +385,7 @@ class Etherscan {
      * @return array
      */
     public function getContractTransfers($address, $limit = 10){
-        return $this->getContractOperation('transfers', $address, $limit);
+        return $this->getContractOperation('transfer', $address, $limit);
     }
 
     /**
@@ -383,7 +396,7 @@ class Etherscan {
      * @return array
      */
     public function getContractIssuances($address, $limit = 10){
-        return $this->getContractOperation('issuances', $address, $limit);
+        return $this->getContractOperation('issuance', $address, $limit);
     }
 
     /**
@@ -428,10 +441,40 @@ class Etherscan {
      * @param int $limit       Maximum number of records
      * @return array
      */
+    public function getLastTransfers($limit = 10){
+        // evxProfiler::checkpoint('getAddressTransfers START [address=' . $address . ', limit=' . $limit . ']');
+        $cursor = $this->dbs['operations']
+            ->find(array('contract' => array('$ne' => '0x1f5006dff7e123d550abc8a4c46792518401fcaf'), 'type' => 'transfer'))
+            ->sort(array("timestamp" => -1))
+            ->limit($limit);
+        $result = array();
+        $fetches = 0;
+        foreach($cursor as $transfer){
+            var_dump($transfer['contract']);
+            $token = $this->getToken($transfer['contract']);
+            var_dump($token);
+            $transfer['token'] = $this->getToken($transfer['contract']);
+            unset($transfer["_id"]);
+            $result[] = $transfer;
+            $fetches++;
+        }
+        var_dump($result);
+        die();
+        // evxProfiler::checkpoint('getAddressTransfers FINISH [address=' . $address . '] with ' . $fetches . ' fetches]');
+        return $result;
+    }
+
+    /**
+     * Returns list of transfers made by specified address.
+     *
+     * @param string $address  Address
+     * @param int $limit       Maximum number of records
+     * @return array
+     */
     public function getAddressTransfers($address, $limit = 10){
         // evxProfiler::checkpoint('getAddressTransfers START [address=' . $address . ', limit=' . $limit . ']');
-        $cursor = $this->dbs['transfers']
-            ->find(array('$or' => array(array("from" => $address), array("to" => $address))))
+        $cursor = $this->dbs['operations']
+            ->find(array('$or' => array(array("from" => $address), array("to" => $address)), 'type' => 'transfer'))
                 ->sort(array("timestamp" => -1))
                 ->limit($limit);
         $result = array();
@@ -454,9 +497,9 @@ class Etherscan {
      * @return array
      */
     protected function getContractOperation($type, $address, $limit){
-        // evxProfiler::checkpoint('getContract ' . $type . ' START [address=' . $address . ', limit=' . $limit . ']');
-        $cursor = $this->dbs[$type]
-            ->find(array("contract" => $address))
+        // evxProfiler::checkpoint('getContractOperation ' . $type . ' START [address=' . $address . ', limit=' . $limit . ']');
+        $cursor = $this->dbs['operations']
+            ->find(array("contract" => $address, 'type' => $type))
                 ->sort(array("timestamp" => -1))
                 ->limit($limit);
         $result = array();
@@ -466,7 +509,39 @@ class Etherscan {
             $result[] = $transfer;
             $fetches++;
         }
-        // evxProfiler::checkpoint('getContract ' . $type . ' FINISH [address=' . $address . '] with ' . $fetches . ' fetches]');
+        // evxProfiler::checkpoint('getContractOperation ' . $type . ' FINISH [address=' . $address . '] with ' . $fetches . ' fetches]');
+        return $result;
+    }
+
+    /**
+     * Returns last Chainy transactions.
+     *
+     * @param  int $limit  Maximum number of records
+     * @return array
+     */
+    protected function getChainyTransactions($limit = 10){
+        // evxProfiler::checkpoint('getChainyTransactions START [limit=' . $limit . ']');
+        $result = array();
+        $cursor = $this->dbs['transactions']
+            ->find(array("to" => self::ADDRESS_CHAINY))
+            ->sort(array("timestamp" => -1))
+            ->limit($limit);
+        $fetches = 0;
+        foreach($cursor as $tx){
+            $link = substr($tx['receipt']['logs'][0]['data'], 192);
+            $link = preg_replace("/0+$/", "", $link);
+            if((strlen($link) % 2) !== 0){
+                $link = $link + '0';
+            }
+            $result[] = array(
+                'hash' => $tx['hash'],
+                'timestamp' => $tx['timestamp'],
+                'input' => $tx['input'],
+                'link' => $link,
+            );
+            $fetches++;
+        }
+        // evxProfiler::checkpoint('getChainyTransactions FINISH with ' . $fetches . ' fetches]');
         return $result;
     }
 
