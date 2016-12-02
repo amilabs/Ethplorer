@@ -459,16 +459,12 @@ class Etherscan {
         $result = array();
         $fetches = 0;
         foreach($cursor as $transfer){
-            var_dump($transfer['contract']);
             $token = $this->getToken($transfer['contract']);
-            var_dump($token);
             $transfer['token'] = $this->getToken($transfer['contract']);
             unset($transfer["_id"]);
             $result[] = $transfer;
             $fetches++;
         }
-        var_dump($result);
-        die();
         // evxProfiler::checkpoint('getAddressTransfers FINISH [address=' . $address . '] with ' . $fetches . ' fetches]');
         return $result;
     }
