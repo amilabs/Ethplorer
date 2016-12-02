@@ -165,10 +165,12 @@ Ethplorer = {
 
         Ethplorer.fillValues('transaction', txData, ['tx', 'tx.from', 'tx.to', 'tx.creates', 'tx.value', 'tx.timestamp', 'tx.gasLimit', 'tx.gasUsed', 'tx.gasPrice', 'tx.fee', 'tx.nonce', 'tx.blockNumber', 'tx.confirmations', 'tx.input']);
 
+
+        console.log(txData);
         if(txData.token){
             var oToken = Ethplorer.prepareToken(txData.token);
-            $('.token-name:eq(0)').html(Ethplorer.Utils.getEthplorerLink(txData.tx.to, ('N/A' !== oToken.name) ? oToken.name : '[ERC20]', false));
-            $('.token-name:eq(1)').html(Ethplorer.Utils.getEthplorerLink(txData.tx.to, oToken.name , false));
+            $('.token-name:eq(0)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, ('N/A' !== oToken.name) ? oToken.name : '[ERC20]', false));
+            $('.token-name:eq(1)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, oToken.name , false));
             txData.token = oToken;
 
             Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);

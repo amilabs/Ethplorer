@@ -211,6 +211,9 @@ class Etherscan {
                     $result["operations"] = $this->getOperations($hash);
                     if(is_array($result["operations"]) && count($result["operations"])){
                         foreach($result["operations"] as $operation){
+                            if($operation['contract'] !== $tx["to"]){
+                                $result["contracts"][] = $operation['contract'];
+                            }
                             if($token = $this->getToken($operation['contract'])){
                                 $operation['type'] = ucfirst($operation['type']);
                                 $result["operation"] = $operation;
@@ -340,17 +343,23 @@ class Etherscan {
     public function getToken($address){
         $aCustomTokens = array(
             '0xc66ea802717bfb9833400264dd12c2bceaa34a6d' => array('name' => 'MKR', 'decimals' => 18),
+            '0x1f5006dff7e123d550abc8a4c46792518401fcaf' => array('decimals' => 18),
             '0x5c543e7ae0a1104f78406c340e9c64fd9fce5170' => array('name' => 'vSlice', 'decimals' => 18)
         );
         // evxProfiler::checkpoint('getToken START [address=' . $address . ']');
         $aTokens = $this->getTokens();
         $result = isset($aTokens[$address]) ? $aTokens[$address] : false;
-        if(isset($aCustomTokens[$address])){
-            $result = array_merge($result, $aCustomTokens[$address]);
-        }
-        if($result) unset($result["_id"]);
-        if(isset($result['decimals']) && !((int)$result['decimals'])){
-            // $result['decimals'] = 18;
+        if($result){
+            unset($result["_id"]);
+            if(isset($aCustomTokens[$address])){
+                $result = array_merge($result, $aCustomTokens[$address]);
+            }
+            if(!isset($result['decimals'])  ){
+                $result['decimals'] = 0;
+            }
+            if(!isset($result['symbol'])  ){
+                $result['symbol'] = "";
+            }
         }
         // evxProfiler::checkpoint('getToken FINISH [address=' . $address . ']');
         return $result;
@@ -444,7 +453,7 @@ class Etherscan {
     public function getLastTransfers($limit = 10){
         // evxProfiler::checkpoint('getAddressTransfers START [address=' . $address . ', limit=' . $limit . ']');
         $cursor = $this->dbs['operations']
-            ->find(array('contract' => array('$ne' => '0x1f5006dff7e123d550abc8a4c46792518401fcaf'), 'type' => 'transfer'))
+            ->find(array('type' => 'transfer'))
             ->sort(array("timestamp" => -1))
             ->limit($limit);
         $result = array();
