@@ -9,6 +9,10 @@
     color: white;
     font-size: 1.3em;
 }
+.txs-loading {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
 .tx-send {
     max-width: 120px;
     overflow: hidden;
