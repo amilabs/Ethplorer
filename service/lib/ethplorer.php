@@ -18,7 +18,7 @@
 require_once __DIR__ . '/cache.php';
 require_once __DIR__ . '/profiler.php';
 
-class Etherscan {
+class Ethplorer {
 
     /**
      * Chainy contract address
@@ -42,7 +42,7 @@ class Etherscan {
     /**
      * Singleton instance.
      *
-     * @var Etherscan
+     * @var Ethplorer
      */
     protected static $oInstance;
 
@@ -102,7 +102,7 @@ class Etherscan {
      */
     public static function db(array $aConfig = array()){
         if(is_null(self::$oInstance)){
-            self::$oInstance = new Etherscan($aConfig);
+            self::$oInstance = new Ethplorer($aConfig);
         }
         return self::$oInstance;
     }

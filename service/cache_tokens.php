@@ -15,6 +15,6 @@
  * limitations under the License.
  */
 
-require dirname(__FILE__) . '/lib/etherscan.php';
+require dirname(__FILE__) . '/lib/ethplorer.php';
 
-Etherscan::db(require_once dirname(__FILE__) . '/config.php')->getTokens(true);
+Ethplorer::db(require_once dirname(__FILE__) . '/config.php')->getTokens(true);

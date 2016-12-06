@@ -18,9 +18,9 @@
 // Allow cross-domain ajax requests
 header('Access-Control-Allow-Origin: *');
 
-require dirname(__FILE__) . '/../service/lib/etherscan.php';
+require dirname(__FILE__) . '/../service/lib/ethplorer.php';
 
-$es = Etherscan::db(require_once dirname(__FILE__) . '/../service/config.php');
+$es = Ethplorer::db(require_once dirname(__FILE__) . '/../service/config.php');
 
 $command = isset($_GET["cmd"]) ? $_GET["cmd"] : false;
 

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-require dirname(__FILE__) . '/lib/etherscan.php';
+require dirname(__FILE__) . '/lib/ethplorer.php';
 
-$es = Etherscan::db(require_once dirname(__FILE__) . '/config.php');
+$es = Ethplorer::db(require_once dirname(__FILE__) . '/config.php');
 
 $data = isset($_GET["data"]) ? $_GET["data"] : false;
 
