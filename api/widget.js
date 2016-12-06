@@ -1,6 +1,5 @@
 ethplorerWidget = {
-//    url: 'https://ethplorer.io',
-    url: 'http://ethplorer',
+    url: 'https://ethplorer.io',
 
     last: false,
 
