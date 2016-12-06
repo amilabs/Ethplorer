@@ -218,7 +218,7 @@ ethplorerWidget = {
             }
             var parts = num.toString().split('.');
             var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-            var zeroCount = cutZeroes ? 0 : decimals;
+            var zeroCount = cutZeroes ? 2 : decimals;
             if(withDecimals && decimals){
                 if(parts.length > 1){
                     res += '.';
