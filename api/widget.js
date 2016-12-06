@@ -30,7 +30,7 @@ ethplorerWidget = {
         $('body').append('<link rel="stylesheet" href="' + ethplorerWidget.url + '/api/widget.css" type="text/css" />')
 
         $(selector).addClass('widget-txs');
-        $(selector).html('Loading...');
+        ethplorerWidget.el.html('<div class="txs-header">Latest token transactions</div><div class="txs-loading">Loading...</div>');
         ethplorerWidget.load();
 
         $(window).resize(ethplorerWidget.resize);
@@ -41,6 +41,7 @@ ethplorerWidget = {
     load: function(){
         $.getJSON(ethplorerWidget.url + '/api/index.php', {cmd: ethplorerWidget.type, limit: ethplorerWidget.options.limit}, function(data){
             if(data && !data.error){
+                $('.txs-loading').remove();
                 if(ethplorerWidget.last === data[0].timestamp){
                     // Skip redraw if nothing changed
                     return;
@@ -61,7 +62,7 @@ ethplorerWidget = {
                         from:  ethplorerWidget.Utils.link(tr.from, tr.from),
                         to: ethplorerWidget.Utils.link(tr.to, tr.to),
                         amount: ethplorerWidget.Utils.link(tr.token.address, amount, amount + ' ' + tr.token.symbol),
-                        token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol, amount + ' ' + tr.token.symbol)
+                        token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol, tr.token.symbol + ' ' + tr.token.address)
                     };
 
                     txTable += ethplorerWidget.tableRow(ethplorerWidget.templates.big, rowData);
@@ -100,7 +101,7 @@ ethplorerWidget = {
                         from:  ethplorerWidget.Utils.link(tr.from, tr.from),
                         to: ethplorerWidget.Utils.link(tr.to, tr.to),
                         amount: ethplorerWidget.Utils.link(tr.token.address, amount, amount + ' ' + tr.token.symbol),
-                        token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol, amount + ' ' + tr.token.symbol)
+                        token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol, tr.token.symbol + ' ' + tr.token.address)
                     };
 
                     var bigRows = $(ethplorerWidget.tableRow(ethplorerWidget.templates.big, rowData));
@@ -217,7 +218,7 @@ ethplorerWidget = {
             }
             var parts = num.toString().split('.');
             var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-            var zeroCount = cutZeroes ? 2 : decimals;
+            var zeroCount = cutZeroes ? 0 : decimals;
             if(withDecimals && decimals){
                 if(parts.length > 1){
                     res += '.';
@@ -230,6 +231,7 @@ ethplorerWidget = {
                     res += padZero('.', parseInt(zeroCount) + 1);
                 }
             }
+            res = res.replace(/\.$/, '');
             return res;
         },
     }

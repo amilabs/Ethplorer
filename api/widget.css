@@ -6,9 +6,8 @@
 .txs-header {
     font-family: 'Open Sans', sans-serif;
     padding: 5px;
-    background-color: white;
-    border-color: white;
-    color: black;
+    color: white;
+    font-size: 1.3em;
 }
 .tx-send {
     max-width: 120px;
@@ -117,6 +116,9 @@ a.tx-link:hover {
     transition: all 1s cubic-bezier(.36,-0.64,.34,1.76);
 }
 @media screen and (max-width: 680px) {
+    .widget-txs {
+        max-width: 480px;
+    }
     .txs {
         display: none;
     }
