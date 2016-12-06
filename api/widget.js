@@ -39,7 +39,7 @@ ethplorerWidget = {
     },
 
     load: function(){
-        $.getJSON(ethplorerWidget.url + '/api', {cmd: ethplorerWidget.type, limit: ethplorerWidget.options.limit}, function(data){
+        $.getJSON(ethplorerWidget.url + '/api/', {cmd: ethplorerWidget.type, limit: ethplorerWidget.options.limit}, function(data){
             if(data && !data.error){
                 if(ethplorerWidget.last === data[0].timestamp){
                     // Skip redraw if nothing changed
@@ -82,7 +82,7 @@ ethplorerWidget = {
             return;
         }
         $('tr').removeClass('hidden new');
-        $.getJSON(ethplorerWidget.url + '/api', {cmd: ethplorerWidget.type, limit: ethplorerWidget.options.limit, timestamp: ethplorerWidget.last}, function(data){
+        $.getJSON(ethplorerWidget.url + '/api/', {cmd: ethplorerWidget.type, limit: ethplorerWidget.options.limit, timestamp: ethplorerWidget.last}, function(data){
             if(data && !data.error && data.length){
                 ethplorerWidget.last = data[0].timestamp;
                 var txTable = $(".txs.big");
