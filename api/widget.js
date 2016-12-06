@@ -1,5 +1,6 @@
 ethplorerWidget = {
-    url: 'https://ethplorer.io',
+//    url: 'https://ethplorer.io',
+    url: 'http://ethplorer',
 
     last: false,
 
@@ -39,7 +40,7 @@ ethplorerWidget = {
     },
 
     load: function(){
-        $.getJSON(ethplorerWidget.url + '/api/', {cmd: ethplorerWidget.type, limit: ethplorerWidget.options.limit}, function(data){
+        $.getJSON(ethplorerWidget.url + '/api/index.php', {cmd: ethplorerWidget.type, limit: ethplorerWidget.options.limit}, function(data){
             if(data && !data.error){
                 if(ethplorerWidget.last === data[0].timestamp){
                     // Skip redraw if nothing changed
@@ -57,11 +58,11 @@ ethplorerWidget = {
                     var amount = ethplorerWidget.Utils.formatNum(tr.value / k, true, parseInt(tr.token.decimals), true);
 
                     var rowData = {
-                        date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false)),
+                        date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false), tr.transactionHash),
                         from:  ethplorerWidget.Utils.link(tr.from, tr.from),
                         to: ethplorerWidget.Utils.link(tr.to, tr.to),
-                        amount: ethplorerWidget.Utils.link(tr.token.address, amount),
-                        token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol)
+                        amount: ethplorerWidget.Utils.link(tr.token.address, amount, amount + ' ' + tr.token.symbol),
+                        token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol, amount + ' ' + tr.token.symbol)
                     };
 
                     txTable += ethplorerWidget.tableRow(ethplorerWidget.templates.big, rowData);
@@ -69,7 +70,7 @@ ethplorerWidget = {
                 }
                 txSmall += '</table>';
                 txTable += '</table>';
-                ethplorerWidget.el.empty();
+                ethplorerWidget.el.html('<div class="txs-header">Latest token transactions</div>');
                 ethplorerWidget.el.append(txTable);
                 ethplorerWidget.el.append(txSmall);
                 setTimeout(ethplorerWidget.resize, 300);
@@ -82,7 +83,7 @@ ethplorerWidget = {
             return;
         }
         $('tr').removeClass('hidden new');
-        $.getJSON(ethplorerWidget.url + '/api/', {cmd: ethplorerWidget.type, limit: ethplorerWidget.options.limit, timestamp: ethplorerWidget.last}, function(data){
+        $.getJSON(ethplorerWidget.url + '/api/index.php', {cmd: ethplorerWidget.type, limit: ethplorerWidget.options.limit, timestamp: ethplorerWidget.last}, function(data){
             if(data && !data.error && data.length){
                 ethplorerWidget.last = data[0].timestamp;
                 var txTable = $(".txs.big");
@@ -96,11 +97,11 @@ ethplorerWidget = {
                     var amount = ethplorerWidget.Utils.formatNum(tr.value / k, true, parseInt(tr.token.decimals), true);
 
                     var rowData = {
-                        date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false)),
+                        date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false), tr.transactionHash),
                         from:  ethplorerWidget.Utils.link(tr.from, tr.from),
                         to: ethplorerWidget.Utils.link(tr.to, tr.to),
-                        amount: ethplorerWidget.Utils.link(tr.token.address, amount),
-                        token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol)
+                        amount: ethplorerWidget.Utils.link(tr.token.address, amount, amount + ' ' + tr.token.symbol),
+                        token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol, amount + ' ' + tr.token.symbol)
                     };
 
                     var bigRows = $(ethplorerWidget.tableRow(ethplorerWidget.templates.big, rowData));
@@ -146,9 +147,10 @@ ethplorerWidget = {
     },
 
     Utils: {
-        link: function(data, text){
+        link: function(data, text, title){
+            title = title || text;
             var linkType = (data && (42 === data.toString().length)) ? 'address' : 'tx';
-            return '<a class="tx-link" href="' + ethplorerWidget.url + '/' + linkType + '/' + data + '" target="_blank">' + text + '</a>';
+            return '<a class="tx-link" href="' + ethplorerWidget.url + '/' + linkType + '/' + data + '" title="' + title + '" target="_blank">' + text + '</a>';
         },
 
         // Date with fixed GMT to local date
@@ -215,7 +217,7 @@ ethplorerWidget = {
                 num = math('round', num, decimals);
             }
             var parts = num.toString().split('.');
-            var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
             var zeroCount = cutZeroes ? 2 : decimals;
             if(withDecimals && decimals){
                 if(parts.length > 1){

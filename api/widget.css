@@ -3,16 +3,12 @@
     border: 0 !important;
     border-collapse: collapse;
 }
-.txs-head {
-    background-color: white;
-    border-color: white;
-}
-.txs-head td {
+.txs-header {
+    font-family: 'Open Sans', sans-serif;
     padding: 5px;
     background-color: white;
     border-color: white;
     color: black;
-    font-weight: 600 !important;
 }
 .tx-send {
     max-width: 120px;
@@ -31,7 +27,6 @@
     text-overflow: ellipsis !important;
     color: #47C2FF !important;
     border: 0 !important;
-    background-color: black;
     padding-left: 5px;
     padding-right: 5px;
 }
@@ -39,23 +34,18 @@
     padding-top: 0px;
     font-size: 14px;
 }
-
-.tx-token a {
-    text-decoration: none !important;
+.tx-token {
+    min-width: 32px;
 }
-
 .txs.small .tx-send, .txs.small .tx-date {
     padding-top: 5px;
 }
-
 .txs.small .tx-amount {
     padding-bottom: 5px;
 }
-
 .txs.small tr td:nth-child(2) {
     text-align: right;
 }
-
 .tx-date {
     max-width: 80px;
     text-align: center;
@@ -63,7 +53,6 @@
 .tx-hash {
     max-width: 80px;
 }
-
 a.tx-link, a.tx-link:visited, a.tx-link:hover {
     color: #47C2FF !important;
     display: inline-block;
@@ -71,11 +60,9 @@ a.tx-link, a.tx-link:visited, a.tx-link:hover {
     overflow: hidden;
     text-overflow: ellipsis !important;
 }
-
 .txs.small .tx-link {
     max-width: 140px;
 }
-
 .tx-hash a.tx-link, .tx-hash a.tx-link:visited, .tx-hash a.tx-link:hover {
     color: #47C2FF !important;
     display: inline-block;
@@ -83,50 +70,52 @@ a.tx-link, a.tx-link:visited, a.tx-link:hover {
     overflow: hidden;
     text-overflow: ellipsis !important;
 }
+a.tx-link, a.tx-link:visited {
+   text-decoration: none !important;
+}
+a.tx-link:hover {
+   text-decoration: underline !important;
+}
 .tx-amount {
     text-align: right !important;    
 }
-
 .tx-amount a, .tx-amount a:visited, .tx-amount a:hover{
     max-width: 140px;
     overflow: hidden;
     text-overflow: ellipsis !important;
     color: white !important;
 }
-
 .txs.small .tx-amount {
     max-width: 200px;
 }
-
 .widget-txs {
     font-family: 'Open Sans', sans-serif;
     max-width: 700px;
     margin-left: auto;
     margin-right: auto;
-    padding: 4px;
-    background-color: black;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 10px;
+    background-color: rgba(0, 0, 0, 0.4);
     text-align: center;
-    margin-top: 16px;
+    margin-top: 32px;
     margin-bottom: 16px;
     color: #D0D0D0;
 }
-
 .txs.small {
     display: none;
 }
-
 .txs tr.hidden {
     transform: rotateX(-90deg);
-    transition: all 0.5s cubic-bezier(.36,-0.64,.34,1.76);    
+    transition: all 1s cubic-bezier(.36,-0.64,.34,1.76);    
     opacity: 0;
 }
-
 .txs tr.hidden.new {
     opacity: 1;
     transform: none;
-    transition: all 0.5s cubic-bezier(.36,-0.64,.34,1.76);
+    transition: all 1s cubic-bezier(.36,-0.64,.34,1.76);
 }
-
 @media screen and (max-width: 680px) {
     .txs {
         display: none;
