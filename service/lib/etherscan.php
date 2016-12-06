@@ -451,12 +451,23 @@ class Etherscan {
      * @param int $limit       Maximum number of records
      * @return array
      */
-    public function getLastTransfers($limit = 10){
+    public function getLastTransfers(array $options = array()){
         // evxProfiler::checkpoint('getAddressTransfers START [address=' . $address . ', limit=' . $limit . ']');
+        $search = array('type' => 'transfer');
+        $sort = array("timestamp" => -1);
+
+        if(isset($options['timestamp'])){
+            $search['timestamp'] = array('$gt' => $options['timestamp']);
+        }
+
         $cursor = $this->dbs['operations']
-            ->find(array('type' => 'transfer'))
-            ->sort(array("timestamp" => -1))
-            ->limit($limit);
+            ->find($search)
+            ->sort($sort);
+
+        if(isset($options['limit'])){
+            $cursor = $cursor->limit((int)$options['limit']);
+        }
+
         $result = array();
         $fetches = 0;
         foreach($cursor as $transfer){
@@ -481,8 +492,8 @@ class Etherscan {
         // evxProfiler::checkpoint('getAddressTransfers START [address=' . $address . ', limit=' . $limit . ']');
         $cursor = $this->dbs['operations']
             ->find(array('$or' => array(array("from" => $address), array("to" => $address)), 'type' => 'transfer'))
-                ->sort(array("timestamp" => -1))
-                ->limit($limit);
+            ->sort(array("timestamp" => -1))
+            ->limit($limit);
         $result = array();
         $fetches = 0;
         foreach($cursor as $transfer){

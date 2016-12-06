@@ -1,0 +1,26 @@
+media screen and (max-width: 400px) {
+  .t415__number {
+    font-size: 24px;
+  }
+}
+
+@media screen and (min-width: 640px) and (max-width: 1200px) {
+    .t269__title {
+        margin-top: 40px;
+    }
+}
+
+
+a, a:hover, a:visited {
+    text-decoration: underline !important;
+    color: white !important;
+}
+
+a.external, a.external:hover, a.external:visited {
+    text-decoration: underline !important;
+    color: #1396e2 !important;
+}
+
+a.t-btn {
+   color: black !important;
+}

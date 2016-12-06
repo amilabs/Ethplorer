@@ -23,19 +23,21 @@ require dirname(__FILE__) . '/../service/lib/etherscan.php';
 $es = Etherscan::db(require_once dirname(__FILE__) . '/../service/config.php');
 
 $command = isset($_GET["cmd"]) ? $_GET["cmd"] : false;
-$address = isset($_GET["address"]) ? $_GET["address"] : false;
-$limit = isset($_GET["limit"]) ? (int)$_GET["limit"] : 10;
 
 $result = array();
 
 if($command){
     switch($command){
         case 'last':
-            $result = $es->getLastTransfers($limit);
+            $options = array(
+                'limit'     => isset($_GET["limit"])     ? (int)$_GET["limit"]     : 10,
+                'timestamp' => isset($_GET["timestamp"]) ? (int)$_GET["timestamp"] : 0,
+            );
+            $result = $es->getLastTransfers($options);
             break;
         default:
-            $result['error'] = true;
-            $result['message'] = 'Unknown command';
+            $result['error']    = true;
+            $result['message']  = 'Unknown command';
     }
     echo json_encode($result);
 }
