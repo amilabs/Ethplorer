@@ -7,16 +7,17 @@ ethplorerWidget = {
         // Big table row
         big:    '<tr>' + 
                     '<td class="tx-field tx-date">%date%</td>' + 
-                    '<td class="tx-field"><span class="tx-send">from </span>%from%<span class="tx-send">to</span>%to%</td>' + 
+                    '<td class="tx-field tx-transfer"><span class="tx-send">from </span>%from%<span class="tx-send">to</span>%to%</td>' + 
                     '<td class="tx-field tx-amount">%amount%</td>' +
                     '<td class="tx-field tx-token">%token%</td>' +
                 '</tr>',
         // Small table row
         small:  '<tr>' +
                     '<td class="tx-field tx-date">%date%</td>' +
-                    '<td class="tx-field"><span class="tx-send">from </span>%from%</td>' +
+                    '<td class="tx-field tx-transfer"><span class="tx-send">from </span>%from%</td>' +
                 '</tr><tr>' +
-                    '<td class="tx-field">&nbsp;</td><td class="tx-field"><span class="tx-send">to</span>%to%</td>' +
+                    '<td class="tx-field">&nbsp;</td>' +
+                    '<td class="tx-field tx-transfer"><span class="tx-send">to</span>%to%</td>' +
                 '</tr><tr>' +
                     '<td colspan="2" class="tx-field tx-amount">%amount% <span class="tx-token">%token%</span></td>' +
                 '</tr>'
