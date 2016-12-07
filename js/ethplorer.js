@@ -725,7 +725,3 @@ Ethplorer = {
         },
     }
 };
-
-$(document).ready(function(){
-    Ethplorer.init();
-});
