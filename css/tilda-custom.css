@@ -27,20 +27,35 @@ a.t-btn {
     }
 }
 
+@media screen and (max-width: 980px){
+    .t269__title {
+        font-size: 50px;
+    }
+    .t454__maincontainer {
+        padding: 0 !important;
+    }
+}
+
 @media screen and (max-width: 639px) {
+    .t269__title {
+        font-size: 40px;
+    }
     .disclaimer {
         font-size: 14px;
     }
 }
 
 @media screen and (max-width: 400px) {
-  .t415__number {
-    font-size: 24px;
-  }
+    .t269__title {
+        font-size: 30px;
+    }
+    .t415__number {
+        font-size: 24px;
+    }
 }
 
-@media screen and (max-width: 980px){
-    .t454__maincontainer {
-        padding: 0 !important;
+@media screen and (max-width: 360px) {
+    .t269__mainwrapper {
+        padding: 0 10px;
     }
 }
