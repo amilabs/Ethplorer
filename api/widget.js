@@ -1,8 +1,7 @@
 ethplorerWidget = {
-    url: 'https://ethplorer.io',
-
+    url: 'http://ethplorer',
     last: false,
-
+    refresh: false,
     templates: {
         // Big table row
         big:    '<tr>' + 
@@ -34,10 +33,80 @@ ethplorerWidget = {
         ethplorerWidget.load();
 
         $(window).resize(ethplorerWidget.resize);
-
-        setInterval(ethplorerWidget.loadMore, 15000);
+        ethplorerWidget.refresh = setInterval(ethplorerWidget.loadMore, 15000);
     },
+    refreshPlayPause: function(){
+        if(ethplorerWidget.refresh){
+            clearInterval(ethplorerWidget.refresh);
+            ethplorerWidget.refresh = false;
+            $('.txs-stop').html('&#9658;');
+            $('.txs-stop').attr('title', 'Start refresh');
+            $('.txs-stop').css('color', '#00ff00');
+        }else{
+            ethplorerWidget.refresh = setInterval(ethplorerWidget.loadMore, 15000);
+            $('.txs-stop').html('&#10074;&#10074;');
+            $('.txs-stop').attr('title', 'Pause refresh');
+            $('.txs-stop').css('color', 'yellow');
+        };
+    },
+    addRandom: function(){
+        var tokens = ['', '✿', 'XYZ', 'Token', 'Token Name', 'Long Token Name', 'Very Long Token Name'];
+        function randomHex(len){
+            var res = '0x';
+            var letters = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
+            for(var i=0; i<len; i++){
+                res += letters[Math.floor(Math.random() * letters.length)];
+            }
+            return res;
+        }
+        var hash = randomHex(64);
+        var from = randomHex(40);
+        var to = randomHex(40);
+        var contract = randomHex(40);
+        var token = tokens[Math.floor(Math.random() * tokens.length)];
+        var decimals = Math.round(Math.random() * 18);
+        var value = Math.random() * 1e+18;
+        var k = Math.pow(10, decimals);
+        if(Math.random() < 0.6){
+            decimals = 2;
+        }
+        var amount = ethplorerWidget.Utils.formatNum(value / k, true, decimals, true);        
+        
+        var rowData = {
+            date: ethplorerWidget.Utils.link(hash, ethplorerWidget.Utils.ts2date(new Date().getTime() / 1000, false), hash),
+            from:  ethplorerWidget.Utils.link(from, from),
+            to: ethplorerWidget.Utils.link(to, to),
+            amount: ethplorerWidget.Utils.link(contract, amount, amount + ' ' + token),
+            token: ethplorerWidget.Utils.link(contract, token, token + ' ' + contract)
+        };
+        var txTable = $(".txs.big");
+        var txSmall = $(".txs.small");
+        var bigRows = $(ethplorerWidget.tableRow(ethplorerWidget.templates.big, rowData));
+        var smallRows = $(ethplorerWidget.tableRow(ethplorerWidget.templates.small, rowData));
+        bigRows.addClass('hidden');
+        smallRows.addClass('hidden');
+        txTable.prepend(bigRows);
+        txSmall.prepend(smallRows);
+        setTimeout(function(){ $('.hidden').addClass('new'); }, 200);
 
+        var limit = ethplorerWidget.options.limit ? ethplorerWidget.options.limit : 10;
+        var rowsToKill = limit * bigRows.length;
+        if(rowsToKill){
+            txTable.find('tr').each(function(i){
+                if(i >= rowsToKill){
+                    $(this).remove();
+                }
+            });
+        }
+        var rowsToKill = limit * smallRows.length;
+        if(rowsToKill){
+            txSmall.find('tr').each(function(i){
+                if(i >= rowsToKill){
+                    $(this).remove();
+                }
+            });
+        }
+    },
     load: function(){
         $.getJSON(ethplorerWidget.url + '/api/index.php', {cmd: ethplorerWidget.type, limit: ethplorerWidget.options.limit}, function(data){
             if(data && !data.error){
@@ -50,29 +119,24 @@ ethplorerWidget = {
                 var txTable = '<table class="txs big">';
                 var txSmall = '<table class="txs small">';
                 for(var i=0; i<data.length; i++){
-                    var tr = data[i];
-                    if(!tr.token){
-                        tr.token = {symbol: "", decimals: 0};
-                    }
-                    var k = Math.pow(10, tr.token.decimals);
-                    var amount = ethplorerWidget.Utils.formatNum(tr.value / k, true, parseInt(tr.token.decimals), true);
-
-                    var rowData = {
-                        date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false), tr.transactionHash),
-                        from:  ethplorerWidget.Utils.link(tr.from, tr.from),
-                        to: ethplorerWidget.Utils.link(tr.to, tr.to),
-                        amount: ethplorerWidget.Utils.link(tr.token.address, amount, amount + ' ' + tr.token.symbol),
-                        token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol, tr.token.symbol + ' ' + tr.token.address)
-                    };
-
+                    var rowData = ethplorerWidget.prepareData(data[i]);
                     txTable += ethplorerWidget.tableRow(ethplorerWidget.templates.big, rowData);
                     txSmall += ethplorerWidget.tableRow(ethplorerWidget.templates.small, rowData);
                 }
                 txSmall += '</table>';
                 txTable += '</table>';
-                ethplorerWidget.el.html('<div class="txs-header">Latest token transactions</div>');
                 ethplorerWidget.el.append(txTable);
                 ethplorerWidget.el.append(txSmall);
+                // Debug mode
+                if(ethplorerWidget.options.debug){
+                    $(".txs-header").append('<div class="txs-debug"><div class="txs-stop"></div><div class="txs-add">&#10010;</div></div>');
+                    $('.txs-stop').click(ethplorerWidget.refreshPlayPause);
+                    $('.txs-stop').html('&#10074;&#10074;');
+                    $('.txs-stop').attr('title', 'Pause refresh');
+                    $('.txs-stop').css('color', 'yellow');
+                    $('.txs-add').click(ethplorerWidget.addRandom);
+                    $('.txs-add').attr('title', 'Add random');
+                }
                 setTimeout(ethplorerWidget.resize, 300);
             }
         });        
@@ -89,21 +153,7 @@ ethplorerWidget = {
                 var txTable = $(".txs.big");
                 var txSmall = $(".txs.small");
                 for(var i=0; i<data.length; i++){
-                    var tr = data[i];
-                    if(!tr.token){
-                        tr.token = {symbol: "", decimals: 0};
-                    }
-                    var k = Math.pow(10, tr.token.decimals);
-                    var amount = ethplorerWidget.Utils.formatNum(tr.value / k, true, parseInt(tr.token.decimals), true);
-
-                    var rowData = {
-                        date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false), tr.transactionHash),
-                        from:  ethplorerWidget.Utils.link(tr.from, tr.from),
-                        to: ethplorerWidget.Utils.link(tr.to, tr.to),
-                        amount: ethplorerWidget.Utils.link(tr.token.address, amount, amount + ' ' + tr.token.symbol),
-                        token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol, tr.token.symbol + ' ' + tr.token.address)
-                    };
-
+                    var rowData = ethplorerWidget.prepareData(data[i]);
                     var bigRows = $(ethplorerWidget.tableRow(ethplorerWidget.templates.big, rowData));
                     var smallRows = $(ethplorerWidget.tableRow(ethplorerWidget.templates.small, rowData));
                     bigRows.addClass('hidden');
@@ -112,7 +162,8 @@ ethplorerWidget = {
                     txSmall.prepend(smallRows);
                     setTimeout(function(){ $('.hidden').addClass('new'); }, 200);
 
-                    var rowsToKill = 10 * bigRows.length;
+                    var limit = ethplorerWidget.options.limit ? ethplorerWidget.options.limit : 10;
+                    var rowsToKill = limit * bigRows.length;
                     if(rowsToKill){
                         txTable.find('tr').each(function(i){
                             if(i >= rowsToKill){
@@ -120,7 +171,7 @@ ethplorerWidget = {
                             }
                         });
                     }
-                    var rowsToKill = 10 * smallRows.length;
+                    var rowsToKill = limit * smallRows.length;
                     if(rowsToKill){
                         txSmall.find('tr').each(function(i){
                             if(i >= rowsToKill){
@@ -132,8 +183,26 @@ ethplorerWidget = {
             }
         });        
     },
+    prepareData: function(tr){
+        if(!tr.token){
+            tr.token = {symbol: "", decimals: 0};
+        }
+        if(!tr.token.symbol && tr.token.name){
+            tr.token.symbol = tr.token.name;
+        }
+        var k = Math.pow(10, tr.token.decimals);
+        var amount = ethplorerWidget.Utils.formatNum(tr.value / k, true, parseInt(tr.token.decimals), true);
 
+        return {
+            date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false), tr.transactionHash),
+            from:  ethplorerWidget.Utils.link(tr.from, tr.from),
+            to: ethplorerWidget.Utils.link(tr.to, tr.to),
+            amount: ethplorerWidget.Utils.link(tr.token.address, amount, amount + ' ' + tr.token.symbol),
+            token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol, tr.token.symbol + ' ' + tr.token.address)
+        };
+    },
     resize: function(){
+        // Tilda hack
         var height = parseInt($('.t-cover__wrapper').height());
         $('.t-cover, .t-cover__carrier, .t-cover__wrapper, .t-cover__filter').height(height + 'px');
     },
