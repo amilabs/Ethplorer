@@ -107,6 +107,8 @@ Ethplorer = {
             $('#txEthStatus').html('Pending');
         }
 
+        var titleAdd = '';
+
         $('#tx-parsed').hide();
         if(oTx.input.length){
             oTx.input = oTx.input.toUpperCase().replace(/^0x/i, '');
@@ -128,6 +130,7 @@ Ethplorer = {
                         'L': 'File Hash',
                         'E': 'Encrypted'
                     };
+                    titleAdd = 'Chainy ' + chainyTypes[obj['type']];
                     $('#chainy-op').text(chainyTypes[obj['type']]);
                     if('undefined' !== typeof(obj['url'])){
                         $('#chainy-url').html('<a href="' + obj['url'] + '" target="_blank" class="external-link"><i class="fa fa-external-link"></i>&nbsp;' + obj['url'] + '</a>');
@@ -166,10 +169,11 @@ Ethplorer = {
         Ethplorer.fillValues('transaction', txData, ['tx', 'tx.from', 'tx.to', 'tx.creates', 'tx.value', 'tx.timestamp', 'tx.gasLimit', 'tx.gasUsed', 'tx.gasPrice', 'tx.fee', 'tx.nonce', 'tx.blockNumber', 'tx.confirmations', 'tx.input']);
 
 
-        console.log(txData);
         if(txData.token){
             var oToken = Ethplorer.prepareToken(txData.token);
-            $('.token-name:eq(0)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, ('N/A' !== oToken.name) ? oToken.name : '[ERC20]', false));
+            var tokenName = ('N/A' !== oToken.name) ? oToken.name : '[ERC20]';
+            titleAdd += (tokenName + ' ');
+            $('.token-name:eq(0)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, tokenName, false));
             $('.token-name:eq(1)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, oToken.name , false));
             txData.token = oToken;
 
@@ -182,6 +186,7 @@ Ethplorer = {
             
             if(txData.operation){
                 var oOperation = txData.operation;
+                titleAdd += oOperation['type'];
                 $('.token-operation-type').text(oOperation['type']);
                 if('undefined' !== typeof(oOperation.value)){
                     oOperation.value = Ethplorer.Utils.toBig(oOperation.value).div(Math.pow(10, oToken.decimals));
@@ -195,6 +200,7 @@ Ethplorer = {
                     $('#operation-status').addClass(oOperation.success ? 'green' : 'red');
                 }
             }else{
+                titleAdd += 'Operation';
                 $('.token-operation-type').text('Operation');
                 if(oTx.blockNumber){
                     $('#txTokenStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
@@ -209,6 +215,9 @@ Ethplorer = {
             }        
             Ethplorer.fillValues('transfer', txData, ['tx', 'tx.timestamp']);
         }
+
+        document.title += (': ' + (titleAdd ? (titleAdd + ' -') : ''));
+        document.title += (' hash ' + txHash);
 
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
@@ -234,6 +243,7 @@ Ethplorer = {
     },
 
     showAddressDetails: function(address, data){
+        var titleAdd = '';
         // Temporary hack
         $('.address-type').text(data.isContract ? 'Contract' : 'Address');
         $('#address-issuances').hide();
@@ -245,6 +255,7 @@ Ethplorer = {
         $('#address-token-balances, #address-token-details').hide();
         // console.log(data);
         if(data.isContract && data.contract.isChainy){
+            titleAdd = 'Chainy Information';
             var fields = ['contract', 'contract.txsCount'];
             Ethplorer.fillValues('address', data, fields);
             $('.address-type:eq(0)').text('Chainy');
@@ -303,6 +314,7 @@ Ethplorer = {
                 oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
                 oToken.description = oToken.description.replace(/\n/g, '<br />');                    
             }
+            titleAdd = 'Token ' + oToken.name + ' Information';
             $('.address-token-name').text(oToken.name);
             if(data.issuances && data.issuances.length){
                 $('#address-issuances').show();
@@ -387,6 +399,10 @@ Ethplorer = {
                 $('#address-transfers-more, #address-token-transfers-more').html(Ethplorer.Utils.getEtherscanLink(address, 'View full history', false));
             }
         }
+
+        document.title += (': ' + (titleAdd ? (titleAdd + ' -') : ''));
+        document.title += ((data.isContract ? ' contract ' : ' address ') + address);
+
         $('.local-time-offset').text(Ethplorer.Utils.getTZOffset());
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
