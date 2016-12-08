@@ -202,6 +202,15 @@ td.list-field {
     display: none;
 }
 
+.chainy-text {
+    font-size: 10px;
+    display: block;
+    margin-bottom: -7px;
+    opacity: 0.4;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
 .token-name a {
     color: #333 !important;
 }

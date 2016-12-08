@@ -256,6 +256,7 @@ Ethplorer = {
                     var link = '';
                     if(tx.link){
                         var obj = Ethplorer.Utils.parseJData(tx.input);
+                        console.log(obj);
                         if(false !== obj){
                             var chainyTypes = {
                                 'R': 'Redirect',
@@ -272,12 +273,17 @@ Ethplorer = {
                     var row = $('<tr>');
                     var tdDate = $('<td>');
                     var tdHash = $('<td>').addClass('list-field table-hash-field');
-                    var tdOpType = $('<td>').addClass('text-center table-type-field');
+                    var tdOpType = $('<td>').addClass('text-center table-type-field');                   
                     var tdLink = $('<td>');
                     tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.hash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
                     tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
                     tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.hash));
                     tdOpType.html(type);
+                    if('Text' === type){
+                        tdOpType.append('<span class="chainy-text"></span>');
+                        tdOpType.find('.chainy-text').text(obj.description.substr(0, 32));
+                        tdOpType.find('.chainy-text').attr('title', obj.description);
+                    }
                     tdLink.html(link);
                     row.append(tdDate, tdHash, tdOpType, tdLink);
                     $('#address-chainy-tx .table').append(row);
