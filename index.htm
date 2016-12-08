@@ -53,6 +53,12 @@
                 </div>
             </div>
             <style>
+                a.underline-onhover, a.underline-onhover:visited, a.underline-onhover:active {
+                    text-decoration: none !important;
+                }
+                a.underline-onhover:hover {
+                    text-decoration: underline !important;
+                }
                 @media screen and (max-width: 980px) {
                     #rec11846335 .t454__leftcontainer{
                         padding: 20px;
@@ -68,7 +74,12 @@
                 $(document).ready(function () {
                     t454_highlight();
                     t454_setBg('11846335');
-                    ethplorerWidget.init('#ethplorer-txs', 'last', {});                    
+                    ethplorerWidget.init('#ethplorer-txs', 'last', {
+                        onLoad: function(){
+                            $('.txs-viewmore a').css('visibility', 'visible');
+                            $('.txs-header').html('<a href="/last" class="underline-onhover">Latest token transactions</a>')
+                        }
+                    });                    
                 });
                 $(window).resize(function () {
                     t454_setBg('11846335');
@@ -134,10 +145,18 @@
                                             </div>
                                         </div>  
                                     </form>
-                                    <div id="ethplorer-txs"></div>
-                                    <div class="t269__hint t-descr t-descr_xxs" field="text" style="">
+                                    <div id="ethplorer-txs" style="padding-bottom:50px !important;"></div>
+                                    <div class="t269__hint t-descr t-descr_xxs txs-viewmore" field="text" style="margin-top:-53px;">
+                                        <a href="/last" style="visibility: hidden;font-size:16px;color:#47C2FF !important;text-decoration: none !important;">view more...</a>
+                                    </div>
+                                    <div class="t269__hint t-descr t-descr_xxs" field="text" style="margin-top:50px;">
                                         <span style="font-weight: 400;">
-                                            Do you need to view <a href="https://ethplorer.io/tx/0xbfbf64b792a1416a501cb4234a667be66a8a4dfaa460d703a15678545ff27811"><span style="color: rgb(255, 255, 255);"><u>custom data</u></span></a> or non-standart token? Ask us. <br /><br /><br />
+                                            Do you need to view 
+                                            <a href="https://ethplorer.io/tx/0xbfbf64b792a1416a501cb4234a667be66a8a4dfaa460d703a15678545ff27811" style="color: white;"><u>custom data</u></a> 
+                                            or non-standart token? 
+                                            <a href="https://docs.google.com/forms/d/e/1FAIpQLSemDE0-vqUnJ7ToRdt1qR95iTbaMfq0FRXt7INMMJrm1IO4dQ/viewform?c=0&w=1" style="color: #47C2FF !important;">Ask us</a>.
+                                        </span><br /><br /><br />
+                                        <span style="font-weight: 400;">
                                             <strong>Donation addresses: </strong><br />
                                             <strong>ETH</strong>: 0x0dE0BCb0703ff8F1aEb8C892eDbE692683bD8030 <br />
                                             <strong>BTC</strong>: 1MKVGqyJA9YkVRuDsGCvnYVJ6ivNtfe289 <br /><br />
@@ -148,6 +167,7 @@
                                                 <strong><u data-redactor-tag="u">Everex/CryptoKit</u></strong>
                                             </span>
                                         </a>
+                                        <br /><br /><br /><br />
                                     </div>
                                 </div>
                             </div>

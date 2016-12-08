@@ -139,6 +139,9 @@ ethplorerWidget = {
                     $('.txs-add').click(ethplorerWidget.addRandom);
                     $('.txs-add').attr('title', 'Add random');
                 }
+                if(ethplorerWidget.options.onLoad){
+                    ethplorerWidget.options.onLoad();
+                }
                 setTimeout(ethplorerWidget.resize, 300);
             }
         });        
