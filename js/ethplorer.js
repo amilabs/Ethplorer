@@ -321,7 +321,7 @@ Ethplorer = {
             }
             titleAdd = 'Token ' + oToken.name + ' Information';
             $('.address-token-name').text(oToken.name);
-            if(('N/A' === oToken.name) && Ethplorer.Config.updateLink){
+            if(Ethplorer.Config.updateLink){
                 $('.address-token-name:eq(0)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>')
             }
             if(data.issuances && data.issuances.length){
