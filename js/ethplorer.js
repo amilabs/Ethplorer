@@ -420,6 +420,9 @@ Ethplorer = {
         if(oToken.prepared){
             return oToken;
         }
+        if('undefined' === typeof(oToken.totalSupply)){
+            oToken.totalSupply = 0;
+        }
         oToken.totalSupply = Ethplorer.Utils.toBig(oToken.totalSupply);
         if(oToken.decimals){
             oToken.decimals = parseInt(Ethplorer.Utils.toBig(oToken.decimals).toString());
