@@ -159,6 +159,8 @@ Ethplorer = {
                         msg = msg + ' ' + obj.link;
                     }
                     var msgid = isChainy ? "#chainy-message" : '#transaction-tx-message';
+                    $(msgid).text(msg);
+                    msg = $(msgid).html();
                     msg = msg.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
                     msg = msg.replace(/\n/g, '<br />');
                     $(msgid).html(msg);
