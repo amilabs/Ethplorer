@@ -305,6 +305,11 @@ Ethplorer = {
                 }
             }            
         }
+        if(data.isContract){
+            console.log('CONTRACT');
+            console.log(data);
+            Ethplorer.fillValues('address', data, ['contract', 'contract.creator']);
+        }
         if(data.isContract && data.token){
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
