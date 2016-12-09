@@ -369,7 +369,7 @@ class Ethplorer {
         $result = $cursor->hasNext() ? $cursor->getNext() : false;
         if($result){
             unset($result["_id"]);
-            $result['txsCount'] = $this->dbs['transactions']->count(array("to" => $address));
+            $result['txsCount'] = $this->dbs['transactions']->count(array("to" => $address)) + 1;
             if($this->isChainyAddress($address)){
                 $result['isChainy'] = true;
             }
