@@ -346,11 +346,14 @@ class Ethplorer {
         $result = isset($aTokens[$address]) ? $aTokens[$address] : false;
         if($result){
             unset($result["_id"]);
-            if(!isset($result['decimals'])  ){
+            if(!isset($result['decimals'])){
                 $result['decimals'] = 0;
             }
-            if(!isset($result['symbol'])  ){
+            if(!isset($result['symbol'])){
                 $result['symbol'] = "";
+            }
+            if(isset($result['txsCount'])){
+                $result['txsCount'] = (int)$result['txsCount'] + 1;
             }
         }
         // evxProfiler::checkpoint('getToken FINISH [address=' . $address . ']');
