@@ -341,20 +341,11 @@ class Ethplorer {
      * @return array
      */
     public function getToken($address){
-        $aCustomTokens = array(
-            '0xc66ea802717bfb9833400264dd12c2bceaa34a6d' => array('name' => 'MKR', 'decimals' => 18),
-            '0x1f5006dff7e123d550abc8a4c46792518401fcaf' => array('decimals' => 18),
-            '0x5c543e7ae0a1104f78406c340e9c64fd9fce5170' => array('name' => 'vSlice', 'decimals' => 18),
-            '0xbb9bc244d798123fde783fcc1c72d3bb8c189413' => array('symbol' => 'DAO Tokens', 'decimals' => 16)
-        );
         // evxProfiler::checkpoint('getToken START [address=' . $address . ']');
         $aTokens = $this->getTokens();
         $result = isset($aTokens[$address]) ? $aTokens[$address] : false;
         if($result){
             unset($result["_id"]);
-            if(isset($aCustomTokens[$address])){
-                $result = array_merge($result, $aCustomTokens[$address]);
-            }
             if(!isset($result['decimals'])  ){
                 $result['decimals'] = 0;
             }
