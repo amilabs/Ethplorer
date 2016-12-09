@@ -414,21 +414,11 @@ Ethplorer = {
     },
 
     prepareToken: function(oToken){
-        var predefined = {
-            '0xbb9bc244d798123fde783fcc1c72d3bb8c189413': {name: 'The DAO', decimals: 16, symbol: 'DAO Tokens'},
-            '0xe0b7927c4af23765cb51314a0e0521a9645f0e2a': {name: 'DGD', decimals: 9, symbol: 'DGD'},
-            '0x74c1e4b8cae59269ec1d85d3d4f324396048f4ac': {name: 'BeerCoin', decimals: 0, symbol: ''}
-        }
         if(!oToken){
             oToken = {name: '', decimals: 0, symbol: '', totalSupply: 0};
         }
         if(oToken.prepared){
             return oToken;
-        }
-        if(oToken.address && ('undefined' !== typeof(predefined[oToken.address]))){
-            oToken.name = predefined[oToken.address].name;
-            oToken.decimals = predefined[oToken.address].decimals;
-            oToken.symbol = predefined[oToken.address].symbol;
         }
         oToken.totalSupply = Ethplorer.Utils.toBig(oToken.totalSupply);
         if(oToken.decimals){
