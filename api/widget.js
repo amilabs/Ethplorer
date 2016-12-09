@@ -31,7 +31,7 @@ ethplorerWidget = {
         $('body').append('<link rel="stylesheet" href="' + ethplorerWidget.url + '/api/widget.css" type="text/css" />')
 
         $(selector).addClass('widget-txs');
-        ethplorerWidget.el.html('<div class="txs-header">Latest token transactions</div><div class="txs-loading">Loading...</div>');
+        ethplorerWidget.el.html('<div class="txs-header">Recent token transactions</div><div class="txs-loading">Loading...</div>');
         ethplorerWidget.load();
 
         $(window).resize(ethplorerWidget.resize);
