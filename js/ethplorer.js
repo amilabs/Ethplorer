@@ -159,8 +159,7 @@ Ethplorer = {
                         msg = msg + ' ' + obj.link;
                     }
                     var msgid = isChainy ? "#chainy-message" : '#transaction-tx-message';
-                    $(msgid).text(msg);
-                    msg = $(msgid).html();
+                    msg = $('<span>').text(msg).html();
                     msg = msg.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
                     msg = msg.replace(/\n/g, '<br />');
                     $(msgid).html(msg);
@@ -313,6 +312,7 @@ Ethplorer = {
                 }
             }
             if(oToken.description){
+                oToken.description = $('<span>').text(oToken.description).html();
                 oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
                 oToken.description = oToken.description.replace(/\n/g, '<br />');                    
             }
