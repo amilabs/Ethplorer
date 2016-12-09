@@ -638,6 +638,7 @@ Ethplorer = {
             if(!/^0x/.test(data)){
                 return text;
             }
+            text = $('<span>').text(text).html();
             var isTx = Ethplorer.Utils.isTx(data);
             var res = '<a target="_blank" class="external-link" href="' + urlEtherscan;
             res += (isTx ? 'tx' : 'address');
@@ -653,6 +654,7 @@ Ethplorer = {
             if(!/^0x/.test(data)){
                 return text;
             }
+            text = $('<span>').text(text).html();
             var isTx = Ethplorer.Utils.isTx(data);
             var res = '<a href="/';
             res += (isTx ? 'tx' : 'address');
