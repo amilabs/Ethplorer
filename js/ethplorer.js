@@ -176,6 +176,9 @@ Ethplorer = {
             titleAdd += (tokenName + ' ');
             $('.token-name:eq(0)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, tokenName, false));
             $('.token-name:eq(1)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, oToken.name , false));
+            if(Ethplorer.Config.updateLink){
+                $('.token-name:eq(1)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>');
+            }
             txData.token = oToken;
 
             Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
@@ -318,6 +321,9 @@ Ethplorer = {
             }
             titleAdd = 'Token ' + oToken.name + ' Information';
             $('.address-token-name').text(oToken.name);
+            if(('N/A' === oToken.name) && Ethplorer.Config.updateLink){
+                $('.address-token-name:eq(0)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>')
+            }
             if(data.issuances && data.issuances.length){
                 $('#address-issuances').show();
                 for(var i=0; i<data.issuances.length; i++){

@@ -16,6 +16,7 @@
 
 Ethplorer.Config = {
     testnet: false,
-    ethService: 'https://ethereumServiceAddress',
-    ga: ''
+    phpService: "/service/service.php",
+    ga: '',
+    updateLink: ''
 };
