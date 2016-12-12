@@ -258,10 +258,12 @@ class Ethplorer {
         $cursor = $this->dbs['transactions']->find(array("hash" => $tx));
         $result = $cursor->hasNext() ? $cursor->getNext() : false;
         if($result){
+            $receipt = isset($result['receipt']) ? $result['receipt'] : false;
             unset($result["_id"]);
             $result['gasLimit'] = $result['gas'];
             unset($result["gas"]);
-            $result['gasUsed'] = isset($result['receipt']) ? $result['receipt']['gasUsed'] : 0;
+            $result['gasUsed'] = $receipt ? $receipt['gasUsed'] : 0;
+            $success = (($result['gasUsed'] < $result['gasLimit']) || ($receipt && !empty($receipt['logs'])));
             $result['success'] = isset($result['receipt']) ? ($result['gasUsed'] < $result['gasLimit']) : true;
         }
         // evxProfiler::checkpoint('getTransaction FINISH [hash=' . $tx . ']');
