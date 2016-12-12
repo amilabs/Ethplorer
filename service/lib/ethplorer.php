@@ -263,8 +263,7 @@ class Ethplorer {
             $result['gasLimit'] = $result['gas'];
             unset($result["gas"]);
             $result['gasUsed'] = $receipt ? $receipt['gasUsed'] : 0;
-            $success = (($result['gasUsed'] < $result['gasLimit']) || ($receipt && !empty($receipt['logs'])));
-            $result['success'] = isset($result['receipt']) ? ($result['gasUsed'] < $result['gasLimit']) : true;
+            $result['success'] = (($result['gasUsed'] < $result['gasLimit']) || ($receipt && !empty($receipt['logs'])));
         }
         // evxProfiler::checkpoint('getTransaction FINISH [hash=' . $tx . ']');
         return $result;
