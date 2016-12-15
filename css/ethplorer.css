@@ -235,7 +235,7 @@ td.list-field {
     max-width: 4px;
 }
 
-.multiop tr.selectable:hover td span {
+.multiop tr.selectable:hover td span.dash_on_hover {
     border-bottom: 1px dashed;
 }
 
