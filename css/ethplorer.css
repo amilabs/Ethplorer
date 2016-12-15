@@ -236,7 +236,7 @@ td.list-field {
 }
 
 .multiop tr.selectable:hover td span {
-    text-decoration: underline;
+    border-bottom: 1px dashed;
 }
 
 a.dashed {
