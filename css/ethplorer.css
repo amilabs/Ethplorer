@@ -210,6 +210,31 @@ td.list-field {
     max-width: 85px;    
 }
 
+.multiop tr td:nth-child(2) {
+    max-width: 50vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.multiop tr td:nth-child(2),
+.multiop tr td:nth-child(3),
+.multiop tr td:nth-child(4)
+{
+    min-width: 65px;
+}
+
+.multiop tr td:nth-child(4) {
+    max-width: 65px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.multiop tr td:nth-child(5){
+    display: none;
+    max-width: 4px;
+}
+
 .multiop tr.selectable:hover td span {
     text-decoration: underline;
 }
@@ -310,6 +335,10 @@ small {
             animation: hrhand 8s linear infinite;
 }
 
+.cuttable-address {
+    white-space: nowrap;
+}
+
 @media screen and (max-width: 640px) {
     .footer {
         line-height: 12px;
@@ -403,6 +432,15 @@ small {
 }
 
 @media screen and (max-width: 767px) {
+
+    .multiop tr td:nth-child(3),
+    .multiop tr td:nth-child(4)
+    {
+        display: none;
+    }
+    .multiop tr td:nth-child(5){
+        display: table-cell;
+    }
     
     #address-token-transfers .block {
         max-width: 100vw;

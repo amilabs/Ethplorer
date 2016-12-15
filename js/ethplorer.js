@@ -234,7 +234,8 @@ Ethplorer = {
                     var opToken = Ethplorer.prepareToken(op.token);
                     if('undefined' !== typeof(op.value)){
                         op.value = Ethplorer.Utils.toBig(op.value).div(Math.pow(10, opToken.decimals));
-                        op.value = Ethplorer.Utils.formatNum(op.value, true, opToken.decimals, true) + ' ' + opToken.symbol;
+                        op.value = Ethplorer.Utils.formatNum(op.value, true, opToken.decimals, true);
+                        op.symbol = opToken.symbol;
                     }
                     var opParties = '';
                     if(op.address){
@@ -242,12 +243,22 @@ Ethplorer = {
                         var address = op.address; // Ethplorer.Utils.getEthplorerLink(op.address, op.address, false);
                         opParties = 'for ' + address;
                     }else if(op.from && op.to){
-                        var from = op.from; // Ethplorer.Utils.getEthplorerLink(op.from, op.from, false);
-                        var to = op.to; // Ethplorer.Utils.getEthplorerLink(op.to, op.to, false);
-                        opParties = 'from ' + from + '<br class="show_small"> to ' + to;
+                        var from = '<span class="cuttable-address">from ' + op.from + '</span>';
+                        var to = '<span class="cuttable-address">to ' + op.to + '</span>';
+                        opParties = from + '<br class="show_small"> ' + to;
                     }
                     if(multiop){
-                        var row = $('<tr data-op-idx="' + idx + '"><td><a class="dashed">Details</a></td><td><span>' + op.type + '<br class="show_small"> ' + opParties + '</span></td><td class="text-right"><span>' + op.value + '</span></td></tr>');
+                        var row = $(
+                            '<tr data-op-idx="' + idx + '">' + 
+                            '<td><a class="dashed">Details</a></td>' +
+                            '<td><span>' + op.type +
+                            '<span class="show_small"> ' + op.value + ' ' + op.symbol + '</span>' +
+                            '<br class="show_small"> ' + opParties + '</span></td>' + 
+                            '<td class="text-right"><span>' + op.value + '</span></td>' +
+                            '<td><span>' + op.symbol + '</span></td>' +
+                            '<td></td>' +
+                            '</tr>'
+                        );
                         row.click(function(_tx, _op){
                             return function(){
                                 if($(this).hasClass('selectable')){
@@ -255,7 +266,14 @@ Ethplorer = {
                                     $('.multiop .blue').addClass('selectable');
                                     $('.multiop .blue').removeClass('blue');
                                     $(this).addClass('blue');
-                                    Ethplorer.showOpDetails(_tx, _op);
+                                    $('.token-related').animate({opacity:0.1}, 250, function(){
+                                        $('.token-related').animate({opacity:1}, 250);
+                                    });
+                                    setTimeout(function(__tx, __op){
+                                        return function(){
+                                            Ethplorer.showOpDetails(__tx, __op);
+                                        };
+                                    }(_tx, _op), 250);
                                     document.location.hash = _op.index;
                                 }
                             };
