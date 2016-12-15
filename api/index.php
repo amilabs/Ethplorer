@@ -19,15 +19,20 @@
 header('Access-Control-Allow-Origin: *');
 
 require dirname(__FILE__) . '/../service/lib/ethplorer.php';
+require dirname(__FILE__) . '/controller.php';
 
 $es = Ethplorer::db(require_once dirname(__FILE__) . '/../service/config.php');
 
-$command = isset($_GET["cmd"]) ? $_GET["cmd"] : false;
+$ctr = new ethplorerController();
+$command = $ctr->getCommand();
 
 $result = array();
 
 if($command){
     switch($command){
+        case 'getTokenHistory':
+            var_dump($ctr->getParam(0));
+            break;
         case 'last':
             $options = array(
                 'limit'     => isset($_GET["limit"])     ? (int)$_GET["limit"]     : 10,
@@ -36,6 +41,7 @@ if($command){
             $result = $es->getLastTransfers($options);
             break;
         default:
+            $result['command'] = $command;
             $result['error']    = true;
             $result['message']  = 'Unknown command';
     }
