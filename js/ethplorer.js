@@ -323,10 +323,10 @@ Ethplorer = {
             var idx = parseInt(hash);
             var el = $('[data-op-idx=' + idx + ']');
             if(el.length){
-                el.removeClass('selectable');
                 $('.multiop .blue').addClass('selectable');
                 $('.multiop .blue').removeClass('blue');
                 el.addClass('blue');
+                el.removeClass('selectable');
                 Ethplorer.showOpDetails(txData.tx, txData.operations[idx]);
             }
         }
