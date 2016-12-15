@@ -83,6 +83,10 @@ class ethplorerController {
         $result = array(
             'operations' => array()
         );
+        $address = $this->getParam(0, FALSE);
+        if((FALSE !== $address) && (!$this->db->isValidAddress($address))){
+            $this->sendError(104, 'Invalid address format');
+        }
         $options = array(
             'address'   => $this->getParam(0, FALSE),
             'type'      => $this->getRequest('type', FALSE),

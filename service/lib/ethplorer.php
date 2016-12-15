@@ -449,10 +449,20 @@ class Ethplorer {
      */
     public function getLastTransfers(array $options = array()){
         // evxProfiler::checkpoint('getAddressTransfers START [address=' . $address . ', limit=' . $limit . ']');
-        $search = array('type' => 'transfer');
+        $search = array();
+        if(!isset($options['type'])){
+            $search['type'] = 'transfer';
+        }else{
+            if(FALSE !== $options['type']){
+                $search['type'] = $options['type'];
+            }
+        }
+        if(isset($options['address'])){
+            $search['contract'] = $options['address'];
+        }
         $sort = array("timestamp" => -1);
 
-        if(isset($options['timestamp'])){
+        if(isset($options['timestamp']) && ($options['timestamp'] > 0)){
             $search['timestamp'] = array('$gt' => $options['timestamp']);
         }
 
