@@ -176,7 +176,7 @@ Ethplorer = {
                             $('#chainy-' + fld).text(obj[fld]);
                         }
                     }
-                    var log = oTx.logs && oTx.logs.length ? oTx.logs[0] : false;
+                    var log = oTx.receipt && oTx.receipt.logs && oTx.receipt.logs.length ? oTx.receipt.logs[0] : false;
                     if(log && log.topics && log.topics.length && (0 === log.topics[0].indexOf("0xdad5c"))){
                         try {
                             var data = log.data.slice(192).replace(/0+$/, '');
