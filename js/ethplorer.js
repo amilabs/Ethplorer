@@ -251,11 +251,11 @@ Ethplorer = {
                         var row = $(
                             '<tr data-op-idx="' + idx + '">' + 
                             '<td><a class="dashed">Details</a></td>' +
-                            '<td><span>' + op.type.toString().toUpperCase() +
+                            '<td><span class="dash_on_hover">' + op.type.toString().toUpperCase() +
                             '<span class="show_small"> ' + op.value + ' ' + op.symbol + '</span>' +
                             '<br class="show_small"> ' + opParties + '</span></td>' + 
-                            '<td class="text-right"><span>' + op.value + '</span></td>' +
-                            '<td><span>' + op.symbol + '</span></td>' +
+                            '<td class="text-right"><span class="dash_on_hover">' + op.value + '</span></td>' +
+                            '<td><span class="dash_on_hover">' + op.symbol + '</span></td>' +
                             '<td></td>' +
                             '</tr>'
                         );
