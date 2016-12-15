@@ -197,9 +197,6 @@ class Ethplorer {
             if(isset($tx["creates"]) && $tx["creates"]){
                 $result["contracts"][] = $tx["creates"];
             }
-            if(isset($tx['receipt']) && isset($tx['receipt']['logs']) && count($tx['receipt']['logs'])){
-                $result['log'] = $tx['receipt']['logs'][0];
-            }
             $fromContract = $this->getContract($tx["from"]);
             if($fromContract){
                 $result["contracts"][] = $tx["from"];
@@ -207,23 +204,27 @@ class Ethplorer {
             if(isset($tx["to"]) && $tx["to"]){
                 $toContract = $this->getContract($tx["to"]);
                 if($toContract){
+                    if($token = $this->getToken($tx["to"])){
+                        $result['token'] = $token;
+                    }
                     $result["contracts"][] = $tx["to"];
                     $result["operations"] = $this->getOperations($hash);
                     if(is_array($result["operations"]) && count($result["operations"])){
-                        foreach($result["operations"] as $operation){
-                            if($operation['contract'] !== $tx["to"]){
+                        foreach($result["operations"] as $idx => $operation){
+                            if($result["operations"][$idx]['contract'] !== $tx["to"]){
                                 $result["contracts"][] = $operation['contract'];
                             }
                             if($token = $this->getToken($operation['contract'])){
-                                $operation['type'] = ucfirst($operation['type']);
-                                $result["operation"] = $operation;
-                                $result["token"] = $token;
-                                break;
+                                $result['token'] = $token;
+                                $result["operations"][$idx]['type'] = ucfirst($operation['type']);
+                                $result["operations"][$idx]['token'] = $token;
                             }
                         }
+                        $result["contracts"] = array_values(array_unique($result["contracts"]));
                     }
                 }
             }
+            $this->oCache->save($cache, $result);
         }
         if(is_array($result) && is_array($tx)){
             $result['tx']['confirmations'] = $this->oCache->get('lastBlock') - $tx['blockNumber'] + 1;

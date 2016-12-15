@@ -81,6 +81,40 @@ Ethplorer = {
 
     knownContracts: [],
     dataFields: {},
+    
+    showOpDetails: function(oTx, op){
+        var titleAdd = '';
+        var oToken = Ethplorer.prepareToken(op.token);
+        var tokenName = ('N/A' !== oToken.name) ? oToken.name : '[ERC20]';
+        titleAdd += (tokenName + ' ');
+        $('.token-name:eq(0)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, tokenName, false));
+        $('.token-name:eq(1)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, oToken.name , false));
+        var txData = {tx: oTx, operation: op, token: oToken};
+        
+        $('.token-related td.list-field').empty();
+        Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
+
+        $('#transfer-tx-timestamp').html($('#transaction-tx-timestamp').html());
+
+        if($('#transaction-tx-message').html()){
+            $('#transfer-tx-message').html($('#transaction-tx-message').html());
+            $('#transaction-tx-message').html('')
+        }
+        var oOperation = txData.operation;
+        titleAdd += oOperation['type'];
+        $('.token-operation-type').text(oOperation['type']);
+        Ethplorer.fillValues('transfer', txData, ['operation', 'operation.from', 'operation.to', 'operation.value']);
+        if(oTx.blockNumber){
+            $('#txTokenStatus')[oOperation.success ? 'removeClass' : 'addClass']('text-danger');
+            $('#txTokenStatus')[oOperation.success ? 'addClass' : 'removeClass']('text-success');                           
+            $('#txTokenStatus').html(oOperation.success ? 'Success' : 'Failed' + (oOperation.failedReason ? (': ' + Ethplorer.getTxErrorReason(oOperation.failedReason)) : ''));
+            $('#operation-status').addClass(oOperation.success ? 'green' : 'red');
+        }
+        document.title = 'Ethplorer: ' + (titleAdd ? (titleAdd + ' -') : '');
+        Ethplorer.Utils.hideEmptyFields();
+    },
+    
+    
     showTxDetails: function(txHash, txData){
         $('#ethplorer-path').html('<b>Transaction hash</b> ' + txHash);
 
@@ -142,7 +176,7 @@ Ethplorer = {
                             $('#chainy-' + fld).text(obj[fld]);
                         }
                     }
-                    var log = txData.log;
+                    var log = oTx.logs && oTx.logs.length ? oTx.logs[0] : false;
                     if(log && log.topics && log.topics.length && (0 === log.topics[0].indexOf("0xdad5c"))){
                         try {
                             var data = log.data.slice(192).replace(/0+$/, '');
@@ -176,9 +210,11 @@ Ethplorer = {
             titleAdd += (tokenName + ' ');
             $('.token-name:eq(0)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, tokenName, false));
             $('.token-name:eq(1)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, oToken.name , false));
+            /*
             if(Ethplorer.Config.updateLink){
                 $('.token-name:eq(1)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>');
             }
+            */
             txData.token = oToken;
 
             Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
@@ -187,15 +223,52 @@ Ethplorer = {
                 $('#transfer-tx-message').html($('#transaction-tx-message').html());
                 $('#transaction-tx-message').html('')
             }
-            
-            if(txData.operation){
+
+            if(txData.operations && txData.operations.length){
+                txData.operation = txData.operations[txData.operations.length - 1];
+                if(txData.operations.length > 1){
+                    $('.multiop').show();
+                    for(var i=0; i<txData.operations.length; i++){
+                        var idx = txData.operations.length - i - 1;
+                        var op = txData.operations[idx];
+                        op.index = idx;
+                        var opToken = Ethplorer.prepareToken(op.token);
+                        if('undefined' !== typeof(op.value)){
+                            op.value = Ethplorer.Utils.toBig(op.value).div(Math.pow(10, opToken.decimals));
+                            op.value = Ethplorer.Utils.formatNum(op.value, true, opToken.decimals, true) + ' ' + opToken.symbol;
+                        }
+                        var opParties = '';
+                        if(op.address){
+                            op.to = op.address;
+                            var address = op.address; // Ethplorer.Utils.getEthplorerLink(op.address, op.address, false);
+                            opParties = 'for ' + address;
+                        }else if(op.from && op.to){
+                            var from = op.from; // Ethplorer.Utils.getEthplorerLink(op.from, op.from, false);
+                            var to = op.to; // Ethplorer.Utils.getEthplorerLink(op.to, op.to, false);
+                            opParties = 'from ' + from + '<br class="show_small"> to ' + to;
+                        }
+                        var row = $('<tr data-op-idx="' + idx + '"><td>' + op.type + ' ' + op.value + '<br class="show_small"> ' + opParties + '</td></tr>');
+                        row.click(function(_tx, _op){
+                            return function(){
+                                if($(this).hasClass('selectable')){
+                                    $(this).removeClass('selectable');
+                                    $('.multiop .blue').addClass('selectable');
+                                    $('.multiop .blue').removeClass('blue');
+                                    $(this).addClass('blue');
+                                    Ethplorer.showOpDetails(_tx, _op);
+                                    document.location.hash = _op.index;
+                                }
+                            };
+                        }(oTx, op));
+                        $('.multiop table').append(row);
+                    }
+                    $('.multiop table tr').addClass('selectable');
+                    $('.multiop table tr:eq(0)').removeClass('selectable').addClass('blue');                    
+                }
+
                 var oOperation = txData.operation;
                 titleAdd += oOperation['type'];
                 $('.token-operation-type').text(oOperation['type']);
-                if('undefined' !== typeof(oOperation.value)){
-                    oOperation.value = Ethplorer.Utils.toBig(oOperation.value).div(Math.pow(10, oToken.decimals));
-                    oOperation.value = Ethplorer.Utils.formatNum(oOperation.value, true, oToken.decimals, true) + ' ' + oToken.symbol;
-                }
                 Ethplorer.fillValues('transfer', txData, ['operation', 'operation.from', 'operation.to', 'operation.value']);
                 if(oTx.blockNumber){
                     $('#txTokenStatus')[oOperation.success ? 'removeClass' : 'addClass']('text-danger');
@@ -222,6 +295,19 @@ Ethplorer = {
 
         document.title += (': ' + (titleAdd ? (titleAdd + ' -') : ''));
         document.title += (' hash ' + txHash);
+
+        var hash = document.location.hash.replace(/^\#/, '');
+        if(hash && hash.length){
+            var idx = parseInt(hash);
+            var el = $('[data-op-idx=' + idx + ']');
+            if(el.length){
+                el.removeClass('selectable');
+                $('.multiop .blue').addClass('selectable');
+                $('.multiop .blue').removeClass('blue');
+                el.addClass('blue');
+                Ethplorer.showOpDetails(txData.tx, txData.operations[idx]);
+            }
+        }
 
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
@@ -361,7 +447,7 @@ Ethplorer = {
                 var row = $('<TR>');
                 row.append('<TD>' + Ethplorer.Utils.getEthplorerLink(balance.contract, oToken.name, false) + '</TD>');
                 var qty = Ethplorer.Utils.toBig(balance.balance).div(Math.pow(10, oToken.decimals));
-                var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals) + ' ' + oToken.symbol;
+                var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals, true) + ' ' + oToken.symbol;
                 row.append('<TD>' + value + '</TD>');
                 row.find('td:eq(1)').addClass('text-right');
                 $('#address-token-balances table').append(row);

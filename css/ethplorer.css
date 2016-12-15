@@ -198,6 +198,23 @@ td.list-field {
     border-bottom-right-radius: 8px;
 }
 
+.multiop {
+    display: none;
+}
+
+.multiop tr.selectable {
+    cursor: pointer;
+}
+
+.multiop tr.selectable:hover {
+    background-color: #ffe87c;
+}
+
+.multiop tr.selectable:hover td {
+    color: black !important;
+}
+
+
 .chainy {
     display: none;
 }
