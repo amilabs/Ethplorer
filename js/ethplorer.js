@@ -837,7 +837,7 @@ Ethplorer = {
         },
 
         parseJData: function(hex){
-            var str = Ethplorer.Utils.hex2ascii(hex.slice(8)).replace('{{', '{');
+            var str = Ethplorer.Utils.hex2ascii(hex.slice(8)).replace('{{', '{').replace(/^[^{]+/, '');
             var res = false;
             var i1 = str.indexOf('{');
             var i2 = str.indexOf('}');
