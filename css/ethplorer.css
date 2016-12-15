@@ -415,6 +415,9 @@ small {
         font-size: 18px;
         padding-left: 8px;
     }
+    .navbar {
+        margin-bottom: 0px;
+    }
 }
 
 .show_small {
@@ -438,10 +441,11 @@ small {
     {
         display: none;
     }
+
     .multiop tr td:nth-child(5){
         display: table-cell;
     }
-    
+
     #address-token-transfers .block {
         max-width: 100vw;
         overflow: hidden;

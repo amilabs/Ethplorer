@@ -240,8 +240,8 @@ Ethplorer = {
                     var opParties = '';
                     if(op.address){
                         op.to = op.address;
-                        var address = op.address; // Ethplorer.Utils.getEthplorerLink(op.address, op.address, false);
-                        opParties = 'for ' + address;
+                        var address = op.address;
+                        opParties = '<span class="cuttable-address">for ' + address + '</span>';
                     }else if(op.from && op.to){
                         var from = '<span class="cuttable-address">from ' + op.from + '</span>';
                         var to = '<span class="cuttable-address">to ' + op.to + '</span>';
@@ -251,7 +251,7 @@ Ethplorer = {
                         var row = $(
                             '<tr data-op-idx="' + idx + '">' + 
                             '<td><a class="dashed">Details</a></td>' +
-                            '<td><span>' + op.type +
+                            '<td><span>' + op.type.toString().toUpperCase() +
                             '<span class="show_small"> ' + op.value + ' ' + op.symbol + '</span>' +
                             '<br class="show_small"> ' + opParties + '</span></td>' + 
                             '<td class="text-right"><span>' + op.value + '</span></td>' +
