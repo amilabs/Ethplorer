@@ -226,28 +226,28 @@ Ethplorer = {
 
             if(txData.operations && txData.operations.length){
                 txData.operation = txData.operations[txData.operations.length - 1];
-                if(txData.operations.length > 1){
-                    $('.multiop').show();
-                    for(var i=0; i<txData.operations.length; i++){
-                        var idx = txData.operations.length - i - 1;
-                        var op = txData.operations[idx];
-                        op.index = idx;
-                        var opToken = Ethplorer.prepareToken(op.token);
-                        if('undefined' !== typeof(op.value)){
-                            op.value = Ethplorer.Utils.toBig(op.value).div(Math.pow(10, opToken.decimals));
-                            op.value = Ethplorer.Utils.formatNum(op.value, true, opToken.decimals, true) + ' ' + opToken.symbol;
-                        }
-                        var opParties = '';
-                        if(op.address){
-                            op.to = op.address;
-                            var address = op.address; // Ethplorer.Utils.getEthplorerLink(op.address, op.address, false);
-                            opParties = 'for ' + address;
-                        }else if(op.from && op.to){
-                            var from = op.from; // Ethplorer.Utils.getEthplorerLink(op.from, op.from, false);
-                            var to = op.to; // Ethplorer.Utils.getEthplorerLink(op.to, op.to, false);
-                            opParties = 'from ' + from + '<br class="show_small"> to ' + to;
-                        }
-                        var row = $('<tr data-op-idx="' + idx + '"><td>' + op.type + ' ' + op.value + '<br class="show_small"> ' + opParties + '</td></tr>');
+                var multiop = txData.operations.length > 1;
+                for(var i=0; i<txData.operations.length; i++){
+                    var idx = txData.operations.length - i - 1;
+                    var op = txData.operations[idx];
+                    op.index = idx;
+                    var opToken = Ethplorer.prepareToken(op.token);
+                    if('undefined' !== typeof(op.value)){
+                        op.value = Ethplorer.Utils.toBig(op.value).div(Math.pow(10, opToken.decimals));
+                        op.value = Ethplorer.Utils.formatNum(op.value, true, opToken.decimals, true) + ' ' + opToken.symbol;
+                    }
+                    var opParties = '';
+                    if(op.address){
+                        op.to = op.address;
+                        var address = op.address; // Ethplorer.Utils.getEthplorerLink(op.address, op.address, false);
+                        opParties = 'for ' + address;
+                    }else if(op.from && op.to){
+                        var from = op.from; // Ethplorer.Utils.getEthplorerLink(op.from, op.from, false);
+                        var to = op.to; // Ethplorer.Utils.getEthplorerLink(op.to, op.to, false);
+                        opParties = 'from ' + from + '<br class="show_small"> to ' + to;
+                    }
+                    if(multiop){
+                        var row = $('<tr data-op-idx="' + idx + '"><td><a class="dashed">Details</a></td><td><span>' + op.type + '<br class="show_small"> ' + opParties + '</span></td><td class="text-right"><span>' + op.value + '</span></td></tr>');
                         row.click(function(_tx, _op){
                             return function(){
                                 if($(this).hasClass('selectable')){
@@ -262,8 +262,12 @@ Ethplorer = {
                         }(oTx, op));
                         $('.multiop table').append(row);
                     }
+                }
+                if(multiop){
                     $('.multiop table tr').addClass('selectable');
                     $('.multiop table tr:eq(0)').removeClass('selectable').addClass('blue');                    
+                    $('.multiop .block-header h3').text(txData.operations.length + ' internal operations found');
+                    $('.multiop').show();
                 }
 
                 var oOperation = txData.operation;

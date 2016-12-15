@@ -206,14 +206,22 @@ td.list-field {
     cursor: pointer;
 }
 
-.multiop tr.selectable:hover {
-    background-color: #ffe87c;
+.multiop tr td:nth-child(1) {
+    max-width: 85px;    
 }
 
-.multiop tr.selectable:hover td {
-    color: black !important;
+.multiop tr.selectable:hover td span {
+    text-decoration: underline;
 }
 
+a.dashed {
+    text-decoration: none;
+    border-bottom: 1px dashed;
+}
+
+.multiop a {
+    color: white !important;
+}
 
 .chainy {
     display: none;
