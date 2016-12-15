@@ -82,10 +82,7 @@ class Ethplorer {
                 'contracts'    => $oDB->{"everex.eth.contracts"},
                 'tokens'       => $oDB->{"everex.erc20.contracts"},
                 'operations'   => $oDB->{"everex.erc20.operations"},
-                'balances'     => $oDB->{"everex.erc20.balances"},
-
-                'transfers'    => $oDB->{"everex.erc20.transfers"},
-                'issuances'    => $oDB->{"everex.erc20.issuances"},
+                'balances'     => $oDB->{"everex.erc20.balances"}
             );
         }else{
             throw new Exception("MongoClient class not found, php_mongo extension required");

@@ -19,6 +19,7 @@ class ethplorerController {
     protected $db;
     protected $command;
     protected $params = array();
+    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo');
 
     public function __construct(Ethplorer $es){
         $this->db = $es;
@@ -70,13 +71,59 @@ class ethplorerController {
     }
 
     public function run(){
-        if(method_exists($this, $this->getCommand())){
+        $command = $this->getCommand();
+        if($command && in_array($command, $this->apiCommands) && method_exists($this, $command)){
             if(!$this->db->checkAPIkey($this->getRequest('apiKey', FALSE))){
                 $this->sendError(1, 'Invalid API key');
             }
             $result = call_user_func(array($this, $this->getCommand()));
             $this->sendResult($result);
         }
+    }
+
+    public function getTokenInfo(){
+        $address = $this->getParam(0, FALSE);
+        if((FALSE === $address)){
+            $this->sendError(103, 'Missing address');
+        }
+        if(!$this->db->isValidAddress($address)){
+            $this->sendError(104, 'Invalid address format');
+        }
+        // @todo: mapping
+        $result = $this->db->getToken($address);
+        if(FALSE === $result){
+            $this->sendError(150, 'Address is not a token contract');
+        }
+        $this->sendResult($result);
+    }
+
+    public function getAddressInfo(){
+        $address = $this->getParam(0, FALSE);
+        if((FALSE === $address)){
+            $this->sendError(103, 'Missing address');
+        }
+        if(!$this->db->isValidAddress($address)){
+            $this->sendError(104, 'Invalid address format');
+        }
+        // @todo: mapping
+        $result = $this->db->getAddressDetails($address);
+        $this->sendResult($result);
+    }
+
+    public function getTxInfo(){
+        $txHash = $this->getParam(0, FALSE);
+        if((FALSE === $txHash)){
+            $this->sendError(101, 'Missing transaction hash');
+        }
+        if(!$this->db->isValidTransactionHash($txHash)){
+            $this->sendError(102, 'Invalid transaction hash format');
+        }
+        // @todo: mapping
+        $result = $this->db->getTransactionDetails($txHash);
+        if(!is_array($result) || (FALSE === $result['tx'])){
+            $this->sendError(404, 'Transaction not found');
+        }
+        $this->sendResult($result);
     }
 
     public function getTokenHistory(){
