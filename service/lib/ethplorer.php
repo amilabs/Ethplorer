@@ -501,6 +501,10 @@ class Ethplorer {
         return $result;
     }
 
+    public function checkAPIKey($key){
+        return isset($this->aSettings['apiKeys']) && (FALSE !== array_search($key, $this->aSettings['apiKeys']));
+    }
+
     /**
      * Returns contract operation data.
      *

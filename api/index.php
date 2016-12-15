@@ -23,16 +23,14 @@ require dirname(__FILE__) . '/controller.php';
 
 $es = Ethplorer::db(require_once dirname(__FILE__) . '/../service/config.php');
 
-$ctr = new ethplorerController();
-$command = $ctr->getCommand();
+$ctr = new ethplorerController($es);
+$ctr->run();
 
 $result = array();
+$command = $ctr->getCommand();
 
 if($command){
     switch($command){
-        case 'getTokenHistory':
-            var_dump($ctr->getParam(0));
-            break;
         case 'last':
             $options = array(
                 'limit'     => isset($_GET["limit"])     ? (int)$_GET["limit"]     : 10,

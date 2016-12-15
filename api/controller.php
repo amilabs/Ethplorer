@@ -16,14 +16,20 @@
  */
 
 class ethplorerController {
+    protected $db;
     protected $command;
     protected $params = array();
 
-    public function __construct(){
-        $command = isset($_GET["cmd"]) ? $_GET["cmd"] : false;
+    public function __construct(Ethplorer $es){
+        $this->db = $es;
+        $command = isset($_GET["cmd"]) ? $_GET["cmd"] : FALSE;
         if(!$command){
             $home = str_replace('/index.php', '', $_SERVER["SCRIPT_NAME"]);
-            $commandStr = preg_replace("/^\//", "", substr($_SERVER["REQUEST_URI"], strlen($home)));
+            $uri = $_SERVER["REQUEST_URI"];
+            if(FALSE !== strpos($uri, "?")){
+                $uri = substr($uri, 0, strpos($uri, "?"));
+            }
+            $commandStr = preg_replace("/^\//", "", substr($uri, strlen($home)));
             $aParts = explode("/", $commandStr);
             $command = $aParts[0];
             if(count($aParts) > 1){
@@ -39,7 +45,71 @@ class ethplorerController {
         return $this->command;
     }
 
-    public function getParam($number, $default = null){
+    public function getParam($number, $default = NULL){
         return isset($this->params[$number]) ? $this->params[$number] : $default;
+    }
+
+    public function getRequest($name, $default = NULL){
+        $result = filter_input(INPUT_GET, $name);
+        return (FALSE !== $result) && (!is_null($result)) ? $result : $default;
+    }
+
+    protected function sendResult(array $result){
+        echo json_encode($result);
+        die();
+    }
+
+    protected function sendError($code, $message){
+        $result = array(
+            'error' => array(
+                'code' => $code,
+                'message' => $message
+            )
+        );
+        $this->sendResult($result);
+    }
+
+    public function run(){
+        if(method_exists($this, $this->getCommand())){
+            if(!$this->db->checkAPIkey($this->getRequest('apiKey', FALSE))){
+                $this->sendError(1, 'Invalid API key');
+            }
+            $result = call_user_func(array($this, $this->getCommand()));
+            $this->sendResult($result);
+        }
+    }
+
+    public function getTokenHistory(){
+        $result = array(
+            'operations' => array()
+        );
+        $options = array(
+            'address'   => $this->getParam(0, FALSE),
+            'type'      => $this->getRequest('type', FALSE),
+            'limit'     => min(abs((int)$this->getRequest('limit', 10)), 10),
+            'timestamp' => (int)$this->getRequest('tsAfter', 0)
+        );
+        $operations = $this->db->getLastTransfers($options);
+        if(is_array($operations) && count($operations)){
+            for($i = 0; $i < count($operations); $i++){
+                $operation = $operations[$i];
+                $res = array(
+                    'timestamp'         => $operation['timestamp'],
+                    'transactionHash'   => $operation['transactionHash'],
+                    'tokenInfo'         => $operation['token'],
+                    'type'              => $operation['type'],
+                    'value'             => $operation['value'],
+                );
+                if(isset($operation['address'])){
+                    $res['address'] = $operation['address'];
+                }
+                if(isset($operation['from'])){
+                    $res['from'] = $operation['from'];
+                    $res['to'] = $operation['to'];
+                }
+                $result['operations'][] = $res;
+            }
+        }
+        return $result;
     }
 }
