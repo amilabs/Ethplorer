@@ -21,7 +21,12 @@ header('Access-Control-Allow-Origin: *');
 require dirname(__FILE__) . '/../service/lib/ethplorer.php';
 require dirname(__FILE__) . '/controller.php';
 
-$es = Ethplorer::db(require_once dirname(__FILE__) . '/../service/config.php');
+try {
+    $es = Ethplorer::db(require_once dirname(__FILE__) . '/../service/config.php');
+}catch(Exception $e){
+    // MongoDB connection error
+    $es = FALSE;
+}
 
 $ctr = new ethplorerController($es);
 $ctr->run();

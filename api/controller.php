@@ -21,7 +21,10 @@ class ethplorerController {
     protected $params = array();
     protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo');
 
-    public function __construct(Ethplorer $es){
+    public function __construct($es){
+        if(!($es instanceof Ethplorer)){
+            $this->sendError(3, 'Database connection failed');
+        }
         $this->db = $es;
         $command = isset($_GET["cmd"]) ? $_GET["cmd"] : FALSE;
         if(!$command){
@@ -102,6 +105,7 @@ class ethplorerController {
         if((FALSE === $address)){
             $this->sendError(103, 'Missing address');
         }
+        $address = strtolower($address);
         if(!$this->db->isValidAddress($address)){
             $this->sendError(104, 'Invalid address format');
         }
@@ -115,13 +119,53 @@ class ethplorerController {
         if((FALSE === $txHash)){
             $this->sendError(101, 'Missing transaction hash');
         }
+        $txHash = strtolower($txHash);
         if(!$this->db->isValidTransactionHash($txHash)){
             $this->sendError(102, 'Invalid transaction hash format');
         }
         // @todo: mapping
-        $result = $this->db->getTransactionDetails($txHash);
-        if(!is_array($result) || (FALSE === $result['tx'])){
+        $tx = $this->db->getTransactionDetails($txHash);
+        if(!is_array($tx) || (FALSE === $tx['tx'])){
             $this->sendError(404, 'Transaction not found');
+        }
+        $result = array(
+            'hash'          => $txHash,
+            'timestamp'     => $tx['timestamp'],
+            'blockNumber'   => $tx['tx']['blockNumber'],
+            'confirmations' => $this->db->getLastBlock() - $tx['tx']['blockNumber'] + 1,
+            'success'       => $tx['tx']['success'],
+            'from'          => $tx['tx']['from'],
+            'to'            => $tx['tx']['to'],
+            'value'         => $this->_bn2float($tx['tx']['value']),
+            'input'         => $tx['tx']['input'],
+            'gasLimit'      => $tx['tx']['gasLimit'],
+            'gasUsed'       => $tx['tx']['gasUsed'],
+            'logs'          => array(),
+        );
+        if(isset($tx['tx']) && !empty($tx['tx']['receipt']) && !empty($tx['tx']['receipt']['logs'])){
+            foreach($tx['tx']['receipt']['logs'] as $log){
+                $result['logs'][] = array(
+                    'address'   => $log['address'],
+                    'topics'    => $log['topics'],
+                    'data'      => $log['data'],
+                );
+            }
+        }
+        $operations = $this->db->getOperations($txHash);
+        if(is_array($operations) && !empty($operations)){
+            foreach($operations as $i => $operation){
+                $token = $this->db->getToken($operation['contract']);
+                if($token && is_array($token)){
+                    unset($token['checked']);
+                    unset($token['txsCount']);
+                    unset($token['transfersCount']);
+                    $operations[$i]['tokenInfo'] = $token;
+                }
+                unset($operations[$i]['blockNumber']);
+                unset($operations[$i]['success']);
+                unset($operations[$i]['contract']);
+            }
+            $result['operations'] = $operations;
         }
         $this->sendResult($result);
     }
@@ -131,6 +175,9 @@ class ethplorerController {
             'operations' => array()
         );
         $address = $this->getParam(0, FALSE);
+        if($address){
+            $address = strtolower($address);
+        }
         if((FALSE !== $address) && (!$this->db->isValidAddress($address))){
             $this->sendError(104, 'Invalid address format');
         }
@@ -162,5 +209,17 @@ class ethplorerController {
             }
         }
         return $result;
+    }
+
+    protected function _bn2float($aNumber){
+        $res = 0;
+        if(isset($aNumber['c']) && !empty($aNumber['c'])){
+            $str = '';
+            for($i=0; $i<count($aNumber['c']); $i++){
+                $str .= (string)$aNumber['c'][$i];
+            }
+            $res = floatval($str) / pow(10, 18);
+        }
+        return $res;
     }
 }
