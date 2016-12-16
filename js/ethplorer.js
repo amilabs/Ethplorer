@@ -414,8 +414,6 @@ Ethplorer = {
             }            
         }
         if(data.isContract){
-            console.log('CONTRACT');
-            console.log(data);
             Ethplorer.fillValues('address', data, ['contract', 'contract.creator']);
         }
         if(data.isContract && data.token){
@@ -425,6 +423,11 @@ Ethplorer = {
                 var json = Ethplorer.Utils.parseJData(data.contract.code);
                 if(json && json.description){
                     oToken.description = json.description;
+                }
+            }
+            if(Ethplorer.Config.tokens && ('undefined' !== typeof(Ethplorer.Config.tokens[address]))){
+                for(var property in Ethplorer.Config.tokens[address]){
+                    oToken[property] = Ethplorer.Config.tokens[address][property];
                 }
             }
             if(oToken.description){
