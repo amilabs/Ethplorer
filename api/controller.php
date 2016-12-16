@@ -58,12 +58,12 @@ class ethplorerController {
         return (FALSE !== $result) && (!is_null($result)) ? $result : $default;
     }
 
-    protected function sendResult(array $result){
+    public function sendResult(array $result){
         echo json_encode($result);
         die();
     }
 
-    protected function sendError($code, $message){
+    public function sendError($code, $message){
         $result = array(
             'error' => array(
                 'code' => $code,
@@ -128,12 +128,9 @@ class ethplorerController {
         );
         if($contract = $this->db->getContract($address)){
             $result['contractInfo'] = array(
-                'code' => $contract['code'],
-                'created' => array(
-                    'creatorAddress' => $contract['creator'],
-                    'transactionHash' => $contract['hash'],
-                    'timestamp' => $contract['timestamp']
-                )
+                'creatorAddress' => $contract['creator'],
+                'transactionHash' => $contract['hash'],
+                'timestamp' => $contract['timestamp']
             );
             if($token = $this->db->getToken($address)){
                 unset($token['checked']);

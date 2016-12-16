@@ -34,19 +34,15 @@ $ctr->run();
 $result = array();
 $command = $ctr->getCommand();
 
-if($command){
-    switch($command){
-        case 'last':
-            $options = array(
-                'limit'     => isset($_GET["limit"])     ? (int)$_GET["limit"]     : 10,
-                'timestamp' => isset($_GET["timestamp"]) ? (int)$_GET["timestamp"] : 0,
-            );
-            $result = $es->getLastTransfers($options);
-            break;
-        default:
-            $result['command'] = $command;
-            $result['error']    = true;
-            $result['message']  = 'Unknown command';
-    }
-    echo json_encode($result);
+switch($command){
+    case 'last':
+        $options = array(
+            'limit'     => isset($_GET["limit"])     ? (int)$_GET["limit"]     : 10,
+            'timestamp' => isset($_GET["timestamp"]) ? (int)$_GET["timestamp"] : 0,
+        );
+        $result = $es->getLastTransfers($options);
+        break;
+    default:
+        $ctr->sendError(17, 'Invalid request');
 }
+$ctr->sendResult($result);
