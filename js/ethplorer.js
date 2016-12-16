@@ -210,6 +210,13 @@ Ethplorer = {
             titleAdd += (tokenName + ' ');
             $('.token-name:eq(0)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, tokenName, false));
             $('.token-name:eq(1)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, oToken.name , false));
+            
+            if(oToken.image){
+                $('.token-related:eq(1) .block-header').prepend(
+                    '<img src="' + oToken.image + '" style="max-width:32px;max-height:32px;margin:8px;margin-left:20px;" align="left">'
+                );
+            }            
+            
             /*
             if(Ethplorer.Config.updateLink){
                 $('.token-name:eq(1)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>');
@@ -425,19 +432,17 @@ Ethplorer = {
                     oToken.description = json.description;
                 }
             }
-            if(Ethplorer.Config.tokens && ('undefined' !== typeof(Ethplorer.Config.tokens[address]))){
-                for(var property in Ethplorer.Config.tokens[address]){
-                    oToken[property] = Ethplorer.Config.tokens[address][property];
-                }
-            }
             if(oToken.description){
                 oToken.description = $('<span>').text(oToken.description).html();
                 oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
                 oToken.description = oToken.description.replace(/\n/g, '<br />');
-                if(oToken.image){
-                    oToken.description = '<img src="' + oToken.image + '" style="max-width:64px;max-height:64px;margin:8px;margin-left:0px;" align="left">' + oToken.description;
-                }
             }
+            if(oToken.image){
+                $('#address-token-details .block-header').prepend(
+                    '<img src="' + oToken.image + '" style="max-width:32px;max-height:32px;margin:8px;margin-left:20px;" align="left">'
+                );
+            }
+
             titleAdd = 'Token ' + oToken.name + ' Information';
             $('.address-token-name').text(oToken.name);
             if(Ethplorer.Config.updateLink){
@@ -541,8 +546,9 @@ Ethplorer = {
     },
 
     prepareToken: function(oToken){
+        console.log(oToken);
         if(!oToken){
-            oToken = {name: '', decimals: 0, symbol: '', totalSupply: 0};
+            oToken = {address: '', name: '', decimals: 0, symbol: '', totalSupply: 0};
         }
         if(oToken.prepared){
             return oToken;
@@ -573,6 +579,11 @@ Ethplorer = {
         }
         if(!oToken.owner || (oToken.owner && ('0x' === oToken.owner))){
             oToken.owner = '';
+        }
+        if(Ethplorer.Config.tokens && ('undefined' !== typeof(Ethplorer.Config.tokens[oToken.address]))){
+            for(var property in Ethplorer.Config.tokens[oToken.address]){
+                oToken[property] = Ethplorer.Config.tokens[oToken.address][property];
+            }
         }
         oToken.prepared  = true;
         return oToken;
