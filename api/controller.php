@@ -59,7 +59,7 @@ class ethplorerController {
     }
 
     public function sendResult(array $result){
-        echo json_encode($result);
+        echo json_encode($result, JSON_UNESCAPED_SLASHES);
         die();
     }
 
