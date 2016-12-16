@@ -124,7 +124,7 @@ class ethplorerController {
                 'totalIn'   => 0,
                 'totalOut'  => 0,
             ),
-            'countTxs' => /* $this->db->countTransactions($address) */ 0
+            'countTxs' => $this->db->countTransactions($address)
         );
         if($contract = $this->db->getContract($address)){
             $result['contractInfo'] = array(
