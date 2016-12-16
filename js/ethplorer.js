@@ -367,7 +367,6 @@ Ethplorer = {
         data.balance = parseFloat(data.balance) * 1e+18;
         Ethplorer.fillValues('address', data, ['address', 'balance']);
         $('#address-token-balances, #address-token-details').hide();
-        // console.log(data);
         if(data.isContract && data.contract.isChainy){
             titleAdd = 'Chainy Information';
             var fields = ['contract', 'contract.txsCount'];
@@ -381,7 +380,6 @@ Ethplorer = {
                     var link = '';
                     if(tx.link){
                         var obj = Ethplorer.Utils.parseJData(tx.input);
-                        console.log(obj);
                         if(false !== obj){
                             var chainyTypes = {
                                 'R': 'Redirect',
@@ -488,9 +486,6 @@ Ethplorer = {
         if(data.transfers && data.transfers.length){
             var tableId = data.token ? 'address-token-transfers' : 'address-transfers';
             $('#' + tableId).show();
-            if(50 === data.transfers.length){
-                $('#' + tableId + ' .block-header').html($('#' + tableId + ' .block-header').html().replace('Transfers', 'Last 50 Transfers'))
-            }
             for(var i=0; i<data.transfers.length; i++){
                 var tx = data.transfers[i];
                 var qty = Ethplorer.Utils.toBig(tx.value);
@@ -511,9 +506,14 @@ Ethplorer = {
                         (!data.token ? ('<span class="address-token-inline">Token:&nbsp;' + token + '<br></span>') : '') +
                         '<span class="show_small">Value:&nbsp;' + value + '<br></span>' +                        
                         'Tx:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.transactionHash) + '<br>' +
-                        'From:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.from) + '<br>' +
-                        'To:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.to)
+                        (tx.from ? (
+                            'From:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.from) + '<br>' +
+                            'To:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.to)
+                        ) : '' /*('Address:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.address))*/)
                     );
+                    if(!tx.from && tx.address){
+                        value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>Burn' : '+' + value + '<br>Issuance';
+                    }
                     tdQty.html(value);
                     tdData.append(divData);
                     row.append(tdDate, tdData);
@@ -529,6 +529,7 @@ Ethplorer = {
                 }
             }
             if(50 == data.transfers.length){
+                $('#' + tableId + ' .block-header').html($('#' + tableId + ' .block-header').html().replace('Transfers', 'Last 50 Transfers').replace('Operations', 'Last 50 Operations'))
                 $('#address-transfers-more, #address-token-transfers-more').html(Ethplorer.Utils.getEtherscanLink(address, 'View full history', false));
             }
         }
@@ -547,7 +548,6 @@ Ethplorer = {
     },
 
     prepareToken: function(oToken){
-        console.log(oToken);
         if(!oToken){
             oToken = {address: '', name: '', decimals: 0, symbol: '', totalSupply: 0};
         }

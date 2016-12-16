@@ -174,7 +174,7 @@ class Ethplorer {
                     $result["tokens"][$balance["contract"]] = $balanceToken;
                 }
             }
-            $result["transfers"] = $this->getAddressTransfers($address, $limit);
+            $result["transfers"] = $this->getAddressOperations($address, $limit);
         }
         return $result;
     }
@@ -526,10 +526,21 @@ class Ethplorer {
      * @param int $limit       Maximum number of records
      * @return array
      */
-    public function getAddressTransfers($address, $limit = 10){
+    public function getAddressOperations($address, $limit = 10){
         // evxProfiler::checkpoint('getAddressTransfers START [address=' . $address . ', limit=' . $limit . ']');
         $cursor = $this->dbs['operations']
-            ->find(array('$or' => array(array("from" => $address), array("to" => $address)), 'type' => 'transfer'))
+            ->find(
+                array(
+                    '$or' => array(
+                        array("from" => $address),
+                        array("to" => $address),
+                        array('address' => $address)
+                    ),
+                    'type' => array(
+                        '$in' => array('transfer', 'issuance', 'burn', 'mint')
+                    )
+                )
+            )
             ->sort(array("timestamp" => -1))
             ->limit($limit);
         $result = array();
