@@ -92,9 +92,13 @@ class ethplorerController {
         if(!$this->db->isValidAddress($address)){
             $this->sendError(104, 'Invalid address format');
         }
-        // @todo: mapping
         $result = $this->db->getToken($address);
-        if(FALSE === $result){
+        if($result && is_array($result)){
+            unset($result['checked']);
+            unset($result['txsCount']);
+            unset($result['transfersCount']);
+            $result['countOps'] = $this->db->countOperations($address);
+        }else{
             $this->sendError(150, 'Address is not a token contract');
         }
         $this->sendResult($result);
@@ -102,6 +106,7 @@ class ethplorerController {
 
     public function getAddressInfo(){
         $address = $this->getParam(0, FALSE);
+        $onlyToken = $this->getRequest('token', FALSE);
         if((FALSE === $address)){
             $this->sendError(103, 'Missing address');
         }
@@ -109,8 +114,57 @@ class ethplorerController {
         if(!$this->db->isValidAddress($address)){
             $this->sendError(104, 'Invalid address format');
         }
-        // @todo: mapping
-        $result = $this->db->getAddressDetails($address);
+        if($onlyToken && !$this->db->isValidAddress($onlyToken)){
+            $this->sendError(104, 'Invalid address format');
+        }
+        $result = array(
+            'address' => $address,
+            'ETH' => array(
+                'balance'   => $this->db->getBalance($address),
+                'totalIn'   => 0,
+                'totalOut'  => 0,
+            ),
+            'countTxs' => /* $this->db->countTransactions($address) */ 0
+        );
+        if($contract = $this->db->getContract($address)){
+            $result['contractInfo'] = array(
+                'code' => $contract['code'],
+                'created' => array(
+                    'creatorAddress' => $contract['creator'],
+                    'transactionHash' => $contract['hash'],
+                    'timestamp' => $contract['timestamp']
+                )
+            );
+            if($token = $this->db->getToken($address)){
+                unset($token['checked']);
+                unset($token['txsCount']);
+                unset($token['transfersCount']);
+                $result['tokenInfo'] = $token;
+            }
+        }
+        $balances = $this->db->getAddressBalances($address);
+        if(is_array($balances) && !empty($balances)){
+            $result['tokens'] = array();
+            foreach($balances as $balance){
+                if($onlyToken){
+                    if($balance['contract'] !== strtolower($onlyToken)){
+                        continue;
+                    }
+                }
+                $token = $this->db->getToken($balance['contract']);
+                if($token){
+                    unset($token['checked']);
+                    unset($token['txsCount']);
+                    unset($token['transfersCount']);
+                    $result['tokens'][] = array(
+                        'tokenInfo' => $token,
+                        'balance' => $balance['balance'],
+                        'totalIn' => 0,
+                        'totalOut' => 0
+                    );
+                }
+            }
+        }
         $this->sendResult($result);
     }
 
@@ -123,7 +177,6 @@ class ethplorerController {
         if(!$this->db->isValidTransactionHash($txHash)){
             $this->sendError(102, 'Invalid transaction hash format');
         }
-        // @todo: mapping
         $tx = $this->db->getTransactionDetails($txHash);
         if(!is_array($tx) || (FALSE === $tx['tx'])){
             $this->sendError(404, 'Transaction not found');

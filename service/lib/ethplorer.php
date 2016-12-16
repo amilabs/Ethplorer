@@ -381,6 +381,38 @@ class Ethplorer {
     }
 
     /**
+     * Returns total number of token operations for the address.
+     *
+     * @param string $address  Contract address
+     * @return int
+     */
+    public function countOperations($address){
+        $result = 0;
+        $token = $this->getToken($address);
+        if($token){
+            $result = $this->dbs['operations']->count(array('contract' => $address));
+        }
+        return $result;
+    }
+
+    /**
+     * Returns total number of transactions for the address (incoming, outoming, contract creation).
+     *
+     * @param string $address  Contract address
+     * @return int
+     */
+    public function countTransactions($address){
+        $result = 0;
+        $result = $this
+            ->dbs['transactions']
+            ->count(array('$or' => array(array('from' => $address), array('to' => $address))));
+        if($this->getContract($address)){
+            $result++; // One for contract creation
+        }
+        return $result;
+    }
+
+    /**
      * Returns list of contract transfers.
      *
      * @param string $address  Contract address
