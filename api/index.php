@@ -43,6 +43,6 @@ switch($command){
         $result = $es->getLastTransfers($options);
         break;
     default:
-        $ctr->sendError(17, 'Invalid request, check https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API for API specification');
+        $ctr->sendError(17, 'Invalid request, check API manual there: https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API');
 }
 $ctr->sendResult($result);
