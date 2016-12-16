@@ -2,6 +2,10 @@ RewriteEngine on
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api/(.*) api/index.php [L,QSA]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^tx/(.*) index.html [L,QSA]
 
 RewriteCond %{REQUEST_FILENAME} !-f

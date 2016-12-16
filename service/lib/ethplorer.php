@@ -160,6 +160,12 @@ class Ethplorer {
         if($result['isContract'] && isset($result['token'])){
             $result["transfers"] = $this->getContractTransfers($address, $limit);
             $result["issuances"] = $this->getContractIssuances($address, $limit);
+            if(empty($result["issuances"])){
+                $result["issuances"] = $this->getContractOperation('mint', $address, $limit);
+            }
+            if(empty($result["issuances"])){
+                unset($result["issuances"]);
+            }
         }
         if(!isset($result['token'])){
             // Get balances
