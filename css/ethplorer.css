@@ -424,14 +424,19 @@ small {
     display: none;
 }
 
-.token-name a.token-update, 
-.address-token-name a.token-update {
+a.token-update {
     position: absolute;
     right: 0px;
     margin-right: 30px;
     font-size: 14px;
     top: 37px;   
     color: #337ab7 !important;
+}
+
+@media screen and (max-width: 479px) {
+    a.token-update {
+        display: none;
+    }
 }
 
 @media screen and (max-width: 767px) {

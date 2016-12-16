@@ -217,11 +217,6 @@ Ethplorer = {
                 );
             }            
             
-            /*
-            if(Ethplorer.Config.updateLink){
-                $('.token-name:eq(1)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>');
-            }
-            */
             txData.token = oToken;
 
             Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
@@ -449,6 +444,9 @@ Ethplorer = {
                 $('.address-token-name:eq(0)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>')
             }
             if(data.issuances && data.issuances.length){
+                if(50 === data.issuances.length){
+                    $('#address-issuances .block-header').html($('#address-issuances .block-header').html().replace('Issuances', 'Last 50 Issuances'))
+                }
                 $('#address-issuances').show();
                 for(var i=0; i<data.issuances.length; i++){
                     var tx = data.issuances[i];
@@ -490,6 +488,9 @@ Ethplorer = {
         if(data.transfers && data.transfers.length){
             var tableId = data.token ? 'address-token-transfers' : 'address-transfers';
             $('#' + tableId).show();
+            if(50 === data.transfers.length){
+                $('#' + tableId + ' .block-header').html($('#' + tableId + ' .block-header').html().replace('Transfers', 'Last 50 Transfers'))
+            }
             for(var i=0; i<data.transfers.length; i++){
                 var tx = data.transfers[i];
                 var qty = Ethplorer.Utils.toBig(tx.value);

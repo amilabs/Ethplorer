@@ -161,9 +161,6 @@ class Ethplorer {
             $result["transfers"] = $this->getContractTransfers($address, $limit);
             $result["issuances"] = $this->getContractIssuances($address, $limit);
             if(empty($result["issuances"])){
-                $result["issuances"] = $this->getContractOperation('mint', $address, $limit);
-            }
-            if(empty($result["issuances"])){
                 unset($result["issuances"]);
             }
         }
@@ -315,7 +312,7 @@ class Ethplorer {
      * @return array
      */
     public function getIssuances($tx){
-        return $this->getOperations($tx, 'issuance');
+        return $this->getOperations($tx, array('$in' => array('issuance', 'burn', 'mint')));
     }
 
     /**
@@ -437,7 +434,7 @@ class Ethplorer {
      * @return array
      */
     public function getContractIssuances($address, $limit = 10){
-        return $this->getContractOperation('issuance', $address, $limit);
+        return $this->getContractOperation(array('$in' => array('issuance', 'burn', 'mint')), $address, $limit);
     }
 
     /**
