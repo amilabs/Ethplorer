@@ -211,8 +211,9 @@ Ethplorer = {
             $('.token-name:eq(1)').html(Ethplorer.Utils.getEthplorerLink(oToken.address, oToken.name , false));
             
             if(oToken.image){
+                var img = Ethplorer.Utils.getEthplorerLink(oToken.address, '##IMG##', false);
                 $('.token-related:eq(1) .block-header').prepend(
-                    '<img src="' + oToken.image + '" style="max-width:32px;max-height:32px;margin:8px;margin-left:20px;" align="left">'
+                    img.replace('##IMG##', '<img src="' + oToken.image + '" style="max-width:32px;max-height:32px;margin:8px;margin-left:20px;" align="left">')
                 );
             }            
             
