@@ -41,11 +41,6 @@ Ethplorer = {
             case 'search':
                 Ethplorer.search(pathData.arg);
                 break;
-            /*
-            case 'token':
-                showTokenDetails(pathData.arg);
-                break;
-            */
             default:
                 Ethplorer.error('Invalid action');
         }
@@ -101,7 +96,11 @@ Ethplorer = {
             $('#transaction-tx-message').html('')
         }
         var oOperation = txData.operation;
-        titleAdd += oOperation['type'];
+        // Temporary workaround
+        if(oOperation.type == 'Mint'){
+            oOperation.type = 'Issuance';
+        }
+        titleAdd += oOperation.type;
         $('.token-operation-type').text(oOperation['type']);
         Ethplorer.fillValues('transfer', txData, ['operation', 'operation.from', 'operation.to', 'operation.value']);
         if(oTx.blockNumber){
@@ -291,8 +290,12 @@ Ethplorer = {
                 }
 
                 var oOperation = txData.operation;
-                titleAdd += oOperation['type'];
-                $('.token-operation-type').text(oOperation['type']);
+                // Temporary workaround
+                if(oOperation.type == 'Mint'){
+                    oOperation.type = 'Issuance';
+                }
+                titleAdd += oOperation.type;
+                $('.token-operation-type').text(oOperation.type);
                 Ethplorer.fillValues('transfer', txData, ['operation', 'operation.from', 'operation.to', 'operation.value']);
                 if(oTx.blockNumber){
                     $('#txTokenStatus')[oOperation.success ? 'removeClass' : 'addClass']('text-danger');
@@ -448,6 +451,10 @@ Ethplorer = {
                 $('#address-issuances').show();
                 for(var i=0; i<data.issuances.length; i++){
                     var tx = data.issuances[i];
+                    // Temporary workaround
+                    if(tx.type == 'mint'){
+                        tx.type = 'issuance';
+                    }
                     var qty = Ethplorer.Utils.toBig(tx.value);
                     if(parseInt(qty.toString())){
                         var qty = Ethplorer.Utils.toBig(tx.value).div(Math.pow(10, oToken.decimals));
@@ -509,10 +516,10 @@ Ethplorer = {
                         (tx.from ? (
                             'From:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.from) + '<br>' +
                             'To:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.to)
-                        ) : '' /*('Address:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.address))*/)
+                        ) : ('Address:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.address)))
                     );
                     if(!tx.from && tx.address){
-                        value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>Burn' : '+' + value + '<br>Issuance';
+                        value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>Burn' : /*'+' + */value + '<br>Issuance';
                     }
                     tdQty.html(value);
                     tdData.append(divData);
@@ -617,11 +624,6 @@ Ethplorer = {
         }
         $('#search').val('');
         Ethplorer.error('Nothing found');
-    },
-
-    showTokenDetails: function(address){
-        Ethplorer.hideLoader();
-        $('#tokenDetails').show();
     },
 
     fillValues: function(prefix, data, keys){
