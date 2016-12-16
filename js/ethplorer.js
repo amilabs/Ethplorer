@@ -433,7 +433,10 @@ Ethplorer = {
             if(oToken.description){
                 oToken.description = $('<span>').text(oToken.description).html();
                 oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
-                oToken.description = oToken.description.replace(/\n/g, '<br />');                    
+                oToken.description = oToken.description.replace(/\n/g, '<br />');
+                if(oToken.image){
+                    oToken.description = '<img src="' + oToken.image + '" style="max-width:64px;max-height:64px;margin-8px;" align="left">' + oToken.description;
+                }
             }
             titleAdd = 'Token ' + oToken.name + ' Information';
             $('.address-token-name').text(oToken.name);
