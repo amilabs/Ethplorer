@@ -283,7 +283,7 @@ class Ethplorer {
         if($type){
             $search['type'] = $type;
         }
-        $cursor = $this->dbs['operations']->find($search);
+        $cursor = $this->dbs['operations']->find($search)->sort(array('priority' => 1));
         $result = array();
         while($cursor->hasNext()){
             $res = $cursor->getNext();

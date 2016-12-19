@@ -198,8 +198,10 @@ ethplorerWidget = {
         var k = Math.pow(10, tr.token.decimals);
         var amount = ethplorerWidget.Utils.formatNum(tr.value / k, true, parseInt(tr.token.decimals), true);
 
+        var hash = tr.priority ? tr.priority : false;
+
         return {
-            date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false), tr.transactionHash),
+            date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false), tr.transactionHash, hash),
             from:  ethplorerWidget.Utils.link(tr.from, tr.from),
             to: ethplorerWidget.Utils.link(tr.to, tr.to),
             amount: ethplorerWidget.Utils.link(tr.token.address, amount, amount + ' ' + tr.token.symbol),
@@ -221,10 +223,16 @@ ethplorerWidget = {
     },
 
     Utils: {
-        link: function(data, text, title){
+        link: function(data, text, title, hash){
             title = title || text;
+            hash = hash || false;
+            if((false !== hash) && hash){
+                hash = '#' + hash;
+            }else{
+                hash = '';
+            }
             var linkType = (data && (42 === data.toString().length)) ? 'address' : 'tx';
-            return '<a class="tx-link" href="' + ethplorerWidget.url + '/' + linkType + '/' + data + '" title="' + title + '" target="_blank">' + text + '</a>';
+            return '<a class="tx-link" href="' + ethplorerWidget.url + '/' + linkType + '/' + data + hash + '" title="' + title + '" target="_blank">' + text + '</a>';
         },
 
         // Date with fixed GMT to local date

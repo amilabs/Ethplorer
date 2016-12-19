@@ -230,8 +230,9 @@ Ethplorer = {
                 txData.operation = txData.operations[txData.operations.length - 1];
                 var multiop = txData.operations.length > 1;
                 for(var i=0; i<txData.operations.length; i++){
-                    var idx = txData.operations.length - i - 1;
+                    var idx = i; // txData.operations.length - i - 1;
                     var op = txData.operations[idx];
+                    var pos = ('undefined' !== typeof(op.priority)) ? op.priority : idx;
                     op.index = idx;
                     var opToken = Ethplorer.prepareToken(op.token);
                     if('undefined' !== typeof(op.value)){
@@ -251,7 +252,7 @@ Ethplorer = {
                     }
                     if(multiop){
                         var row = $(
-                            '<tr data-op-idx="' + idx + '">' + 
+                            '<tr data-op-idx="' + pos + '">' + 
                             '<td><a class="dashed">Details</a></td>' +
                             '<td><span class="dash_on_hover">' + op.type.toString().toUpperCase() +
                             '<span class="show_small"> ' + op.value + ' ' + op.symbol + '</span>' +
@@ -276,7 +277,7 @@ Ethplorer = {
                                             Ethplorer.showOpDetails(__tx, __op);
                                         };
                                     }(_tx, _op), 250);
-                                    document.location.hash = _op.index;
+                                    document.location.hash = ('undefined' !== typeof(_op.priority)) ? _op.priority : _op.index;
                                 }
                             };
                         }(oTx, op));
@@ -774,15 +775,18 @@ Ethplorer = {
         },
         getEtherscanLink: function(data, text, isContract){
             text = text || data;
-            var urlEtherscan = Ethplorer.Utils.getEtherscanAddress();
+            text = $('<span>').text(text).html();
             if(!/^0x/.test(data)){
                 return text;
             }
-            text = $('<span>').text(text).html();
+            /*
+            var urlEtherscan = Ethplorer.Utils.getEtherscanAddress();
             var isTx = Ethplorer.Utils.isTx(data);
             var res = '<a target="_blank" class="external-link" href="' + urlEtherscan;
             res += (isTx ? 'tx' : 'address');
             res += ('/' + data + '"><i class="fa fa-external-link"></i>&nbsp;' + text + '</a>');
+            */
+            var res = text;
             if(isContract){
                 res = 'Contract ' + res;
             }        
