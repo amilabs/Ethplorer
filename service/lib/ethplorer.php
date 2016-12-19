@@ -489,9 +489,13 @@ class Ethplorer {
                 $search['type'] = $options['type'];
             }
         }
-        if(isset($options['address'])){
+        if(isset($options['address']) && !isset($options['history'])){
             $search['contract'] = $options['address'];
         }
+        if(isset($options['address']) && isset($options['history'])){
+            $search['$or'] = array(array('from' => $options['address']), array('to' => $options['address']));
+        }
+
         $sort = array("timestamp" => -1);
 
         if(isset($options['timestamp']) && ($options['timestamp'] > 0)){
@@ -555,7 +559,21 @@ class Ethplorer {
     }
 
     public function checkAPIKey($key){
-        return isset($this->aSettings['apiKeys']) && (FALSE !== array_search($key, $this->aSettings['apiKeys']));
+        return isset($this->aSettings['apiKeys']) && isset($this->aSettings['apiKeys'][$key]);
+    }
+
+    public function getAPIKeyDefaults($key, $option = FALSE){
+        $res = FALSE;
+        if($this->checkAPIKey($key)){
+            if(is_array($this->aSettings['apiKeys'][$key])){
+                if(FALSE === $option){
+                    $res = $this->aSettings['apiKeys'][$key];
+                }else if(isset($this->aSettings['apiKeys'][$key][$option])){
+                    $res = $this->aSettings['apiKeys'][$key][$option];
+                }
+            }
+        }
+        return $res;
     }
 
     /**

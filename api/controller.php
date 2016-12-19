@@ -19,7 +19,8 @@ class ethplorerController {
     protected $db;
     protected $command;
     protected $params = array();
-    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo');
+    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory');
+    protected $defaults;
 
     public function __construct($es){
         if(!($es instanceof Ethplorer)){
@@ -76,9 +77,11 @@ class ethplorerController {
     public function run(){
         $command = $this->getCommand();
         if($command && in_array($command, $this->apiCommands) && method_exists($this, $command)){
-            if(!$this->db->checkAPIkey($this->getRequest('apiKey', FALSE))){
+            $key = $this->getRequest('apiKey', FALSE);
+            if(!$key || !$this->db->checkAPIkey($key)){
                 $this->sendError(1, 'Invalid API key');
             }
+            $this->defaults = $this->db->getAPIKeyDefaults($key, $this->getCommand());
             $result = call_user_func(array($this, $this->getCommand()));
             $this->sendResult($result);
         }
@@ -231,11 +234,56 @@ class ethplorerController {
         if((FALSE !== $address) && (!$this->db->isValidAddress($address))){
             $this->sendError(104, 'Invalid address format');
         }
+        $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 10;
         $options = array(
             'address'   => $this->getParam(0, FALSE),
             'type'      => $this->getRequest('type', FALSE),
-            'limit'     => min(abs((int)$this->getRequest('limit', 10)), 10),
+            'limit'     => min(abs((int)$this->getRequest('limit', 10)), $maxLimit),
             'timestamp' => (int)$this->getRequest('tsAfter', 0)
+        );
+        $operations = $this->db->getLastTransfers($options);
+        if(is_array($operations) && count($operations)){
+            for($i = 0; $i < count($operations); $i++){
+                $operation = $operations[$i];
+                $res = array(
+                    'timestamp'         => $operation['timestamp'],
+                    'transactionHash'   => $operation['transactionHash'],
+                    'tokenInfo'         => $operation['token'],
+                    'type'              => $operation['type'],
+                    'value'             => $operation['value'],
+                );
+                if(isset($operation['address'])){
+                    $res['address'] = $operation['address'];
+                }
+                if(isset($operation['from'])){
+                    $res['from'] = $operation['from'];
+                    $res['to'] = $operation['to'];
+                }
+                $result['operations'][] = $res;
+            }
+        }
+        return $result;
+    }
+
+    // @todo: remove copypaste
+    public function getAddressHistory(){
+        $result = array(
+            'operations' => array()
+        );
+        $address = $this->getParam(0, FALSE);
+        if($address){
+            $address = strtolower($address);
+        }
+        if((FALSE !== $address) && (!$this->db->isValidAddress($address))){
+            $this->sendError(104, 'Invalid address format');
+        }
+        $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 10;
+        $options = array(
+            'address'   => $this->getParam(0, FALSE),
+            'type'      => $this->getRequest('type', FALSE),
+            'limit'     => min(abs((int)$this->getRequest('limit', 10)), $maxLimit),
+            'timestamp' => (int)$this->getRequest('tsAfter', 0),
+            'history'   => TRUE
         );
         $operations = $this->db->getLastTransfers($options);
         if(is_array($operations) && count($operations)){
