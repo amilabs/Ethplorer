@@ -441,7 +441,7 @@ Ethplorer = {
                 );
             }
 
-            titleAdd = 'Token ' + oToken.name + ' Information';
+            titleAdd = 'Token ' + oToken.name + (oToken.symbol ? (' [' + oToken.symbol + ']') : '' ) + ' Information';
             $('.address-token-name').text(oToken.name);
             if(Ethplorer.Config.updateLink){
                 $('.address-token-name:eq(0)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>')
@@ -551,7 +551,7 @@ Ethplorer = {
         }
 
         document.title += (': ' + (titleAdd ? (titleAdd + ' -') : ''));
-        document.title += ((data.isContract ? ' contract ' : ' address ') + address);
+        document.title += ((data.isContract ? ' Ethereum contract ' : ' Ethereum address ') + address);
 
         $('.local-time-offset').text(Ethplorer.Utils.getTZOffset());
         Ethplorer.Utils.hideEmptyFields();
