@@ -490,8 +490,8 @@ Ethplorer = {
                     value += '<br />';
                     var totalIn = Ethplorer.Utils.toBig(balance.totalIn).div(Math.pow(10, oToken.decimals));
                     var totalOut = Ethplorer.Utils.toBig(balance.totalOut).div(Math.pow(10, oToken.decimals));
-                    value += ('<div class="total-in-out-small">Total IN: ' + Ethplorer.Utils.formatNum(totalIn, true, oToken.decimals, true) + '<br />');
-                    value += ('Total OUT: ' + Ethplorer.Utils.formatNum(totalOut, true, oToken.decimals, true) + '</div>');
+                    value += ('<div class="total-in-out-small">Total In: ' + Ethplorer.Utils.formatNum(totalIn, true, oToken.decimals, true) + '<br />');
+                    value += ('Total Out: ' + Ethplorer.Utils.formatNum(totalOut, true, oToken.decimals, true) + '</div>');
                     row.append('<TD>' + value + '</TD>');
                 }
                 row.find('td:eq(1)').addClass('text-right');

@@ -301,7 +301,8 @@ a.dashed {
 .total-in-out-small {
     font-size: 0.8em;
     opacity: 0.4;
-    line-height: 12px;
+    line-height: 14px;
+    padding-top: 4px;
 }
 
 /* Timer*/
