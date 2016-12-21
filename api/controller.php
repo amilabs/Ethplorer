@@ -19,7 +19,7 @@ class ethplorerController {
     protected $db;
     protected $command;
     protected $params = array();
-    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory');
+    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', /*'getAddressHistory'*/);
     protected $defaults;
 
     public function __construct($es){
@@ -159,8 +159,8 @@ class ethplorerController {
                     $result['tokens'][] = array(
                         'tokenInfo' => $token,
                         'balance' => $balance['balance'],
-                        'totalIn' => 0,
-                        'totalOut' => 0
+                        'totalIn' => isset($balance['totalIn']) ? $balance['totalIn'] : 0,
+                        'totalOut' => isset($balance['totalOut']) ? $balance['totalOut'] : 0
                     );
                 }
             }
