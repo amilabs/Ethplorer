@@ -19,7 +19,7 @@ class ethplorerController {
     protected $db;
     protected $command;
     protected $params = array();
-    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', /*'getAddressHistory'*/);
+    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory');
     protected $defaults;
 
     public function __construct($es){
@@ -224,49 +224,15 @@ class ethplorerController {
     }
 
     public function getTokenHistory(){
-        $result = array(
-            'operations' => array()
-        );
-        $address = $this->getParam(0, FALSE);
-        if($address){
-            $address = strtolower($address);
-        }
-        if((FALSE !== $address) && (!$this->db->isValidAddress($address))){
-            $this->sendError(104, 'Invalid address format');
-        }
-        $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 10;
-        $options = array(
-            'address'   => $this->getParam(0, FALSE),
-            'type'      => $this->getRequest('type', FALSE),
-            'limit'     => min(abs((int)$this->getRequest('limit', 10)), $maxLimit),
-            'timestamp' => (int)$this->getRequest('tsAfter', 0)
-        );
-        $operations = $this->db->getLastTransfers($options);
-        if(is_array($operations) && count($operations)){
-            for($i = 0; $i < count($operations); $i++){
-                $operation = $operations[$i];
-                $res = array(
-                    'timestamp'         => $operation['timestamp'],
-                    'transactionHash'   => $operation['transactionHash'],
-                    'tokenInfo'         => $operation['token'],
-                    'type'              => $operation['type'],
-                    'value'             => $operation['value'],
-                );
-                if(isset($operation['address'])){
-                    $res['address'] = $operation['address'];
-                }
-                if(isset($operation['from'])){
-                    $res['from'] = $operation['from'];
-                    $res['to'] = $operation['to'];
-                }
-                $result['operations'][] = $res;
-            }
-        }
-        return $result;
+        return $this->_getHistory();
     }
 
     // @todo: remove copypaste
     public function getAddressHistory(){
+        return $this->_getHistory(TRUE);
+    }
+
+    protected function _getHistory($addressHistoryMode = FALSE){
         $result = array(
             'operations' => array()
         );
@@ -274,17 +240,26 @@ class ethplorerController {
         if($address){
             $address = strtolower($address);
         }
-        if((FALSE !== $address) && (!$this->db->isValidAddress($address))){
+        if((!$address && $addressHistoryMode) || ((FALSE !== $address) && (!$this->db->isValidAddress($address)))){
             $this->sendError(104, 'Invalid address format');
         }
         $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 10;
         $options = array(
-            'address'   => $this->getParam(0, FALSE),
+            'address'   => $address,
             'type'      => $this->getRequest('type', FALSE),
             'limit'     => min(abs((int)$this->getRequest('limit', 10)), $maxLimit),
-            'timestamp' => (int)$this->getRequest('tsAfter', 0),
-            'history'   => TRUE
         );
+        if($addressHistoryMode){
+            $token = $this->getRequest('token', FALSE);
+            if(FALSE !== $token){
+                $token = strtolower($token);
+                if(!$this->db->isValidAddress($token)){
+                    $this->sendError(104, 'Invalid token address format');
+                }
+                $options['token'] = $token;
+            }
+            $options['history'] = TRUE;
+        }
         $operations = $this->db->getLastTransfers($options);
         if(is_array($operations) && count($operations)){
             for($i = 0; $i < count($operations); $i++){

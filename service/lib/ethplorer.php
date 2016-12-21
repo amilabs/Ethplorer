@@ -496,6 +496,10 @@ class Ethplorer {
             $search['$or'] = array(array('from' => $options['address']), array('to' => $options['address']));
         }
 
+        if(isset($options['token']) && isset($options['history'])){
+            $search['contract'] = $options['token'];
+        }
+
         $sort = array("timestamp" => -1);
 
         if(isset($options['timestamp']) && ($options['timestamp'] > 0)){
