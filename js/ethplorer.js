@@ -493,9 +493,9 @@ Ethplorer = {
                     value += ('<div class="total-in-out-small">Total In: ' + Ethplorer.Utils.formatNum(totalIn, true, oToken.decimals, true) + '<br />');
                     value += ('Total Out: ' + Ethplorer.Utils.formatNum(totalOut, true, oToken.decimals, true) + '</div>');
                     row.append('<TD>' + value + '</TD>');
-                }
-                row.find('td:eq(1)').addClass('text-right');
-                $('#address-token-balances table').append(row);
+                    row.find('td:eq(1)').addClass('text-right');
+                    $('#address-token-balances table').append(row);
+                }                
             }
         }
 
