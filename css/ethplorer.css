@@ -287,11 +287,21 @@ a.dashed {
     text-overflow: ellipsis
 }
 
-small {
+#address-token-transfers small,
+#address-transfers small,
+#address-issuances small,
+#address-chainy-tx small
+{
     margin-top: -10px;
     display: block;
     padding-left: 16px;
     color: white;
+}
+
+.total-in-out-small {
+    font-size: 0.8em;
+    opacity: 0.4;
+    line-height: 12px;
 }
 
 /* Timer*/

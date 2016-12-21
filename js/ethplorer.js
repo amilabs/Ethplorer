@@ -481,12 +481,19 @@ Ethplorer = {
             $('#address-token-balances').show();
             for(var k=0; k<data.balances.length; k++){
                 var balance = data.balances[k];
-                var oToken = Ethplorer.prepareToken(data.tokens[balance.contract]);
-                var row = $('<TR>');
-                row.append('<TD>' + Ethplorer.Utils.getEthplorerLink(balance.contract, oToken.name, false) + '</TD>');
-                var qty = Ethplorer.Utils.toBig(balance.balance).div(Math.pow(10, oToken.decimals));
-                var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals, true) + ' ' + oToken.symbol;
-                row.append('<TD>' + value + '</TD>');
+                if(balance.totalIn || balance.totalOut){
+                    var oToken = Ethplorer.prepareToken(data.tokens[balance.contract]);
+                    var row = $('<TR>');
+                    row.append('<TD>' + Ethplorer.Utils.getEthplorerLink(balance.contract, oToken.name, false) + '</TD>');
+                    var qty = Ethplorer.Utils.toBig(balance.balance).div(Math.pow(10, oToken.decimals));
+                    var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals, true) + ' ' + oToken.symbol;
+                    value += '<br />';
+                    var totalIn = Ethplorer.Utils.toBig(balance.totalIn).div(Math.pow(10, oToken.decimals));
+                    var totalOut = Ethplorer.Utils.toBig(balance.totalOut).div(Math.pow(10, oToken.decimals));
+                    value += ('<div class="total-in-out-small">Total IN: ' + Ethplorer.Utils.formatNum(totalIn, true, oToken.decimals, true) + '<br />');
+                    value += ('Total OUT: ' + Ethplorer.Utils.formatNum(totalOut, true, oToken.decimals, true) + '</div>');
+                    row.append('<TD>' + value + '</TD>');
+                }
                 row.find('td:eq(1)').addClass('text-right');
                 $('#address-token-balances table').append(row);
             }
@@ -725,7 +732,7 @@ Ethplorer = {
                 num = math('round', num, decimals);
             }
             var parts = num.toString().split('.');
-            var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
             var zeroCount = cutZeroes ? 2 : decimals;
             if(withDecimals && decimals){
                 if(parts.length > 1){
