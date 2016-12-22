@@ -74,6 +74,11 @@ class ethplorerController {
         $this->sendResult($result);
     }
 
+    /**
+     * Checks API key and runs command
+     *
+     * @return void
+     */
     public function run(){
         $command = $this->getCommand();
         if($command && in_array($command, $this->apiCommands) && method_exists($this, $command)){
@@ -87,6 +92,11 @@ class ethplorerController {
         }
     }
 
+    /**
+     * /getTokenInfo method implementation.
+     *
+     * @return array
+     */
     public function getTokenInfo(){
         $address = $this->getParam(0, FALSE);
         if((FALSE === $address)){
@@ -107,6 +117,11 @@ class ethplorerController {
         $this->sendResult($result);
     }
 
+    /**
+     * /getAddressInfo method implementation.
+     *
+     * @return array
+     */
     public function getAddressInfo(){
         $address = $this->getParam(0, FALSE);
         $onlyToken = $this->getRequest('token', FALSE);
@@ -168,6 +183,11 @@ class ethplorerController {
         $this->sendResult($result);
     }
 
+    /**
+     * /getTxInfo method implementation.
+     *
+     * @return array
+     */
     public function getTxInfo(){
         $txHash = $this->getParam(0, FALSE);
         if((FALSE === $txHash)){
@@ -223,15 +243,31 @@ class ethplorerController {
         $this->sendResult($result);
     }
 
+    /**
+     * /getTokenHistory method implementation.
+     *
+     * @return array
+     */
     public function getTokenHistory(){
         return $this->_getHistory();
     }
 
-    // @todo: remove copypaste
+    /**
+     * /getAddressHistory method implementation.
+     *
+     * @return array
+     */
     public function getAddressHistory(){
         return $this->_getHistory(TRUE);
     }
 
+    /**
+     *
+     * Common method to get token and address operation history.
+     *
+     * @param bool $addressHistoryMode
+     * @return array
+     */
     protected function _getHistory($addressHistoryMode = FALSE){
         $result = array(
             'operations' => array()
@@ -284,6 +320,12 @@ class ethplorerController {
         return $result;
     }
 
+    /**
+     * Converts JavaScript bignumber format to a float.
+     *
+     * @param array $aNumber
+     * @return float
+     */
     protected function _bn2float($aNumber){
         $res = 0;
         if(isset($aNumber['c']) && !empty($aNumber['c'])){
