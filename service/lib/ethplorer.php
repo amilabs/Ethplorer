@@ -493,7 +493,7 @@ class Ethplorer {
             $search['contract'] = $options['address'];
         }
         if(isset($options['address']) && isset($options['history'])){
-            $search['$or'] = array(array('from' => $options['address']), array('to' => $options['address']));
+            $search['$or'] = array(array('from' => $options['address']), array('to' => $options['address']), array('address' => $options['address']));
         }
 
         if(isset($options['token']) && isset($options['history'])){
