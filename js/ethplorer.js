@@ -308,6 +308,17 @@ Ethplorer = {
             }else{
                 titleAdd += 'Operation';
                 $('.token-operation-type').text('Operation');
+                if(oTx.receipt && oTx.receipt.logs && oTx.receipt.logs.length){
+                    for(var i=0; i<oTx.receipt.logs.length; i++){
+                        var log = oTx.receipt.logs[i];
+                        // Error event
+                        if(log.topics && log.topics.length && (0 === log.topics[0].indexOf('0x19f3a4'))){
+                            oTx.success = false;
+                            oTx.failedReason = Ethplorer.Utils.hex2ascii(log.data.substr(192))
+                            break;
+                        }
+                    }
+                }
                 if(oTx.blockNumber){
                     $('#txTokenStatus')[oTx.success ? 'removeClass' : 'addClass']('text-danger');
                     $('#txTokenStatus')[oTx.success ? 'addClass' : 'removeClass']('text-success');           
