@@ -224,7 +224,9 @@ class Ethplorer {
                     }
                 }
             }
-            $this->oCache->save($cache, $result);
+            if($result['tx']){
+                $this->oCache->save($cache, $result);
+            }
         }
         if(is_array($result) && is_array($result['tx'])){
             $result['tx']['confirmations'] = $this->oCache->get('lastBlock') - $result['tx']['blockNumber'] + 1;
