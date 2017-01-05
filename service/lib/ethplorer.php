@@ -67,29 +67,28 @@ class Ethplorer {
         );
 
         $this->oCache = new evxCache($this->aSettings['cacheDir']);
-        if(!isset($this->aSettings['mongo'])){
-            throw new Exception("Mongo configuration not found");
-        }
         if(!isset($this->aSettings['ethereum'])){
             throw new Exception("Ethereum configuration not found");
         }
-        if(class_exists("MongoClient")){
-            $oMongo = new MongoClient($this->aSettings['mongo']['server']);
-            $oDB = $oMongo->{$this->aSettings['mongo']['dbName']};
-            $this->dbs = array(
-                'transactions' => $oDB->{"everex.eth.transactions"},
-                'blocks'       => $oDB->{"everex.eth.blocks"},
-                'contracts'    => $oDB->{"everex.eth.contracts"},
-                'tokens'       => $oDB->{"everex.erc20.contracts"},
-                'operations'   => $oDB->{"everex.erc20.operations"},
-                'balances'     => $oDB->{"everex.erc20.balances"}
-            );
-        }else{
-            throw new Exception("MongoClient class not found, php_mongo extension required");
+        if(isset($this->aSettings['mongo']) && (FALSE !== $this->aSettings['mongo'])){
+            if(class_exists("MongoClient")){
+                $oMongo = new MongoClient($this->aSettings['mongo']['server']);
+                $oDB = $oMongo->{$this->aSettings['mongo']['dbName']};
+                $this->dbs = array(
+                    'transactions' => $oDB->{"everex.eth.transactions"},
+                    'blocks'       => $oDB->{"everex.eth.blocks"},
+                    'contracts'    => $oDB->{"everex.eth.contracts"},
+                    'tokens'       => $oDB->{"everex.erc20.contracts"},
+                    'operations'   => $oDB->{"everex.erc20.operations"},
+                    'balances'     => $oDB->{"everex.erc20.balances"}
+                );
+                // Get last block
+                $lastblock = $this->getLastBlock();
+                $this->oCache->store('lastBlock', $lastblock);
+            }else{
+                throw new Exception("MongoClient class not found, php_mongo extension required");
+            }
         }
-        // Get last block
-        $lastblock = $this->getLastBlock();
-        $this->oCache->store('lastBlock', $lastblock);
     }
 
     /**

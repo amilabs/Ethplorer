@@ -32,7 +32,7 @@ body {
 .content-page h3 {
     padding-left: 20px;
     padding-top: 12px;
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .content-page .block {
@@ -43,40 +43,40 @@ body {
 }
 
 .content-page .block-header {
-	padding-bottom: 10px;
-	background-color:white;
-	border-top-left-radius: 8px;
-	border-top-right-radius: 8px;
+    padding-bottom: 10px;
+    background-color:white;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
 }
 
 .content-page table td {
     color: white;
     border: 0 !important;
-	min-width: 120px;
+    min-width: 120px;
 }
 
 .content-page table td:first-child {
-	padding: 8px 8px 8px 28px;
+    padding: 8px 8px 8px 28px;
 }
 
 tr.even {
-	background: #0f0f0f;
+    background: #0f0f0f;
 }
 
 tr.odd {
-	background: #1a1a1a;
+    background: #1a1a1a;
 }
 
 .content-page tr.blue {
-	background-color: #1396e2 !important;
+    background-color: #1396e2 !important;
 }
 
 .content-page tr.green {
-	background-color: #27ae60 !important;
+    background-color: #27ae60 !important;
 }
 
 .content-page tr.red {
-	background-color: #c0392b !important;
+    background-color: #c0392b !important;
 }
 
 .block h3 {
@@ -142,6 +142,16 @@ pre.list-field {
 a {
     text-decoration: underline;
 }
+
+.nav-tabs {
+    margin-top: 10px;
+}
+
+.nav-tabs li a {
+    text-decoration: none;
+    border-radius: 8px 8px 0 0;
+}
+
 
 a.local-link, a.local-link:visited, a.local-link:hover {
     color: white;
@@ -276,9 +286,46 @@ a.dashed {
 }
 
 #ethplorer-path {
+    display: none;
+    padding: 16px;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100vw;
+    background-color: white;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 22px;
+    margin-top: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+.arrow-in {
+    color: #00ff00;
+}
+.arrow-in:before {
+    content: '↑';
+}
+.arrow-out {
+    color: #ff0000;
+}
+.arrow-out:before {
+    content: '↓';
+}
+
+.block-header.clickable.closed {
+    background: black;
+    color: white;
+}
+
+.block-header.clickable h3 {
+    display: inline-block;
+    border-bottom: 1px dashed;
+    padding: 0px;
+    margin-left: 20px;
+    margin-top: 12px;
+    cursor: pointer;
 }
 
 .hash-from-to {
@@ -363,6 +410,9 @@ a.dashed {
 }
 
 @media screen and (max-width: 991px) {
+    #ethplorer-path {
+        font-size: 18px;
+    }   
     .address-token {
         display: none;
     }
@@ -407,7 +457,9 @@ a.dashed {
     #address-token-transfers td {
         font-size: 11px;
     }
-    
+    #ethplorer-path {
+        font-size: 14px;
+    }
     td.list-field {
         overflow: hidden;
         max-width: 34vw;
@@ -451,6 +503,9 @@ a.token-update {
 }
 
 @media screen and (max-width: 767px) {
+    #ethplorer-path {
+        font-size: 16px;
+    }
 
     .multiop tr td:nth-child(3),
     .multiop tr td:nth-child(4)

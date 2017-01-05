@@ -23,4 +23,4 @@ Make sure your web server supports .htaccess and mod_rewrite.
 
 # Configure
 
-Copy cfg/config.ethplorer.sample.js to cfg/config.ethplorer.js and specify service addresses.
+Copy service/config.sample.php to service/config.php and specify service addresses.

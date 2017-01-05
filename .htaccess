@@ -6,15 +6,15 @@ RewriteRule ^api/(.*) api/index.php [L,QSA]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^tx/(.*) index.html [L,QSA]
+RewriteRule ^tx/(.*) index.php [L,QSA]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^address/(.*) index.html [L,QSA]
+RewriteRule ^address/(.*) index.php [L,QSA]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^search/(.*) index.html [L,QSA]
+RewriteRule ^search/(.*) index.php [L,QSA]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
