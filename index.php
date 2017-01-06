@@ -102,9 +102,11 @@ if($error){
                 </div>
 
                 <div>
-                    <div class="col-xs-12">
+                    <div class="col-xs-1 col-sm-2"></div>
+                    <div class="col-xs-10 col-sm-8">
                         <h1 id="ethplorer-path"><?=$header?></h1>
                     </div>
+                    <div class="col-xs-1 col-sm-2"></div>
                 </div>
 
                 <div id="txDetails" class="content-page">
@@ -160,6 +162,9 @@ if($error){
                                     </tr>
                                     </table>
                                 </div>
+                                <div class="text-center">
+                                    <a class="tx-details-link">Transaction details</a>
+                                </div>
                             </div>
                             <div class="col-xs-12 col-md-6 token-related">
                                 <div class="block">
@@ -191,6 +196,9 @@ if($error){
                                     </tr>
                                     </table>
                                 </div>
+                                <div class="text-center visible-md visible-lg visible-xl">
+                                    <a class="tx-details-link">Transaction details</a>
+                                </div>
                             </div>
                             <div class="col-xs-12 col-md-6 token-related">
                                 <div class="block">
@@ -218,15 +226,23 @@ if($error){
                                     </tr>
                                     </table>
                                 </div>
+                                <div class="text-center hidden-md hidden-lg hidden-xl">
+                                    <a class="tx-details-link">Transaction details</a>
+                                </div>
                             </div>
                         </div>
 
                         <!-- <div id="eth-tab" class="tab-pane fade"> -->
-                        <div>
+                        <div id="tx-details-block" style="display:none;">
                             <div class="col-xs-12">
                                 <div class="block">
-                                    <div class="block-header clickable closed" data-opens="tx-details-block"><h3>Transaction details</h3></div>
-                                    <table class="table" id="tx-details-block" style="display:none;">
+                                    <div class="block-header">
+                                        <h3>Transaction details</h3>
+                                        <div class="tx-details-close">
+                                            &times;
+                                        </div>
+                                    </div>
+                                    <table class="table">
                                     <tr>
                                         <td>Tx</td>
                                         <td id="transaction-tx-hash" class="list-field" data-type="etherscan"></td>

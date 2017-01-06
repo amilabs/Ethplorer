@@ -181,7 +181,8 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 td.list-field {
     white-space: nowrap;
     overflow: hidden;
-    max-width: 26vw;
+    max-width: 1px;
+    width: 80%;
     text-overflow: ellipsis;
 }
 
@@ -301,31 +302,12 @@ a.dashed {
     text-overflow: ellipsis
 }
 
-.arrow-in {
-    color: #00ff00;
-}
-.arrow-in:before {
-    content: '↑';
-}
-.arrow-out {
-    color: #ff0000;
-}
-.arrow-out:before {
-    content: '↓';
+.incoming {
+    color: #4f9450 !important;
 }
 
-.block-header.clickable.closed {
-    background: black;
-    color: white;
-}
-
-.block-header.clickable h3 {
-    display: inline-block;
-    border-bottom: 1px dashed;
-    padding: 0px;
-    margin-left: 20px;
-    margin-top: 12px;
-    cursor: pointer;
+.outgoing {
+    color: #900 !important;
 }
 
 .hash-from-to {
@@ -343,6 +325,37 @@ a.dashed {
     display: block;
     padding-left: 16px;
     color: white;
+}
+
+#address-issuances tr td:last-child {
+    min-width: 150px;
+}
+
+.tx-details-link {
+    font-size: 22px;
+    color: white !important;
+    cursor: pointer;
+    border-bottom: 1px dashed white;
+}
+
+.tx-details-link,
+.tx-details-link:hover,
+.tx-details-link:visited,
+.tx-details-link:active {
+    text-decoration: none;
+}
+
+.tx-details-link.closed {
+    display: none;
+}
+
+.tx-details-close {
+    top: 24px;
+    position: absolute;
+    right: 32px;
+    font-size: 30px;
+    color: #444;
+    cursor: pointer;    
 }
 
 .total-in-out-small {
@@ -410,6 +423,7 @@ a.dashed {
 }
 
 @media screen and (max-width: 991px) {
+    .tx-details-link,
     #ethplorer-path {
         font-size: 18px;
     }   
@@ -422,12 +436,6 @@ a.dashed {
 }
 
 @media screen and (min-width: 400px) and (max-width: 991px) {
-    td.list-field {
-        overflow: hidden;
-        max-width: 44vw;
-        text-overflow: ellipsis;
-    }
-
     .hash-from-to {
         max-width: 38vw;
     }
@@ -457,13 +465,9 @@ a.dashed {
     #address-token-transfers td {
         font-size: 11px;
     }
+    .tx-details-link,
     #ethplorer-path {
         font-size: 14px;
-    }
-    td.list-field {
-        overflow: hidden;
-        max-width: 34vw;
-        text-overflow: ellipsis;
     }
     .table tr td:first-child {
         padding-left: 8px;
@@ -503,6 +507,7 @@ a.token-update {
 }
 
 @media screen and (max-width: 767px) {
+    .tx-details-link,
     #ethplorer-path {
         font-size: 16px;
     }

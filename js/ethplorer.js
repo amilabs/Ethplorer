@@ -29,33 +29,24 @@ Ethplorer = {
                 $(this).addClass('active');
             }
         });
-        $(document).on('click', '.block-header.clickable h3', function(){
-            var el = $(this).parent('.clickable');
-            var oid = el.attr('data-opens');
-            if(el.hasClass('closed')){
-                localStorage[oid] = 'open';
-                el.removeClass('closed');
-                $('#' + oid).show();
-            }else{
-                localStorage[oid] = 'closed';
-                el.addClass('closed');
-                $('#' + oid).hide();
-            }
+        $(document).on('click', '.tx-details-link', function(){
+            localStorage['tx-details-block'] = 'open';
+            $('.tx-details-link').addClass('closed');
+            $('#tx-details-block').show();
         });
-        if(localStorage){
-            $('.block-header.clickable').each(function(){
-                var el = $(this);
-                var oid = el.attr('data-opens');
-                if('undefined' !== typeof(localStorage[oid])){
-                    if('open' === localStorage[oid]){
-                        el.removeClass('closed');
-                        $('#' + oid).show();
-                    }else{
-                        el.addClass('closed');
-                        $('#' + oid).hide();
-                    }
-                }
-            });
+        $(document).on('click', '.tx-details-close', function(){
+            localStorage['tx-details-block'] = 'closed';
+            $('.tx-details-link').removeClass('closed');
+            $('#tx-details-block').hide();
+        });
+        if(localStorage && ('undefined' !== typeof(localStorage['tx-details-block']))){
+            if('open' === localStorage['tx-details-block']){
+                $('.tx-details-link').addClass('closed');
+                $('#tx-details-block').show();
+            }else{
+                $('.tx-details-link').removeClass('closed');
+                $('#tx-details-block').hide();
+            }
         }   
     },
     route: function(){
@@ -515,7 +506,7 @@ Ethplorer = {
                         var tdDate = $('<td>');
                         var tdHash = $('<td>').addClass('list-field table-hash-field');
                         var tdOpType = $('<td>').addClass('text-center table-type-field');
-                        var tdQty = $('<td>').addClass('text-right');
+                        var tdQty = $('<td>').addClass('text-right ' + (tx.type !== 'burn') ? 'incoming' : 'outgoing');
                         tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
                         tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
                         tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash));
@@ -569,24 +560,25 @@ Ethplorer = {
                     var token = Ethplorer.Utils.getEthplorerLink(tx.contract, txToken.name, false);
                     var from = tx.from ? ((tx.from !== address) ? Ethplorer.Utils.getEthplorerLink(tx.from) : address) : false;
                     var to = tx.to ? ((tx.to !== address) ? Ethplorer.Utils.getEthplorerLink(tx.to) : address) : false;
-                    var arrow = '';
+                    var rowClass = '';
                     if(from && (tx.from === address)){
                         value = '-' + value;
-                        arrow = '<span class="arrow-out"></span>';
+                        rowClass = 'outgoing';
                     }else if(to && (tx.to === address)){
-                        arrow = '<span class="arrow-in"></span>';
+                        rowClass = 'incoming';
                     }
-                    tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, date, false) + (arrow ? ('&nbsp;' + arrow) : ''));
+                    tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, date, false));
                     divData.html(
-                        '<span class="show_small">Date:&nbsp;' + date + (arrow ? ('&nbsp;' + arrow) : '') + '<br></span>' +
+                        '<span class="show_small">Date:&nbsp;' + date + '<br></span>' +
                         (!data.token ? ('<span class="address-token-inline">Token:&nbsp;' + token + '<br></span>') : '') +
-                        '<span class="show_small">Value:&nbsp;' + value + '<br></span>' +                        
+                        '<span class="show_small ' + rowClass + '">Value:&nbsp;' + value + '<br></span>' +                        
                         'Tx:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.transactionHash) + '<br>' +
                         (from ? ('From:&nbsp;' + from + '<br>To:&nbsp;' + to) : ('Address:&nbsp;' + address))
                     );
                     if(!from && tx.address){
                         value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>Burn' : /*'+' + */value + '<br>Issuance';
                     }
+                    tdQty.addClass(rowClass);
                     tdQty.html(value);
                     tdData.append(divData);
                     row.append(tdDate, tdData);
