@@ -506,7 +506,7 @@ Ethplorer = {
                         var tdDate = $('<td>');
                         var tdHash = $('<td>').addClass('list-field table-hash-field');
                         var tdOpType = $('<td>').addClass('text-center table-type-field');
-                        var tdQty = $('<td>').addClass('text-right ' + (tx.type !== 'burn') ? 'incoming' : 'outgoing');
+                        var tdQty = $('<td>').addClass('text-right ' + ((tx.type.toString().toLowerCase() !== 'burn') ? 'incoming' : 'outgoing'));
                         tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
                         tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
                         tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash));
@@ -576,7 +576,7 @@ Ethplorer = {
                     }
                     tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, date, false));
                     if(!from && tx.address){
-                        value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>&#128293; Burn' : /*'+' + */value + '<br>&#9874; Issuance';
+                        value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>&#128293;&nbsp;Burn' : /*'+' + */value + '<br>&#9874;&nbsp;Issuance';
                     }
                     divData.html(
                         '<span class="show_small">Date:&nbsp;' + date + '<br></span>' +

@@ -308,7 +308,7 @@ a.dashed {
 }
 
 .same-address {
-    opacity: 0.6;
+    opacity: 0.4;
 }
 
 .incoming {
@@ -431,6 +431,11 @@ a.dashed {
         text-align: center;
         position:relative;
         width: 100%;
+    }
+}
+@media screen and (min-width: 992px) {
+    .multiop tr td:nth-child(3) {
+        white-space: nowrap !important;
     }
 }
 
