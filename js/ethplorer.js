@@ -558,26 +558,33 @@ Ethplorer = {
                     var date = Ethplorer.Utils.ts2date(tx.timestamp, false);
                     var value = Ethplorer.Utils.formatNum(qty, true, txToken.decimals ? txToken.decimals : 18, 2) + ' ' + txToken.symbol;
                     var token = Ethplorer.Utils.getEthplorerLink(tx.contract, txToken.name, false);
-                    var from = tx.from ? ((tx.from !== address) ? Ethplorer.Utils.getEthplorerLink(tx.from) : address) : false;
-                    var to = tx.to ? ((tx.to !== address) ? Ethplorer.Utils.getEthplorerLink(tx.to) : address) : false;
+                    var from = tx.from ? ((tx.from !== address) ? Ethplorer.Utils.getEthplorerLink(tx.from) : ('<span class="same-address">' + address + '</span>')) : false;
+                    var to = tx.to ? ((tx.to !== address) ? Ethplorer.Utils.getEthplorerLink(tx.to) : ('<span class="same-address">' + address + '</span>')) : false;
+                    var _address = (tx.address && (tx.address === address )) ? ('<span class="same-address">' + address + '</span>') : tx.address;
                     var rowClass = '';
                     if(from && (tx.from === address)){
                         value = '-' + value;
                         rowClass = 'outgoing';
                     }else if(to && (tx.to === address)){
                         rowClass = 'incoming';
+                    }else if(tx.address === address){
+                        if('burn' === tx.type){
+                            rowClass = 'outgoing';
+                        }else{
+                            rowClass = 'incoming';
+                        }
                     }
                     tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, date, false));
+                    if(!from && tx.address){
+                        value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>&#128293; Burn' : /*'+' + */value + '<br>&#9874; Issuance';
+                    }
                     divData.html(
                         '<span class="show_small">Date:&nbsp;' + date + '<br></span>' +
                         (!data.token ? ('<span class="address-token-inline">Token:&nbsp;' + token + '<br></span>') : '') +
                         '<span class="show_small ' + rowClass + '">Value:&nbsp;' + value + '<br></span>' +                        
                         'Tx:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.transactionHash) + '<br>' +
-                        (from ? ('From:&nbsp;' + from + '<br>To:&nbsp;' + to) : ('Address:&nbsp;' + address))
+                        (from ? ('From:&nbsp;' + from + '<br>To:&nbsp;' + to) : ('Address:&nbsp;' + _address))
                     );
-                    if(!from && tx.address){
-                        value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>Burn' : /*'+' + */value + '<br>Issuance';
-                    }
                     tdQty.addClass(rowClass);
                     tdQty.html(value);
                     tdData.append(divData);
@@ -593,7 +600,7 @@ Ethplorer = {
                     $('#' + tableId + ' .table').append(row);
                 }
             }
-            if(50 == data.transfers.length){
+            if(50 === data.transfers.length){
                 $('#' + tableId + ' .block-header').html($('#' + tableId + ' .block-header').html().replace('Transfers', 'Last 50 Transfers').replace('Operations', 'Last 50 Operations'))
                 $('#address-transfers-more, #address-token-transfers-more').html(Ethplorer.Utils.getEtherscanLink(address, 'View full history', false));
             }

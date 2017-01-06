@@ -173,7 +173,7 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 }
 
 #disqus_thread {
-    margin-top: 20px;
+    margin-top: 60px;
     display: none;
     padding-bottom: 70px;
 }
@@ -184,6 +184,11 @@ td.list-field {
     max-width: 1px;
     width: 80%;
     text-overflow: ellipsis;
+}
+
+.token-related .blue td {
+    font-size: 20px;
+    white-space: normal;
 }
 
 .navbar-logo {
@@ -302,16 +307,22 @@ a.dashed {
     text-overflow: ellipsis
 }
 
+.same-address {
+    opacity: 0.6;
+}
+
 .incoming {
-    color: #4f9450 !important;
+    font-size: 16px;
+    color: #1e8c1e !important;
 }
 
 .outgoing {
-    color: #900 !important;
+    font-size: 16px;
+    color: #8c1e1e !important;
 }
 
 .hash-from-to {
-    max-width: 50vw;
+    max-width: 40vw;
     overflow: hidden;
     text-overflow: ellipsis
 }
@@ -325,6 +336,7 @@ a.dashed {
     display: block;
     padding-left: 16px;
     color: white;
+    margin-bottom: 20px;
 }
 
 #address-issuances tr td:last-child {
@@ -446,6 +458,10 @@ a.dashed {
 }
 
 @media screen and (max-width: 699px) {
+    .token-related .blue td {
+        font-size: 18px;
+    }
+
     .hash-from-to {
         max-width: 56vw;
     }
@@ -462,6 +478,9 @@ a.dashed {
 }
 
 @media screen and (max-width: 399px) {
+    .token-related .blue td {
+        font-size: 16px;
+    }
     #address-token-transfers td {
         font-size: 11px;
     }
