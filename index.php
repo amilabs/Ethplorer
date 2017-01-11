@@ -15,6 +15,8 @@
  * limitations under the License.
  */
 
+$codeVersion = "101";
+
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $esCfg = require_once dirname(__FILE__) . '/service/config.php';
 $esCfg['mongo'] = FALSE; // No mongo connection
@@ -49,7 +51,7 @@ if($error){
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/css/ethplorer.css?v=10">
+    <link rel="stylesheet" href="/css/ethplorer.css?v=<?=$version?>">
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="referrer" content="never" />
@@ -62,7 +64,7 @@ if($error){
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="/js/bignumber.js"></script>
-    <script src="/js/ethplorer.js?v=10"></script>
+    <script src="/js/ethplorer.js?v=<?=$version?>"></script>
     <script><?php
         // Build JS config from PHP code
         echo "Ethplorer.Config = " . json_encode($esCfg['client'], JSON_OBJECT_AS_ARRAY);
