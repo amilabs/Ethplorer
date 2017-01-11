@@ -120,10 +120,11 @@ Ethplorer = {
             oOperation.type = 'Issuance';
         }
 
-        if('undefined' !== typeof(oOperation.value)){
+        if('undefined' !== typeof(oOperation.formatted)){
             oOperation.value = Ethplorer.Utils.toBig(oOperation.value).div(Math.pow(10, oToken.decimals));
             oOperation.value = Ethplorer.Utils.formatNum(oOperation.value, true, oToken.decimals, true);
             oOperation.value = oToken.symbol ? (oOperation.value + ' ' + oToken.symbol) : oOperation.value;
+            oOperation.formatted = true;
         }
 
         titleAdd += oOperation.type;
@@ -257,7 +258,7 @@ Ethplorer = {
                 txData.operation = txData.operations[txData.operations.length - 1];
                 var multiop = txData.operations.length > 1;
                 for(var i=0; i<txData.operations.length; i++){
-                    var idx = i; // txData.operations.length - i - 1;
+                    var idx = i;
                     var op = txData.operations[idx];
                     var pos = ('undefined' !== typeof(op.priority)) ? op.priority : idx;
                     op.index = idx;
@@ -315,7 +316,7 @@ Ethplorer = {
                 }
                 if(multiop){
                     $('.multiop table tr').addClass('selectable');
-                    $('.multiop table tr:eq(0)').removeClass('selectable').addClass('blue');                    
+                    $('.multiop table tr:eq(0)').removeClass('selectable').addClass('blue');
                     $('.multiop .block-header h3').text(txData.operations.length + ' internal operations found');
                     $('.multiop').show();
                 }
@@ -377,6 +378,8 @@ Ethplorer = {
                 el.removeClass('selectable');
                 Ethplorer.showOpDetails(txData.tx, el[0].operation);
             }
+        }else if(multiop){
+            Ethplorer.showOpDetails(oTx, txData.operations[0]);
         }
 
         Ethplorer.Utils.hideEmptyFields();
