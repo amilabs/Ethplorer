@@ -64,7 +64,7 @@ tr.even {
 }
 
 tr.odd {
-    background: #1a1a1a;
+    background: #202020;
 }
 
 .content-page tr.blue {
@@ -454,6 +454,7 @@ a.dashed {
 
 @media screen and (min-width: 400px) and (max-width: 991px) {
     .hash-from-to {
+        padding-left: 20px;
         max-width: 38vw;
     }
     
@@ -489,7 +490,6 @@ a.dashed {
     #address-token-transfers td {
         font-size: 11px;
     }
-    .tx-details-link,
     #ethplorer-path {
         font-size: 14px;
     }
@@ -531,7 +531,6 @@ a.token-update {
 }
 
 @media screen and (max-width: 767px) {
-    .tx-details-link,
     #ethplorer-path {
         font-size: 16px;
     }
