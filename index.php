@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "102";
+$codeVersion = "103";
 
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $esCfg = require_once dirname(__FILE__) . '/service/config.php';
@@ -377,6 +377,14 @@ if($error){
                             <tr>
                                 <td>Total Supply</td>
                                 <td id="address-token-totalSupply" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Total In</td>
+                                <td id="address-token-totalIn" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Total Out</td>
+                                <td id="address-token-totalOut" class="list-field"></td>
                             </tr>
                             </table>
                         </div>

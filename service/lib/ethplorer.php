@@ -178,6 +178,38 @@ class Ethplorer {
         return $result;
     }
 
+    public function getTokenTotalInOut($address){
+        $t1 = microtime(true);
+        $result = array('totalIn' => 0, 'totalOut' => 0);
+        if($this->isValidAddress($address)){
+            $cursor = $this->dbs['balances']->aggregate(
+                array(
+                    array('$match' => array("contract" => $address)),
+                    array(
+                        '$group' => array(
+                            "_id" => '$contract',
+                            'totalIn' => array('$sum' => '$totalIn'),
+                            'totalOut' => array('$sum' => '$totalOut')
+                        )
+                    ),
+                )
+            );
+            if($cursor){
+                foreach($cursor as $record){
+                    if(isset($record[0])){
+                        if(isset($record[0]['totalIn'])){
+                            $result['totalIn'] += floatval($record[0]['totalIn']);
+                        }
+                        if(isset($record[0]['totalOut'])){
+                            $result['totalOut'] += floatval($record[0]['totalOut']);
+                        }
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
     /**
      * Returns advanced transaction data.
      *
@@ -331,6 +363,7 @@ class Ethplorer {
                 $address = $aToken["address"];
                 unset($aToken["_id"]);
                 $aResult[$address] = $aToken;
+                $aResult[$address] += $this->getTokenTotalInOut($address);
             }
             $this->oCache->save('tokens', $aResult);
         }

@@ -520,7 +520,7 @@ Ethplorer = {
                     }
                 }
             }
-            var fields = ['token', 'token.name', 'token.description', 'token.owner', 'token.totalSupply', 'token.decimals', 'token.symbol', 'token.txsCount'];
+            var fields = ['token', 'token.name', 'token.description', 'token.owner', 'token.totalSupply', 'token.totalIn', 'token.totalOut', 'token.decimals', 'token.symbol', 'token.txsCount'];
             Ethplorer.fillValues('address', data, fields);
         }else if(data.balances && data.balances.length){
             $('#address-token-balances').show();
@@ -645,11 +645,16 @@ Ethplorer = {
             if(oToken.decimals > 20){ // Too many decimals, must be invalid value, use 0 instead
                 oToken.decimals = 0;
             }
-            oToken.totalSupply = oToken.totalSupply.div(Math.pow(10, oToken.decimals));
+            var k = Math.pow(10, oToken.decimals);
+            oToken.totalSupply = oToken.totalSupply.div(k);
+            oToken.totalIn = Ethplorer.Utils.formatNum(oToken.totalIn / k, true, oToken.decimals, true);
+            oToken.totalOut = Ethplorer.Utils.formatNum(oToken.totalOut / k, true, oToken.decimals, true);
         }
         oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true, oToken.decimals, true);
         if(oToken.symbol){
             oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
+            oToken.totalIn = oToken.totalIn + ' ' + oToken.symbol;
+            oToken.totalOut = oToken.totalOut + ' ' + oToken.symbol;
         }
         if(!oToken.name){
             oToken.name = 'N/A';
