@@ -1,227 +1,50 @@
 ethplorerWidget = {
+    // Ethplorer API URL
+    api: 'https://api.ethplorer.io',
+
+    // Ethplorer URL
     url: 'https://ethplorer.io',
 
-    last: false,
-    refresh: false,
-    templates: {
-        // Big table row
-        big:    '<tr>' + 
-                    '<td class="tx-field tx-date">%date%</td>' + 
-                    '<td class="tx-field tx-transfer"><span class="tx-send">from </span>%from%<span class="tx-send">to</span>%to%</td>' + 
-                    '<td class="tx-field tx-amount">%amount%</td>' +
-                    '<td class="tx-field tx-token">%token%</td>' +
-                '</tr>',
-        // Small table row
-        small:  '<tr>' +
-                    '<td class="tx-field tx-date">%date%</td>' +
-                    '<td class="tx-field tx-transfer"><span class="tx-send">from </span>%from%</td>' +
-                '</tr><tr>' +
-                    '<td class="tx-field">&nbsp;</td>' +
-                    '<td class="tx-field tx-transfer"><span class="tx-send">to</span>%to%</td>' +
-                '</tr><tr>' +
-                    '<td colspan="2" class="tx-field tx-amount">%amount% <span class="tx-token">%token%</span></td>' +
-                '</tr>'
-    },
+    // Widget types
+    Type: {},
 
-    init: function(selector, type, options){
-        ethplorerWidget.options = options || {};
-        ethplorerWidget.type = type || 'last';
-        ethplorerWidget.el = $(selector);
-
-        $('body').append('<link rel="stylesheet" href="' + ethplorerWidget.url + '/api/widget.css" type="text/css" />')
-
-        $(selector).addClass('widget-txs');
-        ethplorerWidget.el.html('<div class="txs-header">Recent token transactions</div><div class="txs-loading">Loading...</div>');
-        ethplorerWidget.load();
-
-        $(window).resize(ethplorerWidget.resize);
-        ethplorerWidget.refresh = setInterval(ethplorerWidget.loadMore, 15000);
-    },
-    refreshPlayPause: function(){
-        if(ethplorerWidget.refresh){
-            clearInterval(ethplorerWidget.refresh);
-            ethplorerWidget.refresh = false;
-            $('.txs-stop').html('&#9658;');
-            $('.txs-stop').attr('title', 'Start refresh');
-            $('.txs-stop').css('color', '#00ff00');
-        }else{
-            ethplorerWidget.refresh = setInterval(ethplorerWidget.loadMore, 15000);
-            $('.txs-stop').html('&#10074;&#10074;');
-            $('.txs-stop').attr('title', 'Pause refresh');
-            $('.txs-stop').css('color', 'yellow');
-        };
-    },
-    addRandom: function(){
-        var tokens = ['', '✿', 'XYZ', 'Token', 'Token Name', 'Long Token Name', 'Very Long Token Name'];
-        function randomHex(len){
-            var res = '0x';
-            var letters = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'];
-            for(var i=0; i<len; i++){
-                res += letters[Math.floor(Math.random() * letters.length)];
-            }
-            return res;
-        }
-        var hash = randomHex(64);
-        var from = randomHex(40);
-        var to = randomHex(40);
-        var contract = randomHex(40);
-        var token = tokens[Math.floor(Math.random() * tokens.length)];
-        var decimals = Math.round(Math.random() * 18);
-        var value = Math.random() * 1e+18;
-        var k = Math.pow(10, decimals);
-        if(Math.random() < 0.6){
-            decimals = 2;
-        }
-        var amount = ethplorerWidget.Utils.formatNum(value / k, true, decimals, true);        
-        
-        var rowData = {
-            date: ethplorerWidget.Utils.link(hash, ethplorerWidget.Utils.ts2date(new Date().getTime() / 1000, false), hash),
-            from:  ethplorerWidget.Utils.link(from, from),
-            to: ethplorerWidget.Utils.link(to, to),
-            amount: ethplorerWidget.Utils.link(contract, amount, amount + ' ' + token),
-            token: ethplorerWidget.Utils.link(contract, token, token + ' ' + contract)
-        };
-        var txTable = $(".txs.big");
-        var txSmall = $(".txs.small");
-        var bigRows = $(ethplorerWidget.tableRow(ethplorerWidget.templates.big, rowData));
-        var smallRows = $(ethplorerWidget.tableRow(ethplorerWidget.templates.small, rowData));
-        bigRows.addClass('hidden');
-        smallRows.addClass('hidden');
-        txTable.prepend(bigRows);
-        txSmall.prepend(smallRows);
-        setTimeout(function(){ $('.hidden').addClass('new'); }, 200);
-
-        var limit = ethplorerWidget.options.limit ? ethplorerWidget.options.limit : 10;
-        var rowsToKill = limit * bigRows.length;
-        if(rowsToKill){
-            txTable.find('tr').each(function(i){
-                if(i >= rowsToKill){
-                    $(this).remove();
-                }
-            });
-        }
-        var rowsToKill = limit * smallRows.length;
-        if(rowsToKill){
-            txSmall.find('tr').each(function(i){
-                if(i >= rowsToKill){
-                    $(this).remove();
-                }
-            });
-        }
-    },
-    load: function(){
-        $.getJSON(ethplorerWidget.url + '/api/index.php', {cmd: ethplorerWidget.type, limit: ethplorerWidget.options.limit}, function(data){
-            if(data && !data.error){
-                $('.txs-loading').remove();
-                if(ethplorerWidget.last === data[0].timestamp){
-                    // Skip redraw if nothing changed
-                    return;
-                }
-                ethplorerWidget.last = data[0].timestamp;
-                var txTable = '<table class="txs big">';
-                var txSmall = '<table class="txs small">';
-                for(var i=0; i<data.length; i++){
-                    var rowData = ethplorerWidget.prepareData(data[i]);
-                    txTable += ethplorerWidget.tableRow(ethplorerWidget.templates.big, rowData);
-                    txSmall += ethplorerWidget.tableRow(ethplorerWidget.templates.small, rowData);
-                }
-                txSmall += '</table>';
-                txTable += '</table>';
-                ethplorerWidget.el.append(txTable);
-                ethplorerWidget.el.append(txSmall);
-                // Debug mode
-                if(ethplorerWidget.options.debug){
-                    $(".txs-header").append('<div class="txs-debug"><div class="txs-stop"></div><div class="txs-add">&#10010;</div></div>');
-                    $('.txs-stop').click(ethplorerWidget.refreshPlayPause);
-                    $('.txs-stop').html('&#10074;&#10074;');
-                    $('.txs-stop').attr('title', 'Pause refresh');
-                    $('.txs-stop').css('color', 'yellow');
-                    $('.txs-add').click(ethplorerWidget.addRandom);
-                    $('.txs-add').attr('title', 'Add random');
-                }
-                if(ethplorerWidget.options.onLoad){
-                    ethplorerWidget.options.onLoad();
-                }
-                setTimeout(ethplorerWidget.resize, 300);
-            }
-        });        
-    },
-    loadMore: function(){
-        if(!ethplorerWidget.last){
-            ethplorerWidget.load();
+    // Widget initialization
+    init: function(selector, type, options, templates){
+        options = options || {};
+        templates = templates || {};
+        type = type || 'last';
+        if('undefined' === typeof(jQuery)){
+            console.error('Cannot initialize Ethplorer widget: jQuery not loaded.');
             return;
         }
-        $('tr').removeClass('hidden new');
-        $.getJSON(ethplorerWidget.url + '/api/index.php', {cmd: ethplorerWidget.type, limit: ethplorerWidget.options.limit, timestamp: ethplorerWidget.last}, function(data){
-            if(data && !data.error && data.length){
-                ethplorerWidget.last = data[0].timestamp;
-                var txTable = $(".txs.big");
-                var txSmall = $(".txs.small");
-                for(var i=0; i<data.length; i++){
-                    var rowData = ethplorerWidget.prepareData(data[i]);
-                    var bigRows = $(ethplorerWidget.tableRow(ethplorerWidget.templates.big, rowData));
-                    var smallRows = $(ethplorerWidget.tableRow(ethplorerWidget.templates.small, rowData));
-                    bigRows.addClass('hidden');
-                    smallRows.addClass('hidden');
-                    txTable.prepend(bigRows);
-                    txSmall.prepend(smallRows);
-                    setTimeout(function(){ $('.hidden').addClass('new'); }, 200);
-
-                    var limit = ethplorerWidget.options.limit ? ethplorerWidget.options.limit : 10;
-                    var rowsToKill = limit * bigRows.length;
-                    if(rowsToKill){
-                        txTable.find('tr').each(function(i){
-                            if(i >= rowsToKill){
-                                $(this).remove();
-                            }
-                        });
-                    }
-                    var rowsToKill = limit * smallRows.length;
-                    if(rowsToKill){
-                        txSmall.find('tr').each(function(i){
-                            if(i >= rowsToKill){
-                                $(this).remove();
-                            }
-                        });
-                    }
-                }
-            }
-        });        
-    },
-    prepareData: function(tr){
-        if(!tr.token){
-            tr.token = {symbol: "", decimals: 0};
+        var el = $(selector);
+        if(!el.length){
+            console.error('Cannot initialize Ethplorer widget: element ' + selector + ' not found.');
+            return;
         }
-        if(!tr.token.symbol && tr.token.name){
-            tr.token.symbol = tr.token.name;
+        $('body').append('<link rel="stylesheet" href="' + ethplorerWidget.api + '/widget.css" type="text/css" />')
+        if('undefined' === ethplorerWidget.eventsAdded){
+            $(window).resize(ethplorerWidget.fixTilda);
+            ethplorerWidget.eventsAdded = true;
         }
-        var k = Math.pow(10, tr.token.decimals);
-        var amount = ethplorerWidget.Utils.formatNum(tr.value / k, true, parseInt(tr.token.decimals), true);
-
-        var hash = tr.priority ? tr.priority : false;
-
-        return {
-            date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false), tr.transactionHash, hash),
-            from:  ethplorerWidget.Utils.link(tr.from, tr.from),
-            to: ethplorerWidget.Utils.link(tr.to, tr.to),
-            amount: ethplorerWidget.Utils.link(tr.token.address, amount, amount + ' ' + tr.token.symbol),
-            token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol, tr.token.symbol + ' ' + tr.token.address)
-        };
+        if('undefined' !== typeof(ethplorerWidget.Type[type])){
+            return new ethplorerWidget.Type[type](el, options, templates);
+        }else{
+            console.error('Cannot initialize Ethplorer widget: invalid widget type "' + type + '".');
+        }
     },
-    resize: function(){
-        // Tilda hack
+    // Tilda css hack
+    fixTilda: function(){
         var height = parseInt($('.t-cover__wrapper').height());
         $('.t-cover, .t-cover__carrier, .t-cover__wrapper, .t-cover__filter').height(height + 'px');
     },
-
-    tableRow: function(template, data){
+    parseTemplate: function(template, data){
         var res = template;
         for(var key in data){
             res = res.replace('%' + key + '%', data[key]);
         }
         return res;
     },
-
     Utils: {
         link: function(data, text, title, hash){
             title = title || text;
@@ -318,3 +141,212 @@ ethplorerWidget = {
         },
     }
 };
+
+/**
+ * Last Token transactions Widget.
+ *
+ * @param {type} element
+ * @param {type} options
+ * @param {type} templates
+ * @returns {undefined}
+ */
+ethplorerWidget.Type['last'] = function(element, options, templates){
+    this.el = element;
+    this.options = options;
+    this.api = ethplorerWidget.api + '/last';
+    this.ts = false;
+    this.interval = false;
+
+    this.templates = {
+        header: '<div class="txs-header">Recent token transactions</div>',
+        loader: '<div class="txs-loading">Loading...</div>',
+        debug: '<div class="txs-debug"><div class="txs-stop"></div></div>',
+        // Big table row
+        big:    '<tr>' + 
+                    '<td class="tx-field tx-date">%date%</td>' + 
+                    '<td class="tx-field tx-transfer"><span class="tx-send">from </span>%from%<span class="tx-send">to</span>%to%</td>' + 
+                    '<td class="tx-field tx-amount">%amount%</td>' +
+                    '<td class="tx-field tx-token">%token%</td>' +
+                '</tr>',
+        // Small table row
+        small:  '<tr>' +
+                    '<td class="tx-field tx-date">%date%</td>' +
+                    '<td class="tx-field tx-transfer"><span class="tx-send">from </span>%from%</td>' +
+                '</tr><tr>' +
+                    '<td class="tx-field">&nbsp;</td>' +
+                    '<td class="tx-field tx-transfer"><span class="tx-send">to</span>%to%</td>' +
+                '</tr><tr>' +
+                    '<td colspan="2" class="tx-field tx-amount">%amount% <span class="tx-token">%token%</span></td>' +
+                '</tr>'
+    };
+
+    // Override default templates with custom
+    if('object' === typeof(templates)){
+        for(var key in templates){
+            this.templates[key] = templates[key];
+        }
+    }
+   
+    this.refresh = function(obj){
+        return function(){
+            $.getJSON(obj.api, obj.getRequestParams(obj.ts ? {timestamp: obj.ts} : false), obj.refreshWidget);
+        }
+    }(this);
+
+    this.load = function(){
+        this.el.html(this.templates.header + this.templates.loader);
+        $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
+    };
+
+    this.init = function(){
+        element.addClass('widget-txs');
+        this.interval = setInterval(this.refresh, 15000);
+        this.load();
+    };
+
+    this.getRequestParams = function(additionalParams){
+        var requestOptions = ['limit', 'token_address', 'timestamp'];
+        var params = {};
+        for(var key in this.options){
+            if(requestOptions.indexOf(key) >= 0){
+                params[key] = this.options[key];
+            }
+        }
+        if('object' === typeof(additionalParams)){
+            for(var key in additionalParams){
+                params[key] = additionalParams[key];
+            }
+        }
+        return params;
+    };
+
+    this.setPlayPause = function(obj){
+        return function(){
+            if(obj.interval){
+                clearInterval(obj.interval);
+                obj.interval = false;
+                obj.el.find('.txs-stop').html('&#9658;');
+                obj.el.find('.txs-stop').attr('title', 'Start refresh');
+                obj.el.find('.txs-stop').css('color', '#00ff00');
+            }else{
+                obj.interval = setInterval(obj.refresh, 15000);
+                obj.el.find('.txs-stop').html('&#10074;&#10074;');
+                obj.el.find('.txs-stop').attr('title', 'Pause refresh');
+                obj.el.find('.txs-stop').css('color', 'yellow');
+            };
+        };
+    }(this);
+
+    this.refreshWidget = function(obj){
+        return function(data){
+            if(!obj.ts){
+                return obj.cbFirstLoad(data);
+            }
+            obj.el.find('tr').removeClass('hidden new');
+            return obj.cbRefresh(data);
+        };
+    }(this);
+
+    this.cbFirstLoad = function(data){
+        if(data && !data.error){
+            this.el.find('.txs-loading').remove();
+            if(this.ts === data[0].timestamp){
+                // Skip redraw if nothing changed
+                return;
+            }
+            this.ts = data[0].timestamp;
+            var txTable = '<table class="txs big">';
+            var txSmall = '<table class="txs small">';
+            for(var i=0; i<data.length; i++){
+                var rowData = this.prepareData(data[i]);
+                txTable += ethplorerWidget.parseTemplate(this.templates.big, rowData);
+                txSmall += ethplorerWidget.parseTemplate(this.templates.small, rowData);
+            }
+            txSmall += '</table>';
+            txTable += '</table>';
+            this.el.append(txTable);
+            this.el.append(txSmall);
+            if(document.location.host !== 'ethplorer.io'){
+                this.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.IO</a></a>')
+            }
+            // Debug mode
+            if(this.options.debug){
+                this.el.find(".txs-header").append(this.templates.debug);
+                this.el.find('.txs-stop').click(this.setPlayPause);
+                this.el.find('.txs-stop').html('&#10074;&#10074;');
+                this.el.find('.txs-stop').attr('title', 'Pause refresh');
+                this.el.find('.txs-stop').css('color', 'yellow');
+            }
+            if('function' === typeof(this.options.onLoad)){
+                this.options.onLoad();
+            }
+            setTimeout(ethplorerWidget.fixTilda, 300);
+        }
+    };
+
+    this.cbRefresh = function(data){
+        if(data && !data.error && data.length){
+            this.ts = data[0].timestamp;
+            var txTable = this.el.find(".txs.big");
+            var txSmall = this.el.find(".txs.small");
+            for(var i=0; i<data.length; i++){
+                var rowData = this.prepareData(data[i]);
+                var bigRows = $(ethplorerWidget.parseTemplate(this.templates.big, rowData));
+                var smallRows = $(ethplorerWidget.parseTemplate(this.templates.small, rowData));
+                bigRows.addClass('hidden');
+                smallRows.addClass('hidden');
+                txTable.prepend(bigRows);
+                txSmall.prepend(smallRows);
+                setTimeout(
+                    function(el){
+                        return function(){
+                            el.find('.hidden').addClass('new');
+                        }
+                    }(this.el),
+                    200
+                );
+
+                var limit = this.options.limit ? this.options.limit : 10;
+                var rowsToKill = limit * bigRows.length;
+                if(rowsToKill){
+                    txTable.find('tr').each(function(i){
+                        if(i >= rowsToKill){
+                            $(this).remove();
+                        }
+                    });
+                }
+                var rowsToKill = limit * smallRows.length;
+                if(rowsToKill){
+                    txSmall.find('tr').each(function(i){
+                        if(i >= rowsToKill){
+                            $(this).remove();
+                        }
+                    });
+                }
+            }
+        }
+    };
+
+    this.prepareData = function(tr){
+        if(!tr.token){
+            tr.token = {symbol: "", decimals: 0};
+        }
+        if(!tr.token.symbol && tr.token.name){
+            tr.token.symbol = tr.token.name;
+        }
+        var k = Math.pow(10, tr.token.decimals);
+        var amount = ethplorerWidget.Utils.formatNum(tr.value / k, true, parseInt(tr.token.decimals), true);
+
+        var hash = tr.priority ? tr.priority : false;
+
+        return {
+            date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false), tr.transactionHash, hash),
+            from:  ethplorerWidget.Utils.link(tr.from, tr.from),
+            to: ethplorerWidget.Utils.link(tr.to, tr.to),
+            amount: ethplorerWidget.Utils.link(tr.token.address, amount, amount + ' ' + tr.token.symbol),
+            token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol, tr.token.symbol + ' ' + tr.token.address)
+        };
+    };
+
+    this.init();
+}
