@@ -40,6 +40,9 @@ switch($command){
             'limit'     => isset($_GET["limit"])     ? (int)$_GET["limit"]     : 10,
             'timestamp' => isset($_GET["timestamp"]) ? (int)$_GET["timestamp"] : 0,
         );
+        if(isset($_GET['token_address']) && $es->isValidAddress(strtolower($_GET['token_address']))){
+            $options['address'] = strtolower($_GET['token_address']);
+        }
         $result = $es->getLastTransfers($options);
         break;
     default:
