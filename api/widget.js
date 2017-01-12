@@ -267,7 +267,7 @@ ethplorerWidget.Type['last'] = function(element, options, templates){
             this.el.append(txTable);
             this.el.append(txSmall);
             if(document.location.host !== 'ethplorer.io'){
-                this.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.IO</a></a>')
+                this.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>')
             }
             // Debug mode
             if(this.options.debug){
