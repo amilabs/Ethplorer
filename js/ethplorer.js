@@ -647,10 +647,13 @@ Ethplorer = {
             }
             var k = Math.pow(10, oToken.decimals);
             oToken.totalSupply = oToken.totalSupply.div(k);
-            oToken.totalIn = Ethplorer.Utils.formatNum(oToken.totalIn / k, true, oToken.decimals, true);
-            oToken.totalOut = Ethplorer.Utils.formatNum(oToken.totalOut / k, true, oToken.decimals, true);
+            oToken.totalIn = oToken.totalIn / k;
+            oToken.totalOut = oToken.totalOut / k;
         }
         oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true, oToken.decimals, true);
+        oToken.totalIn = Ethplorer.Utils.formatNum(oToken.totalIn, true, oToken.decimals, true);
+        oToken.totalOut = Ethplorer.Utils.formatNum(oToken.totalOut, true, oToken.decimals, true);
+
         if(oToken.symbol){
             oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
             oToken.totalIn = oToken.totalIn + ' ' + oToken.symbol;
