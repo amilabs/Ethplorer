@@ -12,7 +12,7 @@ ethplorerWidget = {
     init: function(selector, type, options, templates){
         options = options || {};
         templates = templates || {};
-        type = type || 'last';
+        type = type || 'tokenHistory';
         if('undefined' === typeof(jQuery)){
             console.error('Cannot initialize Ethplorer widget: jQuery not loaded.');
             return;
@@ -150,10 +150,13 @@ ethplorerWidget = {
  * @param {type} templates
  * @returns {undefined}
  */
-ethplorerWidget.Type['last'] = function(element, options, templates){
+ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
     this.el = element;
     this.options = options;
-    this.api = ethplorerWidget.api + '/last';
+    this.api = ethplorerWidget.api + '/getTokenHistory';
+    if(options && options.address){
+        this.api += ('/' + options.address.toString().toLowerCase());
+    }
     this.ts = false;
     this.interval = false;
 
@@ -205,8 +208,11 @@ ethplorerWidget.Type['last'] = function(element, options, templates){
     };
 
     this.getRequestParams = function(additionalParams){
-        var requestOptions = ['limit', 'token_address', 'timestamp'];
-        var params = {};
+        var requestOptions = ['limit', 'address', 'timestamp'];
+        var params = {
+            apiKey: 'ethplorer.widget',
+            type: 'transfer',
+        };
         for(var key in this.options){
             if(requestOptions.indexOf(key) >= 0){
                 params[key] = this.options[key];
@@ -214,7 +220,9 @@ ethplorerWidget.Type['last'] = function(element, options, templates){
         }
         if('object' === typeof(additionalParams)){
             for(var key in additionalParams){
-                params[key] = additionalParams[key];
+                if(requestOptions.indexOf(key) >= 0){
+                    params[key] = additionalParams[key];
+                }
             }
         }
         return params;
@@ -248,17 +256,17 @@ ethplorerWidget.Type['last'] = function(element, options, templates){
     }(this);
 
     this.cbFirstLoad = function(data){
-        if(data && !data.error){
+        if(data && !data.error && data.operations && data.operations.length){
             this.el.find('.txs-loading').remove();
-            if(this.ts === data[0].timestamp){
+            if(this.ts === data.operations[0].timestamp){
                 // Skip redraw if nothing changed
                 return;
             }
-            this.ts = data[0].timestamp;
+            this.ts = data.operations[0].timestamp;
             var txTable = '<table class="txs big">';
             var txSmall = '<table class="txs small">';
-            for(var i=0; i<data.length; i++){
-                var rowData = this.prepareData(data[i]);
+            for(var i=0; i<data.operations.length; i++){
+                var rowData = this.prepareData(data.operations[i]);
                 txTable += ethplorerWidget.parseTemplate(this.templates.big, rowData);
                 txSmall += ethplorerWidget.parseTemplate(this.templates.small, rowData);
             }
@@ -285,12 +293,12 @@ ethplorerWidget.Type['last'] = function(element, options, templates){
     };
 
     this.cbRefresh = function(data){
-        if(data && !data.error && data.length){
-            this.ts = data[0].timestamp;
+        if(data && !data.error && data.operations && data.operations.length){
+            this.ts = data.operations[0].timestamp;
             var txTable = this.el.find(".txs.big");
             var txSmall = this.el.find(".txs.small");
-            for(var i=0; i<data.length; i++){
-                var rowData = this.prepareData(data[i]);
+            for(var i=0; i<data.operations.length; i++){
+                var rowData = this.prepareData(data.operations[i]);
                 var bigRows = $(ethplorerWidget.parseTemplate(this.templates.big, rowData));
                 var smallRows = $(ethplorerWidget.parseTemplate(this.templates.small, rowData));
                 bigRows.addClass('hidden');
@@ -328,14 +336,14 @@ ethplorerWidget.Type['last'] = function(element, options, templates){
     };
 
     this.prepareData = function(tr){
-        if(!tr.token){
-            tr.token = {symbol: "", decimals: 0};
+        if(!tr.tokenInfo){
+            tr.tokenInfo = {symbol: "", decimals: 0};
         }
-        if(!tr.token.symbol && tr.token.name){
-            tr.token.symbol = tr.token.name;
+        if(!tr.tokenInfo.symbol && tr.tokenInfo.name){
+            tr.tokenInfo.symbol = tr.tokenInfo.name;
         }
-        var k = Math.pow(10, tr.token.decimals);
-        var amount = ethplorerWidget.Utils.formatNum(tr.value / k, true, parseInt(tr.token.decimals), true);
+        var k = Math.pow(10, tr.tokenInfo.decimals);
+        var amount = ethplorerWidget.Utils.formatNum(tr.value / k, true, parseInt(tr.tokenInfo.decimals), true);
 
         var hash = tr.priority ? tr.priority : false;
 
@@ -343,8 +351,8 @@ ethplorerWidget.Type['last'] = function(element, options, templates){
             date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false), tr.transactionHash, hash),
             from:  ethplorerWidget.Utils.link(tr.from, tr.from),
             to: ethplorerWidget.Utils.link(tr.to, tr.to),
-            amount: ethplorerWidget.Utils.link(tr.token.address, amount, amount + ' ' + tr.token.symbol),
-            token: ethplorerWidget.Utils.link(tr.token.address, tr.token.symbol, tr.token.symbol + ' ' + tr.token.address)
+            amount: ethplorerWidget.Utils.link(tr.tokenInfo.address, amount, amount + ' ' + tr.tokenInfo.symbol),
+            token: ethplorerWidget.Utils.link(tr.tokenInfo.address, tr.tokenInfo.symbol, tr.tokenInfo.symbol + ' ' + tr.tokenInfo.address)
         };
     };
 
