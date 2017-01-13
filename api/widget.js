@@ -33,6 +33,11 @@ ethplorerWidget = {
             console.error('Cannot initialize Ethplorer widget: invalid widget type "' + type + '".');
         }
     },
+    appendEthplorerLink: function(el){
+        if(document.location.host !== 'ethplorer.io'){
+            el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>')
+        }
+    },
     // Tilda css hack
     fixTilda: function(){
         var height = parseInt($('.t-cover__wrapper').height());
@@ -41,12 +46,13 @@ ethplorerWidget = {
     parseTemplate: function(template, data){
         var res = template;
         for(var key in data){
-            res = res.replace('%' + key + '%', data[key]);
+            var reg = new RegExp('%' + key + '%', 'g')
+            res = res.replace(reg, data[key]);
         }
         return res;
     },
     Utils: {
-        link: function(data, text, title, hash){
+        link: function(data, text, title, hash, style){
             title = title || text;
             hash = hash || false;
             if((false !== hash) && hash){
@@ -55,7 +61,10 @@ ethplorerWidget = {
                 hash = '';
             }
             var linkType = (data && (42 === data.toString().length)) ? 'address' : 'tx';
-            return '<a class="tx-link" href="' + ethplorerWidget.url + '/' + linkType + '/' + data + hash + '" title="' + title + '" target="_blank">' + text + '</a>';
+            if(style){
+                style = 'style="' + style + '"';
+            }
+            return '<a class="tx-link" ' + style + ' href="' + ethplorerWidget.url + '/' + linkType + '/' + data + hash + '" title="' + title + '" target="_blank">' + text + '</a>';
         },
 
         // Timestamp to local date
@@ -216,7 +225,7 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
     };
 
     this.init = function(){
-        element.addClass('widget-txs');
+        this.el.addClass('widget-txs');
         this.interval = setInterval(this.refresh, 15000);
         this.load();
     };
@@ -288,9 +297,9 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
             txTable += '</table>';
             this.el.append(txTable);
             this.el.append(txSmall);
-            if(document.location.host !== 'ethplorer.io'){
-                this.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>')
-            }
+
+            ethplorerWidget.appendEthplorerLink(this.el);
+            
             // Debug mode
             if(this.options.debug){
                 this.el.find(".txs-header").append(this.templates.debug);
@@ -369,6 +378,113 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
             to: ethplorerWidget.Utils.link(tr.to, tr.to),
             amount: ethplorerWidget.Utils.link(tr.tokenInfo.address, amount, amount + ' ' + tr.tokenInfo.symbol),
             token: ethplorerWidget.Utils.link(tr.tokenInfo.address, tr.tokenInfo.symbol, tr.tokenInfo.symbol + ' ' + tr.tokenInfo.address)
+        };
+    };
+
+    this.init();
+}
+
+/**
+ * Top Tokens list Widget.
+ *
+ * @param {type} element
+ * @param {type} options
+ * @param {type} templates
+ * @returns {undefined}
+ */
+ethplorerWidget.Type['topTokens'] = function(element, options, templates){
+    this.el = element;
+
+    this.options = {
+        limit: 10,
+        period: 30
+    };
+
+    if(options){
+        for(var key in options){
+            this.options[key] = options[key];
+        }
+    }
+
+    this.api = ethplorerWidget.api + '/getTopTokens';
+
+    this.templates = {
+        header: '<div class="txs-header">Top %limit% tokens for %period% days</div>',
+        loader: '<div class="txs-loading">Loading...</div>',
+        // Big table row
+        row:    '<tr>' + 
+                    '<td class="tx-field">%position%</td>' + 
+                    '<td class="tx-field">%name%</td>' +
+                    '<td class="tx-field" title="%opCount% operations">%opCount%</td>' +
+                '</tr>',
+    };
+
+    // Override default templates with custom
+    if('object' === typeof(templates)){
+        for(var key in templates){
+            this.templates[key] = templates[key];
+        }
+    }
+
+    this.load = function(){
+        this.el.html(ethplorerWidget.parseTemplate(this.templates.header, this.options) + this.templates.loader);
+        $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
+    };
+
+    this.init = function(){
+        this.el.addClass('widget-txs');
+        this.load();
+    };
+
+    this.getRequestParams = function(additionalParams){
+        var requestOptions = ['limit', 'period'];
+        var params = {
+            apiKey: 'freekey',
+        };
+        for(var key in this.options){
+            if(requestOptions.indexOf(key) >= 0){
+                params[key] = this.options[key];
+            }
+        }
+        if('object' === typeof(additionalParams)){
+            for(var key in additionalParams){
+                if(requestOptions.indexOf(key) >= 0){
+                    params[key] = additionalParams[key];
+                }
+            }
+        }
+        return params;
+    };
+
+    this.refreshWidget = function(obj){
+        return function(data){
+            if(data && !data.error && data.tokens && data.tokens.length){
+                obj.el.find('.txs-loading').remove();
+                var txTable = '<table class="txs">';
+                for(var i=0; i<data.tokens.length; i++){
+                    var rowData = obj.prepareData(data.tokens[i]);
+                    rowData['position'] = i+1;
+                    txTable += ethplorerWidget.parseTemplate(obj.templates.row, rowData);
+                }
+                txTable += '</table>';
+                obj.el.append(txTable);
+
+                ethplorerWidget.appendEthplorerLink(obj.el);
+
+                if('function' === typeof(obj.options.onLoad)){
+                    obj.options.onLoad();
+                }
+                setTimeout(ethplorerWidget.fixTilda, 300);
+            }
+        };
+    }(this);
+
+    this.prepareData = function(data){
+        var name = data.name ? data.name : data.address;
+        return {
+            address: ethplorerWidget.Utils.link(data.address, data.address, data.address),
+            name: ethplorerWidget.Utils.link(data.address, name, name, false, data.name ? "" : "color:yellow!important;"),
+            opCount: data.opCount
         };
     };
 

@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ethplorer Top 50 Widget</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+    <script src="https://api.ethplorer.io/widget.js?v=4"></script>
+    <style>
+        body {
+            background-color: #333;
+            padding:10px;
+        }
+        #ethplorer-top {
+            border-radius: 8px;
+            max-width: 600px !important;
+        }
+        #ethplorer-top .tx-link {
+            max-width: 450px;
+        }
+        #ethplorer-top tr td:nth-child(3){
+            text-align: right;
+            color: white !important;
+        }
+        #ethplorer-top tr td:nth-child(1){
+            text-align: right;
+            padding-right: 10px;
+            color: #8a8c85 !important;
+        }
+    </style>
+</head>
+<body>
+    <div id="ethplorer-top"></div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            ethplorerWidget.init('#ethplorer-top', 'topTokens', {limit: 50, period: 90});
+        });
+    </script>
+</body>
+</html>
