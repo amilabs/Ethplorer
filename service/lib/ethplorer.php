@@ -599,6 +599,7 @@ class Ethplorer {
     /**
      * Returns top tokens list.
      *
+     * @todo: count number of transactions with "transfer" operation
      * @param int $limit   Maximum records number
      * @param int $period  Days from now
      * @return array

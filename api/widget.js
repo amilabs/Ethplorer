@@ -52,7 +52,7 @@ ethplorerWidget = {
         return res;
     },
     Utils: {
-        link: function(data, text, title, hash, style){
+        link: function(data, text, title, hash, addClass){
             title = title || text;
             hash = hash || false;
             if((false !== hash) && hash){
@@ -61,10 +61,10 @@ ethplorerWidget = {
                 hash = '';
             }
             var linkType = (data && (42 === data.toString().length)) ? 'address' : 'tx';
-            if(style){
-                style = 'style="' + style + '"';
+            if(!addClass){
+                addClass = "";
             }
-            return '<a class="tx-link" ' + style + ' href="' + ethplorerWidget.url + '/' + linkType + '/' + data + hash + '" title="' + title + '" target="_blank">' + text + '</a>';
+            return '<a class="tx-link ' + addClass + '" href="' + ethplorerWidget.url + '/' + linkType + '/' + data + hash + '" title="' + title + '" target="_blank">' + text + '</a>';
         },
 
         // Timestamp to local date
@@ -483,7 +483,7 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
         var name = data.name ? data.name : data.address;
         return {
             address: ethplorerWidget.Utils.link(data.address, data.address, data.address),
-            name: ethplorerWidget.Utils.link(data.address, name, name, false, data.name ? "" : "color:yellow!important;"),
+            name: ethplorerWidget.Utils.link(data.address, name, name, false, data.name ? "" : "tx-unknown"),
             opCount: data.opCount
         };
     };
