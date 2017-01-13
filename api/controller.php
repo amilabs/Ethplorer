@@ -19,7 +19,7 @@ class ethplorerController {
     protected $db;
     protected $command;
     protected $params = array();
-    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory');
+    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens');
     protected $defaults;
 
     public function __construct($es){
@@ -87,8 +87,8 @@ class ethplorerController {
             if(!$key || !$this->db->checkAPIkey($key)){
                 $this->sendError(1, 'Invalid API key');
             }
-            $this->defaults = $this->db->getAPIKeyDefaults($key, $this->getCommand());
-            $result = call_user_func(array($this, $this->getCommand()));
+            $this->defaults = $this->db->getAPIKeyDefaults($key, $command);
+            $result = call_user_func(array($this, $command));
         }
         return $result;
     }
@@ -260,6 +260,21 @@ class ethplorerController {
      */
     public function getAddressHistory(){
         return $this->_getHistory(TRUE);
+    }
+
+    /**
+     * /getTopTokens method implementation.
+     *
+     * @undocumented
+     * @return array
+     */
+    public function getTopTokens(){
+        $maxLimit = is_array($this->defaults) && isset($this->defaults['maxLimit']) ? $this->defaults['maxLimit'] : 50;
+        $maxPeriod = is_array($this->defaults) && isset($this->defaults['maxPeriod']) ? $this->defaults['maxPeriod'] : 90;
+        $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
+        $period = min(abs((int)$this->getRequest('limit', 10)), $maxPeriod);
+        $result = array('tokens' => $this->db->getTopTokens($limit, $period));
+        $this->sendResult($result);
     }
 
     /**

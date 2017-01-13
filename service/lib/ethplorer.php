@@ -596,6 +596,44 @@ class Ethplorer {
         return $result;
     }
 
+    /**
+     * Returns top tokens list.
+     *
+     * @param int $limit   Maximum records number
+     * @param int $period  Days from now
+     * @return array
+     */
+    public function getTopTokens($limit = 10, $period = 30){
+        $cache = 'top_tokens-' . $period . '-' . $limit;
+        $result = $this->oCache->get($cache, false, true, 24 * 3600);
+        if(FALSE === $result){
+            $result = array();
+            $dbData = $this->dbs['operations']->aggregate(
+                array(
+                    array('$match' => array("timestamp" => array('$gt' => time() - $period * 24 * 3600))),
+                    array(
+                        '$group' => array(
+                            "_id" => '$contract',
+                            'cnt' => array('$sum' => 1)
+                        )
+                    ),
+                    array('$sort' => array('cnt' => -1)),
+                    array('$limit' => $limit)
+                )
+            );
+            if(is_array($dbData) && !empty($dbData['result'])){
+                foreach($dbData['result'] as $token){
+                    $oToken = $this->getToken($token['_id']);
+                    $oToken['opCount'] = $token['cnt'];
+                    unset($oToken['checked']);
+                    $result[] = $oToken;
+                }
+                $this->oCache->save($cache, $result);
+            }
+        }
+        return $result;
+    }
+
     public function checkAPIKey($key){
         return isset($this->aSettings['apiKeys']) && isset($this->aSettings['apiKeys'][$key]);
     }
