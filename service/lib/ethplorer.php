@@ -159,6 +159,7 @@ class Ethplorer {
         if($result['isContract'] && isset($result['token'])){
             $result["transfers"] = $this->getContractTransfers($address, $limit);
             $result["issuances"] = $this->getContractIssuances($address, $limit);
+            $result['holders'] = $this->getTokenHolders($address, $limit);
             if(empty($result["issuances"])){
                 unset($result["issuances"]);
             }
@@ -364,10 +365,47 @@ class Ethplorer {
                 unset($aToken["_id"]);
                 $aResult[$address] = $aToken;
                 $aResult[$address] += $this->getTokenTotalInOut($address);
+                $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
             }
             $this->oCache->save('tokens', $aResult);
         }
         return $aResult;
+    }
+
+
+    public function getTokenHoldersCount($address){
+        return $this->dbs['balances']->find(array('contract' => $address, 'balance' => array('$gt' => 0)))->count();
+    }
+
+    /**
+     * Returns list of token holders.
+     *
+     * @param string $address
+     * @param int $limit
+     * @return array
+     */
+    public function getTokenHolders($address, $limit = FALSE){
+        $result = array();
+        $cursor = $this->dbs['balances']->find(array('contract' => $address, 'balance' => array('$gt' => 0)))->sort(array('balance' => -1));
+        if($limit){
+            $cursor = $cursor->limit($limit);
+        }
+        if($cursor){
+            $total = 0;
+            foreach($cursor as $balance){
+                $total += floatval($balance['balance']);
+            }
+            if($total > 0){
+                foreach($cursor as $balance){
+                    $result[] = array(
+                        'address' => $balance['address'],
+                        'balance' => floatval($balance['balance']),
+                        'share' => round((floatval($balance['balance']) / $total) * 100, 2)
+                    );
+                }
+            }
+        }
+        return $result;
     }
 
     /**
