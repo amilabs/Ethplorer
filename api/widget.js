@@ -58,8 +58,8 @@ ethplorerWidget = {
             return '<a class="tx-link" href="' + ethplorerWidget.url + '/' + linkType + '/' + data + hash + '" title="' + title + '" target="_blank">' + text + '</a>';
         },
 
-        // Date with fixed GMT to local date
-        ts2date: function(ts, withGMT){
+        // Timestamp to local date
+        ts2date: function(ts, withTime, withGMT){
             withGMT = 'undefined' !== typeof(withGMT) ? withGMT : true;
             ts *= 1000;
             function padZero(s){
@@ -67,8 +67,22 @@ ethplorerWidget = {
             }        
             var res = '';
             var dt = new Date(ts);
-            /*res += (dt.getFullYear() + '-' + padZero((dt.getMonth() + 1)) + '-' + padZero(dt.getDate()));
-            res += ' '*/;
+            res += (dt.getFullYear() + '-' + padZero((dt.getMonth() + 1)) + '-' + padZero(dt.getDate()));
+            if(withTime){
+                res += ' ';
+                res += ethplorerWidget.Utils.ts2time(ts, withGMT);
+            }
+            return res;
+        },
+        //Timestamp to local time
+        ts2time: function(ts, withGMT){
+            withGMT = 'undefined' !== typeof(withGMT) ? withGMT : true;
+            ts *= 1000;
+            function padZero(s){
+                return (s < 10) ? '0' + s : s.toString();
+            }        
+            var res = '';
+            var dt = new Date(ts);
             res += (padZero(dt.getHours()) + ':' + padZero(dt.getMinutes()) + ':' + padZero(dt.getSeconds()));
             if(withGMT){
                 res += (' (' + Ethplorer.Utils.getTZOffset() + ')');
@@ -166,14 +180,14 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
         debug: '<div class="txs-debug"><div class="txs-stop"></div></div>',
         // Big table row
         big:    '<tr>' + 
-                    '<td class="tx-field tx-date">%date%</td>' + 
+                    '<td class="tx-field tx-date">%time%</td>' + 
                     '<td class="tx-field tx-transfer"><span class="tx-send">from </span>%from%<span class="tx-send">to</span>%to%</td>' + 
                     '<td class="tx-field tx-amount">%amount%</td>' +
                     '<td class="tx-field tx-token">%token%</td>' +
                 '</tr>',
         // Small table row
         small:  '<tr>' +
-                    '<td class="tx-field tx-date">%date%</td>' +
+                    '<td class="tx-field tx-date">%time%</td>' +
                     '<td class="tx-field tx-transfer"><span class="tx-send">from </span>%from%</td>' +
                 '</tr><tr>' +
                     '<td class="tx-field">&nbsp;</td>' +
@@ -348,7 +362,9 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
         var hash = tr.priority ? tr.priority : false;
 
         return {
-            date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false), tr.transactionHash, hash),
+            date: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, false, false), tr.transactionHash, hash),
+            time: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2time(tr.timestamp, false), tr.transactionHash, hash),
+            datetime: ethplorerWidget.Utils.link(tr.transactionHash, ethplorerWidget.Utils.ts2date(tr.timestamp, true, false), tr.transactionHash, hash),
             from:  ethplorerWidget.Utils.link(tr.from, tr.from),
             to: ethplorerWidget.Utils.link(tr.to, tr.to),
             amount: ethplorerWidget.Utils.link(tr.tokenInfo.address, amount, amount + ' ' + tr.tokenInfo.symbol),
