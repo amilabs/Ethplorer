@@ -281,10 +281,15 @@ class ethplorerController {
         }
         $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 10;
         $options = array(
-            'address'   => $address,
             'type'      => $this->getRequest('type', FALSE),
             'limit'     => min(abs((int)$this->getRequest('limit', 10)), $maxLimit),
         );
+        if(FALSE !== $address){
+            $options['address'] = $address;
+        }
+        if(FALSE !== $this->getRequest('timestamp', FALSE)){
+            $options['timestamp'] = $this->getRequest('timestamp');
+        }
         if($addressHistoryMode){
             $token = $this->getRequest('token', FALSE);
             if(FALSE !== $token){
