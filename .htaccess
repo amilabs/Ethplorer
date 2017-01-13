@@ -1,5 +1,7 @@
 RewriteEngine on
 
+RewriteRule ^last last.html [L,QSA]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^tx/(.*) index.php [L,QSA]
