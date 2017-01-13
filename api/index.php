@@ -29,23 +29,10 @@ try {
 }
 
 $ctr = new ethplorerController($es);
-$ctr->run();
+$result = $ctr->run();
 
-$result = array();
-$command = $ctr->getCommand();
-
-switch($command){
-    case 'last':
-        $options = array(
-            'limit'     => isset($_GET["limit"])     ? (int)$_GET["limit"]     : 10,
-            'timestamp' => isset($_GET["timestamp"]) ? (int)$_GET["timestamp"] : 0,
-        );
-        if(isset($_GET['token_address']) && $es->isValidAddress(strtolower($_GET['token_address']))){
-            $options['address'] = strtolower($_GET['token_address']);
-        }
-        $result = $es->getLastTransfers($options);
-        break;
-    default:
-        $ctr->sendError(17, 'Invalid request, check API manual there: https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API');
+if(!$result){
+    $ctr->sendError(17, 'Invalid request, check API manual there: https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API');
 }
+
 $ctr->sendResult($result);

@@ -80,6 +80,7 @@ class ethplorerController {
      * @return void
      */
     public function run(){
+        $result = FALSE;
         $command = $this->getCommand();
         if($command && in_array($command, $this->apiCommands) && method_exists($this, $command)){
             $key = $this->getRequest('apiKey', FALSE);
@@ -88,8 +89,8 @@ class ethplorerController {
             }
             $this->defaults = $this->db->getAPIKeyDefaults($key, $this->getCommand());
             $result = call_user_func(array($this, $this->getCommand()));
-            $this->sendResult($result);
         }
+        return $result;
     }
 
     /**
