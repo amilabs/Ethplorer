@@ -491,6 +491,45 @@ Ethplorer = {
             if(Ethplorer.Config.updateLink){
                 $('.address-token-name:eq(0)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>')
             }
+            if(data.holders && data.holders.length){
+                var table = $('#address-token-holders').find('table');
+                var totalVolume = 0;
+                var totalShare = 0;
+                for(var i=0; i<data.holders.length; i++){
+                    var holder = data.holders[i];
+                    totalVolume += holder['balance'];
+                    totalShare += holder['share'];
+                    var row = $('<tr>');
+                    var balance = holder['balance'];
+                    if(oToken.decimals){
+                        balance = balance / Math.pow(10, oToken.decimals);
+                    }
+                    balance = Ethplorer.Utils.formatNum(balance, true, oToken.decimals, true);
+                    if(oToken.symbol){
+                        balance = balance + ' ' + oToken.symbol;
+                    }else if(oToken.name){
+                    }
+                    var address = Ethplorer.Utils.getEthplorerLink(holder['address'], holder['address'], false);
+                    var shareDiv = '<div><div class="holder-gauge" style="width:' + holder['share'] + '%;"></div><div class="holder-gauge-value">&nbsp;' + holder['share'] + '%</div></div>'
+                    row.append('<td>' + (i+1) + '</td><td>' + address + '</td><td></td><td>' + balance + '</td><td>' + shareDiv + '</td>');
+                    table.append(row);
+                }
+                if(totalShare > 100){
+                    totalShare = 100;
+                }
+                totalShare = Ethplorer.Utils.formatNum(totalShare, true, 2, true);
+                if(oToken.decimals){
+                    totalVolume = totalVolume / Math.pow(10, oToken.decimals);
+                }
+                totalVolume = Ethplorer.Utils.formatNum(totalVolume, true, oToken.decimals, true);
+                var totals = "Total " + oToken.name + " supply: " + oToken.totalSupply;
+                if(oToken.holdersCount > 50){
+                    totals += ", Summary of top 50 (from " + oToken.holdersCount + ") holders: " + totalVolume + " " + oToken.symbol + ", which is " + totalShare + "% of " + oToken.name;
+                }
+
+                $("#address-token-holders-totals").html(totals);
+                $('#address-token-holders').show();
+            }
             if(data.issuances && data.issuances.length){
                 if(50 === data.issuances.length){
                     $('#address-issuances .block-header').html($('#address-issuances .block-header').html().replace('Issuances', 'Last 50 Issuances'))
@@ -633,6 +672,17 @@ Ethplorer = {
         if('undefined' === typeof(oToken.totalSupply)){
             oToken.totalSupply = 0;
         }
+        if(!oToken.name){
+            oToken.name = 'N/A';
+        }
+        if(!oToken.owner || (oToken.owner && ('0x' === oToken.owner))){
+            oToken.owner = '';
+        }
+        if(Ethplorer.Config.tokens && ('undefined' !== typeof(Ethplorer.Config.tokens[oToken.address]))){
+            for(var property in Ethplorer.Config.tokens[oToken.address]){
+                oToken[property] = Ethplorer.Config.tokens[oToken.address][property];
+            }
+        }
         oToken.totalSupply = Ethplorer.Utils.toBig(oToken.totalSupply);
         if(oToken.decimals){
             oToken.decimals = parseInt(Ethplorer.Utils.toBig(oToken.decimals).toString());
@@ -655,21 +705,12 @@ Ethplorer = {
         oToken.totalOut = Ethplorer.Utils.formatNum(oToken.totalOut, true, oToken.decimals, true);
 
         if(oToken.symbol){
+            console.log(oToken.symbol);
             oToken.totalSupply = oToken.totalSupply + ' ' + oToken.symbol;
             oToken.totalIn = oToken.totalIn + ' ' + oToken.symbol;
             oToken.totalOut = oToken.totalOut + ' ' + oToken.symbol;
         }
-        if(!oToken.name){
-            oToken.name = 'N/A';
-        }
-        if(!oToken.owner || (oToken.owner && ('0x' === oToken.owner))){
-            oToken.owner = '';
-        }
-        if(Ethplorer.Config.tokens && ('undefined' !== typeof(Ethplorer.Config.tokens[oToken.address]))){
-            for(var property in Ethplorer.Config.tokens[oToken.address]){
-                oToken[property] = Ethplorer.Config.tokens[oToken.address][property];
-            }
-        }
+
         oToken.prepared  = true;
         return oToken;
     },

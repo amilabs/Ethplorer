@@ -116,7 +116,7 @@ if($error){
                     <div class="col-xs-12">
                         <ul class="nav nav-tabs">
                           <li class="active"><a data-toggle="tab" href="#erc20-tab">Token Operations</a></li>
-                          <li><a data-toggle="tab" href="#eth-tab">Transaction Details</a></li>
+                          <li><a data-toggle="tab" href="#eth-tab"><span class="dashed">Transaction Details</span></a></li>
                         </ul>
                     </div>
 -->
@@ -389,7 +389,13 @@ if($error){
                             </table>
                         </div>
                     </div>
-
+                    <div class="col-xs-12" id="address-token-holders" style="display:none;">
+                        <div class="block">
+                            <div class="block-header"><h3>Token <span class="address-token-name"></span> Holders</h3></div>
+                            <table class="table"></table>
+                            <div id="address-token-holders-totals"></div>
+                        </div>
+                    </div>
                     <div class="col-xs-12" id="address-token-transfers" style="display:none;">
                         <div class="block">
                             <div class="block-header"><h3>Token <span class="address-token-name"></span> Transfers</h3></div>

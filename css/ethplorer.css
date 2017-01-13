@@ -19,6 +19,31 @@ body {
     padding-left: 15px;
 }
 
+.nav-tabs {
+    border-bottom: 10px solid #fff;
+}
+
+.nav-tabs li a {
+    color: white;
+    border-bottom: 1px dashed white;
+}
+
+.nav-tabs li a:hover {
+    color: black;
+}
+
+.nav-tabs li a span.dashed {
+    border-bottom: 1px dashed white;
+}
+
+.nav-tabs li a:hover span.dashed {
+    border-bottom: 1px dashed black;
+}
+
+.nav-tabs li.active a span.dashed {
+    border-bottom: 0px dashed transparent;
+}
+
 #network {
     color: white;
     line-height: 34px;
@@ -338,6 +363,54 @@ a.dashed {
     color: white;
     margin-bottom: 20px;
 }
+
+#address-token-holders tr td:first-child {
+    max-width: 50px;
+    width: 50px;
+    text-align: right;
+}
+
+#address-token-holders tr td:nth-child(2) {
+    max-width: 250px;
+    width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#address-token-holders tr td:nth-child(4) {
+    max-width: 200px;
+    width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: right;
+}
+
+#address-token-holders tr td:nth-child(5) {
+    width: 50%;
+    padding-right: 60px;
+}
+
+#address-token-holders-totals {
+    color: white;
+    font-size: 13px;
+    text-align: center;
+}
+
+.holder-gauge {
+    position: relative;
+    background-color: white;
+    opacity: 0.8;
+    height: 20px;
+    float: left;
+}
+
+.holder-gauge-value {
+    position:relative;
+    width:0px;
+    height: 20px;
+    float: left;
+}
+    
 
 #address-issuances tr td:last-child {
     min-width: 200px;
