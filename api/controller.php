@@ -272,7 +272,7 @@ class ethplorerController {
         $maxLimit = is_array($this->defaults) && isset($this->defaults['maxLimit']) ? $this->defaults['maxLimit'] : 50;
         $maxPeriod = is_array($this->defaults) && isset($this->defaults['maxPeriod']) ? $this->defaults['maxPeriod'] : 90;
         $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
-        $period = min(abs((int)$this->getRequest('limit', 10)), $maxPeriod);
+        $period = min(abs((int)$this->getRequest('period', 10)), $maxPeriod);
         $result = array('tokens' => $this->db->getTopTokens($limit, $period));
         $this->sendResult($result);
     }
