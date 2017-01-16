@@ -409,7 +409,6 @@ Ethplorer = {
         var titleAdd = '';
         // Temporary hack
         $('.address-type').text(data.isContract ? 'Contract' : 'Address');
-        $('#address-issuances').hide();
         var tp = data.isContract ? 'Contract address ' : 'Address ';
         // $('#ethplorer-path').html('<b>' + tp + '</b> ' + address);
         $('#ethplorer-path').show();
@@ -534,7 +533,7 @@ Ethplorer = {
                 if(50 === data.issuances.length){
                     $('#address-issuances .block-header').html($('#address-issuances .block-header').html().replace('Issuances', 'Last 50 Issuances'))
                 }
-                $('#address-issuances').show();
+                $('#tab-issuances, #address-issuances').show();
                 for(var i=0; i<data.issuances.length; i++){
                     var tx = data.issuances[i];
                     // Temporary workaround

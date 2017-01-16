@@ -386,22 +386,28 @@ class Ethplorer {
      */
     public function getTokenHolders($address, $limit = FALSE){
         $result = array();
-        $cursor = $this->dbs['balances']->find(array('contract' => $address, 'balance' => array('$gt' => 0)))->sort(array('balance' => -1));
-        if($limit){
-            $cursor = $cursor->limit($limit);
-        }
-        if($cursor){
-            $total = 0;
-            foreach($cursor as $balance){
-                $total += floatval($balance['balance']);
+        $token = $this->getToken($address);
+        if($token){
+            $cursor = $this->dbs['balances']->find(array('contract' => $address, 'balance' => array('$gt' => 0)))->sort(array('balance' => -1));
+            if($limit){
+                $cursor = $cursor->limit($limit);
             }
-            if($total > 0){
+            if($cursor){
+                $total = 0;
                 foreach($cursor as $balance){
-                    $result[] = array(
-                        'address' => $balance['address'],
-                        'balance' => floatval($balance['balance']),
-                        'share' => round((floatval($balance['balance']) / $total) * 100, 2)
-                    );
+                    $total += floatval($balance['balance']);
+                }
+                if($total > 0){
+                    if(isset($token['totalSupply']) && ($total < $token['totalSupply'])){
+                        $total = $token['totalSupply'];
+                    }
+                    foreach($cursor as $balance){
+                        $result[] = array(
+                            'address' => $balance['address'],
+                            'balance' => floatval($balance['balance']),
+                            'share' => round((floatval($balance['balance']) / $total) * 100, 2)
+                        );
+                    }
                 }
             }
         }

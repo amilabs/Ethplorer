@@ -112,212 +112,198 @@ if($error){
                 </div>
 
                 <div id="txDetails" class="content-page">
-<!--
-                    <div class="col-xs-12">
-                        <ul class="nav nav-tabs">
-                          <li class="active"><a data-toggle="tab" href="#erc20-tab">Token Operations</a></li>
-                          <li><a data-toggle="tab" href="#eth-tab"><span class="dashed">Transaction Details</span></a></li>
-                        </ul>
-                    </div>
--->
-
-                    <div class="tab-content">
-                        <!-- <div id="erc20-tab" class="tab-pane fade in active"> -->
-                        <div>
-                            <div class="col-xs-12 multiop">
-                                <div class="block">
-                                    <div class="block-header">
-                                        <h3>Internal operations</h3>
-                                    </div>
-                                    <table class="table">
-                                    </table>
+                    <div>
+                        <div class="col-xs-12 multiop">
+                            <div class="block">
+                                <div class="block-header">
+                                    <h3>Internal operations</h3>
                                 </div>
-                            </div>
-
-                            <div class="col-xs-12 col-md-6 chainy">
-                                <div class="block">
-                                    <div class="block-header"><h3><a href="/address/0xf3763c30dd6986b53402d41a8552b8f7f6a6089b" style="text-decoration: none;">Chainy</a> <span id="chainy-op"><span></h3></div>
-                                    <table class="table">
-                                    <tr>
-                                        <td>URL</td>
-                                        <td id="chainy-url" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>SHA256 Hash</td>
-                                        <td id="chainy-hash" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Filename</td>
-                                        <td id="chainy-filename" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Filesize</td>
-                                        <td id="chainy-filesize" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Data</td>
-                                        <td id="chainy-message" class="list-field" style="white-space: normal !important;"></td>
-                                    </tr>
-                                    <tr class="blue">
-                                        <td>Short Link</td>
-                                        <td id="chainy-link" class="list-field"></td>
-                                    </tr>
-                                    </table>
-                                </div>
-                                <div class="text-center">
-                                    <a class="tx-details-link">Transaction details</a>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-md-6 token-related">
-                                <div class="block">
-                                    <div class="block-header"><h3><span class="token-name"></span> <span class="token-operation-type"></span></h3></div>
-                                    <table class="table">
-                                    <tr class="blue">
-                                        <td>Value</td>
-                                        <td id="transfer-operation-value" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Date</td>
-                                        <td id="transfer-tx-timestamp" data-type="localdate" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>From</td>
-                                        <td id="transfer-operation-from" data-type="ethplorer" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>To</td>
-                                        <td id="transfer-operation-to" data-type="ethplorer" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Message</td>
-                                        <td id="transfer-tx-message" class="list-field"></td>
-                                    </tr>
-                                    <tr id="operation-status">
-                                        <td>Status</td>
-                                        <td id="txTokenStatus" class="list-field"></td>
-                                    </tr>
-                                    </table>
-                                </div>
-                                <div class="text-center visible-md visible-lg visible-xl">
-                                    <a class="tx-details-link">Transaction details</a>
-                                </div>
-                            </div>
-                            <div class="col-xs-12 col-md-6 token-related">
-                                <div class="block">
-                                    <div class="block-header"><h3>Token <span class="token-name"></span> Information</h3></div>
-                                    <table class="table">
-                                    <tr>
-                                        <td>Contract</td>
-                                        <td id="transaction-token-contract" class="list-field" data-type="ethplorer" data-options="no-contract"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Symbol</td>
-                                        <td id="transaction-token-symbol" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Decimals</td>
-                                        <td id="transaction-token-decimals" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Owner</td>
-                                        <td id="transaction-token-owner" data-type="ethplorer" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Total Supply</td>
-                                        <td id="transaction-token-totalSupply" class="list-field"></td>
-                                    </tr>
-                                    </table>
-                                </div>
-                                <div class="text-center hidden-md hidden-lg hidden-xl">
-                                    <a class="tx-details-link">Transaction details</a>
-                                </div>
+                                <table class="table">
+                                </table>
                             </div>
                         </div>
 
-                        <!-- <div id="eth-tab" class="tab-pane fade"> -->
-                        <div id="tx-details-block" style="display:none;">
-                            <div class="col-xs-12">
-                                <div class="block">
-                                    <div class="block-header">
-                                        <h3>Transaction details</h3>
-                                        <div class="tx-details-close">
-                                            &times;
-                                        </div>
+                        <div class="col-xs-12 col-md-6 chainy">
+                            <div class="block">
+                                <div class="block-header"><h3><a href="/address/0xf3763c30dd6986b53402d41a8552b8f7f6a6089b" style="text-decoration: none;">Chainy</a> <span id="chainy-op"><span></h3></div>
+                                <table class="table">
+                                <tr>
+                                    <td>URL</td>
+                                    <td id="chainy-url" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>SHA256 Hash</td>
+                                    <td id="chainy-hash" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Filename</td>
+                                    <td id="chainy-filename" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Filesize</td>
+                                    <td id="chainy-filesize" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Data</td>
+                                    <td id="chainy-message" class="list-field" style="white-space: normal !important;"></td>
+                                </tr>
+                                <tr class="blue">
+                                    <td>Short Link</td>
+                                    <td id="chainy-link" class="list-field"></td>
+                                </tr>
+                                </table>
+                            </div>
+                            <div class="text-center">
+                                <a class="tx-details-link">Transaction details</a>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 token-related">
+                            <div class="block">
+                                <div class="block-header"><h3><span class="token-name"></span> <span class="token-operation-type"></span></h3></div>
+                                <table class="table">
+                                <tr class="blue">
+                                    <td>Value</td>
+                                    <td id="transfer-operation-value" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Date</td>
+                                    <td id="transfer-tx-timestamp" data-type="localdate" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>From</td>
+                                    <td id="transfer-operation-from" data-type="ethplorer" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>To</td>
+                                    <td id="transfer-operation-to" data-type="ethplorer" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Message</td>
+                                    <td id="transfer-tx-message" class="list-field"></td>
+                                </tr>
+                                <tr id="operation-status">
+                                    <td>Status</td>
+                                    <td id="txTokenStatus" class="list-field"></td>
+                                </tr>
+                                </table>
+                            </div>
+                            <div class="text-center visible-md visible-lg visible-xl">
+                                <a class="tx-details-link">Transaction details</a>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-md-6 token-related">
+                            <div class="block">
+                                <div class="block-header"><h3>Token <span class="token-name"></span> Information</h3></div>
+                                <table class="table">
+                                <tr>
+                                    <td>Contract</td>
+                                    <td id="transaction-token-contract" class="list-field" data-type="ethplorer" data-options="no-contract"></td>
+                                </tr>
+                                <tr>
+                                    <td>Symbol</td>
+                                    <td id="transaction-token-symbol" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Decimals</td>
+                                    <td id="transaction-token-decimals" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Owner</td>
+                                    <td id="transaction-token-owner" data-type="ethplorer" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Total Supply</td>
+                                    <td id="transaction-token-totalSupply" class="list-field"></td>
+                                </tr>
+                                </table>
+                            </div>
+                            <div class="text-center hidden-md hidden-lg hidden-xl">
+                                <a class="tx-details-link">Transaction details</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="tx-details-block" style="display:none;">
+                        <div class="col-xs-12">
+                            <div class="block">
+                                <div class="block-header">
+                                    <h3>Transaction details</h3>
+                                    <div class="tx-details-close">
+                                        &times;
                                     </div>
-                                    <table class="table">
-                                    <tr>
-                                        <td>Tx</td>
-                                        <td id="transaction-tx-hash" class="list-field" data-type="etherscan"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Date</td>
-                                        <td id="transaction-tx-timestamp" data-type="localdate" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Message</td>
-                                        <td id="transaction-tx-message" class="list-field"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Block</td>
-                                        <td id="transaction-tx-block">
-                                            <span id="transaction-tx-blockNumber" class="list-field"></span> (<span id="transaction-tx-confirmations" class="list-field"></span> confirmations)
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>From</td>
-                                        <td id="transaction-tx-from" class="list-field" data-type="ethplorer"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>To</td>
-                                        <td id="transaction-tx-to" class="list-field" data-type="ethplorer"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Creates</td>
-                                        <td id="transaction-tx-creates" class="list-field" data-type="ethplorer"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Value</td>
-                                        <td id="transaction-tx-value" class="list-field" data-type="ether"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Gas Limit</td>
-                                        <td id="transaction-tx-gasLimit" class="list-field" data-type="int"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Gas Used</td>
-                                        <td id="transaction-tx-gasUsed" class="list-field" data-type="int"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Gas Price</td>
-                                        <td id="transaction-tx-gasPrice" class="list-field" data-type="ether"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>TX Fee</td>
-                                        <td id="transaction-tx-fee" class="list-field" data-type="ether"></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Nonce</td>
-                                        <td id="transaction-tx-nonce" class="list-field"></td>
-                                    </tr>
-                                    <tr id="tx-parsed">
-                                        <td>Parsed Data</td>
-                                        <td class="text-right">
-                                            <pre id="transaction-tx-parsed" class="list-field text-left"></pre>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>Input Data</td>
-                                        <td class="text-right">
-                                            <a onclick="Ethplorer.convert('transaction-tx-input', this);" class="pre-switcher">ASCII</a>
-                                            <pre id="transaction-tx-input" class="list-field text-left" data-mode="hex"></pre>
-                                        </td>
-                                    </tr>
-                                    <tr id="tx-status">
-                                        <td>Status</td>
-                                        <td id="txEthStatus" class="list-field"></td>
-                                    </tr>
-                                    </table>
                                 </div>
+                                <table class="table">
+                                <tr>
+                                    <td>Tx</td>
+                                    <td id="transaction-tx-hash" class="list-field" data-type="etherscan"></td>
+                                </tr>
+                                <tr>
+                                    <td>Date</td>
+                                    <td id="transaction-tx-timestamp" data-type="localdate" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Message</td>
+                                    <td id="transaction-tx-message" class="list-field"></td>
+                                </tr>
+                                <tr>
+                                    <td>Block</td>
+                                    <td id="transaction-tx-block">
+                                        <span id="transaction-tx-blockNumber" class="list-field"></span> (<span id="transaction-tx-confirmations" class="list-field"></span> confirmations)
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>From</td>
+                                    <td id="transaction-tx-from" class="list-field" data-type="ethplorer"></td>
+                                </tr>
+                                <tr>
+                                    <td>To</td>
+                                    <td id="transaction-tx-to" class="list-field" data-type="ethplorer"></td>
+                                </tr>
+                                <tr>
+                                    <td>Creates</td>
+                                    <td id="transaction-tx-creates" class="list-field" data-type="ethplorer"></td>
+                                </tr>
+                                <tr>
+                                    <td>Value</td>
+                                    <td id="transaction-tx-value" class="list-field" data-type="ether"></td>
+                                </tr>
+                                <tr>
+                                    <td>Gas Limit</td>
+                                    <td id="transaction-tx-gasLimit" class="list-field" data-type="int"></td>
+                                </tr>
+                                <tr>
+                                    <td>Gas Used</td>
+                                    <td id="transaction-tx-gasUsed" class="list-field" data-type="int"></td>
+                                </tr>
+                                <tr>
+                                    <td>Gas Price</td>
+                                    <td id="transaction-tx-gasPrice" class="list-field" data-type="ether"></td>
+                                </tr>
+                                <tr>
+                                    <td>TX Fee</td>
+                                    <td id="transaction-tx-fee" class="list-field" data-type="ether"></td>
+                                </tr>
+                                <tr>
+                                    <td>Nonce</td>
+                                    <td id="transaction-tx-nonce" class="list-field"></td>
+                                </tr>
+                                <tr id="tx-parsed">
+                                    <td>Parsed Data</td>
+                                    <td class="text-right">
+                                        <pre id="transaction-tx-parsed" class="list-field text-left"></pre>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Input Data</td>
+                                    <td class="text-right">
+                                        <a onclick="Ethplorer.convert('transaction-tx-input', this);" class="pre-switcher">ASCII</a>
+                                        <pre id="transaction-tx-input" class="list-field text-left" data-mode="hex"></pre>
+                                    </td>
+                                </tr>
+                                <tr id="tx-status">
+                                    <td>Status</td>
+                                    <td id="txEthStatus" class="list-field"></td>
+                                </tr>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -389,33 +375,54 @@ if($error){
                             </table>
                         </div>
                     </div>
-                    <div class="col-xs-12" id="address-token-holders" style="display:none;">
-                        <div class="block">
-                            <div class="block-header"><h3>Token <span class="address-token-name"></span> Holders</h3></div>
-                            <table class="table"></table>
-                            <div id="address-token-holders-totals"></div>
-                        </div>
+                    <div class="col-xs-12">
+                        <ul class="nav nav-tabs">
+                            <li id="tab-transactions" class="active">
+                                <a data-toggle="tab" href="#token-transfers-tab"><span class="dashed">Token Transactions</span></a>
+                            </li>
+                            <li id="tab-issuances">
+                                <a data-toggle="tab" href="#token-issuances-tab"><span class="dashed">Token Issuances</span></a>
+                            </li>
+                            <li id="tab-holders">
+                                <a data-toggle="tab" href="#token-holders-tab"><span class="dashed">Token Holders</span></a>
+                            </li>
+                        </ul>
                     </div>
-                    <div class="col-xs-12" id="address-token-transfers" style="display:none;">
-                        <div class="block">
-                            <div class="block-header"><h3>Token <span class="address-token-name"></span> Transfers</h3></div>
-                            <table class="table"></table>
-                            <div id="address-token-transfers-more" class="text-center"></div>
+                    <div class="tab-content">
+                        <div id="token-transfers-tab" class="tab-pane fade in active">
+                            <div class="col-xs-12" id="address-token-transfers">
+                                <div class="block">
+                                    <div class="block-header"><h3>Token <span class="address-token-name"></span> Transfers</h3></div>
+                                    <table class="table"></table>
+                                    <div id="address-token-transfers-more" class="text-center"></div>
+                                </div>
+                                <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
+                            </div>
                         </div>
-                        <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
+                        <div id="token-issuances-tab" class="tab-pane fade">
+                            <div class="col-xs-12" id="address-issuances">
+                                <div class="block">
+                                    <div class="block-header"><h3>Token <span class="address-token-name"></span> Issuances</h3></div>
+                                    <table class="table"></table>
+                                </div>
+                                <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
+                            </div>
+                        </div>
+                        <div id="token-holders-tab" class="tab-pane fade">
+                            <div class="col-xs-12" id="address-token-holders">
+                                <div class="block">
+                                    <div class="block-header"><h3>Token <span class="address-token-name"></span> Holders</h3></div>
+                                    <table class="table"></table>
+                                    <div id="address-token-holders-totals"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-xs-12" id="address-transfers" style="display:none;">
                         <div class="block">
                             <div class="block-header"><h3>Transfers</h3></div>
                             <table class="table"></table>
                             <div id="address-transfers-more" class="text-center"></div>
-                        </div>
-                        <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
-                    </div>
-                    <div class="col-xs-12" id="address-issuances">
-                        <div class="block">
-                            <div class="block-header"><h3>Token <span class="address-token-name"></span> Issuances</h3></div>
-                            <table class="table"></table>
                         </div>
                         <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
                     </div>

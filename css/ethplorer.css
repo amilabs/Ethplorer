@@ -84,10 +84,16 @@ body {
     padding: 8px 8px 8px 28px;
 }
 
+#token-transfers-tab .table tr:nth-child(even),
+#token-issuances-tab .table tr:nth-child(even),
+#token-holders-tab .table tr:nth-child(even),
 tr.even {
     background: #0f0f0f;
 }
 
+#token-transfers-tab .table tr:nth-child(odd),
+#token-issuances-tab .table tr:nth-child(odd),
+#token-holders-tab .table tr:nth-child(odd),
 tr.odd {
     background: #202020;
 }
@@ -362,6 +368,13 @@ a.dashed {
     padding-left: 16px;
     color: white;
     margin-bottom: 20px;
+}
+
+#tab-issuances,
+#address-token-transfers,
+#address-issuances,
+#address-token-holders {
+    display: none;
 }
 
 #address-token-holders tr td:first-child {
