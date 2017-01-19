@@ -5,6 +5,31 @@ body {
     height: 100%;
 }
 
+.pager .page {
+    width: 20px;
+    text-align: center;
+    float: left;
+}
+
+tr.paginationFooter td {
+    background: white;
+    padding-top:0px !important;
+    padding-bottom: 0px !important;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    text-align: right;
+}
+
+tr.paginationFooter td ul.pagination {
+    margin-top: 8px;
+    margin-bottom: 4px;
+}
+
+.table.unclickable {
+    opacity: 0.5;
+    pointer-events: none;   
+}
+
 .navbar-inverse {
     background-color: #fff;
     padding-top: 8px;
@@ -195,6 +220,8 @@ a.local-link, a.local-link:visited, a.local-link:hover {
     margin-top: 20px;
     margin-bottom: 0px;
     width: 100%;
+    min-height: 70px;
+    height: 70px;
 }
 
 .footer .copyrights {
@@ -371,6 +398,7 @@ a.dashed {
 }
 
 #tab-issuances,
+#tab-holders,
 #address-token-transfers,
 #address-issuances,
 #address-token-holders {
@@ -390,9 +418,13 @@ a.dashed {
     text-overflow: ellipsis;
 }
 
+#address-token-holders tr td:nth-child(3) {
+    min-width: 1px;
+}
+
 #address-token-holders tr td:nth-child(4) {
-    max-width: 200px;
-    width: 200px;
+    max-width: 215px;
+    width: 215px;
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: right;

@@ -20,9 +20,38 @@ require dirname(__FILE__) . '/lib/ethplorer.php';
 $es = Ethplorer::db(require_once dirname(__FILE__) . '/config.php');
 
 $data = isset($_GET["data"]) ? $_GET["data"] : false;
+$page = isset($_GET["page"]) ? $_GET["page"] : false;
+$refresh = isset($_GET["refresh"]) ? $_GET["refresh"] : false;
 
 // Allow cross-domain ajax requests
 header('Access-Control-Allow-Origin: *');
+
+$pageSize = 10;
+
+// Parse page data
+if($page && (FALSE !== strpos($page, '='))){
+    $aPageData = explode('&', $page);
+    foreach($aPageData as $pageDataString){
+        $aPageParams = explode('=', $pageDataString);
+        if(2 === count($aPageParams)){
+            switch($aPageParams[0]){
+                case 'pageSize':
+                    $pageSize = intval($aPageParams[1]);
+                    break;
+                case 'transfers':
+                case 'issuances':
+                case 'holders':
+                    $es->setPager($aPageParams[0], intval($aPageParams[1]));
+                    break;
+            }
+        }
+    }
+    if($refresh){
+        $es->setPager('refresh', $refresh);
+    }
+}
+
+$es->setPageSize($pageSize);
 
 $result = array();
 if(false !== $data){
@@ -32,4 +61,11 @@ if(false !== $data){
         $result = $es->getTransactionDetails($data);
     }
 }
+
+if(!isset($result['pager'])){
+    $result['pager'] = array(
+        'pageSize' => $pageSize
+    );
+}
+
 echo json_encode($result);

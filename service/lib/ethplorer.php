@@ -54,6 +54,18 @@ class Ethplorer {
     protected $oCache;
 
     /**
+     *
+     * @var int
+     */
+    protected $pageSize = 0;
+
+    /**
+     *
+     * @var array
+     */
+    protected $aPager = array();
+
+    /**
      * Constructor.
      *
      * @throws Exception
@@ -104,6 +116,35 @@ class Ethplorer {
     }
 
     /**
+     * Sets new page size.
+     *
+     * @param int $pageSize
+     */
+    public function setPageSize($pageSize){
+        $this->pageSize = $pageSize;
+    }
+
+    /**
+     * Sets current page offset for section
+     *
+     * @param string $section
+     * @param int $page
+     */
+    public function setPager($section, $page = 1){
+        $this->aPager[$section] = $page;
+    }
+
+
+    public function getPager($section){
+        return isset($this->aPager[$section]) ? $this->aPager[$section] : 1;
+    }
+
+    public function getOffset($section){
+        $limit = $this->pageSize;
+        return (1 === $this->getPager($section)) ? FALSE : ($this->getPager($section) - 1) * $limit;
+    }
+
+    /**
      * Returns true if provided string is a valid ethereum address.
      *
      * @param string $address  Address to check
@@ -141,14 +182,20 @@ class Ethplorer {
      */
     public function getAddressDetails($address, $limit = 50){
         $result = array(
-            "isContract"    => false,
-            "balance"       => $this->getBalance($address),
+            "isContract"    => FALSE,
             "transfers"     => array()
         );
+        if($this->pageSize){
+            $limit = $this->pageSize;
+        }
+        $refresh = isset($this->aPager['refresh']) ? $this->aPager['refresh'] : FALSE;
+        if(!$refresh){
+            $result['balance'] = $this->getBalance($address);
+        }
         $contract = $this->getContract($address);
-        $token = false;
+        $token = FALSE;
         if($contract){
-            $result['isContract'] = true;
+            $result['isContract'] = TRUE;
             $result['contract'] = $contract;
             if($token = $this->getToken($address)){
                 $result["token"] = $token;
@@ -157,11 +204,29 @@ class Ethplorer {
             }
         }
         if($result['isContract'] && isset($result['token'])){
-            $result["transfers"] = $this->getContractTransfers($address, $limit);
-            $result["issuances"] = $this->getContractIssuances($address, $limit);
-            $result['holders'] = $this->getTokenHolders($address, $limit);
-            if(empty($result["issuances"])){
-                unset($result["issuances"]);
+            $result['pager'] = array('pageSize' => $limit);
+            if(!$refresh || ('transfers' === $refresh)){
+                $result["transfers"] = $this->getContractTransfers($address, $limit, $this->getOffset('transfers'));
+                $result['pager']['transfers'] = array(
+                    'page' => $this->getPager('transfers'),
+                    'records' => $this->getContractOperationCount('transfer', $address)
+                );
+            }
+            if(!$refresh || ('issuances' === $refresh)){
+                $result["issuances"] = $this->getContractIssuances($address, $limit, $this->getOffset('issuances'));
+                if(empty($result["issuances"])) unset($result["issuances"]);
+                $result['pager']['issuances'] = array(
+                    'page' => $this->getPager('issuances'),
+                    'records' => $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address)
+                );
+            }
+            if(!$refresh || ('holders' === $refresh)){
+                $result['holders'] = $this->getTokenHolders($address, $limit, $this->getOffset('holders'));
+                if(empty($result["holders"])) unset($result["holders"]);
+                $result['pager']['holders'] = array(
+                    'page' => $this->getPager('holders'),
+                    'records' => $this->getTokenHoldersCount($address)
+                );
             }
         }
         if(!isset($result['token'])){
@@ -174,7 +239,7 @@ class Ethplorer {
                     $result["tokens"][$balance["contract"]] = $balanceToken;
                 }
             }
-            $result["transfers"] = $this->getAddressOperations($address, $limit);
+            $result["transfers"] = $this->getAddressOperations($address, $limit, $this->getOffset('operations'));
         }
         return $result;
     }
@@ -384,12 +449,15 @@ class Ethplorer {
      * @param int $limit
      * @return array
      */
-    public function getTokenHolders($address, $limit = FALSE){
+    public function getTokenHolders($address, $limit = FALSE, $offset = FALSE){
         $result = array();
         $token = $this->getToken($address);
         if($token){
             $cursor = $this->dbs['balances']->find(array('contract' => $address, 'balance' => array('$gt' => 0)))->sort(array('balance' => -1));
-            if($limit){
+            if((FALSE !== $offset) && $offset){
+                $cursor = $cursor->skip($offset);
+            }
+            if((FALSE !== $limit) && $limit){
                 $cursor = $cursor->limit($limit);
             }
             if($cursor){
@@ -500,8 +568,8 @@ class Ethplorer {
      * @param int $limit       Maximum number of records
      * @return array
      */
-    public function getContractTransfers($address, $limit = 10){
-        return $this->getContractOperation('transfer', $address, $limit);
+    public function getContractTransfers($address, $limit = 10, $offset = FALSE){
+        return $this->getContractOperation('transfer', $address, $limit, $offset);
     }
 
     /**
@@ -511,8 +579,8 @@ class Ethplorer {
      * @param int $limit       Maximum number of records
      * @return array
      */
-    public function getContractIssuances($address, $limit = 10){
-        return $this->getContractOperation(array('$in' => array('issuance', 'burn', 'mint')), $address, $limit);
+    public function getContractIssuances($address, $limit = 10, $offset = FALSE){
+        return $this->getContractOperation(array('$in' => array('issuance', 'burn', 'mint')), $address, $limit, $offset);
     }
 
     /**
@@ -702,15 +770,31 @@ class Ethplorer {
      *
      * @param string $type     Operation type
      * @param string $address  Contract address
+     * @return array
+     */
+    protected function getContractOperationCount($type, $address){
+        $cursor = $this->dbs['operations']
+            ->find(array("contract" => $address, 'type' => $type))
+            ->sort(array("timestamp" => -1));
+        return $cursor ? $cursor->count() : 0;
+    }
+
+    /**
+     * Returns contract operation data.
+     *
+     * @param string $type     Operation type
+     * @param string $address  Contract address
      * @param string $limit    Maximum number of records
      * @return array
      */
-    protected function getContractOperation($type, $address, $limit){
-        // evxProfiler::checkpoint('getContractOperation ' . $type . ' START [address=' . $address . ', limit=' . $limit . ']');
+    protected function getContractOperation($type, $address, $limit, $offset = FALSE){
         $cursor = $this->dbs['operations']
             ->find(array("contract" => $address, 'type' => $type))
-                ->sort(array("timestamp" => -1))
-                ->limit($limit);
+                ->sort(array("timestamp" => -1));
+        if(FALSE !== $offset){
+            $cursor = $cursor->skip($offset);
+        }
+        $cursor = $cursor->limit($limit);
         $result = array();
         $fetches = 0;
         foreach($cursor as $transfer){
@@ -718,7 +802,6 @@ class Ethplorer {
             $result[] = $transfer;
             $fetches++;
         }
-        // evxProfiler::checkpoint('getContractOperation ' . $type . ' FINISH [address=' . $address . '] with ' . $fetches . ' fetches]');
         return $result;
     }
 
