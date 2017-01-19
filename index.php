@@ -471,7 +471,8 @@ if($error){
             <div class="copyrights">
                 <span style="color:white;">(c) 2016</span> <a href="https://everex.one" target="_blank">Everex</a>
                 &nbsp;&nbsp;&nbsp;
-                <a href="mailto://support@ethplorer.io">support@ethplorer.io</a>
+                <a href="mailto://support@ethplorer.io">support@ethplorer.io</a><br>
+                <a href="/privacy.html">Privacy & Terms</a>
             </div>
         </div>
     </div>
