@@ -42,11 +42,6 @@ if(3 === count($rParts)){
         $error = FALSE;
     }
 }
-if($error){
-    // @todo: normal error message
-    die('Invalid request');
-}
-
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -95,6 +90,12 @@ if($error){
     <div class="container">
         <div class="starter-template">
             <div id="page-create" class="page">
+                <?php if($error): ?>
+                <div id="error" class="content-page text-center">
+                    <h1 class="text-danger">ERROR</h1>
+                    <h3 id="error-reason" class="text-danger">Invalid request</h3>
+                </div>
+                <?php else: ?>
 
                 <div id="loader" class="text-center">
                     <div class="timer"></div>
@@ -437,6 +438,7 @@ if($error){
                         <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
