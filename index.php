@@ -42,6 +42,12 @@ if(3 === count($rParts)){
         $error = FALSE;
     }
 }
+if($error){
+    if(isset($rParts[1] && !$rParts[1]){
+        header('Location:index.htm');
+        die();
+    }
+}
 ?><!DOCTYPE html>
 <html>
 <head>
