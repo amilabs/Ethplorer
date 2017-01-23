@@ -43,7 +43,7 @@ if(3 === count($rParts)){
     }
 }
 if($error){
-    if(isset($rParts[1] && !$rParts[1]){
+    if(isset($rParts[1]) && !$rParts[1]){
         header('Location:index.htm');
         die();
     }
