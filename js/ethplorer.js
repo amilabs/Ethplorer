@@ -698,8 +698,8 @@ Ethplorer = {
             }
             totalVolume = Ethplorer.Utils.formatNum(totalVolume, true, oToken.decimals, true);
             var totals = "Total " + oToken.name + " supply: " + oToken.totalSupply;
-            if(oToken.holdersCount > 50){
-                totals += ", Summary of top 50 (from " + oToken.holdersCount + ") holders: " + totalVolume + " " + oToken.symbol + ", which is " + totalShare + "% of " + oToken.name;
+            if(oToken.holdersCount > Ethplorer.pageSize){
+                totals += ", Summary of page (from " + oToken.holdersCount + ") holders: " + totalVolume + " " + oToken.symbol + ", which is " + totalShare + "% of " + oToken.name;
             }
 
             $("#address-token-holders-totals").html(totals);
