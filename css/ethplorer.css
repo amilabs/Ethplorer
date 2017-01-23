@@ -408,6 +408,12 @@ a.dashed {
     white-space: nowrap;
 }
 
+.pageSize {
+    float: left;
+    color: #333;
+    margin-top: 14px;
+}
+
 #tab-issuances,
 #tab-holders,
 #address-token-transfers,

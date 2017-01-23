@@ -16,10 +16,20 @@
 
 Ethplorer = {
     data: {},
+    pageSize: 10,
     service: "/service/service.php",
     init: function(){
         BigNumber.config({ ERRORS: false });
         Ethplorer.Nav.init();
+        if(localStorage && ('undefined' !== typeof(localStorage['pageSize']))){
+            Ethplorer.pageSize = localStorage['pageSize'];
+            if(Ethplorer.pageSize > 10){
+                Ethplorer.Nav.set('pageSize', Ethplorer.pageSize);
+            }
+        }
+        if(Ethplorer.Nav.get('pageSize')){
+            Ethplorer.pageSize = Ethplorer.Nav.get('pageSize');
+        }
         Ethplorer.route();
         $('#network').text(Ethplorer.Config.testnet ? 'Test' : 'Modern');
         $('.navbar-nav li[data-page]').click(function(){
@@ -49,7 +59,7 @@ Ethplorer = {
                 $('.tx-details-link').removeClass('closed');
                 $('#tx-details-block').hide();
             }
-        }   
+        }
     },
     route: function(){
         var pathData  = Ethplorer.Utils.parsePath();
@@ -581,12 +591,16 @@ Ethplorer = {
         // Pager
         if(data.pager && data.pager.transfers){
             var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-            var cb = function(page, pageSize){
+            var cb = function(page){
                 $('.paginationFooter:visible').parents('.table').addClass('unclickable');
-                Ethplorer.Nav.set('transfers', page);
+                if(page > 1){
+                    Ethplorer.Nav.set('transfers', page);
+                }else{
+                    Ethplorer.Nav.del('transfers');
+                }
                 Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "transfers"}, Ethplorer.drawTransfers);
             };
-            Ethplorer.drawPager(pagination.find('td'), data.pager.transfers.page, 10, data.pager.transfers.records, cb);
+            Ethplorer.drawPager(pagination.find('td'), data.pager.transfers.page, data.pager.transfers.records, cb);
             $('#' + tableId + ' .table').append(pagination);
         }
         $('.paginationFooter:visible').parents('.table').removeClass('unclickable');
@@ -629,12 +643,16 @@ Ethplorer = {
         // Pager
         if(data.pager && data.pager.issuances){
             var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-            var cb = function(page, pageSize){
+            var cb = function(page){
                 $('.paginationFooter:visible').parents('.table').addClass('unclickable');
-                Ethplorer.Nav.set('issuances', page);
+                if(page > 1){
+                    Ethplorer.Nav.set('issuances', page);
+                }else{
+                    Ethplorer.Nav.del('issuances');
+                }
                 Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "issuances"}, Ethplorer.drawIssuances);
             };
-            Ethplorer.drawPager(pagination.find('td'), data.pager.issuances.page, 10, data.pager.issuances.records, cb);
+            Ethplorer.drawPager(pagination.find('td'), data.pager.issuances.page, data.pager.issuances.records, cb);
             $('#address-issuances .table').append(pagination);
         }
         $('.paginationFooter:visible').parents('.table').removeClass('unclickable');
@@ -689,12 +707,16 @@ Ethplorer = {
         // Pager
         if(data.pager && data.pager.holders){
             var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-            var cb = function(page, pageSize){
+            var cb = function(page){
                 $('.paginationFooter:visible').parents('.table').addClass('unclickable');
-                Ethplorer.Nav.set('holders', page);
+                if(page > 1){
+                    Ethplorer.Nav.set('holders', page);
+                }else{
+                    Ethplorer.Nav.del('holders');
+                }
                 Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "holders"}, Ethplorer.drawHolders);
             };
-            Ethplorer.drawPager(pagination.find('td'), data.pager.holders.page, 10, data.pager.holders.records, cb);
+            Ethplorer.drawPager(pagination.find('td'), data.pager.holders.page, data.pager.holders.records, cb);
             $('#address-token-holders .table').append(pagination);
         }
         $('.paginationFooter:visible').parents('.table').removeClass('unclickable');
@@ -758,27 +780,65 @@ Ethplorer = {
         // Pager
         if(data.pager && data.pager.chainy){
             var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-            var cb = function(page, pageSize){
+            var cb = function(page){
                 $('.paginationFooter:visible').parents('.table').addClass('unclickable');
-                Ethplorer.Nav.set('chainy', page);
+                if(page > 1){
+                    Ethplorer.Nav.set('chainy', page);
+                }else{
+                    Ethplorer.Nav.del('chainy');
+                }
                 Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "chainy"}, Ethplorer.drawChainy);
             };
-            Ethplorer.drawPager(pagination.find('td'), data.pager.chainy.page, 10, data.pager.chainy.records, cb);
+            Ethplorer.drawPager(pagination.find('td'), data.pager.chainy.page, data.pager.chainy.records, cb);
             $('#address-chainy-tx .table').append(pagination);
         }
         $('.paginationFooter:visible').parents('.table').removeClass('unclickable');
         $('#address-chainy-tx').show();
     },
-    drawPager: function(container, currentPage, pageSize, recordsCount, reloadCb){
-        if(recordsCount <= pageSize){
-            console.log(container);
+    drawPager: function(container, currentPage, recordsCount, reloadCb){
+        if(recordsCount <= Ethplorer.pageSize){
             container.parents('.paginationFooter').remove();
             return;
         }
+        var pageSizeSelect = $('<SELECT class="pageSize">');
+        var sizes = [10, 25, 50, 100];
+        for(var i=0; i<4; i++){
+            var option = $('<OPTION>');
+            option.text(sizes[i]);
+            option.attr('value', sizes[i]);
+            if(Ethplorer.pageSize == sizes[i]){
+                option.attr('selected', 'selected');
+            }
+            pageSizeSelect.append(option);
+        }
+        pageSizeSelect.change(function(_container, _rc){
+            return function(){
+                var ps = $(this).val();
+                if(ps !== Ethplorer.pageSize){
+                    Ethplorer.pageSize = ps;
+                    if(Ethplorer.pageSize > 10){
+                        Ethplorer.Nav.set('pageSize', ps);
+                        if(localStorage){
+                            localStorage.setItem('pageSize', ps);
+                        }
+                    }else{
+                        Ethplorer.Nav.del('pageSize');
+                        if(localStorage){
+                            localStorage.setItem('pageSize', 10);
+                        }
+                    }
+                    if('function' === typeof(_container['reloadCallback'])){
+                        _container['reloadCallback'](1);
+                    }
+                    Ethplorer.drawPager(_container, 1, _rc);
+                }
+            }
+        }(container, recordsCount));
+
         var pager = $('<UL>');
         pager.addClass('pagination pagination-sm');
         if(recordsCount){
-            var pages = Math.ceil(recordsCount / pageSize);
+            var pages = Math.ceil(recordsCount / Ethplorer.pageSize);
             var lastPage = true;
             for(var i=1; i<=pages; i++){
                 var page = $('<LI>');
@@ -787,15 +847,15 @@ Ethplorer = {
                     var link = $('<a>');
                     link.html(i);
                     link.attr('href', '#');
-                    link.click(function(_container, _page, _pageSize, _recordsCount){
+                    link.click(function(_container, _page, _recordsCount){
                         return function(e){
                             if('function' === typeof(_container['reloadCallback'])){
-                                _container['reloadCallback'](_page, _pageSize);
+                                _container['reloadCallback'](_page);
                             }
-                            Ethplorer.drawPager(_container, _page, _pageSize, _recordsCount)
+                            Ethplorer.drawPager(_container, _page, _recordsCount)
                             e.preventDefault();
                         };
-                    }(container, i, pageSize, recordsCount));
+                    }(container, i, recordsCount));
                     page.html(link);
                     lastPage = true;
                 }else if(lastPage){
@@ -812,6 +872,7 @@ Ethplorer = {
             }
         }
         container.empty();
+        container.append(pageSizeSelect);
         container.append(pager);
         if('function' === typeof(reloadCb)){
             container['reloadCallback'] = reloadCb;
@@ -967,6 +1028,10 @@ Ethplorer = {
                 }
             }
         },
+        del: function(name){
+            delete Ethplorer.Nav.data[name];
+            Ethplorer.Nav.updateHash();
+        },
         get: function(name){
             return ('undefined' !== typeof(Ethplorer.Nav.data[name])) ? Ethplorer.Nav.data[name] : false;
         },
@@ -986,7 +1051,7 @@ Ethplorer = {
         },
         updateHash: function(){
             var hash = Ethplorer.Nav.getString();
-            if(hash){
+            if(hash != document.location.hash){
                 document.location.hash = hash;
             }
         }
