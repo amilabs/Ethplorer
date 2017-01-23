@@ -199,6 +199,13 @@ a {
     text-decoration: underline;
 }
 
+.token-logo {
+    max-width: 32px;
+    max-height: 32px;
+    margin: 8px;
+    margin-left:20px;
+}
+
 .nav-tabs {
     margin-top: 10px;
 }
@@ -395,6 +402,10 @@ a.dashed {
     padding-left: 16px;
     color: white;
     margin-bottom: 20px;
+}
+
+#address-chainy-tx .table tr td:nth-child(4){
+    white-space: nowrap;
 }
 
 #tab-issuances,

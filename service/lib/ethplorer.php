@@ -200,7 +200,11 @@ class Ethplorer {
             if($token = $this->getToken($address)){
                 $result["token"] = $token;
             }elseif($this->isChainyAddress($address)){
-                $result['chainy'] = $this->getChainyTransactions($limit);
+                $result['chainy'] = $this->getChainyTransactions($limit, $this->getOffset('chainy'));
+                $result['pager']['chainy'] = array(
+                    'page' => $this->getPager('chainy'),
+                    'records' => $this->countChainy()
+                );
             }
         }
         if($result['isContract'] && isset($result['token'])){
@@ -229,7 +233,7 @@ class Ethplorer {
                 );
             }
         }
-        if(!isset($result['token'])){
+        if(!isset($result['token']) && !isset($result['pager'])){
             // Get balances
             $result["tokens"] = array();
             $result["balances"] = $this->getAddressBalances($address);
@@ -239,7 +243,11 @@ class Ethplorer {
                     $result["tokens"][$balance["contract"]] = $balanceToken;
                 }
             }
-            $result["transfers"] = $this->getAddressOperations($address, $limit, $this->getOffset('operations'));
+            $result["transfers"] = $this->getAddressOperations($address, $limit, $this->getOffset('transfers'));
+            $result['pager']['transfers'] = array(
+                'page' => $this->getPager('transfers'),
+                'records' => $this->countOperations($address)
+            );
         }
         return $result;
     }
@@ -540,7 +548,19 @@ class Ethplorer {
         $token = $this->getToken($address);
         if($token){
             $result = $this->dbs['operations']->count(array('contract' => $address));
+        }else{
+            $result = $this->dbs['operations']->count(array('$or' => array(array('from' => $address), array('to' => $address), array('address' => $address))));
         }
+        return $result;
+    }
+
+    /**
+     * Returns total number of Chainy operations for the address.
+     *
+     * @return int
+     */
+    public function countChainy(){
+        $result = $this->dbs['transactions']->count(array('to' => self::ADDRESS_CHAINY));
         return $result;
     }
 
@@ -680,7 +700,7 @@ class Ethplorer {
      * @param int $limit       Maximum number of records
      * @return array
      */
-    public function getAddressOperations($address, $limit = 10){
+    public function getAddressOperations($address, $limit = 10, $offset = FALSE){
         // evxProfiler::checkpoint('getAddressTransfers START [address=' . $address . ', limit=' . $limit . ']');
         $cursor = $this->dbs['operations']
             ->find(
@@ -695,8 +715,13 @@ class Ethplorer {
                     )
                 )
             )
-            ->sort(array("timestamp" => -1))
-            ->limit($limit);
+            ->sort(array("timestamp" => -1));
+        if($offset){
+            $cursor = $cursor->skip($offset);
+        }
+        if($limit){
+            $cursor = $cursor->limit($limit);
+        }
         $result = array();
         $fetches = 0;
         foreach($cursor as $transfer){
@@ -790,11 +815,13 @@ class Ethplorer {
     protected function getContractOperation($type, $address, $limit, $offset = FALSE){
         $cursor = $this->dbs['operations']
             ->find(array("contract" => $address, 'type' => $type))
-                ->sort(array("timestamp" => -1));
-        if(FALSE !== $offset){
+            ->sort(array("timestamp" => -1));
+        if($offset){
             $cursor = $cursor->skip($offset);
         }
-        $cursor = $cursor->limit($limit);
+        if($limit){
+            $cursor = $cursor->limit($limit);
+        }
         $result = array();
         $fetches = 0;
         foreach($cursor as $transfer){
@@ -811,13 +838,18 @@ class Ethplorer {
      * @param  int $limit  Maximum number of records
      * @return array
      */
-    protected function getChainyTransactions($limit = 10){
+    protected function getChainyTransactions($limit = 10, $offset = FALSE){
         // evxProfiler::checkpoint('getChainyTransactions START [limit=' . $limit . ']');
         $result = array();
         $cursor = $this->dbs['transactions']
             ->find(array("to" => self::ADDRESS_CHAINY))
-            ->sort(array("timestamp" => -1))
-            ->limit($limit);
+            ->sort(array("timestamp" => -1));
+        if($offset){
+            $cursor = $cursor->skip($offset);
+        }
+        if($limit){
+            $cursor = $cursor->limit($limit);
+        }
         $fetches = 0;
         foreach($cursor as $tx){
             $link = substr($tx['receipt']['logs'][0]['data'], 192);

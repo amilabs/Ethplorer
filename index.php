@@ -428,7 +428,7 @@ if($error){
                     </div>
                     <div class="col-xs-12" id="address-chainy-tx" style="display:none;">
                         <div class="block">
-                            <div class="block-header"><h3>Last 50 Chainy Transactions</h3></div>
+                            <div class="block-header"><h3>Chainy Transactions</h3></div>
                             <table class="table"></table>
                         </div>
                         <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>

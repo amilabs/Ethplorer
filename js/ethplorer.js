@@ -435,49 +435,7 @@ Ethplorer = {
         $('#address-token-balances, #address-token-details').hide();
         if(data.isContract && data.contract.isChainy){
             titleAdd = 'Chainy Information';
-            var fields = ['contract', 'contract.txsCount'];
-            Ethplorer.fillValues('address', data, fields);
-            $('.address-type:eq(0)').text('Chainy');
-            if(data.chainy && data.chainy.length){
-                $('#address-chainy-tx').show();
-                for(var i=0; i<data.chainy.length; i++){
-                    var tx = data.chainy[i];
-                    var type = '';
-                    var link = '';
-                    if(tx.link){
-                        var obj = Ethplorer.Utils.parseJData(tx.input);
-                        if(false !== obj){
-                            var chainyTypes = {
-                                'R': 'Redirect',
-                                'T': 'Text',
-                                'H': 'Hash',
-                                'L': 'File Hash',
-                                'E': 'Encrypted'
-                            };
-                            type = chainyTypes[obj.type];
-                        }
-                        link = Ethplorer.Utils.hex2ascii(tx.link);
-                        link = '<a href="' + link + '" target="_blank" class="external-link"><i class="fa fa-external-link"></i>&nbsp;' + link + '</a>';
-                    }
-                    var row = $('<tr>');
-                    var tdDate = $('<td>');
-                    var tdHash = $('<td>').addClass('list-field table-hash-field');
-                    var tdOpType = $('<td>').addClass('text-center table-type-field');                   
-                    var tdLink = $('<td>');
-                    tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.hash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
-                    tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
-                    tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.hash));
-                    tdOpType.html(type);
-                    if('Text' === type){
-                        tdOpType.append('<span class="chainy-text"></span>');
-                        tdOpType.find('.chainy-text').text(obj.description.substr(0, 32));
-                        tdOpType.find('.chainy-text').attr('title', obj.description);
-                    }
-                    tdLink.html(link);
-                    row.append(tdDate, tdHash, tdOpType, tdLink);
-                    $('#address-chainy-tx .table').append(row);
-                }
-            }            
+            Ethplorer.drawChainy(address, data);
         }
         if(data.isContract){
             Ethplorer.fillValues('address', data, ['contract', 'contract.creator']);
@@ -485,6 +443,8 @@ Ethplorer = {
         if(data.isContract && data.token){
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
+            titleAdd = 'Token ' + oToken.name + (oToken.symbol ? (' [' + oToken.symbol + ']') : '' ) + ' Information';
+            
             if(data.contract && data.contract.code){
                 var json = Ethplorer.Utils.parseJData(data.contract.code);
                 if(json && json.description){
@@ -497,11 +457,8 @@ Ethplorer = {
                 oToken.description = oToken.description.replace(/\n/g, '<br />');
             }
             if(oToken.image){
-                $('#address-token-details .block-header').prepend(
-                    '<img src="' + oToken.image + '" style="max-width:32px;max-height:32px;margin:8px;margin-left:20px;" align="left">'
-                );
+                $('#address-token-details .block-header').prepend('<img src="' + oToken.image + '" class="token-logo" align="left">');
             }
-            titleAdd = 'Token ' + oToken.name + (oToken.symbol ? (' [' + oToken.symbol + ']') : '' ) + ' Information';
             $('.address-token-name').text(oToken.name);
             if(Ethplorer.Config.updateLink){
                 $('.address-token-name:eq(0)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>')
@@ -744,8 +701,80 @@ Ethplorer = {
         $('#tab-holders, #address-token-holders').show();
     },
 
+    drawChainy: function(address, chainyData){
+        $('#address-chainy-tx .table').empty();
+        for(var key in chainyData){
+            Ethplorer.data[key] = chainyData[key];
+        }
+        var data = Ethplorer.data;
 
+        var fields = ['contract', 'contract.txsCount'];
+        Ethplorer.fillValues('address', data, fields);
+        $('.address-type:eq(0)').text('Chainy');
+        if(data.chainy && data.chainy.length){
+            $('#address-chainy-tx').show();
+            for(var i=0; i<data.chainy.length; i++){
+                var tx = data.chainy[i];
+                var type = '';
+                var link = '';
+                if(tx.link){
+                    var obj = Ethplorer.Utils.parseJData(tx.input);
+                    if(false !== obj){
+                        var chainyTypes = {
+                            'R': 'Redirect',
+                            'T': 'Text',
+                            'H': 'Hash',
+                            'L': 'File Hash',
+                            'E': 'Encrypted'
+                        };
+                        type = chainyTypes[obj.type];
+                    }
+                    link = Ethplorer.Utils.hex2ascii(tx.link);
+                    link = '<a href="' + link + '" target="_blank" class="external-link"><i class="fa fa-external-link"></i>&nbsp;' + link + '</a>';
+                }
+                var row = $('<tr>');
+                var tdDate = $('<td>');
+                var tdHash = $('<td>').addClass('list-field table-hash-field');
+                var tdOpType = $('<td>').addClass('text-center table-type-field');                   
+                var tdLink = $('<td>');
+                tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.hash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
+                tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
+                tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.hash));
+                if(type){
+                    tdOpType.html(type);
+                    if('Text' === type){
+                        tdOpType.append('<span class="chainy-text"></span>');
+                        tdOpType.find('.chainy-text').text(obj.description.substr(0, 32));
+                        tdOpType.find('.chainy-text').attr('title', obj.description);
+                    }
+                }else{
+                    tdOpType.html('<span class="text-danger">Failed</span>');
+                }
+                tdLink.html(link);
+                row.append(tdDate, tdHash, tdOpType, tdLink);
+                $('#address-chainy-tx .table').append(row);
+            }
+        }            
+        // Pager
+        if(data.pager && data.pager.chainy){
+            var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
+            var cb = function(page, pageSize){
+                $('.paginationFooter:visible').parents('.table').addClass('unclickable');
+                Ethplorer.Nav.set('chainy', page);
+                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "chainy"}, Ethplorer.drawChainy);
+            };
+            Ethplorer.drawPager(pagination.find('td'), data.pager.chainy.page, 10, data.pager.chainy.records, cb);
+            $('#address-chainy-tx .table').append(pagination);
+        }
+        $('.paginationFooter:visible').parents('.table').removeClass('unclickable');
+        $('#address-chainy-tx').show();
+    },
     drawPager: function(container, currentPage, pageSize, recordsCount, reloadCb){
+        if(recordsCount <= pageSize){
+            console.log(container);
+            container.parents('.paginationFooter').remove();
+            return;
+        }
         var pager = $('<UL>');
         pager.addClass('pagination pagination-sm');
         if(recordsCount){

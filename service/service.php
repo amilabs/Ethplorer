@@ -41,6 +41,7 @@ if($page && (FALSE !== strpos($page, '='))){
                 case 'transfers':
                 case 'issuances':
                 case 'holders':
+                case 'chainy':
                     $es->setPager($aPageParams[0], intval($aPageParams[1]));
                     break;
             }
