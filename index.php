@@ -25,6 +25,9 @@ $es = Ethplorer::db($esCfg);
 $error = TRUE;
 $header = "";
 $rParts = explode('/', $_SERVER['REQUEST_URI']);
+foreach($rParts as $i => $part){
+    $rParts[$i] = strtolower($part);
+}
 if(3 === count($rParts)){
     if(('tx' === $rParts[1]) && $es->isValidTransactionHash($rParts[2])){
         $header = "Transaction hash: " . $rParts[2];
