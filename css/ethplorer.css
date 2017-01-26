@@ -383,7 +383,7 @@ a.dashed {
 
 .outgoing {
     font-size: 16px;
-    color: #8c1e1e !important;
+    color: #ae2525 !important;
 }
 
 .hash-from-to {
@@ -619,6 +619,13 @@ a.dashed {
 }
 
 @media screen and (max-width: 399px) {
+    .pagination-sm>li>a, .pagination-sm>li>span {
+        padding: 7px 5px;
+        font-size: 9px;
+    }
+    tr.paginationFooter td ul.pagination {
+        margin-right: 10px;
+    }
     #address-issuances tr td:last-child {
         min-width: 140px;
     }
