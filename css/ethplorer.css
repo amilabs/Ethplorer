@@ -623,6 +623,10 @@ a.dashed {
 }
 
 @media screen and (max-width: 499px) {
+    .nav-tabs li a {
+        padding-left:6px;
+        padding-right: 6px;
+    }
     td.table-type-field {
         display: none;
     }
