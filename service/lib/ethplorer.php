@@ -209,28 +209,32 @@ class Ethplorer {
         }
         if($result['isContract'] && isset($result['token'])){
             $result['pager'] = array('pageSize' => $limit);
-            if(!$refresh || ('transfers' === $refresh)){
-                $result["transfers"] = $this->getContractTransfers($address, $limit, $this->getOffset('transfers'));
-                $result['pager']['transfers'] = array(
-                    'page' => $this->getPager('transfers'),
-                    'records' => $this->getContractOperationCount('transfer', $address)
-                );
-            }
-            if(!$refresh || ('issuances' === $refresh)){
-                $result["issuances"] = $this->getContractIssuances($address, $limit, $this->getOffset('issuances'));
-                if(empty($result["issuances"])) unset($result["issuances"]);
-                $result['pager']['issuances'] = array(
-                    'page' => $this->getPager('issuances'),
-                    'records' => $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address)
-                );
-            }
-            if(!$refresh || ('holders' === $refresh)){
-                $result['holders'] = $this->getTokenHolders($address, $limit, $this->getOffset('holders'));
-                if(empty($result["holders"])) unset($result["holders"]);
-                $result['pager']['holders'] = array(
-                    'page' => $this->getPager('holders'),
-                    'records' => $this->getTokenHoldersCount($address)
-                );
+            foreach(array('transfers', 'issuances', 'holders') as $type){
+                if(!$refresh || ($type === $refresh)){
+                    $page = $this->getPager($type);
+                    $offset = $this->getOffset($type);
+                    switch($type){
+                        case 'transfers':
+                            $count = $this->getContractOperationCount('transfer', $address);
+                            $cmd = 'getContractTransfers';
+                            break;
+                        case 'issuances':
+                            $count = $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address);
+                            $cmd = 'getContractIssuances';
+                            break;
+                        case 'holders':
+                            $count = $this->getTokenHoldersCount($address);
+                            $cmd = 'getTokenHolders';
+                            break;
+                    }
+                    if($offset && ($offset > $count)){
+                        $offset = 0;
+                        $page = 1;
+                    }
+                    $result[$type] = $this->{$cmd}($address, $limit, $offset);;
+                    if(empty($result[$type])) unset($result[$type]);
+                    $result['pager'][$type] = array('page' => $page, 'records' => $count);
+                }
             }
         }
         if(!isset($result['token']) && !isset($result['pager'])){
