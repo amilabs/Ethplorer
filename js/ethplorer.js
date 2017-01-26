@@ -625,12 +625,13 @@ Ethplorer = {
             var type = (tx.type && ('burn' === tx.type)) ? '&#128293;&nbsp;Burn' : '&#9874;&nbsp;Issuance';
             var qty = Ethplorer.Utils.toBig(tx.value);
             if(parseInt(qty.toString())){
+                var opClass = (tx.type.toString().toLowerCase() !== 'burn') ? 'incoming' : 'outgoing';
                 var qty = Ethplorer.Utils.toBig(tx.value).div(Math.pow(10, oToken.decimals));
                 var row = $('<tr>');
                 var tdDate = $('<td>');
                 var tdHash = $('<td>').addClass('list-field table-hash-field');
-                var tdOpType = $('<td>').addClass('text-center table-type-field');
-                var tdQty = $('<td>').addClass('text-right ' + ((tx.type.toString().toLowerCase() !== 'burn') ? 'incoming' : 'outgoing'));
+                var tdOpType = $('<td>').addClass('text-center table-type-field ' + opClass);
+                var tdQty = $('<td>').addClass('text-right ' + opClass);
                 tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
                 tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
                 tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash));
