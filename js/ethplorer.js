@@ -564,7 +564,7 @@ Ethplorer = {
                 }
                 tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, date, false));
                 if(!from && tx.address){
-                    value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>&#128293;&nbsp;Burn' : /*'+' + */value + '<br>&#9874;&nbsp;Issuance';
+                    value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>&#128293;&nbsp;Burn' : value + '<br>&#9874;&nbsp;Issuance';
                 }
                 divData.html(
                     '<span class="show_small">Date:&nbsp;' + date + '<br></span>' +
@@ -622,6 +622,7 @@ Ethplorer = {
             if(tx.type == 'mint'){
                 tx.type = 'issuance';
             }
+            var type = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>&#128293;&nbsp;Burn' : value + '<br>&#9874;&nbsp;Issuance';
             var qty = Ethplorer.Utils.toBig(tx.value);
             if(parseInt(qty.toString())){
                 var qty = Ethplorer.Utils.toBig(tx.value).div(Math.pow(10, oToken.decimals));
@@ -633,7 +634,7 @@ Ethplorer = {
                 tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
                 tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
                 tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash));
-                tdOpType.html(tx.type.toString().toUpperCase());
+                tdOpType.html(type));
                 tdQty.html((tx.type !== 'burn' ? '+' : '-') + Ethplorer.Utils.formatNum(qty, true, oToken.decimals ? oToken.decimals : 18, 2) + ((oToken.symbol) ? '&nbsp;' + oToken.symbol : ''));
                 row.append(tdDate, tdHash, tdOpType, tdQty);
                 $('#address-issuances .table').append(row);
@@ -699,7 +700,7 @@ Ethplorer = {
             totalVolume = Ethplorer.Utils.formatNum(totalVolume, true, oToken.decimals, true);
             var totals = 'Summary of page is '+ totalVolume + " " + oToken.symbol;
             if(oToken.holdersCount > Ethplorer.pageSize){
-                totals += (', which is' + totalShare + "%% of " + oToken.name + ' total supply');
+                totals += (', which is ' + totalShare + "% of " + oToken.name + ' total supply');
             }
             $("#address-token-holders-totals").html(totals);
         }
