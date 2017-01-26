@@ -388,13 +388,13 @@ if($error){
                     <div class="col-xs-12">
                         <ul class="nav nav-tabs">
                             <li id="tab-transactions" class="active">
-                                <a data-toggle="tab" href="#token-transfers-tab"><span class="dashed">Token Transactions</span></a>
+                                <a data-toggle="tab" href="#token-transfers-tab"><span class="dashed">Transfers</span></a>
                             </li>
                             <li id="tab-issuances">
-                                <a data-toggle="tab" href="#token-issuances-tab"><span class="dashed">Token Issuances</span></a>
+                                <a data-toggle="tab" href="#token-issuances-tab"><span class="dashed">Issuances</span></a>
                             </li>
                             <li id="tab-holders">
-                                <a data-toggle="tab" href="#token-holders-tab"><span class="dashed">Token Holders</span></a>
+                                <a data-toggle="tab" href="#token-holders-tab"><span class="dashed">Holders</span></a>
                             </li>
                         </ul>
                     </div>
