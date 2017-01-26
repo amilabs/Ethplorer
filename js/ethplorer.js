@@ -381,6 +381,9 @@ Ethplorer = {
                 $('#txTokenStatus').html('Pending');
             }        
             Ethplorer.fillValues('transfer', txData, ['tx', 'tx.timestamp']);
+        }else{
+            $('#tx-details-block').show();
+            $('.tx-details-close').hide();
         }
 
         document.title = 'Ethplorer';
