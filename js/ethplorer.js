@@ -464,13 +464,20 @@ Ethplorer = {
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
             titleAdd = 'Token ' + oToken.name + (oToken.symbol ? (' [' + oToken.symbol + ']') : '' ) + ' Information';
-            
+            // Read description from tx
             if(data.contract && data.contract.code){
                 var json = Ethplorer.Utils.parseJData(data.contract.code);
                 if(json && json.description){
                     oToken.description = json.description;
                 }
             }
+            // Read from config
+            if(Ethplorer.Config.tokens && ('undefined' !== typeof(Ethplorer.Config.tokens[oToken.address]))){
+                if('undefined' !== typeof(Ethplorer.Config.tokens[oToken.address].description)){
+                    oToken.description = Ethplorer.Config.tokens[oToken.address].description;
+                }
+            }
+            
             if(oToken.description){
                 oToken.description = $('<span>').text(oToken.description).html();
                 oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
