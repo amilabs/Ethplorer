@@ -120,6 +120,10 @@ Ethplorer = {
         $('.token-related td.list-field').empty();
         Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
 
+        if(oToken.estimatedDecimals){
+            $('#transaction-token-decimals').append(' <small>(estimated)</small>');
+        }
+
         $('#transfer-tx-timestamp').html($('#transaction-tx-timestamp').html());
 
         if($('#transaction-tx-message').html()){
@@ -260,7 +264,11 @@ Ethplorer = {
             txData.token = oToken;
 
             Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
-            
+
+            if(oToken.estimatedDecimals){
+                $('#transaction-token-decimals').append(' <small>(estimated)</small>');
+            }
+
             if($('#transaction-tx-message').html()){
                 $('#transfer-tx-message').html($('#transaction-tx-message').html());
                 $('#transaction-tx-message').html('')
@@ -481,6 +489,9 @@ Ethplorer = {
             }
             var fields = ['token', 'token.name', 'token.description', 'token.owner', 'token.totalSupply', 'token.totalIn', 'token.totalOut', 'token.decimals', 'token.symbol', 'token.txsCount'];
             Ethplorer.fillValues('address', data, fields);
+            if(oToken.estimatedDecimals){
+                $('#address-token-decimals').append(' <small>(estimated)</small>');
+            }
         }else if(data.balances && data.balances.length){
             $('#address-token-balances').show();
             for(var k=0; k<data.balances.length; k++){

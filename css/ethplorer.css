@@ -215,6 +215,10 @@ a {
     border-radius: 8px 8px 0 0;
 }
 
+#transaction-token-decimals small,
+#address-token-decimals small {
+    color: #888;
+}
 
 a.local-link, a.local-link:visited, a.local-link:hover {
     color: white;

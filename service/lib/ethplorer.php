@@ -506,8 +506,12 @@ class Ethplorer {
         $result = isset($aTokens[$address]) ? $aTokens[$address] : false;
         if($result){
             unset($result["_id"]);
-            if(!isset($result['decimals'])){
+            if(!isset($result['decimals']) || !intval($result['decimals'])){
                 $result['decimals'] = 0;
+                if(isset($result['totalSupply']) && ((float)$result['totalSupply'] > 1e+18)){
+                    $result['decimals'] = 18;
+                    $result['estimatedDecimals'] = true;
+                }
             }
             if(!isset($result['symbol'])){
                 $result['symbol'] = "";
