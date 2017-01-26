@@ -617,7 +617,7 @@ Ethplorer = {
             Ethplorer.drawPager(pagination.find('td'), data.pager.transfers.page, data.pager.transfers.records, cb);
             $('#' + tableId + ' .table').append(pagination);
         }
-        $('.paginationFooter:visible').parents('.table').removeClass('unclickable');
+        $('.table').removeClass('unclickable');
         $('#' + tableId).show();
     },
 
@@ -671,7 +671,7 @@ Ethplorer = {
             Ethplorer.drawPager(pagination.find('td'), data.pager.issuances.page, data.pager.issuances.records, cb);
             $('#address-issuances .table').append(pagination);
         }
-        $('.paginationFooter:visible').parents('.table').removeClass('unclickable');
+        $('.table').removeClass('unclickable');
         $('#tab-issuances, #address-issuances').show();
     },
 
@@ -738,7 +738,7 @@ Ethplorer = {
             Ethplorer.drawPager(pagination.find('td'), data.pager.holders.page, data.pager.holders.records, cb);
             $('#address-token-holders .table').append(pagination);
         }
-        $('.paginationFooter:visible').parents('.table').removeClass('unclickable');
+        $('.table').removeClass('unclickable');
         $('#tab-holders, #address-token-holders').show();
     },
 
@@ -811,7 +811,7 @@ Ethplorer = {
             Ethplorer.drawPager(pagination.find('td'), data.pager.chainy.page, data.pager.chainy.records, cb);
             $('#address-chainy-tx .table').append(pagination);
         }
-        $('.paginationFooter:visible').parents('.table').removeClass('unclickable');
+        $('.table').removeClass('unclickable');
         $('#address-chainy-tx').show();
     },
     drawPager: function(container, currentPage, recordsCount, reloadCb){    
