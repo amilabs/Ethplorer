@@ -634,7 +634,7 @@ Ethplorer = {
                 tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
                 tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
                 tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash));
-                tdOpType.html(type));
+                tdOpType.html(type);
                 tdQty.html((tx.type !== 'burn' ? '+' : '-') + Ethplorer.Utils.formatNum(qty, true, oToken.decimals ? oToken.decimals : 18, 2) + ((oToken.symbol) ? '&nbsp;' + oToken.symbol : ''));
                 row.append(tdDate, tdHash, tdOpType, tdQty);
                 $('#address-issuances .table').append(row);
