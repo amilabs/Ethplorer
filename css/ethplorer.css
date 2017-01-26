@@ -708,16 +708,11 @@ a.token-update {
     }
     
     .hide-small {
-        background: red;
         display: none !important;
     }
     
     .show_small {
         display: initial;
-    }
-    
-    #address-transfers table tr td:nth-child(1){
-        display:none;
     }
 
     .address-token{

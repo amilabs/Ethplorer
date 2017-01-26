@@ -697,9 +697,9 @@ Ethplorer = {
                 totalVolume = totalVolume / Math.pow(10, oToken.decimals);
             }
             totalVolume = Ethplorer.Utils.formatNum(totalVolume, true, oToken.decimals, true);
-            var totals = "Total " + oToken.name + " supply: " + oToken.totalSupply;
+            var totals = 'Summary of page is '+ totalVolume + " " + oToken.symbol;
             if(oToken.holdersCount > Ethplorer.pageSize){
-                totals += ", Summary of page (from " + oToken.holdersCount + ") holders: " + totalVolume + " " + oToken.symbol + ", which is " + totalShare + "% of " + oToken.name;
+                totals += (', which is' + totalShare + "%% of " + oToken.name + ' total supply');
             }
 
             $("#address-token-holders-totals").html(totals);
@@ -795,11 +795,7 @@ Ethplorer = {
         $('.paginationFooter:visible').parents('.table').removeClass('unclickable');
         $('#address-chainy-tx').show();
     },
-    drawPager: function(container, currentPage, recordsCount, reloadCb){
-        if(recordsCount <= Ethplorer.pageSize){
-            container.parents('.paginationFooter').remove();
-            return;
-        }
+    drawPager: function(container, currentPage, recordsCount, reloadCb){    
         var pageSizeSelect = $('<SELECT class="pageSize">');
         var sizes = [10, 25, 50, 100];
         for(var i=0; i<4; i++){
