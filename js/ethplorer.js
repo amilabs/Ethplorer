@@ -622,7 +622,7 @@ Ethplorer = {
             if(tx.type == 'mint'){
                 tx.type = 'issuance';
             }
-            var type = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>&#128293;&nbsp;Burn' : value + '<br>&#9874;&nbsp;Issuance';
+            var type = (tx.type && ('burn' === tx.type)) ? '&#128293;&nbsp;Burn' : '&#9874;&nbsp;Issuance';
             var qty = Ethplorer.Utils.toBig(tx.value);
             if(parseInt(qty.toString())){
                 var qty = Ethplorer.Utils.toBig(tx.value).div(Math.pow(10, oToken.decimals));
