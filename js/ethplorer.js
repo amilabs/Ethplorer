@@ -447,8 +447,6 @@ Ethplorer = {
         var titleAdd = '';
         // Temporary hack
         $('.address-type').text(data.isContract ? 'Contract' : 'Address');
-        var tp = data.isContract ? 'Contract address ' : 'Address ';
-        // $('#ethplorer-path').html('<b>' + tp + '</b> ' + address);
         $('#ethplorer-path').show();
         data.address = address;
         data.balance = parseFloat(data.balance) * 1e+18;
@@ -457,6 +455,7 @@ Ethplorer = {
         if(data.isContract && data.contract.isChainy){
             titleAdd = 'Chainy Information';
             Ethplorer.drawChainy(address, data);
+            $('#address-chainy-info').show();
         }
         if(data.isContract){
             Ethplorer.fillValues('address', data, ['contract', 'contract.creator']);
@@ -751,7 +750,6 @@ Ethplorer = {
 
         var fields = ['contract', 'contract.txsCount'];
         Ethplorer.fillValues('address', data, fields);
-        $('.address-type:eq(0)').text('Chainy');
         if(data.chainy && data.chainy.length){
             $('#address-chainy-tx').show();
             for(var i=0; i<data.chainy.length; i++){
