@@ -701,7 +701,6 @@ Ethplorer = {
             if(oToken.holdersCount > Ethplorer.pageSize){
                 totals += (', which is' + totalShare + "%% of " + oToken.name + ' total supply');
             }
-
             $("#address-token-holders-totals").html(totals);
         }
         // Pager
@@ -842,16 +841,20 @@ Ethplorer = {
                 if((i <= 1) || ((i <= 5) &&(currentPage <= 4)) || ((i >= (pages - 4)) &&(currentPage >= (pages - 3))) || (i >= (pages)) || ((i >= (currentPage - 1)) && (i <= (currentPage + 1)))){
                     var link = $('<a>');
                     link.html(i);
-                    link.attr('href', '#');
-                    link.click(function(_container, _page, _recordsCount){
-                        return function(e){
-                            if('function' === typeof(_container['reloadCallback'])){
-                                _container['reloadCallback'](_page);
-                            }
-                            Ethplorer.drawPager(_container, _page, _recordsCount)
-                            e.preventDefault();
-                        };
-                    }(container, i, recordsCount));
+                    if(i === currentPage){
+                        page.addClass('active');
+                    }else{
+                        link.attr('href', '#');
+                        link.click(function(_container, _page, _recordsCount){
+                            return function(e){
+                                if('function' === typeof(_container['reloadCallback'])){
+                                    _container['reloadCallback'](_page);
+                                }
+                                Ethplorer.drawPager(_container, _page, _recordsCount)
+                                e.preventDefault();
+                            };
+                        }(container, i, recordsCount));
+                    }
                     page.html(link);
                     lastPage = true;
                 }else if(lastPage){
@@ -860,9 +863,6 @@ Ethplorer = {
                     splitter.html('...');
                     page.append(splitter);
                     page.addClass('disabled');
-                }
-                if(i === currentPage){
-                    page.addClass('active');
                 }
                 pager.append(page);
             }
