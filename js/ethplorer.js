@@ -687,7 +687,9 @@ Ethplorer = {
                 }
                 var address = Ethplorer.Utils.getEthplorerLink(holder['address'], holder['address'], false);
                 var shareDiv = '<div><div class="holder-gauge" style="width:' + holder['share'] + '%;"></div><div class="holder-gauge-value">&nbsp;' + holder['share'] + '%</div></div>'
-                row.append('<td>' + (i+1) + '</td><td>' + address + '</td><td></td><td>' + balance + '</td><td>' + shareDiv + '</td>');
+                var page = (data.pager && data.pager.holders) ? data.pager.holders.page : 1;
+                var add = (page - 1) * Ethplorer.pageSize;
+                row.append('<td>' + (add + i + 1) + '</td><td>' + address + '</td><td></td><td>' + balance + '</td><td>' + shareDiv + '</td>');
                 table.append(row);
             }
             if(totalShare > 100){
@@ -699,8 +701,10 @@ Ethplorer = {
             }
             totalVolume = Ethplorer.Utils.formatNum(totalVolume, true, oToken.decimals, true);
             var totals = 'Summary of page is '+ totalVolume + " " + oToken.symbol;
-            if(oToken.holdersCount > Ethplorer.pageSize){
-                totals += (', which is ' + totalShare + "% of " + oToken.name + ' total supply');
+            if(data.pager && data.pager.holders){
+                if(data.pager.holders.records > Ethplorer.pageSize){
+                    totals += (', which is ' + totalShare + "% of " + oToken.name + ' total supply');
+                }
             }
             $("#address-token-holders-totals").html(totals);
         }
