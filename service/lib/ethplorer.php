@@ -863,7 +863,7 @@ class Ethplorer {
             $link = substr($tx['receipt']['logs'][0]['data'], 192);
             $link = preg_replace("/0+$/", "", $link);
             if((strlen($link) % 2) !== 0){
-                $link = $link + '0';
+                $link = $link . '0';
             }
             $result[] = array(
                 'hash' => $tx['hash'],
