@@ -354,7 +354,7 @@ if($error){
                         </div>
                         <div class="block" id="address-chainy-info">
                             <div class="block-header">
-                                <img src="/images/chainy.png" class="token-logo" align="left">
+                                <img src="/images/chainy.png?new" class="token-logo" align="left">
                                 <h3>Chainy Information</h3>
                             </div>
                             <table class="table">
