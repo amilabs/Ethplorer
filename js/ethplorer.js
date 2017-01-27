@@ -1252,9 +1252,18 @@ Ethplorer = {
         hex2ascii: function(data){
             var res = '';
             try {
-                res = data.match(/.{1,2}/g).map(function(v){
+                res = data.match(/.{2}/g).map(function(v){
                     return String.fromCharCode(parseInt(v, 16));
                 }).join('');
+            } catch(e) {}
+            return res;
+        },
+
+        hex2utf: function(data){
+            var res = '';
+            try {
+                var uri = data.toLowerCase().replace(/[0-9a-f]{2}/g, '%$&');
+                res = decodeURIComponent(uri);
             } catch(e) {}
             return res;
         },
@@ -1269,6 +1278,11 @@ Ethplorer = {
                 try {
                     res = JSON.parse(jstr);
                 }catch(e){}
+                if(res){
+                    var rrr = Ethplorer.Utils.ascii2hex(jstr);
+                    rrr = Ethplorer.Utils.hex2utf(rrr);
+                    res = JSON.parse(rrr);
+                }
             }
             return res;
         },
