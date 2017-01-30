@@ -429,6 +429,18 @@ a.dashed {
     display: none;
 }
 
+#address-token-holders td.show_small {
+    padding-left: 0px !important;
+}
+
+.holder_small {
+    min-height: 50px;
+    margin-top: -16px;
+    max-width: 60vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 #address-token-holders tr td:first-child {
     max-width: 50px;
     width: 50px;
