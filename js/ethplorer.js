@@ -55,7 +55,7 @@ Ethplorer = {
             Ethplorer.Nav.set('tab', $(this).parent().attr('id'));
         });
         if(Ethplorer.Nav.get('tab')){
-            $('#tab-holders a').click();
+            $('#' + Ethplorer.Nav.get('tab') +' a').click();
         }
         if(localStorage && ('undefined' !== typeof(localStorage['tx-details-block']))){
             if('open' === localStorage['tx-details-block']){
