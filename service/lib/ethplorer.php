@@ -780,6 +780,44 @@ class Ethplorer {
         return $result;
     }
 
+    /**
+     * Returns daily tx's list.
+     *
+     * @param int $period  Days from now
+     * @return array
+     */
+    public function getDailyTX($period = 30, $token = null){
+        $cache = 'daily_tx-' . ($token ? ($token . '-') : '') . $period;
+        $result = $this->oCache->get($cache, false, true, 24 * 3600);
+        if(FALSE === $result){
+            $result = array();
+            $dbData = $this->dbs['operations']->aggregate(
+                array(
+                    array('$match' => array("timestamp" => array('$gt' => time() - $period * 24 * 3600))),
+                    //array('$match' => array("contract" => '0xff71cb760666ab06aa73f34995b42dd4b85ea07b')),
+                    array(
+                        '$group' => array(
+                            //"_id" => '$contract',
+                            "_id" => array(
+                                "year"  => array('$year' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                "month"  => array('$month' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                "day"  => array( '$dayOfMonth' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                            ),
+                            'ts' =>  array('$first' => '$timestamp'),
+                            'cnt' => array('$sum' => 1)
+                        )
+                    ),
+                    array('$sort' => array('ts' => -1)),
+                    //array('$limit' => 10)
+                )
+            );
+            if(is_array($dbData) && !empty($dbData['result'])){
+                return $dbData['result'];
+            }
+        }
+        return $result;
+    }
+
     public function checkAPIKey($key){
         return isset($this->aSettings['apiKeys']) && isset($this->aSettings['apiKeys'][$key]);
     }
