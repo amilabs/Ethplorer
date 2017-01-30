@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "109";
+$codeVersion = "110";
 
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $esCfg = require_once dirname(__FILE__) . '/service/config.php';
