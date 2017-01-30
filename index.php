@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "106";
+$codeVersion = "109";
 
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $esCfg = require_once dirname(__FILE__) . '/service/config.php';
@@ -351,6 +351,31 @@ if($error){
                         <div class="block" id="address-token-balances">
                             <div class="block-header"><h3>Token Balances</h3></div>
                             <table class="table"></table>
+                        </div>
+                        <div class="block" id="address-chainy-info">
+                            <div class="block-header">
+                                <img src="/images/chainy.png?new" class="token-logo" align="left">
+                                <h3>Chainy Information</h3>
+                            </div>
+                            <table class="table">
+                            <tr>
+                                <td style="padding-bottom: 12px;">
+                                    Chainy is a smart contract which allows to create and read different kind of data in Ethereum blockchain:
+                                    <br><br>
+                                    <b>AEON short links</b><br>
+                                    Irreplaceable short URLs (similar to bit.ly but impossible to change)
+                                    <br><br>
+                                    <b>Proof of Existence + Files</b><br>
+                                    Permanent proof of existence of the document (file) together with link to the file at one page
+                                    <br><br>
+                                    <b>Broadcast Messages</b><br>
+                                    Public text message on the Ethereum blockchain. Also may be encrypted
+                                    <br><br>
+                                    Read more: <a href="https://chainy.link" class="external-link" target="_blank">https://chainy.link</a><br>
+                                    Post your data: <a href="https://chainy.link/add" class="external-link" target="_blank">https://chainy.link/add</a>
+                                </td>
+                            </tr>
+                            </table>
                         </div>
                         <div class="block" id="address-token-details">
                             <div class="block-header"><h3>Token <span class="address-token-name"></span> Information</h3></div>

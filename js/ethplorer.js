@@ -447,8 +447,6 @@ Ethplorer = {
         var titleAdd = '';
         // Temporary hack
         $('.address-type').text(data.isContract ? 'Contract' : 'Address');
-        var tp = data.isContract ? 'Contract address ' : 'Address ';
-        // $('#ethplorer-path').html('<b>' + tp + '</b> ' + address);
         $('#ethplorer-path').show();
         data.address = address;
         data.balance = parseFloat(data.balance) * 1e+18;
@@ -457,6 +455,7 @@ Ethplorer = {
         if(data.isContract && data.contract.isChainy){
             titleAdd = 'Chainy Information';
             Ethplorer.drawChainy(address, data);
+            $('#address-chainy-info').show();
         }
         if(data.isContract){
             Ethplorer.fillValues('address', data, ['contract', 'contract.creator']);
@@ -465,13 +464,20 @@ Ethplorer = {
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
             titleAdd = 'Token ' + oToken.name + (oToken.symbol ? (' [' + oToken.symbol + ']') : '' ) + ' Information';
-            
+            // Read description from tx
             if(data.contract && data.contract.code){
                 var json = Ethplorer.Utils.parseJData(data.contract.code);
                 if(json && json.description){
                     oToken.description = json.description;
                 }
             }
+            // Read from config
+            if(Ethplorer.Config.tokens && ('undefined' !== typeof(Ethplorer.Config.tokens[oToken.address]))){
+                if('undefined' !== typeof(Ethplorer.Config.tokens[oToken.address].description)){
+                    oToken.description = Ethplorer.Config.tokens[oToken.address].description;
+                }
+            }
+            
             if(oToken.description){
                 oToken.description = $('<span>').text(oToken.description).html();
                 oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
@@ -751,7 +757,6 @@ Ethplorer = {
 
         var fields = ['contract', 'contract.txsCount'];
         Ethplorer.fillValues('address', data, fields);
-        $('.address-type:eq(0)').text('Chainy');
         if(data.chainy && data.chainy.length){
             $('#address-chainy-tx').show();
             for(var i=0; i<data.chainy.length; i++){
@@ -1247,9 +1252,18 @@ Ethplorer = {
         hex2ascii: function(data){
             var res = '';
             try {
-                res = data.match(/.{1,2}/g).map(function(v){
+                res = data.match(/.{2}/g).map(function(v){
                     return String.fromCharCode(parseInt(v, 16));
                 }).join('');
+            } catch(e) {}
+            return res;
+        },
+
+        hex2utf: function(data){
+            var res = '';
+            try {
+                var uri = data.toLowerCase().replace(/[0-9a-f]{2}/g, '%$&');
+                res = decodeURIComponent(uri);
             } catch(e) {}
             return res;
         },
@@ -1264,6 +1278,11 @@ Ethplorer = {
                 try {
                     res = JSON.parse(jstr);
                 }catch(e){}
+                if(res){
+                    var rrr = Ethplorer.Utils.ascii2hex(jstr);
+                    rrr = Ethplorer.Utils.hex2utf(rrr);
+                    res = JSON.parse(rrr);
+                }
             }
             return res;
         },

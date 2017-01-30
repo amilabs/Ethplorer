@@ -109,6 +109,7 @@ tr.paginationFooter td ul.pagination {
     padding: 8px 8px 8px 28px;
 }
 
+#address-chainy-tx .table tr:nth-child(even),
 #token-transfers-tab .table tr:nth-child(even),
 #token-issuances-tab .table tr:nth-child(even),
 #token-holders-tab .table tr:nth-child(even),
@@ -116,6 +117,7 @@ tr.even {
     background: #0f0f0f;
 }
 
+#address-chainy-tx .table tr:nth-child(odd),
 #token-transfers-tab .table tr:nth-child(odd),
 #token-issuances-tab .table tr:nth-child(odd),
 #token-holders-tab .table tr:nth-child(odd),
@@ -338,7 +340,7 @@ a.dashed {
 }
 
 .chainy-text {
-    font-size: 10px;
+    font-size: 11px;
     display: block;
     margin-bottom: -7px;
     opacity: 0.4;
@@ -418,6 +420,7 @@ a.dashed {
     margin-top: 14px;
 }
 
+#address-chainy-info,
 #tab-issuances,
 #tab-holders,
 #address-token-transfers,
