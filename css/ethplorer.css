@@ -433,6 +433,7 @@ a.dashed {
     max-width: 50px;
     width: 50px;
     text-align: right;
+    padding-left: 0px;
 }
 
 #address-token-holders tr td:nth-child(2) {
