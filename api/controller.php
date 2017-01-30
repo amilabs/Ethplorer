@@ -19,7 +19,7 @@ class ethplorerController {
     protected $db;
     protected $command;
     protected $params = array();
-    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens');
+    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getDailyTX');
     protected $defaults;
 
     public function __construct($es){
@@ -274,6 +274,25 @@ class ethplorerController {
         $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
         $period = min(abs((int)$this->getRequest('period', 10)), $maxPeriod);
         $result = array('tokens' => $this->db->getTopTokens($limit, $period));
+        $this->sendResult($result);
+    }
+
+    /**
+     * /getDailyTX method implementation.
+     *
+     * @undocumented
+     * @return array
+     */
+    public function getDailyTX(){
+        $period = min(abs((int)$this->getRequest('period', 30)), 30);
+        $token = $this->getRequest('token', FALSE);
+        if(FALSE !== $token){
+            $token = strtolower($token);
+            if(!$this->db->isValidAddress($token)){
+                $this->sendError(104, 'Invalid token address format');
+            }
+        }
+        $result = array('txs' => $this->db->getDailyTX($period, $token));
         $this->sendResult($result);
     }
 

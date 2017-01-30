@@ -490,3 +490,122 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
 
     this.init();
 }
+
+/**
+ * Daily Token TXs Widget.
+ *
+ * @param {type} element
+ * @param {type} options
+ * @param {type} templates
+ * @returns {undefined}
+ */
+ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
+    this.el = element;
+
+    this.options = {
+        period: 30
+    };
+
+    if(options){
+        for(var key in options){
+            this.options[key] = options[key];
+        }
+    }
+
+    this.api = ethplorerWidget.api + '/getDailyTX';
+
+    this.templates = {
+        loader: '<div class="txs-loading">Loading daily token transactions...</div>',
+    };
+
+    this.load = function(){
+        this.el.html(this.templates.loader);
+        $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
+    };
+
+    this.drawChart = function(aTxData){
+        var aData = [];
+        aData.push(['Day', 'Txs']);
+        for(var i = aTxData.length - 1; i >= 0; i--){
+            var aDailyData = aTxData[i];
+            console.log(aDailyData);
+            aData.push([new Date(aDailyData._id.year, aDailyData._id.month - 1, aDailyData._id.day), aDailyData.cnt]);
+        }
+
+        var data = google.visualization.arrayToDataTable(aData);
+        var options = {
+            title: 'Daily TXs',
+            curveType: 'function',
+            legend: { position: 'none' },
+            /*fontSize: fontSize,
+            titleTextStyle: {
+                fontSize: fontSize
+            },*/
+            hAxis : {
+                //allowContainerBoundaryTextCufoff: true,
+                /*textStyle : {
+                    fontSize: fontSize
+                },*/
+                //ticks: [new Date(2016,10,28), new Date(2016,11,25), new Date(2017,0,22)],
+                textPosition: 'out',
+                slantedText: false,
+                maxAlternation: 1,
+                maxTextLines: 1
+            },
+            vAxis: {
+                /*textStyle : {
+                    fontSize: fontSize
+                },*/
+                viewWindow: {min: 0}
+            },
+            /*chartArea: {width: '100%', height: '100%'},
+            legend: {position: 'in'},
+            titlePosition: 'in', axisTitlesPosition: 'in',
+            hAxis: {textPosition: 'in'}, vAxis: {textPosition: 'in'}*/
+        };
+
+        var chart = new google.visualization.LineChart(this.el[0]);
+        chart.draw(data, options);
+    };
+
+    this.init = function(){
+        this.load();
+    };
+
+    this.getRequestParams = function(additionalParams){
+        var requestOptions = ['period'];
+        var params = {
+            apiKey: 'freekey',
+        };
+        for(var key in this.options){
+            if(requestOptions.indexOf(key) >= 0){
+                params[key] = this.options[key];
+            }
+        }
+        if('object' === typeof(additionalParams)){
+            for(var key in additionalParams){
+                if(requestOptions.indexOf(key) >= 0){
+                    params[key] = additionalParams[key];
+                }
+            }
+        }
+        return params;
+    };
+
+    this.refreshWidget = function(obj){
+        return function(data){
+            console.log(data);
+            if(data && !data.error && data.txs && data.txs.length){
+                obj.el.find('.txs-loading').remove();
+                obj.drawChart(data.txs);
+                ethplorerWidget.appendEthplorerLink(obj.el);
+                if('function' === typeof(obj.options.onLoad)){
+                    obj.options.onLoad();
+                }
+                setTimeout(ethplorerWidget.fixTilda, 300);
+            }
+        };
+    }(this);
+
+    this.init();
+}

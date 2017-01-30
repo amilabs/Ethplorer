@@ -786,18 +786,18 @@ class Ethplorer {
      * @param int $period  Days from now
      * @return array
      */
-    public function getDailyTX($period = 30, $token = null){
+    public function getDailyTX($period = 30, $token = FALSE){
         $cache = 'daily_tx-' . ($token ? ($token . '-') : '') . $period;
         $result = $this->oCache->get($cache, false, true, 24 * 3600);
         if(FALSE === $result){
+            $aMatch = array("timestamp" => array('$gt' => time() - $period * 24 * 3600));
+            if($token) $aMatch["contract"] = $token;
             $result = array();
             $dbData = $this->dbs['operations']->aggregate(
                 array(
-                    array('$match' => array("timestamp" => array('$gt' => time() - $period * 24 * 3600))),
-                    //array('$match' => array("contract" => '0xff71cb760666ab06aa73f34995b42dd4b85ea07b')),
+                    array('$match' => $aMatch),
                     array(
                         '$group' => array(
-                            //"_id" => '$contract',
                             "_id" => array(
                                 "year"  => array('$year' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
                                 "month"  => array('$month' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
@@ -812,7 +812,8 @@ class Ethplorer {
                 )
             );
             if(is_array($dbData) && !empty($dbData['result'])){
-                return $dbData['result'];
+                $result = $dbData['result'];
+                $this->oCache->save($cache, $result);
             }
         }
         return $result;
