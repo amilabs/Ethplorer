@@ -537,33 +537,16 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             title: 'Daily TXs',
             curveType: 'function',
             legend: { position: 'none' },
-            /*fontSize: fontSize,
-            titleTextStyle: {
-                fontSize: fontSize
-            },*/
             hAxis : {
-                //allowContainerBoundaryTextCufoff: true,
-                /*textStyle : {
-                    fontSize: fontSize
-                },*/
-                //ticks: [new Date(2016,10,28), new Date(2016,11,25), new Date(2017,0,22)],
                 textPosition: 'out',
                 slantedText: false,
                 maxAlternation: 1,
                 maxTextLines: 1
             },
             vAxis: {
-                /*textStyle : {
-                    fontSize: fontSize
-                },*/
                 viewWindow: {min: 0}
-            },
-            /*chartArea: {width: '100%', height: '100%'},
-            legend: {position: 'in'},
-            titlePosition: 'in', axisTitlesPosition: 'in',
-            hAxis: {textPosition: 'in'}, vAxis: {textPosition: 'in'}*/
+            }
         };
-
         var chart = new google.visualization.LineChart(this.el[0]);
         chart.draw(data, options);
     };
@@ -573,7 +556,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     };
 
     this.getRequestParams = function(additionalParams){
-        var requestOptions = ['period'];
+        var requestOptions = ['period', 'token'];
         var params = {
             apiKey: 'freekey',
         };
