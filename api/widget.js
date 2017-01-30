@@ -543,7 +543,9 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
                 textPosition: 'out',
                 slantedText: false,
                 maxAlternation: 1,
-                maxTextLines: 1
+                maxTextLines: 1,
+                format: 'MMM d',
+                gridlines: {count: 10}
             },
             vAxis: {
                 viewWindow: {min: 0}
