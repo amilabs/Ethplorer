@@ -501,6 +501,8 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
  */
 ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     this.el = element;
+    this.widgetData = null;
+    this.resizeTimer = null;
 
     this.options = {
         period: 30
@@ -528,7 +530,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         aData.push(['Day', 'Txs']);
         for(var i = aTxData.length - 1; i >= 0; i--){
             var aDailyData = aTxData[i];
-            console.log(aDailyData);
+            //console.log(aDailyData);
             aData.push([new Date(aDailyData._id.year, aDailyData._id.month - 1, aDailyData._id.day), aDailyData.cnt]);
         }
 
@@ -579,6 +581,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         return function(data){
             console.log(data);
             if(data && !data.error && data.txs && data.txs.length){
+                obj.widgetData = data.txs;
                 obj.el.find('.txs-loading').remove();
                 obj.drawChart(data.txs);
                 ethplorerWidget.appendEthplorerLink(obj.el);
@@ -589,6 +592,14 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             }
         };
     }(this);
+
+    $(window).resize(this, function(){
+        var obj = arguments[0].data;
+        if(obj.resizeTimer) clearTimeout(obj.resizeTimer);
+        obj.resizeTimer = setTimeout(function(){
+            if(obj.widgetData) obj.drawChart(obj.widgetData);
+        }, 500);
+    });
 
     this.init();
 }
