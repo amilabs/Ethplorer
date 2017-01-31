@@ -31,6 +31,20 @@ Ethplorer = {
         if(Ethplorer.Nav.get('pageSize')){
             Ethplorer.pageSize = Ethplorer.Nav.get('pageSize');
         }
+        if(Ethplorer.Nav.get('filter')){
+            var filter = Ethplorer.Nav.get('filter');
+            if(filter){
+                filter = filter.toLowerCase();
+                if(Ethplorer.checkFilter(filter)){
+                    Ethplorer.filter = filter;
+                    Ethplorer.Nav.set('filter', Ethplorer.filter);
+                    $('.filter-clear').show();
+                    $('#filter_list').val(Ethplorer.filter);
+                }else{
+                    Ethplorer.Nav.del('filter');                    
+                }
+            }
+        }
         Ethplorer.route();
         $('#network').text(Ethplorer.Config.testnet ? 'Test' : 'Modern');
         $('.navbar-nav li[data-page]').click(function(){
@@ -58,21 +72,23 @@ Ethplorer = {
         if(Ethplorer.Nav.get('tab')){
             $('#' + Ethplorer.Nav.get('tab') +' a').click();
         }
-        if(Ethplorer.Nav.get('filter')){
-            Ethplorer.filter = Ethplorer.Nav.get('filter');
-            $('.filter-clear').show();
-            $('#filter_list').val(Ethplorer.filter);
-        }
         $('.filter-clear').click(function(){
             $('#filter_list').val('');
             $('.filter-form').trigger('submit');
         });
         $('.filter-form').submit(function(e){
-            var filter = $('#filter_list').val();
+            e.preventDefault();
+            var filter = $('#filter_list').val().toLowerCase();
             if(Ethplorer.filter != filter){
                 if(filter){
-                    $('.filter-clear').show();
-                    Ethplorer.Nav.set('filter', filter);
+                    if(Ethplorer.checkFilter(filter)){
+                        $('.filter-clear').show();
+                        Ethplorer.Nav.set('filter', filter);
+                    }else{
+                        alert('Invalid filter!');
+                        
+                        return;
+                    }
                 }else{
                     $('.filter-clear').hide();
                     Ethplorer.Nav.del('filter');
@@ -82,7 +98,6 @@ Ethplorer = {
                 $('#filter_list').attr('disabled', true)
                 Ethplorer.route();
             }
-            e.preventDefault();
         });
         if(localStorage && ('undefined' !== typeof(localStorage['tx-details-block']))){
             if('open' === localStorage['tx-details-block']){
@@ -93,6 +108,9 @@ Ethplorer = {
                 $('#tx-details-block').hide();
             }
         }
+    },
+    checkFilter: function(filter){
+        return (!filter || /^[0-9a-fx]+$/.test(filter));
     },
     route: function(){
         var pathData  = Ethplorer.Utils.parsePath();
