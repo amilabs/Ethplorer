@@ -538,19 +538,34 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         var data = google.visualization.arrayToDataTable(aData);
         var options = {
             title: 'Daily TXs',
+            titleTextStyle: {
+                color: '#FFF',
+            },
             //curveType: 'function',
             legend: { position: 'none' },
             hAxis : {
                 textPosition: 'out',
+                textStyle: {color: '#FFF'},
                 slantedText: false,
                 maxAlternation: 1,
                 maxTextLines: 1,
                 format: 'MMM d',
-                gridlines: {count: 10},
-                titleTextStyle: {color: '#333'}
+                gridlines: {
+                    count: 10,
+                    color: "#FFF"
+                },
+                baselineColor: '#FFF'
             },
-            vAxis: {minValue: 0},
-            pointSize: 5
+            vAxis: {
+                minValue: 0,
+                textStyle: {color: '#FFF'},
+                gridlineColor: '#FFF',
+                baselineColor: '#FFF'
+            },
+            pointSize: 5,
+            colors: ['#47C2FF'],
+            backgroundColor: { fill:'transparent' }
+            //bar: {groupWidth: '80%'}
         };
         if(this.options['type'] == 'area') var chart = new google.visualization.AreaChart(this.el[0]);
         else var chart = new google.visualization.ColumnChart(this.el[0]);
@@ -558,6 +573,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     };
 
     this.init = function(){
+        this.el.addClass('widget-txs');
         this.load();
     };
 

@@ -862,7 +862,7 @@ class Ethplorer {
      */
     public function getDailyTX($period = 30, $token = FALSE){
         $cache = 'daily_tx-' . ($token ? ($token . '-') : '') . $period;
-        $result = $this->oCache->get($cache, false, true, 24 * 3600);
+        $result = $this->oCache->get($cache, false, true, 600);
         if(FALSE === $result){
             $aMatch = array("timestamp" => array('$gt' => time() - $period * 24 * 3600));
             if($token) $aMatch["contract"] = $token;
