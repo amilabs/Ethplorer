@@ -505,7 +505,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     this.resizeTimer = null;
 
     this.options = {
-        period: 30
+        period: 30,
+        type: 'column'
     };
 
     if(options){
@@ -551,7 +552,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             vAxis: {minValue: 0},
             pointSize: 5
         };
-        var chart = new google.visualization.AreaChart(this.el[0]);
+        if(this.options['type'] == 'area') var chart = new google.visualization.AreaChart(this.el[0]);
+        else var chart = new google.visualization.ColumnChart(this.el[0]);
         chart.draw(data, options);
     };
 
@@ -560,7 +562,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     };
 
     this.getRequestParams = function(additionalParams){
-        var requestOptions = ['period', 'token'];
+        var requestOptions = ['period', 'token', 'type'];
         var params = {
             apiKey: 'freekey',
         };
