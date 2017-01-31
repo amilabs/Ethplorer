@@ -427,7 +427,10 @@ if($error){
                         <div id="token-transfers-tab" class="tab-pane fade in active">
                             <div class="col-xs-12" id="address-token-transfers">
                                 <div class="block">
-                                    <div class="block-header"><h3>Token <span class="address-token-name"></span> Transfers</h3></div>
+                                    <div class="block-header">
+                                        <h3>Token <span class="address-token-name"></span> Transfers</h3>
+                                        <div class="total-records"></div>
+                                    </div>
                                     <table class="table"></table>
                                     <div id="address-token-transfers-more" class="text-center"></div>
                                 </div>
@@ -437,7 +440,10 @@ if($error){
                         <div id="token-issuances-tab" class="tab-pane fade">
                             <div class="col-xs-12" id="address-issuances">
                                 <div class="block">
-                                    <div class="block-header"><h3>Token <span class="address-token-name"></span> Issuances</h3></div>
+                                    <div class="block-header">
+                                        <h3>Token <span class="address-token-name"></span> Issuances</h3>
+                                        <div class="total-records"></div>
+                                    </div>
                                     <table class="table"></table>
                                 </div>
                                 <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
@@ -446,7 +452,10 @@ if($error){
                         <div id="token-holders-tab" class="tab-pane fade">
                             <div class="col-xs-12" id="address-token-holders">
                                 <div class="block">
-                                    <div class="block-header"><h3>Token <span class="address-token-name"></span> Holders</h3></div>
+                                    <div class="block-header">
+                                        <h3>Token <span class="address-token-name"></span> Holders</h3>
+                                        <div class="total-records"></div>
+                                    </div>
                                     <table class="table"></table>
                                     <div id="address-token-holders-totals"></div>
                                 </div>
@@ -455,7 +464,10 @@ if($error){
                     </div>
                     <div class="col-xs-12" id="address-transfers" style="display:none;">
                         <div class="block">
-                            <div class="block-header"><h3>Transfers</h3></div>
+                            <div class="block-header">
+                                <h3>Transfers</h3>
+                                <div class="total-records"></div>
+                            </div>
                             <table class="table"></table>
                             <div id="address-transfers-more" class="text-center"></div>
                         </div>
@@ -463,7 +475,10 @@ if($error){
                     </div>
                     <div class="col-xs-12" id="address-chainy-tx" style="display:none;">
                         <div class="block">
-                            <div class="block-header"><h3>Chainy Transactions</h3></div>
+                            <div class="block-header">
+                                <h3>Chainy Transactions</h3>
+                                <div class="total-records"></div>
+                            </div>
                             <table class="table"></table>
                         </div>
                         <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>

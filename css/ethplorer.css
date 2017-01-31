@@ -441,11 +441,21 @@ a.dashed {
     text-overflow: ellipsis;
 }
 
+.total-records {
+    float: right;
+    margin-top: -22px;
+    margin-right: 20px;
+}
+
 #address-token-holders tr td:first-child {
     max-width: 50px;
     width: 50px;
     text-align: right;
     padding-left: 0px;
+}
+
+tr.paginationFooter td {
+    padding-left: 20px !important;
 }
 
 #address-token-holders tr td:nth-child(2) {
