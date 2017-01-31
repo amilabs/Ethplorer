@@ -284,7 +284,7 @@ class ethplorerController {
      * @return array
      */
     public function getDailyTX(){
-        $period = min(abs((int)$this->getRequest('period', 30)), 30);
+        $period = min(abs((int)$this->getRequest('period', 30)), 90);
         $token = $this->getRequest('token', FALSE);
         if(FALSE !== $token){
             $token = strtolower($token);
