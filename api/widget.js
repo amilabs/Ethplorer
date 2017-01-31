@@ -1,9 +1,9 @@
 ethplorerWidget = {
     // Ethplorer API URL
-    api: 'https://api.ethplorer.io',
+    api: 'http://ethplorer.loc/api',//'https://api.ethplorer.io',
 
     // Ethplorer URL
-    url: 'https://ethplorer.io',
+    url: 'http://ethplorer.loc',///'https://ethplorer.io',
 
     // Widget types
     Type: {},
@@ -537,7 +537,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         var data = google.visualization.arrayToDataTable(aData);
         var options = {
             title: 'Daily TXs',
-            curveType: 'function',
+            //curveType: 'function',
             legend: { position: 'none' },
             hAxis : {
                 textPosition: 'out',
@@ -545,13 +545,13 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
                 maxAlternation: 1,
                 maxTextLines: 1,
                 format: 'MMM d',
-                gridlines: {count: 10}
+                gridlines: {count: 10},
+                titleTextStyle: {color: '#333'}
             },
-            vAxis: {
-                viewWindow: {min: 0}
-            }
+            vAxis: {minValue: 0},
+            pointSize: 5
         };
-        var chart = new google.visualization.LineChart(this.el[0]);
+        var chart = new google.visualization.AreaChart(this.el[0]);
         chart.draw(data, options);
     };
 
