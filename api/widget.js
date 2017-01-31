@@ -1,9 +1,9 @@
 ethplorerWidget = {
     // Ethplorer API URL
-    api: 'http://ethplorer.loc/api',//'https://api.ethplorer.io',
+    api: 'https://api.ethplorer.io',
 
     // Ethplorer URL
-    url: 'http://ethplorer.loc',///'https://ethplorer.io',
+    url: 'https://ethplorer.io',
 
     // Widget types
     Type: {},
