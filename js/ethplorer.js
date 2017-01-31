@@ -650,7 +650,7 @@ Ethplorer = {
             }
             var type = (tx.type && ('burn' === tx.type)) ? '&#128293;&nbsp;Burn' : '&#9874;&nbsp;Issuance';
             var qty = Ethplorer.Utils.toBig(tx.value);
-            if(parseInt(qty.toString())){
+            if(!isNaN(parseInt(qty.toString()))){
                 var opClass = (tx.type.toString().toLowerCase() !== 'burn') ? 'incoming' : 'outgoing';
                 var qty = Ethplorer.Utils.toBig(tx.value).div(Math.pow(10, oToken.decimals));
                 var row = $('<tr>');
@@ -688,7 +688,6 @@ Ethplorer = {
     },
 
     drawHolders: function(address, holdersData){
-        console.log('here');
         $('#address-token-holders .table').empty();
         for(var key in holdersData){
             Ethplorer.data[key] = holdersData[key];
@@ -866,6 +865,13 @@ Ethplorer = {
         var pager = $('<UL>');
         pager.addClass('pagination pagination-sm');
         if(recordsCount){
+            setTimeout(function(_container, _count){
+                return function(){
+                    // console.log(_container.parents('.block').find('.total-records'));
+                    _container.parents('.block').find('.total-records').text(_count + ' total');
+                }
+            }(container, recordsCount), 100);
+            
             var pages = Math.ceil(recordsCount / Ethplorer.pageSize);
             var lastPage = true;
             for(var i=1; i<=pages; i++){
