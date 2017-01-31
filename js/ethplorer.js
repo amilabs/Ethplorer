@@ -688,6 +688,7 @@ Ethplorer = {
     },
 
     drawHolders: function(address, holdersData){
+        console.log('here');
         $('#address-token-holders .table').empty();
         for(var key in holdersData){
             Ethplorer.data[key] = holdersData[key];
@@ -716,7 +717,8 @@ Ethplorer = {
                 var shareDiv = '<div><div class="holder-gauge" style="width:' + holder['share'] + '%;"></div><div class="holder-gauge-value">&nbsp;' + holder['share'] + '%</div></div>'
                 var page = (data.pager && data.pager.holders) ? data.pager.holders.page : 1;
                 var add = (page - 1) * Ethplorer.pageSize;
-                row.append('<td>' + (add + i + 1) + '</td><td>' + address + '</td><td></td><td>' + balance + '</td><td>' + shareDiv + '</td>');
+                row.append('<td>' + (add + i + 1) + '</td><td class="hide-small">' + address + '</td><td class="hide-small"></td><td class="hide-small">' + balance + '</td><td class="hide-small">' + shareDiv + '</td>');
+                row.append('<td class="show_small"><div class="holder_small">' + address + '<br />' + balance + '<br />' + shareDiv + '</div></td>');
                 table.append(row);
             }
             if(totalShare > 100){
