@@ -550,7 +550,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
                 titleTextStyle: {color: '#333'}
             },
             vAxis: {minValue: 0},
-            pointSize: 5
+            pointSize: 5,
+            bar: {groupWidth: '80%'}
         };
         if(this.options['type'] == 'area') var chart = new google.visualization.AreaChart(this.el[0]);
         else var chart = new google.visualization.ColumnChart(this.el[0]);
