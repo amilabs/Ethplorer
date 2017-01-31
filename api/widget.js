@@ -559,6 +559,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     };
 
     this.init = function(){
+        this.el.addClass('widget-txs');
         this.load();
     };
 
