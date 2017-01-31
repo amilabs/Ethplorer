@@ -44,6 +44,9 @@ if($page && (FALSE !== strpos($page, '='))){
                 case 'chainy':
                     $es->setPager($aPageParams[0], intval($aPageParams[1]));
                     break;
+                case 'filter':
+                    $es->setFilter($aPageParams[1]);
+                    break;
             }
         }
     }

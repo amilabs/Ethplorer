@@ -18,6 +18,7 @@ Ethplorer = {
     data: {},
     pageSize: 10,
     service: "/service/service.php",
+    filter: '',
     init: function(){
         BigNumber.config({ ERRORS: false });
         Ethplorer.Nav.init();
@@ -57,6 +58,32 @@ Ethplorer = {
         if(Ethplorer.Nav.get('tab')){
             $('#' + Ethplorer.Nav.get('tab') +' a').click();
         }
+        if(Ethplorer.Nav.get('filter')){
+            Ethplorer.filter = Ethplorer.Nav.get('filter');
+            $('.filter-clear').show();
+            $('#filter_list').val(Ethplorer.filter);
+        }
+        $('.filter-clear').click(function(){
+            $('#filter_list').val('');
+            $('.filter-form').trigger('submit');
+        });
+        $('.filter-form').submit(function(e){
+            var filter = $('#filter_list').val();
+            if(Ethplorer.filter != filter){
+                if(filter){
+                    $('.filter-clear').show();
+                    Ethplorer.Nav.set('filter', filter);
+                }else{
+                    $('.filter-clear').hide();
+                    Ethplorer.Nav.del('filter');
+                }
+                Ethplorer.filter = filter;
+                $('.paginationFooter, .notFoundRow').parents('.table').addClass('unclickable');
+                $('#filter_list').attr('disabled', true)
+                Ethplorer.route();
+            }
+            e.preventDefault();
+        });
         if(localStorage && ('undefined' !== typeof(localStorage['tx-details-block']))){
             if('open' === localStorage['tx-details-block']){
                 $('.tx-details-link').addClass('closed');
@@ -262,6 +289,7 @@ Ethplorer = {
             
             if(oToken.image){
                 var img = Ethplorer.Utils.getEthplorerLink(oToken.address, '##IMG##', false);
+                $('.token-related:eq(1) .block-header').find('img').remove();
                 $('.token-related:eq(1) .block-header').prepend(
                     img.replace('##IMG##', '<img src="' + oToken.image + '" style="max-width:32px;max-height:32px;margin:8px;margin-left:20px;" align="left">')
                 );
@@ -448,6 +476,7 @@ Ethplorer = {
     },
 
     showAddressDetails: function(address, data){
+        $('#filter_list').attr('disabled', false)
         Ethplorer.currentAddress = address;
         Ethplorer.data = data;
         var titleAdd = '';
@@ -490,25 +519,35 @@ Ethplorer = {
                 oToken.description = oToken.description.replace(/\n/g, '<br />');
             }
             if(oToken.image){
+                $('#address-token-details .block-header').find('img').remove();                
                 $('#address-token-details .block-header').prepend('<img src="' + oToken.image + '" class="token-logo" align="left">');
             }
             $('.address-token-name').text(oToken.name);
             if(Ethplorer.Config.updateLink){
                 $('.address-token-name:eq(0)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>')
             }
-            if(data.holders && data.holders.length){
-                Ethplorer.drawHolders(address, data);
+
+            Ethplorer.drawHolders(address, data);
+            Ethplorer.drawIssuances(address, data);
+
+            var fields = [
+                'token', 'token.name', 'token.description', 'token.owner', 'token.totalSupply', 'token.totalIn', 'token.totalOut', 'token.decimals', 'token.symbol',
+                'token.txsCount', 'token.transfersCount', 'token.issuancesCount', 'token.holdersCount'
+            ];
+            
+            if(oToken.issuancesCount){
+                $('#tab-issuances').show();
             }
-            if(data.issuances && data.issuances.length){
-                Ethplorer.drawIssuances(address, data);
+            if(oToken.holdersCount){
+                $('#tab-holders').show();
             }
-            var fields = ['token', 'token.name', 'token.description', 'token.owner', 'token.totalSupply', 'token.totalIn', 'token.totalOut', 'token.decimals', 'token.symbol', 'token.txsCount'];
+            
             Ethplorer.fillValues('address', data, fields);
             if(oToken.estimatedDecimals){
                 $('#address-token-decimals').append(' <small>(estimated)</small>');
             }
         }else if(data.balances && data.balances.length){
-            $('#address-token-balances').show();
+            $('#address-token-balances table').empty();
             for(var k=0; k<data.balances.length; k++){
                 var balance = data.balances[k];
                 if(balance.totalIn || balance.totalOut){
@@ -527,11 +566,17 @@ Ethplorer = {
                     $('#address-token-balances table').append(row);
                 }                
             }
+            $('#address-token-balances').show();
         }
 
-        if(data.transfers && data.transfers.length){
-            Ethplorer.drawTransfers(address, data);
+        if(!data.isContract || !data.token){
+            $('.nav-tabs').hide();
+            $('.filter-box').addClass('out-of-tabs');
+        }else{
+            $('.filter-box').addClass('in-tabs');
         }
+
+        Ethplorer.drawTransfers(address, data);
 
         document.title = 'Ethplorer';
         document.title += (': ' + (titleAdd ? (titleAdd + ' -') : ''));
@@ -545,9 +590,6 @@ Ethplorer = {
         $("table").find("tr:visible:odd").addClass("odd");
         $("table").find("tr:visible:even").addClass("even");
         $("table").find("tr:visible:last").addClass("last");
-        if(1 === $('[data-toggle="tab"]:visible').length){
-            $('.nav-tabs').hide();
-        }
     },
 
     drawTransfers: function(address, transfersData){
@@ -555,79 +597,84 @@ Ethplorer = {
             Ethplorer.data[key] = transfersData[key];
         }
         var data = Ethplorer.data;
-        if(!data.transfers || !data.transfers.length) return;
         var tableId = data.token ? 'address-token-transfers' : 'address-transfers';
         $('#' + tableId).find('.table').empty();
-        for(var i=0; i<data.transfers.length; i++){
-            var tx = data.transfers[i];
-            var qty = Ethplorer.Utils.toBig(tx.value);
-            if(parseInt(qty.toString())){
-                var txToken = Ethplorer.prepareToken(data.token ? data.token : data.tokens[tx.contract]);
-                qty = qty.div(Math.pow(10, txToken.decimals));
-                var row = $('<tr>');
-                var tdDate = $('<td>').addClass('hide-small');
-                var tdData = $('<td>');
-                var divData = $('<div>').addClass('hash-from-to');
-                var tdQty = $('<td>').addClass('hide-small text-right');
-                var date = Ethplorer.Utils.ts2date(tx.timestamp, false);
-                var value = Ethplorer.Utils.formatNum(qty, true, txToken.decimals ? txToken.decimals : 18, 2) + ' ' + txToken.symbol;
-                var token = Ethplorer.Utils.getEthplorerLink(tx.contract, txToken.name, false);
-                var from = tx.from ? ((tx.from !== address) ? Ethplorer.Utils.getEthplorerLink(tx.from) : ('<span class="same-address">' + address + '</span>')) : false;
-                var to = tx.to ? ((tx.to !== address) ? Ethplorer.Utils.getEthplorerLink(tx.to) : ('<span class="same-address">' + address + '</span>')) : false;
-                var _address = (tx.address && (tx.address === address )) ? ('<span class="same-address">' + address + '</span>') : tx.address;
-                var rowClass = '';
-                if(from && (tx.from === address)){
-                    value = '-' + value;
-                    rowClass = 'outgoing';
-                }else if(to && (tx.to === address)){
-                    rowClass = 'incoming';
-                }else if(tx.address === address){
-                    if('burn' === tx.type){
+        if(!data.transfers || !data.transfers.length){
+            if(!data.token) return;
+            $('#' + tableId).find('.total-records').empty();
+            $('#' + tableId).find('.table').append('<tr class="notFoundRow"><td>No transactions found</td></tr>');
+        }else{
+            for(var i=0; i<data.transfers.length; i++){
+                var tx = data.transfers[i];
+                var qty = Ethplorer.Utils.toBig(tx.value);
+                if(parseInt(qty.toString())){
+                    var txToken = Ethplorer.prepareToken(data.token ? data.token : data.tokens[tx.contract]);
+                    qty = qty.div(Math.pow(10, txToken.decimals));
+                    var row = $('<tr>');
+                    var tdDate = $('<td>').addClass('hide-small');
+                    var tdData = $('<td>');
+                    var divData = $('<div>').addClass('hash-from-to');
+                    var tdQty = $('<td>').addClass('hide-small text-right');
+                    var date = Ethplorer.Utils.ts2date(tx.timestamp, false);
+                    var value = Ethplorer.Utils.formatNum(qty, true, txToken.decimals ? txToken.decimals : 18, 2) + ' ' + txToken.symbol;
+                    var token = Ethplorer.Utils.getEthplorerLink(tx.contract, txToken.name, false);
+                    var from = tx.from ? ((tx.from !== address) ? Ethplorer.Utils.getEthplorerLink(tx.from) : ('<span class="same-address">' + address + '</span>')) : false;
+                    var to = tx.to ? ((tx.to !== address) ? Ethplorer.Utils.getEthplorerLink(tx.to) : ('<span class="same-address">' + address + '</span>')) : false;
+                    var _address = (tx.address && (tx.address === address )) ? ('<span class="same-address">' + address + '</span>') : tx.address;
+                    var rowClass = '';
+                    if(from && (tx.from === address)){
+                        value = '-' + value;
                         rowClass = 'outgoing';
-                    }else{
+                    }else if(to && (tx.to === address)){
                         rowClass = 'incoming';
+                    }else if(tx.address === address){
+                        if('burn' === tx.type){
+                            rowClass = 'outgoing';
+                        }else{
+                            rowClass = 'incoming';
+                        }
                     }
+                    tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, date, false));
+                    if(!from && tx.address){
+                        value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>&#128293;&nbsp;Burn' : value + '<br>&#9874;&nbsp;Issuance';
+                    }
+                    divData.html(
+                        '<span class="show_small">Date:&nbsp;' + date + '<br></span>' +
+                        (!data.token ? ('<span class="address-token-inline">Token:&nbsp;' + token + '<br></span>') : '') +
+                        '<span class="show_small ' + rowClass + '">Value:&nbsp;' + value + '<br></span>' +                        
+                        'Tx:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.transactionHash) + '<br>' +
+                        (from ? ('From:&nbsp;' + from + '<br>To:&nbsp;' + to) : ('Address:&nbsp;' + _address))
+                    );
+                    tdQty.addClass(rowClass);
+                    tdQty.html(value);
+                    tdData.append(divData);
+                    row.append(tdDate, tdData);
+                    if(!data.token){
+                        var tdToken = $('<td>');
+                        tdToken.addClass('address-token');
+                        tdToken.html(token);
+                        row.append(tdToken);
+                    }
+                    tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
+                    row.append(tdQty);
+                    $('#' + tableId + ' .table').append(row);
                 }
-                tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, date, false));
-                if(!from && tx.address){
-                    value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>&#128293;&nbsp;Burn' : value + '<br>&#9874;&nbsp;Issuance';
-                }
-                divData.html(
-                    '<span class="show_small">Date:&nbsp;' + date + '<br></span>' +
-                    (!data.token ? ('<span class="address-token-inline">Token:&nbsp;' + token + '<br></span>') : '') +
-                    '<span class="show_small ' + rowClass + '">Value:&nbsp;' + value + '<br></span>' +                        
-                    'Tx:&nbsp;' + Ethplorer.Utils.getEthplorerLink(tx.transactionHash) + '<br>' +
-                    (from ? ('From:&nbsp;' + from + '<br>To:&nbsp;' + to) : ('Address:&nbsp;' + _address))
-                );
-                tdQty.addClass(rowClass);
-                tdQty.html(value);
-                tdData.append(divData);
-                row.append(tdDate, tdData);
-                if(!data.token){
-                    var tdToken = $('<td>');
-                    tdToken.addClass('address-token');
-                    tdToken.html(token);
-                    row.append(tdToken);
-                }
-                tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
-                row.append(tdQty);
-                $('#' + tableId + ' .table').append(row);
             }
-        }
-        // Pager
-        if(data.pager && data.pager.transfers){
-            var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-            var cb = function(page){
-                $('.paginationFooter:visible').parents('.table').addClass('unclickable');
-                if(page > 1){
-                    Ethplorer.Nav.set('transfers', page);
-                }else{
-                    Ethplorer.Nav.del('transfers');
-                }
-                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "transfers"}, Ethplorer.drawTransfers);
-            };
-            Ethplorer.drawPager(pagination.find('td'), data.pager.transfers.page, data.pager.transfers.records, cb);
-            $('#' + tableId + ' .table').append(pagination);
+            // Pager
+            if(data.pager && data.pager.transfers){
+                var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
+                var cb = function(page){
+                    $('.paginationFooter:visible').parents('.table').addClass('unclickable');
+                    if(page > 1){
+                        Ethplorer.Nav.set('transfers', page);
+                    }else{
+                        Ethplorer.Nav.del('transfers');
+                    }
+                    Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "transfers"}, Ethplorer.drawTransfers);
+                };
+                Ethplorer.drawPager(pagination.find('td'), data.pager.transfers.page, data.pager.transfers.records, cb);
+                $('#' + tableId + ' .table').append(pagination);
+            }
         }
         $('.table').removeClass('unclickable');
         $('#' + tableId).show();
@@ -639,52 +686,56 @@ Ethplorer = {
             Ethplorer.data[key] = issuancesData[key];
         }
         var data = Ethplorer.data;
-        if(!data.issuances || !data.issuances.length) return;
-
-        var oToken = Ethplorer.prepareToken(data.token);
-        for(var i=0; i<data.issuances.length; i++){
-            var tx = data.issuances[i];
-            // Temporary workaround
-            if(tx.type == 'mint'){
-                tx.type = 'issuance';
-            }
-            var type = (tx.type && ('burn' === tx.type)) ? '&#128293;&nbsp;Burn' : '&#9874;&nbsp;Issuance';
-            var qty = Ethplorer.Utils.toBig(tx.value);
-            if(!isNaN(parseInt(qty.toString()))){
-                var opClass = (tx.type.toString().toLowerCase() !== 'burn') ? 'incoming' : 'outgoing';
-                var qty = Ethplorer.Utils.toBig(tx.value).div(Math.pow(10, oToken.decimals));
-                var row = $('<tr>');
-                var tdDate = $('<td>');
-                var tdHash = $('<td>').addClass('list-field table-hash-field');
-                var tdOpType = $('<td>').addClass('text-center table-type-field ' + opClass);
-                var tdQty = $('<td>').addClass('text-right ' + opClass);
-                tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
-                tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
-                tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash));
-                tdOpType.html(type);
-                tdQty.html((tx.type !== 'burn' ? '+' : '-') + Ethplorer.Utils.formatNum(qty, true, oToken.decimals ? oToken.decimals : 18, 2) + ((oToken.symbol) ? '&nbsp;' + oToken.symbol : ''));
-                row.append(tdDate, tdHash, tdOpType, tdQty);
-                $('#address-issuances .table').append(row);
-            }
-        }
-
-        // Pager
-        if(data.pager && data.pager.issuances){
-            var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-            var cb = function(page){
-                $('.paginationFooter:visible').parents('.table').addClass('unclickable');
-                if(page > 1){
-                    Ethplorer.Nav.set('issuances', page);
-                }else{
-                    Ethplorer.Nav.del('issuances');
+        if(!data.issuances || !data.issuances.length){
+            if(!data.token) return;
+            $('#address-issuances').find('.total-records').empty();
+            $('#address-issuances').find('.table').append('<tr class="notFoundRow"><td>No issuances found</td></tr>');
+        }else{
+            var oToken = Ethplorer.prepareToken(data.token);
+            for(var i=0; i<data.issuances.length; i++){
+                var tx = data.issuances[i];
+                // Temporary workaround
+                if(tx.type == 'mint'){
+                    tx.type = 'issuance';
                 }
-                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "issuances"}, Ethplorer.drawIssuances);
-            };
-            Ethplorer.drawPager(pagination.find('td'), data.pager.issuances.page, data.pager.issuances.records, cb);
-            $('#address-issuances .table').append(pagination);
+                var type = (tx.type && ('burn' === tx.type)) ? '&#128293;&nbsp;Burn' : '&#9874;&nbsp;Issuance';
+                var qty = Ethplorer.Utils.toBig(tx.value);
+                if(!isNaN(parseInt(qty.toString()))){
+                    var opClass = (tx.type.toString().toLowerCase() !== 'burn') ? 'incoming' : 'outgoing';
+                    var qty = Ethplorer.Utils.toBig(tx.value).div(Math.pow(10, oToken.decimals));
+                    var row = $('<tr>');
+                    var tdDate = $('<td>');
+                    var tdHash = $('<td>').addClass('list-field table-hash-field');
+                    var tdOpType = $('<td>').addClass('text-center table-type-field ' + opClass);
+                    var tdQty = $('<td>').addClass('text-right ' + opClass);
+                    tdDate.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash, Ethplorer.Utils.ts2date(tx.timestamp, false), false));
+                    tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
+                    tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash));
+                    tdOpType.html(type);
+                    tdQty.html((tx.type !== 'burn' ? '+' : '-') + Ethplorer.Utils.formatNum(qty, true, oToken.decimals ? oToken.decimals : 18, 2) + ((oToken.symbol) ? '&nbsp;' + oToken.symbol : ''));
+                    row.append(tdDate, tdHash, tdOpType, tdQty);
+                    $('#address-issuances .table').append(row);
+                }
+            }
+
+            // Pager
+            if(data.pager && data.pager.issuances){
+                var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
+                var cb = function(page){
+                    $('.paginationFooter:visible').parents('.table').addClass('unclickable');
+                    if(page > 1){
+                        Ethplorer.Nav.set('issuances', page);
+                    }else{
+                        Ethplorer.Nav.del('issuances');
+                    }
+                    Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "issuances"}, Ethplorer.drawIssuances);
+                };
+                Ethplorer.drawPager(pagination.find('td'), data.pager.issuances.page, data.pager.issuances.records, cb);
+                $('#address-issuances .table').append(pagination);
+            }
+            $('.table').removeClass('unclickable');
         }
-        $('.table').removeClass('unclickable');
-        $('#tab-issuances, #address-issuances').show();
+        $('#address-issuances').show();
     },
 
     drawHolders: function(address, holdersData){
@@ -735,24 +786,27 @@ Ethplorer = {
                 }
             }
             $("#address-token-holders-totals").html(totals);
-        }
-        // Pager
-        if(data.pager && data.pager.holders){
-            var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-            var cb = function(page){
-                $('.paginationFooter:visible').parents('.table').addClass('unclickable');
-                if(page > 1){
-                    Ethplorer.Nav.set('holders', page);
-                }else{
-                    Ethplorer.Nav.del('holders');
-                }
-                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "holders"}, Ethplorer.drawHolders);
-            };
-            Ethplorer.drawPager(pagination.find('td'), data.pager.holders.page, data.pager.holders.records, cb);
-            $('#address-token-holders .table').append(pagination);
+            // Pager
+            if(data.pager && data.pager.holders){
+                var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
+                var cb = function(page){
+                    $('.paginationFooter:visible').parents('.table').addClass('unclickable');
+                    if(page > 1){
+                        Ethplorer.Nav.set('holders', page);
+                    }else{
+                        Ethplorer.Nav.del('holders');
+                    }
+                    Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "holders"}, Ethplorer.drawHolders);
+                };
+                Ethplorer.drawPager(pagination.find('td'), data.pager.holders.page, data.pager.holders.records, cb);
+                $('#address-token-holders .table').append(pagination);
+            }
+        }else{
+            $('#address-token-holders').find('.total-records').empty();
+            $('#address-token-holders').find('.table').append('<tr class="notFoundRow"><td>No holders found</td></tr>');
         }
         $('.table').removeClass('unclickable');
-        $('#tab-holders, #address-token-holders').show();
+        $('#address-token-holders').show();
     },
 
     drawChainy: function(address, chainyData){
@@ -867,8 +921,16 @@ Ethplorer = {
         if(recordsCount){
             setTimeout(function(_container, _count){
                 return function(){
-                    // console.log(_container.parents('.block').find('.total-records'));
                     _container.parents('.block').find('.total-records').text(_count + ' total');
+                    var filter = Ethplorer.Nav.get('filter');
+                    if(filter){
+                        _container.parents('.table').find('a.local-link').each(function(){
+                            var text = $(this).text();
+                            if(0 === text.indexOf('0x')){
+                                $(this).html(text.replace(new RegExp(filter, 'g'), '<span class="filer-mark">' + filter + '</span>'))
+                            }
+                        });
+                    }
                 }
             }(container, recordsCount), 100);
             

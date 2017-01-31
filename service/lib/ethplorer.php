@@ -66,6 +66,12 @@ class Ethplorer {
     protected $aPager = array();
 
     /**
+     *
+     * @var string
+     */
+    protected $filter = FALSE;
+
+    /**
      * Constructor.
      *
      * @throws Exception
@@ -134,11 +140,31 @@ class Ethplorer {
         $this->aPager[$section] = $page;
     }
 
-
+    /**
+     * Return page offset for section
+     *
+     * @param string $section
+     * @return int
+     */
     public function getPager($section){
         return isset($this->aPager[$section]) ? $this->aPager[$section] : 1;
     }
 
+    /**
+     * Set filter value
+     *
+     * @param string $filter
+     */
+    public function setFilter($filter){
+        $this->filter = $filter;
+    }
+
+    /**
+     * Returns item offset for section.
+     *
+     * @param string $section
+     * @int type
+     */
     public function getOffset($section){
         $limit = $this->pageSize;
         return (1 === $this->getPager($section)) ? FALSE : ($this->getPager($section) - 1) * $limit;
@@ -250,7 +276,8 @@ class Ethplorer {
             $result["transfers"] = $this->getAddressOperations($address, $limit, $this->getOffset('transfers'));
             $result['pager']['transfers'] = array(
                 'page' => $this->getPager('transfers'),
-                'records' => $this->countOperations($address)
+                'records' => $this->countOperations($address),
+                'total' => $this->countOperations($address. FALSE),
             );
         }
         return $result;
@@ -450,8 +477,17 @@ class Ethplorer {
     }
 
 
-    public function getTokenHoldersCount($address){
-        return $this->dbs['balances']->find(array('contract' => $address, 'balance' => array('$gt' => 0)))->count();
+    public function getTokenHoldersCount($address, $useFilter = TRUE){
+        $search = array('contract' => $address, 'balance' => array('$gt' => 0));
+        if($useFilter && $this->filter){
+            $search = array(
+                '$and' => array(
+                    $search,
+                    array('address' => array('$regex' => $this->filter)),
+                )
+            );
+        }
+        return $this->dbs['balances']->count($search);
     }
 
     /**
@@ -465,7 +501,16 @@ class Ethplorer {
         $result = array();
         $token = $this->getToken($address);
         if($token){
-            $cursor = $this->dbs['balances']->find(array('contract' => $address, 'balance' => array('$gt' => 0)))->sort(array('balance' => -1));
+            $search = array('contract' => $address, 'balance' => array('$gt' => 0));
+            if($this->filter){
+                $search = array(
+                    '$and' => array(
+                        $search,
+                        array('address' => array('$regex' => $this->filter)),
+                    )
+                );
+            }
+            $cursor = $this->dbs['balances']->find($search)->sort(array('balance' => -1));
             if((FALSE !== $offset) && $offset){
                 $cursor = $cursor->skip($offset);
             }
@@ -501,26 +546,34 @@ class Ethplorer {
      * @return array
      */
     public function getToken($address){
-        // evxProfiler::checkpoint('getToken START [address=' . $address . ']');
-        $aTokens = $this->getTokens();
-        $result = isset($aTokens[$address]) ? $aTokens[$address] : false;
-        if($result){
-            unset($result["_id"]);
-            if(!isset($result['decimals']) || !intval($result['decimals'])){
-                $result['decimals'] = 0;
-                if(isset($result['totalSupply']) && ((float)$result['totalSupply'] > 1e+18)){
-                    $result['decimals'] = 18;
-                    $result['estimatedDecimals'] = true;
+        $cache = 'token-' . $address;
+        $result = $this->oCache->get($cache, false, true, 15);
+        if(FALSE === $result){
+            $aTokens = $this->getTokens();
+            $result = isset($aTokens[$address]) ? $aTokens[$address] : false;
+            if($result){
+                unset($result["_id"]);
+                if(!isset($result['decimals']) || !intval($result['decimals'])){
+                    $result['decimals'] = 0;
+                    if(isset($result['totalSupply']) && ((float)$result['totalSupply'] > 1e+18)){
+                        $result['decimals'] = 18;
+                        $result['estimatedDecimals'] = true;
+                    }
                 }
-            }
-            if(!isset($result['symbol'])){
-                $result['symbol'] = "";
-            }
-            if(isset($result['txsCount'])){
-                $result['txsCount'] = (int)$result['txsCount'] + 1;
+                if(!isset($result['symbol'])){
+                    $result['symbol'] = "";
+                }
+                if(isset($result['txsCount'])){
+                    $result['txsCount'] = (int)$result['txsCount'] + 1;
+                }
+                $result += array(
+                    'transfersCount' => $this->getContractOperationCount('transfer', $address, FALSE),
+                    'issuancesCount' => $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address, FALSE),
+                    'holdersCount' => ''
+                );
+                $this->oCache->save($cache, $result);
             }
         }
-        // evxProfiler::checkpoint('getToken FINISH [address=' . $address . ']');
         return $result;
     }
 
@@ -551,26 +604,40 @@ class Ethplorer {
      * @param string $address  Contract address
      * @return int
      */
-    public function countOperations($address){
+    public function countOperations($address, $useFilter = TRUE){
         $result = 0;
         $token = $this->getToken($address);
         if($token){
-            $result = $this->dbs['operations']->count(array('contract' => $address));
+            $search = array('contract' => $address);
         }else{
-            $result = $this->dbs['operations']->count(array('$or' => array(array('from' => $address), array('to' => $address), array('address' => $address))));
+            $search = array(
+                '$or' => array(
+                    array("from"    => $address),
+                    array("to"      => $address),
+                    array('address' => $address)
+                )
+            );
+            $search['type'] = array('$in' => array('transfer', 'issuance', 'burn', 'mint'));
         }
+        if($useFilter && $this->filter){
+            $search = array(
+                '$and' => array(
+                    $search,
+                    array(
+                        '$or' => array(
+                            array('from'                => array('$regex' => $this->filter)),
+                            array('to'                  => array('$regex' => $this->filter)),
+                            array('address'             => array('$regex' => $this->filter)),
+                            array('transactionHash'     => array('$regex' => $this->filter)),
+                        )
+                    )
+                )
+            );
+        }
+        $result = $this->dbs['operations']->count($search);
         return $result;
     }
 
-    /**
-     * Returns total number of Chainy operations for the address.
-     *
-     * @return int
-     */
-    public function countChainy(){
-        $result = $this->dbs['transactions']->count(array('to' => self::ADDRESS_CHAINY));
-        return $result;
-    }
 
     /**
      * Returns total number of transactions for the address (incoming, outoming, contract creation).
@@ -709,21 +776,31 @@ class Ethplorer {
      * @return array
      */
     public function getAddressOperations($address, $limit = 10, $offset = FALSE){
-        // evxProfiler::checkpoint('getAddressTransfers START [address=' . $address . ', limit=' . $limit . ']');
-        $cursor = $this->dbs['operations']
-            ->find(
-                array(
-                    '$or' => array(
-                        array("from" => $address),
-                        array("to" => $address),
-                        array('address' => $address)
-                    ),
-                    'type' => array(
-                        '$in' => array('transfer', 'issuance', 'burn', 'mint')
+        $search = array(
+            '$or' => array(
+                array("from"    => $address),
+                array("to"      => $address),
+                array('address' => $address)
+            )
+        );
+        if($this->filter){
+            $search = array(
+                '$and' => array(
+                    $search,
+                    array(
+                        '$or' => array(
+                            array('from'                => array('$regex' => $this->filter)),
+                            array('to'                  => array('$regex' => $this->filter)),
+                            array('address'             => array('$regex' => $this->filter)),
+                            array('transactionHash'     => array('$regex' => $this->filter)),
+                        )
                     )
                 )
-            )
-            ->sort(array("timestamp" => -1));
+            );
+        }
+        $search['type'] = array('$in' => array('transfer', 'issuance', 'burn', 'mint'));
+
+        $cursor = $this->dbs['operations']->find($search)->sort(array("timestamp" => -1));
         if($offset){
             $cursor = $cursor->skip($offset);
         }
@@ -731,13 +808,10 @@ class Ethplorer {
             $cursor = $cursor->limit($limit);
         }
         $result = array();
-        $fetches = 0;
         foreach($cursor as $transfer){
             unset($transfer["_id"]);
             $result[] = $transfer;
-            $fetches++;
         }
-        // evxProfiler::checkpoint('getAddressTransfers FINISH [address=' . $address . '] with ' . $fetches . ' fetches]');
         return $result;
     }
 
@@ -844,9 +918,18 @@ class Ethplorer {
      * @param string $address  Contract address
      * @return array
      */
-    protected function getContractOperationCount($type, $address){
+    protected function getContractOperationCount($type, $address, $useFilter = TRUE){
+        $search = array("contract" => $address, 'type' => $type);
+        if($useFilter && $this->filter){
+            $search['$or'] = array(
+                array('from'                => array('$regex' => $this->filter)),
+                array('to'                  => array('$regex' => $this->filter)),
+                array('address'             => array('$regex' => $this->filter)),
+                array('transactionHash'     => array('$regex' => $this->filter))
+            );
+        }
         $cursor = $this->dbs['operations']
-            ->find(array("contract" => $address, 'type' => $type))
+            ->find($search)
             ->sort(array("timestamp" => -1));
         return $cursor ? $cursor->count() : 0;
     }
@@ -860,8 +943,17 @@ class Ethplorer {
      * @return array
      */
     protected function getContractOperation($type, $address, $limit, $offset = FALSE){
+        $search = array("contract" => $address, 'type' => $type);
+        if($this->filter){
+            $search['$or'] = array(
+                array('from'                => array('$regex' => $this->filter)),
+                array('to'                  => array('$regex' => $this->filter)),
+                array('address'             => array('$regex' => $this->filter)),
+                array('transactionHash'     => array('$regex' => $this->filter))
+            );
+        }
         $cursor = $this->dbs['operations']
-            ->find(array("contract" => $address, 'type' => $type))
+            ->find($search)
             ->sort(array("timestamp" => -1));
         if($offset){
             $cursor = $cursor->skip($offset);
@@ -886,18 +978,23 @@ class Ethplorer {
      * @return array
      */
     protected function getChainyTransactions($limit = 10, $offset = FALSE){
-        // evxProfiler::checkpoint('getChainyTransactions START [limit=' . $limit . ']');
         $result = array();
-        $cursor = $this->dbs['transactions']
-            ->find(array("to" => self::ADDRESS_CHAINY))
-            ->sort(array("timestamp" => -1));
+        $search = array('to' => self::ADDRESS_CHAINY);
+        if($this->filter){
+            $search = array(
+                '$and' => array(
+                    $search,
+                    array('hash' => array('$regex' => $this->filter)),
+                )
+            );
+        }
+        $cursor = $this->dbs['transactions']->find($search)->sort(array("timestamp" => -1));
         if($offset){
             $cursor = $cursor->skip($offset);
         }
         if($limit){
             $cursor = $cursor->limit($limit);
         }
-        $fetches = 0;
         foreach($cursor as $tx){
             $link = substr($tx['receipt']['logs'][0]['data'], 192);
             $link = preg_replace("/0+$/", "", $link);
@@ -910,9 +1007,26 @@ class Ethplorer {
                 'input' => $tx['input'],
                 'link' => $link,
             );
-            $fetches++;
         }
-        // evxProfiler::checkpoint('getChainyTransactions FINISH with ' . $fetches . ' fetches]');
+        return $result;
+    }
+
+    /**
+     * Returns total number of Chainy operations for the address.
+     *
+     * @return int
+     */
+    public function countChainy($useFilter = TRUE){
+        $search = array('to' => self::ADDRESS_CHAINY);
+        if($useFilter && $this->filter){
+            $search = array(
+                '$and' => array(
+                    $search,
+                    array('hash' => array('$regex' => $this->filter)),
+                )
+            );
+        }
+        $result = $this->dbs['transactions']->count($search);
         return $result;
     }
 

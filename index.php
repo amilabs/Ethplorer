@@ -400,6 +400,18 @@ if($error){
                                 <td id="address-token-totalSupply" class="list-field"></td>
                             </tr>
                             <tr>
+                                <td>Transfers</td>
+                                <td id="address-token-transfersCount" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Issuances</td>
+                                <td id="address-token-issuancesCount" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Holders</td>
+                                <td id="address-token-holdersCount" class="list-field"></td>
+                            </tr>
+                            <tr>
                                 <td>Total In</td>
                                 <td id="address-token-totalIn" class="list-field"></td>
                             </tr>
@@ -412,7 +424,7 @@ if($error){
                     </div>
                     <div class="col-xs-12">
                         <ul class="nav nav-tabs">
-                            <li id="tab-transactions" class="active">
+                            <li id="tab-transfers" class="active">
                                 <a data-toggle="tab" href="#token-transfers-tab"><span class="dashed">Transfers</span></a>
                             </li>
                             <li id="tab-issuances">
@@ -423,6 +435,12 @@ if($error){
                             </li>
                         </ul>
                     </div>
+                    <div class="col-xs-12 filter-box">
+                        <form class="filter-form">
+                            <input id="filter_list" type="text" placeholder="Enter address or hash">
+                            <div class="filter-clear" title="Clear filter">&times;</div>
+                        </form>
+                    </div>
                     <div class="tab-content">
                         <div id="token-transfers-tab" class="tab-pane fade in active">
                             <div class="col-xs-12" id="address-token-transfers">
@@ -432,7 +450,6 @@ if($error){
                                         <div class="total-records"></div>
                                     </div>
                                     <table class="table"></table>
-                                    <div id="address-token-transfers-more" class="text-center"></div>
                                 </div>
                                 <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
                             </div>
@@ -469,7 +486,6 @@ if($error){
                                 <div class="total-records"></div>
                             </div>
                             <table class="table"></table>
-                            <div id="address-transfers-more" class="text-center"></div>
                         </div>
                         <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
                     </div>
