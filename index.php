@@ -437,7 +437,7 @@ if($error){
                     </div>
                     <div class="col-xs-12 filter-box">
                         <form class="filter-form">
-                            <input id="filter_list" type="text" placeholder="Enter address or hash">
+                            <input id="filter_list" type="text" placeholder="Filter by address or hash">
                             <div class="filter-clear" title="Clear filter">&times;</div>
                         </form>
                     </div>

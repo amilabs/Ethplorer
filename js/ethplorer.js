@@ -40,6 +40,7 @@ Ethplorer = {
                     Ethplorer.Nav.set('filter', Ethplorer.filter);
                     $('.filter-clear').show();
                     $('#filter_list').val(Ethplorer.filter);
+                    $('#filter_list').addClass('filled');
                 }else{
                     Ethplorer.Nav.del('filter');                    
                 }
@@ -84,6 +85,7 @@ Ethplorer = {
                     if(Ethplorer.checkFilter(filter)){
                         $('.filter-clear').show();
                         Ethplorer.Nav.set('filter', filter);
+                        $('#filter_list').addClass('filled');
                     }else{
                         alert('Invalid filter!');
                         
@@ -91,6 +93,7 @@ Ethplorer = {
                     }
                 }else{
                     $('.filter-clear').hide();
+                    $('#filter_list').removeClass('filled');
                     Ethplorer.Nav.del('filter');
                 }
                 Ethplorer.filter = filter;
@@ -690,7 +693,7 @@ Ethplorer = {
                     }
                     Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "transfers"}, Ethplorer.drawTransfers);
                 };
-                Ethplorer.drawPager(pagination.find('td'), data.pager.transfers.page, data.pager.transfers.records, cb);
+                Ethplorer.drawPager(pagination.find('td'), data.pager.transfers, cb);
                 $('#' + tableId + ' .table').append(pagination);
             }
         }
@@ -748,7 +751,7 @@ Ethplorer = {
                     }
                     Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "issuances"}, Ethplorer.drawIssuances);
                 };
-                Ethplorer.drawPager(pagination.find('td'), data.pager.issuances.page, data.pager.issuances.records, cb);
+                Ethplorer.drawPager(pagination.find('td'), data.pager.issuances, cb);
                 $('#address-issuances .table').append(pagination);
             }
             $('.table').removeClass('unclickable');
@@ -816,7 +819,7 @@ Ethplorer = {
                     }
                     Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "holders"}, Ethplorer.drawHolders);
                 };
-                Ethplorer.drawPager(pagination.find('td'), data.pager.holders.page, data.pager.holders.records, cb);
+                Ethplorer.drawPager(pagination.find('td'), data.pager.holders, cb);
                 $('#address-token-holders .table').append(pagination);
             }
         }else{
@@ -879,26 +882,32 @@ Ethplorer = {
                 row.append(tdDate, tdHash, tdOpType, tdLink);
                 $('#address-chainy-tx .table').append(row);
             }
-        }            
-        // Pager
-        if(data.pager && data.pager.chainy){
-            var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-            var cb = function(page){
-                $('.paginationFooter:visible').parents('.table').addClass('unclickable');
-                if(page > 1){
-                    Ethplorer.Nav.set('chainy', page);
-                }else{
-                    Ethplorer.Nav.del('chainy');
-                }
-                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "chainy"}, Ethplorer.drawChainy);
-            };
-            Ethplorer.drawPager(pagination.find('td'), data.pager.chainy.page, data.pager.chainy.records, cb);
-            $('#address-chainy-tx .table').append(pagination);
+            // Pager
+            if(data.pager && data.pager.chainy){
+                var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
+                var cb = function(page){
+                    $('.paginationFooter:visible').parents('.table').addClass('unclickable');
+                    if(page > 1){
+                        Ethplorer.Nav.set('chainy', page);
+                    }else{
+                        Ethplorer.Nav.del('chainy');
+                    }
+                    Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "chainy"}, Ethplorer.drawChainy);
+                };
+                Ethplorer.drawPager(pagination.find('td'), data.pager.chainy, cb);
+                $('#address-chainy-tx .table').append(pagination);
+            }
+        }else{
+            $('#address-chainy-tx').find('.total-records').empty();
+            $('#address-chainy-tx').find('.table').append('<tr class="notFoundRow"><td>No transactions found</td></tr>');
         }
         $('.table').removeClass('unclickable');
         $('#address-chainy-tx').show();
     },
-    drawPager: function(container, currentPage, recordsCount, reloadCb){    
+    drawPager: function(container, pageData, reloadCb){    
+        var currentPage     = pageData.page,
+            recordsCount    = pageData.records,
+            totalCount      = pageData.total;
         var pageSizeSelect = $('<SELECT class="pageSize">');
         var sizes = [10, 25, 50, 100];
         for(var i=0; i<4; i++){
@@ -910,7 +919,7 @@ Ethplorer = {
             }
             pageSizeSelect.append(option);
         }
-        pageSizeSelect.change(function(_container, _rc){
+        pageSizeSelect.change(function(_container, _pd){
             return function(){
                 var ps = $(this).val();
                 if(ps !== Ethplorer.pageSize){
@@ -929,17 +938,21 @@ Ethplorer = {
                     if('function' === typeof(_container['reloadCallback'])){
                         _container['reloadCallback'](1);
                     }
-                    Ethplorer.drawPager(_container, 1, _rc);
+                    Ethplorer.drawPager(_container, _pd);
                 }
             }
-        }(container, recordsCount));
+        }(container, pageData));
 
         var pager = $('<UL>');
         pager.addClass('pagination pagination-sm');
         if(recordsCount){
-            setTimeout(function(_container, _count){
+            setTimeout(function(_container, _count, _total){
                 return function(){
-                    _container.parents('.block').find('.total-records').text(_count + ' total');
+                    var str = _count + ' total';
+                    if(_count < _total){
+                        str = 'Filtered ' + _count + ' records of ' + _total + ' total';
+                    }
+                    _container.parents('.block').find('.total-records').text(str);
                     var filter = Ethplorer.Nav.get('filter');
                     if(filter){
                         _container.parents('.table').find('a.local-link').each(function(){
@@ -950,7 +963,7 @@ Ethplorer = {
                         });
                     }
                 }
-            }(container, recordsCount), 100);
+            }(container, recordsCount, totalCount), 100);
             
             var pages = Math.ceil(recordsCount / Ethplorer.pageSize);
             var lastPage = true;
@@ -964,15 +977,16 @@ Ethplorer = {
                         page.addClass('active');
                     }else{
                         link.attr('href', '#');
-                        link.click(function(_container, _page, _recordsCount){
+                        link.click(function(_container, _page, _pageData){
                             return function(e){
                                 if('function' === typeof(_container['reloadCallback'])){
                                     _container['reloadCallback'](_page);
                                 }
-                                Ethplorer.drawPager(_container, _page, _recordsCount)
+                                _pageData.page = 
+                                Ethplorer.drawPager(_container, {page: _page, records: _pageData.records, total: _pageData.total})
                                 e.preventDefault();
                             };
-                        }(container, i, recordsCount));
+                        }(container, i, pageData));
                     }
                     page.html(link);
                     lastPage = true;

@@ -554,8 +554,8 @@ tr.paginationFooter td {
 }
 
 .filer-mark {
-    color: black;
-    background-color: yellow;
+    /* color: black; */
+    /* background-color: yellow; */
 }
 
 .filter-box.out-of-tabs{
@@ -568,11 +568,12 @@ tr.paginationFooter td {
     width: 16px;
     height: 16px;
     position: absolute;
-    top: 3px;
+    top: -3px;
     right: 24px;
     color: #8c8c8c;
     cursor: pointer;
     display: none;
+    font-size: 24px;
 }
 
 .filter-box.out-of-tabs .filter-clear {
@@ -589,6 +590,10 @@ tr.paginationFooter td {
     padding-bottom: 2px;
     background-color: black;
     color: white;
+}
+#filter_list.filled {
+    border-color: #7b1818;
+    color: #7b1818;
 }
 
 .notFoundRow td {

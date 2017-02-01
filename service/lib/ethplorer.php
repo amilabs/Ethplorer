@@ -227,9 +227,11 @@ class Ethplorer {
                 $result["token"] = $token;
             }elseif($this->isChainyAddress($address)){
                 $result['chainy'] = $this->getChainyTransactions($limit, $this->getOffset('chainy'));
+                $count = $this->countChainy();
                 $result['pager']['chainy'] = array(
                     'page' => $this->getPager('chainy'),
-                    'records' => $this->countChainy()
+                    'records' => $count,
+                    'total' => $this->filter ? $this->countChainy(FALSE) : $count
                 );
             }
         }
@@ -242,14 +244,17 @@ class Ethplorer {
                     switch($type){
                         case 'transfers':
                             $count = $this->getContractOperationCount('transfer', $address);
+                            $total = $this->filter ? $this->getContractOperationCount('transfer', $address, FALSE) : $count;
                             $cmd = 'getContractTransfers';
                             break;
                         case 'issuances':
                             $count = $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address);
+                            $total = $this->filter ? $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address, FALSE) : $count;
                             $cmd = 'getContractIssuances';
                             break;
                         case 'holders':
                             $count = $this->getTokenHoldersCount($address);
+                            $total = $this->filter ? $this->getTokenHoldersCount($address, FALSE) : $count;
                             $cmd = 'getTokenHolders';
                             break;
                     }
@@ -259,7 +264,11 @@ class Ethplorer {
                     }
                     $result[$type] = $this->{$cmd}($address, $limit, $offset);;
                     if(empty($result[$type])) unset($result[$type]);
-                    $result['pager'][$type] = array('page' => $page, 'records' => $count);
+                    $result['pager'][$type] = array(
+                        'page' => $page,
+                        'records' => $count,
+                        'total' => $total
+                    );
                 }
             }
         }
