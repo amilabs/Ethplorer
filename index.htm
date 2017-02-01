@@ -24,6 +24,7 @@
         <script src="js/tilda-zoom-1.0.min.js"></script>
         <script src="js/tilda-forms-1.0.js"></script>
         <script src="https://api.ethplorer.io/widget.js?v=1"></script>
+        <script src="https://www.gstatic.com/charts/loader.js"></script>
     </head>
 <body class="t-body" style="margin:0;">
     <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="11344" data-tilda-page-id="226253" data-tilda-page-alias="ethplorer" >
@@ -71,10 +72,18 @@
                 }
             </style>
             <script type="text/javascript">
+                google.charts.load('current', {packages: ['corechart']});
+                google.charts.setOnLoadCallback(
+                    function(){
+                        $(document).ready(function(){
+                            window.W1 = ethplorerWidget.init('#ethplorer-daily', 'dailyTX', {'period': 30, 'type': 'area'});
+                        })
+                    }
+                );
                 $(document).ready(function () {
                     t454_highlight();
                     t454_setBg('11846335');
-                    ethplorerWidget.init('#ethplorer-txs', 'tokenHistory', {
+                    window.W2 = ethplorerWidget.init('#ethplorer-txs', 'tokenHistory', {
                         onLoad: function(){
                             $('.txs-viewmore a').css('visibility', 'visible');
                             $('.txs-header').html('<a href="/last" class="underline-onhover">Recent token transactions</a>')
@@ -145,6 +154,7 @@
                                     <div class="t269__hint t-descr t-descr_xxs txs-viewmore" field="text" style="margin-top:-53px;">
                                         <a href="/last" style="visibility: hidden;font-size:16px;color:#47C2FF !important;text-decoration: none !important;">view more...</a>
                                     </div>
+                                    <div id="ethplorer-daily"></div>
                                     <div class="t269__hint t-descr t-descr_xxs" field="text" style="margin-top:50px;opacity:0.6;">
                                         <span style="font-weight: 400;">
                                             Do you need to view 
