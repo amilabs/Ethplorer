@@ -1,6 +1,6 @@
 (function(){
     function ethpWiInit(){
-        var eWgs = eWgs || [];
+        var eWgs = window.eWgs || [];
         if(eWgs && eWgs.length)
             for(var i=0; i<eWgs.length; i++)
                 if('function' === typeof(eWgs[i]))

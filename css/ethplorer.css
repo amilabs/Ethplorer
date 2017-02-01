@@ -783,12 +783,19 @@ a.token-update {
 
 @media screen and (max-width: 767px) {
     
-    .filter-box {
+    .filter-box.in-tabs {
         text-align: right;
-        height: 15px;
-        margin-top: 10px;
+        height: 15px !important;
+        margin-top: 10px !important;
     }    
     
+    .filter-box.in-tabs .filter-form {
+        width: 100%;
+    }
+    
+    .filter-box.in-tabs #filter_list {
+        width: 100%;
+    }
     
     #ethplorer-path {
         font-size: 16px;
