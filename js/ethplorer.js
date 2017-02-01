@@ -623,6 +623,13 @@ Ethplorer = {
         $("table").find("tr:visible:odd").addClass("odd");
         $("table").find("tr:visible:even").addClass("even");
         $("table").find("tr:visible:last").addClass("last");
+
+        google.charts.setOnLoadCallback(
+            function(){
+                $('#ethplorer-daily-token').show();
+                ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {token: address, options: {title: ''}});
+            }
+        );
     },
 
     drawTransfers: function(address, transfersData){
@@ -1426,3 +1433,4 @@ Ethplorer = {
         },
     }
 };
+google.charts.load('current', {packages: ['corechart']});
