@@ -644,6 +644,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
                     obj.options.onLoad();
                 }
                 setTimeout(ethplorerWidget.fixTilda, 300);
+            }else{
+                obj.el.find('.txs-loading').remove();
             }
         };
     }(this);
@@ -652,7 +654,10 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         var obj = arguments[0].data;
         if(obj.resizeTimer) clearTimeout(obj.resizeTimer);
         obj.resizeTimer = setTimeout(function(){
-            if(obj.widgetData) obj.drawChart(obj.widgetData);
+            if(obj.widgetData){
+                obj.drawChart(obj.widgetData);
+                ethplorerWidget.appendEthplorerLink(obj.el);
+            }
         }, 500);
     });
 
