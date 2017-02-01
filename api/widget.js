@@ -506,7 +506,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
 
     this.options = {
         period: 30,
-        type: 'column'
+        type: 'column',
+        options: {}
     };
 
     if(options){
@@ -536,7 +537,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         }
 
         var data = google.visualization.arrayToDataTable(aData);
-        var options = {
+        var def = {
             title: 'Daily TXs',
             titleTextStyle: {
                 color: '#FFF',
@@ -569,6 +570,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             backgroundColor: { fill:'transparent' }
             //bar: {groupWidth: '80%'}
         };
+        var options = $.extend(true, def, this.options['options']);
+
         if(this.options['type'] == 'area') var chart = new google.visualization.AreaChart(this.el[0]);
         else var chart = new google.visualization.ColumnChart(this.el[0]);
         chart.draw(data, options);
