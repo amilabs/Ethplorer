@@ -552,15 +552,17 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
                 format: 'MMM d',
                 gridlines: {
                     count: 10,
-                    color: "#FFF"
+                    color: "none"
                 },
                 baselineColor: '#FFF'
             },
             vAxis: {
                 minValue: 0,
                 textStyle: {color: '#FFF'},
-                gridlineColor: '#FFF',
-                baselineColor: '#FFF'
+                gridlines: {
+                    color: "none"
+                },
+                baselineColor: 'none'
             },
             pointSize: 5,
             colors: ['#47C2FF'],
