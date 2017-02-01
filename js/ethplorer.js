@@ -87,7 +87,19 @@ Ethplorer = {
                         Ethplorer.Nav.set('filter', filter);
                         $('#filter_list').addClass('filled');
                     }else{
-                        alert('Invalid filter!');
+                        if(!$('#filter-error').length){
+                            var errDiv = $('<div id="filter-error">');
+                            errDiv.addClass("col-xs-12 text-right");
+                            errDiv.text('Invalid filter value');
+                            $('.filter-box').after(errDiv);
+                            $('#filter-error').show(500, function(){
+                                setTimeout(function(){
+                                    $('#filter-error').hide(500, function(){
+                                        $('#filter-error').remove();
+                                    });
+                                }, 3000);
+                            });
+                        }
                         
                         return;
                     }
@@ -621,9 +633,8 @@ Ethplorer = {
         var tableId = data.token ? 'address-token-transfers' : 'address-transfers';
         $('#' + tableId).find('.table').empty();
         if(!data.transfers || !data.transfers.length){
-            if(!data.token) return;
             $('#' + tableId).find('.total-records').empty();
-            $('#' + tableId).find('.table').append('<tr class="notFoundRow"><td>No transactions found</td></tr>');
+            $('#' + tableId).find('.table').append('<tr class="notFoundRow"><td>No transfers found</td></tr>');
         }else{
             for(var i=0; i<data.transfers.length; i++){
                 var tx = data.transfers[i];
@@ -698,7 +709,14 @@ Ethplorer = {
             }
         }
         $('.table').removeClass('unclickable');
-        $('#' + tableId).show();
+        if(data.pager && data.pager.transfers && data.pager.transfers.total){
+            $('#' + tableId).show();
+        }else{
+            if(!data.token){
+                $('#' + tableId).hide();
+                $('.filter-box').hide();
+            }
+        }
     },
 
     drawIssuances: function(address, issuancesData){

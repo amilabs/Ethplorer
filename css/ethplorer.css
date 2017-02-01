@@ -576,6 +576,12 @@ tr.paginationFooter td {
     font-size: 24px;
 }
 
+#filter-error {
+    color: #7b1818;
+    margin-top: 15px;
+    display: none;
+}
+
 .filter-box.out-of-tabs .filter-clear {
     right: 24px;
 }
