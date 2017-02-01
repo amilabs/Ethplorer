@@ -67,6 +67,8 @@ if($error){
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+    <script src="/api/widget.js?v=1"></script>
     <script src="/js/bignumber.js"></script>
     <script src="/js/ethplorer.js?v=<?=$codeVersion?>"></script>
     <script><?php
@@ -117,6 +119,16 @@ if($error){
                     <div class="col-xs-1 col-sm-2"></div>
                     <div class="col-xs-10 col-sm-8">
                         <h1 id="ethplorer-path"><?=$header?></h1>
+                    </div>
+                    <div class="col-xs-1 col-sm-2"></div>
+                </div>
+
+                <div class="clearfix"></div>
+
+                <div>
+                    <div class="col-xs-1 col-sm-2"></div>
+                    <div class="col-xs-10 col-sm-8">
+                        <div id="ethplorer-daily-token"></div>
                     </div>
                     <div class="col-xs-1 col-sm-2"></div>
                 </div>
