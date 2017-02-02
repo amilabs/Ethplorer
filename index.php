@@ -126,6 +126,13 @@ if($error){
 
                 <div class="clearfix"></div>
 
+                <style>
+                    #ethplorer-daily-token {
+                        margin-top: 0 !important;
+                        margin-bottom: 0 !important;
+                        padding: 0 !important;
+                    }
+                </style>
                 <div>
                     <div class="col-xs-1 col-sm-2"></div>
                     <div class="col-xs-10 col-sm-8">

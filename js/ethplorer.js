@@ -633,7 +633,19 @@ Ethplorer = {
         google.charts.setOnLoadCallback(
             function(){
                 $('#ethplorer-daily-token').show();
-                ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {token: address, options: {title: ''}});
+                var options = {
+                    title: '',
+                    height: 100,
+                    chartArea: {
+                        left: 20,
+                        right: 0,
+                        bottom: 20,
+                        top: 10,
+                        width: "100%",
+                        height: "100%"
+                    }
+                };
+                ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {token: address, options: options});
             }
         );
     },
