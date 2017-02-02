@@ -635,17 +635,8 @@ Ethplorer = {
                 $('#ethplorer-daily-token').show();
                 var options = {
                     title: '',
-                    height: 100,
-                    chartArea: {
-                        left: 20,
-                        right: 0,
-                        bottom: 20,
-                        top: 10,
-                        width: "100%",
-                        height: "100%"
-                    }
                 };
-                ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {token: address, options: options});
+                ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {type:'area', token: address, options: options});
             }
         );
     },
