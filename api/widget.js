@@ -42,6 +42,7 @@ ethplorerWidget = {
     init: function(selector, type, options, templates){
         if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') >= 0)){
             ethplorerWidget.api = '//' + document.location.host + '/api';
+            ethplorerWidget.url = '//' + document.location.host
         }
         options = options || {};
         templates = templates || {};
@@ -67,7 +68,8 @@ ethplorerWidget = {
         }
     },
     appendEthplorerLink: function(el){
-        if(document.location.host !== 'ethplorer.io'){
+        var host = ethplorerWidget.url.split('//')[1];
+        if(document.location.host !== host){
             el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>')
         }
     },
