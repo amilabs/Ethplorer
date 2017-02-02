@@ -23,7 +23,6 @@
         <script src="js/tilda-blocks-2.4.js?t=1481025753"></script>	
         <script src="js/tilda-zoom-1.0.min.js"></script>
         <script src="js/tilda-forms-1.0.js"></script>
-        <script src="https://api.ethplorer.io/widget.js?v=1"></script>
         <script src="https://www.gstatic.com/charts/loader.js"></script>
     </head>
 <body class="t-body" style="margin:0;">
@@ -71,29 +70,6 @@
                     }
                 }
             </style>
-            <script type="text/javascript">
-                google.charts.load('current', {packages: ['corechart']});
-                google.charts.setOnLoadCallback(
-                    function(){
-                        $(document).ready(function(){
-                            window.W1 = ethplorerWidget.init('#ethplorer-daily', 'dailyTX', {'period': 30, 'type': 'area'});
-                        })
-                    }
-                );
-                $(document).ready(function () {
-                    t454_highlight();
-                    t454_setBg('11846335');
-                    window.W2 = ethplorerWidget.init('#ethplorer-txs', 'tokenHistory', {
-                        onLoad: function(){
-                            $('.txs-viewmore a').css('visibility', 'visible');
-                            $('.txs-header').html('<a href="/last" class="underline-onhover">Recent token transactions</a>')
-                        }
-                    });                    
-                });
-                $(window).resize(function () {
-                    t454_setBg('11846335');
-                });
-            </script>
         </div>
         <div id="rec6767885" class="r" style=" " data-animationappear="off" data-record-type="288"   >
             <div class="t-cover" id="recorddiv6767885" bgimgfield="img" style="height:96vh; background-image:-webkit-linear-gradient(top, #ccc, #777); background-image:-moz-linear-gradient(top, #ccc, #777); background-image:-o-linear-gradient(top, #ccc, #777); background-image:-ms-linear-gradient(top, #ccc, #777); background-image:linear-gradient(top, #ccc, #777); " >
@@ -155,6 +131,30 @@
                                         <a href="/last" style="visibility: hidden;font-size:16px;color:#47C2FF !important;text-decoration: none !important;">view more...</a>
                                     </div>
                                     <div id="ethplorer-daily"></div>
+                                    <script type="text/javascript">
+                                        $(document).ready(function () {
+                                            t454_highlight();
+                                            t454_setBg('11846335');
+                                        });
+                                        $(window).resize(function () {
+                                            t454_setBg('11846335');
+                                        });
+                                        if(typeof(eWgs) === 'undefined'){ document.write('<scr' + 'ipt src="/api/widget.js?' + new Date().getTime().toString().substr(0,7) + '" async></scr' + 'ipt>'); var eWgs = []; }
+                                        google.charts.load('current', {packages: ['corechart']});
+                                        eWgs.push(function(){
+                                            ethplorerWidget.init('#ethplorer-txs', 'tokenHistory', {
+                                                onLoad: function(){
+                                                    $('.txs-viewmore a').css('visibility', 'visible');
+                                                    $('.txs-header').html('<a href="/last" class="underline-onhover">Recent token transactions</a>')
+                                                }
+                                            });
+                                            google.charts.setOnLoadCallback(
+                                                function(){
+                                                    ethplorerWidget.init('#ethplorer-daily', 'dailyTX', {'type': 'area'});
+                                                }
+                                            );
+                                        });
+                                    </script>
                                     <div class="t269__hint t-descr t-descr_xxs" field="text" style="margin-top:50px;opacity:0.6;">
                                         <span style="font-weight: 400;">
                                             Do you need to view 
