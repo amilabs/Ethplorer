@@ -1,33 +1,3 @@
-(function(){
-    function ethpWiInit(){
-        var eWgs = window.eWgs || [];
-        if(eWgs && eWgs.length)
-            for(var i=0; i<eWgs.length; i++)
-                if('function' === typeof(eWgs[i]))
-                    eWgs[i]();
-    }
-    // add widget css
-    var linkElem = document.createElement('link');
-    linkElem.setAttribute("rel", 'stylesheet');
-    linkElem.setAttribute("type", 'text/css');
-    linkElem.setAttribute("href", 'https://api.ethplorer.io/widget.css');
-    document.getElementsByTagName("head")[0].appendChild(linkElem);
-    // autoload
-    if(document.readyState === "interactive" || document.readyState === "complete"){
-        ethpWiInit();
-    }else{
-        if(document.addEventListener){
-            document.addEventListener("DOMContentLoaded", ethpWiInit);
-        }else if(document.attachEvent){
-            document.attachEvent("onreadystatechange", function(){
-                if(document.readyState === "interactive" || document.readyState === "complete"){
-                    ethpWiInit()
-                }
-            });
-        }
-    }
-}());
-
 ethplorerWidget = {
     // Ethplorer API URL
     api: 'https://api.ethplorer.io',
@@ -667,4 +637,34 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     });
 
     this.init();
-}
+};
+
+(function(){
+    function ethpWiInit(){
+        var eWgs = window.eWgs || [];
+        if(eWgs && eWgs.length)
+            for(var i=0; i<eWgs.length; i++)
+                if('function' === typeof(eWgs[i]))
+                    eWgs[i]();
+    }
+    // add widget css
+    var linkElem = document.createElement('link');
+    linkElem.setAttribute("rel", 'stylesheet');
+    linkElem.setAttribute("type", 'text/css');
+    linkElem.setAttribute("href", 'https://api.ethplorer.io/widget.css');
+    document.getElementsByTagName("head")[0].appendChild(linkElem);
+    // autoload
+    if(document.readyState === "interactive" || document.readyState === "complete"){
+        ethpWiInit();
+    }else{
+        if(document.addEventListener){
+            document.addEventListener("DOMContentLoaded", ethpWiInit);
+        }else if(document.attachEvent){
+            document.attachEvent("onreadystatechange", function(){
+                if(document.readyState === "interactive" || document.readyState === "complete"){
+                    ethpWiInit()
+                }
+            });
+        }
+    }
+}());
