@@ -1082,13 +1082,11 @@ class Ethplorer {
         $aTokens = $this->getTokens();
         $i = 0;
         foreach($aTokens as $address => $aToken){
-            if(!empty($aToken['name']) || !empty($aToken['symbol'])){
-                if((strpos(strtolower($aToken['name']), strtolower($token)) !== FALSE) || (strpos(strtolower($aToken['symbol']), strtolower($token)) !== FALSE)){
-                    if($i < 6){
-                        $result['results'][] = array($aToken['name'], $aToken['symbol'], $address);
-                    }
-                    $i++;
+            if((!empty($aToken['name']) && (strpos(strtolower($aToken['name']), strtolower($token)) !== FALSE)) || (!empty($aToken['symbol']) && (strpos(strtolower($aToken['symbol']), strtolower($token)) !== FALSE))){
+                if($i < 6){
+                    $result['results'][] = array($aToken['name'], $aToken['symbol'], $address);
                 }
+                $i++;
             }
         }
         $result['total'] = $i;
