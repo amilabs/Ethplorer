@@ -18,7 +18,9 @@ ethplorerWidget = {
         templates = templates || {};
         type = type || 'tokenHistory';
         if('undefined' === typeof(jQuery)){
-            console.error('Cannot initialize Ethplorer widget: jQuery not loaded.');
+            console.error('Cannot initialize Ethplorer widget: jQuery not found.');
+            console.log('Add next string in the <head> section of the page:');
+            console.log('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>');
             return;
         }
         var el = $(selector);
@@ -26,7 +28,6 @@ ethplorerWidget = {
             console.error('Cannot initialize Ethplorer widget: element ' + selector + ' not found.');
             return;
         }
-        $('body').append('<link rel="stylesheet" href="' + ethplorerWidget.api + '/widget.css" type="text/css" />')
         if('undefined' === ethplorerWidget.eventsAdded){
             $(window).resize(ethplorerWidget.fixTilda);
             ethplorerWidget.eventsAdded = true;
@@ -638,7 +639,6 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
 
     this.init();
 };
-
 
 /**
  * Document on ready widgets initialization.
