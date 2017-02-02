@@ -68,7 +68,6 @@ if($error){
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://www.gstatic.com/charts/loader.js"></script>
-    <script src="/api/widget.js?v=1"></script>
     <script src="/js/bignumber.js"></script>
     <script src="/js/ethplorer.js?v=<?=$codeVersion?>"></script>
     <script><?php
@@ -117,11 +116,11 @@ if($error){
                 </div>
 
                 <div>
-                    <div class="col-xs-1 col-sm-2"></div>
-                    <div class="col-xs-10 col-sm-8">
+                    <div class="col-xs-1 col-sm-1"></div>
+                    <div class="col-xs-10 col-sm-10">
                         <h1 id="ethplorer-path"><?=$header?></h1>
                     </div>
-                    <div class="col-xs-1 col-sm-2"></div>
+                    <div class="col-xs-1 col-sm-1"></div>
                 </div>
 
                 <div class="clearfix"></div>
@@ -141,6 +140,9 @@ if($error){
                     </div>
                     <div class="col-xs-1 col-sm-2"></div>
                 </div>
+                <script type="text/javascript">
+                    if(typeof(eWgs) === 'undefined'){ document.write('<scr' + 'ipt src="/api/widget.js?' + new Date().getTime().toString().substr(0,7) + '" async></scr' + 'ipt>'); var eWgs = []; }
+                </script>
 
                 <div id="txDetails" class="content-page">
                     <div>
