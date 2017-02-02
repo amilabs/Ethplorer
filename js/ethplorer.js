@@ -123,6 +123,12 @@ Ethplorer = {
                 $('#tx-details-block').hide();
             }
         }
+        Ethplorer.searchInterval = setInterval(function(){
+            var search = $('#search').val();
+            if(search.length && (search.length < 20)){
+                
+            }
+        }, 500);
     },
     checkFilter: function(filter){
         return (!filter || /^[0-9a-fx]+$/.test(filter));

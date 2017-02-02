@@ -1077,11 +1077,10 @@ class Ethplorer {
         return $result;
     }
 
-    /**
-     * Store profile data on exit.
-     */
-    public function __destruct() {
-        // evxProfiler::checkpoint('FINISH');
-        // file_put_contents($this->aSettings['logsDir'] . '/profiler-' . microtime(true) . '.log', json_encode(evxProfiler::get(), JSON_PRETTY_PRINT));
+    public function searchToken($token){
+        return array(
+            array('THBEX', 'THB', '0xff71cb760666ab06aa73f34995b42dd4b85ea07b'),
+            array('vSlice', 'VSL', '0x5c543e7ae0a1104f78406c340e9c64fd9fce5170'),
+        );
     }
 }

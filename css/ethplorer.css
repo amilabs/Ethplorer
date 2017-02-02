@@ -613,6 +613,18 @@ tr.paginationFooter td {
 .notFoundRow td {
     text-align: center !important;
 }
+
+#search-quick-results {
+    z-index:100;
+    position: absolute;
+    background-color: white;
+    border:1px solid black;
+    width: 350px;
+    height: 150px;
+    display: none;
+}
+
+
 /* Timer*/
 .timer{
     width: 47px;

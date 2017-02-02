@@ -23,6 +23,8 @@ $data = isset($_GET["data"]) ? $_GET["data"] : false;
 $page = isset($_GET["page"]) ? $_GET["page"] : false;
 $refresh = isset($_GET["refresh"]) ? $_GET["refresh"] : false;
 
+$search = isset($_GET["search"]) ? $_GET["search"] : false;
+
 // Allow cross-domain ajax requests
 header('Access-Control-Allow-Origin: *');
 
@@ -55,21 +57,22 @@ if($page && (FALSE !== strpos($page, '='))){
     }
 }
 
-$es->setPageSize($pageSize);
-
 $result = array();
-if(false !== $data){
+
+if($search){
+    $result = $es->searchToken($search);
+}else if(false !== $data){
+    $es->setPageSize($pageSize);
     if($es->isValidAddress($data)){
         $result = $es->getAddressDetails($data);
     }elseif($es->isValidTransactionHash($data)){
         $result = $es->getTransactionDetails($data);
     }
-}
-
-if(!isset($result['pager'])){
-    $result['pager'] = array(
-        'pageSize' => $pageSize
-    );
+    if(!isset($result['pager'])){
+        $result['pager'] = array(
+            'pageSize' => $pageSize
+        );
+    }
 }
 
 echo json_encode($result);
