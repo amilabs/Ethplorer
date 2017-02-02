@@ -126,7 +126,11 @@ Ethplorer = {
         Ethplorer.searchInterval = setInterval(function(){
             var search = $('#search').val();
             if(search.length && (search.length < 20)){
-                
+                $('#search-quick-results').show();
+            }else{
+                console.log('Hide da sheet');
+                $('#search-quick-results').empty();
+                $('#search-quick-results').hide();
             }
         }, 500);
     },
@@ -574,12 +578,8 @@ Ethplorer = {
                 'token.txsCount', 'token.transfersCount', 'token.issuancesCount', 'token.holdersCount'
             ];
             
-            if(oToken.issuancesCount){
-                $('#tab-issuances').show();
-            }
-            if(oToken.holdersCount){
-                $('#tab-holders').show();
-            }
+            $('#tab-issuances').show();
+            $('#tab-holders').show();
             
             Ethplorer.fillValues('address', data, fields);
             if(oToken.estimatedDecimals){

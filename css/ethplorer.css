@@ -618,7 +618,7 @@ tr.paginationFooter td {
     z-index:100;
     position: absolute;
     background-color: white;
-    border:1px solid black;
+    border:1px solid #aaa;
     width: 350px;
     height: 150px;
     display: none;
