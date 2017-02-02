@@ -1005,17 +1005,19 @@ class Ethplorer {
             $cursor = $cursor->limit($limit);
         }
         foreach($cursor as $tx){
-            $link = substr($tx['receipt']['logs'][0]['data'], 192);
-            $link = preg_replace("/0+$/", "", $link);
-            if((strlen($link) % 2) !== 0){
-                $link = $link . '0';
+            if(!empty($tx['receipt']['logs'])){
+                $link = substr($tx['receipt']['logs'][0]['data'], 192);
+                $link = preg_replace("/0+$/", "", $link);
+                if((strlen($link) % 2) !== 0){
+                    $link = $link . '0';
+                }
+                $result[] = array(
+                    'hash' => $tx['hash'],
+                    'timestamp' => $tx['timestamp'],
+                    'input' => $tx['input'],
+                    'link' => $link,
+                );
             }
-            $result[] = array(
-                'hash' => $tx['hash'],
-                'timestamp' => $tx['timestamp'],
-                'input' => $tx['input'],
-                'link' => $link,
-            );
         }
         return $result;
     }
