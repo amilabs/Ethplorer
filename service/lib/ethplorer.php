@@ -1078,9 +1078,20 @@ class Ethplorer {
     }
 
     public function searchToken($token){
-        return array(
-            array('THBEX', 'THB', '0xff71cb760666ab06aa73f34995b42dd4b85ea07b'),
-            array('vSlice', 'VSL', '0x5c543e7ae0a1104f78406c340e9c64fd9fce5170'),
-        );
+        $result = array('results' => array(), 'total' => 0);
+        $aTokens = $this->getTokens();
+        $i = 0;
+        foreach($aTokens as $address => $aToken){
+            if(!empty($aToken['name']) || !empty($aToken['symbol'])){
+                if((strpos(strtolower($aToken['name']), strtolower($token)) !== FALSE) || (strpos(strtolower($aToken['symbol']), strtolower($token)) !== FALSE)){
+                    if($i < 6){
+                        $result['results'][] = array($aToken['name'], $aToken['symbol'], $address);
+                    }
+                    $i++;
+                }
+            }
+        }
+        $result['total'] = $i;
+        return $result;
     }
 }

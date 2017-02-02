@@ -125,11 +125,30 @@ Ethplorer = {
         }
         Ethplorer.searchInterval = setInterval(function(){
             var search = $('#search').val();
-            if(search.length && (search.length < 20)){
-                $('#search-quick-results').show();
-            }else{
-                console.log('Hide da sheet');
-                $('#search-quick-results').empty();
+            if(!$('.timer:visible').length && $('#search').is(":focus") && search.length && (search.length < 20)){
+                if(Ethplorer.lastSearch !== search){
+                    Ethplorer.lastSearch = search;
+                    // @todo: wait 1-2 sec for changes
+                    $.getJSON(Ethplorer.service, {search: search}, function(data){
+                        if(data && data.results && data.total){
+                            $('#search-quick-results').empty();
+                            for(var i=0; i<data.results.length; i++){
+                                var link = $('<a>');
+                                link.attr('href', '/address/' + data.results[i][2]);
+                                link.text(data.results[i][0] + (data.results[i][1] ? (' (' + data.results[i][1] + ')') : ''));
+                                $('#search-quick-results').append(link);
+                                $('#search-quick-results').append('<br>');
+                            }
+                            if(data.total > data.results.length){
+                                var more = $('<span style="color:#aaa;">');
+                                more.text((data.total - data.results.length) + ' results more...');
+                                $('#search-quick-results').append(more);
+                            }
+                        }
+                    });
+                    $('#search-quick-results').show();
+                }
+            }else if($('#search-quick-results:visible').length){
                 $('#search-quick-results').hide();
             }
         }, 500);
