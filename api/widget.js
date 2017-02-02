@@ -40,6 +40,9 @@ ethplorerWidget = {
 
     // Widget initialization
     init: function(selector, type, options, templates){
+        if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') >= 0)){
+            ethplorerWidget.api = '//' + document.location.host + '/api';
+        }
         options = options || {};
         templates = templates || {};
         type = type || 'tokenHistory';
