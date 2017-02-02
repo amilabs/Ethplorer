@@ -639,6 +639,11 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     this.init();
 };
 
+
+/**
+ * Document on ready widgets initialization.
+ * Initializes all widgets added using eWgs array.
+ */
 (function(){
     function ethpWiInit(){
         var eWgs = window.eWgs || [];
