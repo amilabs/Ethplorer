@@ -135,7 +135,7 @@ if($error){
                 </style>
                 <div>
                     <div class="hidden-xs col-sm-1"></div>
-                    <div class="col-xs-12 col-sm-10">
+                    <div class="col-xs-12 col-sm-10 daily-widget">
                         <div id="ethplorer-daily-token"></div>
                     </div>
                     <div class="hidden-xs col-sm-1"></div>
