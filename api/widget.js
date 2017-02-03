@@ -522,7 +522,6 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         }
     }
 
-    google.charts.load('current', {packages: ['corechart']});
     this.api = ethplorerWidget.api + '/getDailyTX';
 
     this.templates = {
@@ -649,6 +648,10 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
 
     this.init();
 };
+
+if(google && google.charts){
+    google.charts.load('current', {packages: ['corechart']});
+}
 
 /**
  * Document on ready widgets initialization.
