@@ -522,6 +522,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         }
     }
 
+    google.charts.load('current', {packages: ['corechart']});
     this.api = ethplorerWidget.api + '/getDailyTX';
 
     this.templates = {
