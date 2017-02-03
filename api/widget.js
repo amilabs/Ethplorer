@@ -550,6 +550,9 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             },
             //curveType: 'function',
             legend: { position: 'none' },
+            tooltip: {
+                format: 'MMM d',
+            },
             hAxis : {
                 textPosition: 'out',
                 textStyle: {color: '#FFF'},
@@ -577,6 +580,12 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             //bar: {groupWidth: '80%'}
         };
         var options = $.extend(true, def, this.options['options']);
+
+        var tooltipFormatter = new google.visualization.DateFormat({ 
+            pattern: "MMM dd, yyyy ZZZZ",
+            timeZone: 0
+        }); 
+        tooltipFormatter.format(data, 0);
 
         if(this.options['type'] == 'area') var chart = new google.visualization.AreaChart(this.el[0]);
         else var chart = new google.visualization.ColumnChart(this.el[0]);
