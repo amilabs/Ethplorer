@@ -623,12 +623,16 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             if(data && !data.error && data.txs && data.txs.length){
                 obj.widgetData = data.txs;
                 obj.el.find('.txs-loading').remove();
-                obj.drawChart(data.txs);
-                ethplorerWidget.appendEthplorerLink(obj.el);
-                if('function' === typeof(obj.options.onLoad)){
-                    obj.options.onLoad();
-                }
-                setTimeout(ethplorerWidget.fixTilda, 300);
+                google.charts.setOnLoadCallback(
+                    function(){
+                        obj.drawChart(data.txs);
+                        ethplorerWidget.appendEthplorerLink(obj.el);
+                        if('function' === typeof(obj.options.onLoad)){
+                            obj.options.onLoad();
+                        }
+                        setTimeout(ethplorerWidget.fixTilda, 300);
+                    }
+                );
             }else{
                 obj.el.find('.txs-loading').remove();
             }

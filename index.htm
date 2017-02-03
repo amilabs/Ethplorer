@@ -147,11 +147,7 @@
                                                     $('.txs-header').html('<a href="/last" class="underline-onhover">Recent token transactions</a>')
                                                 }
                                             });
-                                            google.charts.setOnLoadCallback(
-                                                function(){
-                                                    ethplorerWidget.init('#ethplorer-daily', 'dailyTX', {'type': 'area'});
-                                                }
-                                            );
+                                            ethplorerWidget.init('#ethplorer-daily', 'dailyTX', {'type': 'area'});
                                         });
                                     </script>
                                     <div class="t269__hint t-descr t-descr_xxs" field="text" style="margin-top:50px;opacity:0.6;">

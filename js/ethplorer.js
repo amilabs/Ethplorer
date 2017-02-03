@@ -649,15 +649,11 @@ Ethplorer = {
         $("table").find("tr:visible:even").addClass("even");
         $("table").find("tr:visible:last").addClass("last");
 
-        google.charts.setOnLoadCallback(
-            function(){
-                $('#ethplorer-daily-token').show();
-                var options = {
-                    title: '',
-                };
-                ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {type:'area', token: address, options: options});
-            }
-        );
+        $('#ethplorer-daily-token').show();
+        var options = {
+            title: '',
+        };
+        ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {type:'area', token: address, options: options});
     },
 
     drawTransfers: function(address, transfersData){
