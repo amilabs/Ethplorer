@@ -116,11 +116,11 @@ if($error){
                 </div>
 
                 <div>
-                    <div class="col-xs-1 col-sm-2"></div>
-                    <div class="col-xs-10 col-sm-8">
+                    <div class="hidden-xs col-sm-2"></div>
+                    <div class="col-xs-12 col-sm-8">
                         <h1 id="ethplorer-path"><?=$header?></h1>
                     </div>
-                    <div class="col-xs-1 col-sm-2"></div>
+                    <div class="hidden-xs col-sm-2"></div>
                 </div>
 
                 <div class="clearfix"></div>
@@ -134,11 +134,11 @@ if($error){
                     }
                 </style>
                 <div>
-                    <div class="col-xs-1 col-sm-1"></div>
-                    <div class="col-xs-10 col-sm-10">
+                    <div class="hidden-xs col-sm-1"></div>
+                    <div class="col-xs-12 col-sm-10">
                         <div id="ethplorer-daily-token"></div>
                     </div>
-                    <div class="col-xs-1 col-sm-1"></div>
+                    <div class="hidden-xs col-sm-1"></div>
                 </div>
                 <script type="text/javascript">
                     if(typeof(eWgs) === 'undefined'){ document.write('<scr' + 'ipt src="/api/widget.js?' + new Date().getTime().toString().substr(0,7) + '" async></scr' + 'ipt>'); var eWgs = []; }
