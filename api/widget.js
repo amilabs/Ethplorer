@@ -550,6 +550,9 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             },
             //curveType: 'function',
             legend: { position: 'none' },
+            tooltip: {
+                format: 'MMM d',
+            },
             hAxis : {
                 textPosition: 'out',
                 textStyle: {color: '#FFF'},
@@ -577,6 +580,12 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             //bar: {groupWidth: '80%'}
         };
         var options = $.extend(true, def, this.options['options']);
+
+        var tooltipFormatter = new google.visualization.DateFormat({ 
+            pattern: "MMM dd, yyyy z",
+            timeZone: 0
+        }); 
+        tooltipFormatter.format(data, 0);
 
         if(this.options['type'] == 'area') var chart = new google.visualization.AreaChart(this.el[0]);
         else var chart = new google.visualization.ColumnChart(this.el[0]);
@@ -614,12 +623,16 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             if(data && !data.error && data.txs && data.txs.length){
                 obj.widgetData = data.txs;
                 obj.el.find('.txs-loading').remove();
-                obj.drawChart(data.txs);
-                ethplorerWidget.appendEthplorerLink(obj.el);
-                if('function' === typeof(obj.options.onLoad)){
-                    obj.options.onLoad();
-                }
-                setTimeout(ethplorerWidget.fixTilda, 300);
+                google.charts.setOnLoadCallback(
+                    function(){
+                        obj.drawChart(data.txs);
+                        ethplorerWidget.appendEthplorerLink(obj.el);
+                        if('function' === typeof(obj.options.onLoad)){
+                            obj.options.onLoad();
+                        }
+                        setTimeout(ethplorerWidget.fixTilda, 300);
+                    }
+                );
             }else{
                 obj.el.find('.txs-loading').remove();
             }
@@ -639,6 +652,10 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
 
     this.init();
 };
+
+if(google && google.charts){
+    google.charts.load('current', {packages: ['corechart']});
+}
 
 /**
  * Document on ready widgets initialization.

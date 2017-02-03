@@ -921,6 +921,10 @@ a.token-update {
         right: -15px;
         top: -4px;
     }
+
+	.daily-widget {
+		padding: 0px !important;
+	}
 }
 
 @-webkit-keyframes minhand{

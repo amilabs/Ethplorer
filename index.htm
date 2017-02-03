@@ -140,7 +140,6 @@
                                             t454_setBg('11846335');
                                         });
                                         if(typeof(eWgs) === 'undefined'){ document.write('<scr' + 'ipt src="/api/widget.js?' + new Date().getTime().toString().substr(0,7) + '" async></scr' + 'ipt>'); var eWgs = []; }
-                                        google.charts.load('current', {packages: ['corechart']});
                                         eWgs.push(function(){
                                             ethplorerWidget.init('#ethplorer-txs', 'tokenHistory', {
                                                 onLoad: function(){
@@ -148,11 +147,7 @@
                                                     $('.txs-header').html('<a href="/last" class="underline-onhover">Recent token transactions</a>')
                                                 }
                                             });
-                                            google.charts.setOnLoadCallback(
-                                                function(){
-                                                    ethplorerWidget.init('#ethplorer-daily', 'dailyTX', {'type': 'area'});
-                                                }
-                                            );
+                                            ethplorerWidget.init('#ethplorer-daily', 'dailyTX', {'type': 'area'});
                                         });
                                     </script>
                                     <div class="t269__hint t-descr t-descr_xxs" field="text" style="margin-top:50px;opacity:0.6;">
