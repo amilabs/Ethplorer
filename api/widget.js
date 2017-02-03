@@ -582,7 +582,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         var options = $.extend(true, def, this.options['options']);
 
         var tooltipFormatter = new google.visualization.DateFormat({ 
-            pattern: "MMM dd, yyyy ZZZZ",
+            pattern: "MMM dd, yyyy z",
             timeZone: 0
         }); 
         tooltipFormatter.format(data, 0);
