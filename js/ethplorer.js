@@ -109,7 +109,7 @@ Ethplorer = {
                     Ethplorer.Nav.del('filter');
                 }
                 Ethplorer.filter = filter;
-                $('.paginationFooter, .notFoundRow').parents('.table').addClass('unclickable');
+                Ethplorer.showTableLoader();
                 $('#filter_list').attr('disabled', true)
                 Ethplorer.route();
             }
@@ -126,32 +126,59 @@ Ethplorer = {
         Ethplorer.searchInterval = setInterval(function(){
             var search = $('#search').val();
             if(!$('.timer:visible').length && $('#search').is(":focus") && search.length && (search.length < 20)){
-                if(Ethplorer.lastSearch !== search){
+                if(Ethplorer.lastSearch !== search && !(Ethplorer.lastEmpty && (search.indexOf(Ethplorer.lastSearch) >= 0))){
                     Ethplorer.lastSearch = search;
-                    // @todo: wait 1-2 sec for changes
-                    $.getJSON(Ethplorer.service, {search: search}, function(data){
-                        if(data && data.results && data.total){
-                            $('#search-quick-results').empty();
-                            for(var i=0; i<data.results.length; i++){
-                                var link = $('<a>');
-                                link.attr('href', '/address/' + data.results[i][2]);
-                                link.text(data.results[i][0] + (data.results[i][1] ? (' (' + data.results[i][1] + ')') : ''));
-                                $('#search-quick-results').append(link);
-                                $('#search-quick-results').append('<br>');
-                            }
-                            if(data.total > data.results.length){
-                                var more = $('<span style="color:#aaa;">');
-                                more.text((data.total - data.results.length) + ' results more...');
-                                $('#search-quick-results').append(more);
-                            }
-                        }
-                    });
-                    $('#search-quick-results').show();
+                    if('undefined' === typeof(Ethplorer.lastEmpty)){
+                        Ethplorer.lastEmpty = false;
+                    }
+                    if(Ethplorer.searchTimeout){
+                        clearTimeout(Ethplorer.searchTimeout);
+                    }
+                    Ethplorer.searchTimeout = setTimeout(function(_search){
+                            return function(){
+                                $.getJSON(Ethplorer.service, {search: _search}, function(data){
+                                    var empty = !(data && data.results && data.total);
+                                    if(!empty){
+                                        $('#search-quick-results').empty();
+                                        for(var i=0; i<data.results.length; i++){
+                                            var res = data.results[i];
+                                            var address = res[2];
+                                            var text = res[0] + (res[1] ? (' (' + res[1] + ')') : '');
+                                            text += (' <span style="color:#aaa;">' + address + '</span>')
+                                            text = text.replace(new RegExp(data.search, 'ig'), "<b>$&</b>");
+                                            var link = $('<div>');
+                                            link.click(function(_address){
+                                                return function(){
+                                                    document.location.href = '/address/' + _address;
+                                                };
+                                            }(address));
+                                            link.addClass('search-result')
+                                            link.html(text);
+                                            $('#search-quick-results').append(link);
+                                        }
+                                        if(data.total > data.results.length){
+                                            var more = $('<div>');
+                                            more.addClass('search-more')
+                                            more.text((data.total - data.results.length) + ' results more...');
+                                            $('#search-quick-results').append(more);
+                                        }
+                                        $('#search-quick-results').show();
+                                    }else{
+                                        $('#search-quick-results').hide();
+                                    }
+                                    Ethplorer.lastEmpty = empty;
+                                });
+                            };
+                        }(search),
+                        1000
+                    );
                 }
             }else if($('#search-quick-results:visible').length){
-                $('#search-quick-results').hide();
+                setTimeout(function(){
+                    $('#search-quick-results').hide();
+                }, 500);
             }
-        }, 500);
+        }, 100);
     },
     checkFilter: function(filter){
         return (!filter || /^[0-9a-fx]+$/.test(filter));
@@ -177,6 +204,7 @@ Ethplorer = {
         $('.content-page').hide();
         $('#error-reason').text(message);
         $('#error').show();
+        $('#ethplorer-path').hide();
     },
     getTxErrorReason: function(reason){
         var aReasons = {
@@ -731,7 +759,7 @@ Ethplorer = {
             if(data.pager && data.pager.transfers){
                 var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
                 var cb = function(page){
-                    $('.paginationFooter:visible').parents('.table').addClass('unclickable');
+                    Ethplorer.showTableLoader();
                     if(page > 1){
                         Ethplorer.Nav.set('transfers', page);
                     }else{
@@ -743,7 +771,7 @@ Ethplorer = {
                 $('#' + tableId + ' .table').append(pagination);
             }
         }
-        $('.table').removeClass('unclickable');
+        Ethplorer.hideTableLoader();
         if(data.pager && data.pager.transfers && data.pager.transfers.total){
             $('#' + tableId).show();
         }else{
@@ -791,24 +819,23 @@ Ethplorer = {
                     $('#address-issuances .table').append(row);
                 }
             }
-
-            // Pager
-            if(data.pager && data.pager.issuances){
-                var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-                var cb = function(page){
-                    $('.paginationFooter:visible').parents('.table').addClass('unclickable');
-                    if(page > 1){
-                        Ethplorer.Nav.set('issuances', page);
-                    }else{
-                        Ethplorer.Nav.del('issuances');
-                    }
-                    Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "issuances"}, Ethplorer.drawIssuances);
-                };
-                Ethplorer.drawPager(pagination.find('td'), data.pager.issuances, cb);
-                $('#address-issuances .table').append(pagination);
-            }
-            $('.table').removeClass('unclickable');
         }
+        // Pager
+        if(data.pager && data.pager.issuances){
+            var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
+            var cb = function(page){
+                Ethplorer.showTableLoader();
+                if(page > 1){
+                    Ethplorer.Nav.set('issuances', page);
+                }else{
+                    Ethplorer.Nav.del('issuances');
+                }
+                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "issuances"}, Ethplorer.drawIssuances);
+            };
+            Ethplorer.drawPager(pagination.find('td'), data.pager.issuances, cb);
+            $('#address-issuances .table').append(pagination);
+        }
+        Ethplorer.hideTableLoader();
         $('#address-issuances').show();
     },
 
@@ -860,26 +887,26 @@ Ethplorer = {
                 }
             }
             $("#address-token-holders-totals").html(totals);
-            // Pager
-            if(data.pager && data.pager.holders){
-                var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-                var cb = function(page){
-                    $('.paginationFooter:visible').parents('.table').addClass('unclickable');
-                    if(page > 1){
-                        Ethplorer.Nav.set('holders', page);
-                    }else{
-                        Ethplorer.Nav.del('holders');
-                    }
-                    Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "holders"}, Ethplorer.drawHolders);
-                };
-                Ethplorer.drawPager(pagination.find('td'), data.pager.holders, cb);
-                $('#address-token-holders .table').append(pagination);
-            }
         }else{
             $('#address-token-holders').find('.total-records').empty();
             $('#address-token-holders').find('.table').append('<tr class="notFoundRow"><td>No holders found</td></tr>');
         }
-        $('.table').removeClass('unclickable');
+        // Pager
+        if(data.pager && data.pager.holders){
+            var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
+            var cb = function(page){
+                Ethplorer.showTableLoader();
+                if(page > 1){
+                    Ethplorer.Nav.set('holders', page);
+                }else{
+                    Ethplorer.Nav.del('holders');
+                }
+                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "holders"}, Ethplorer.drawHolders);
+            };
+            Ethplorer.drawPager(pagination.find('td'), data.pager.holders, cb);
+            $('#address-token-holders .table').append(pagination);
+        }
+        Ethplorer.hideTableLoader();
         $('#address-token-holders').show();
     },
 
@@ -935,26 +962,26 @@ Ethplorer = {
                 row.append(tdDate, tdHash, tdOpType, tdLink);
                 $('#address-chainy-tx .table').append(row);
             }
-            // Pager
-            if(data.pager && data.pager.chainy){
-                var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-                var cb = function(page){
-                    $('.paginationFooter:visible').parents('.table').addClass('unclickable');
-                    if(page > 1){
-                        Ethplorer.Nav.set('chainy', page);
-                    }else{
-                        Ethplorer.Nav.del('chainy');
-                    }
-                    Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "chainy"}, Ethplorer.drawChainy);
-                };
-                Ethplorer.drawPager(pagination.find('td'), data.pager.chainy, cb);
-                $('#address-chainy-tx .table').append(pagination);
-            }
         }else{
             $('#address-chainy-tx').find('.total-records').empty();
             $('#address-chainy-tx').find('.table').append('<tr class="notFoundRow"><td>No transactions found</td></tr>');
         }
-        $('.table').removeClass('unclickable');
+        // Pager
+        if(data.pager && data.pager.chainy){
+            var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
+            var cb = function(page){
+                Ethplorer.showTableLoader();
+                if(page > 1){
+                    Ethplorer.Nav.set('chainy', page);
+                }else{
+                    Ethplorer.Nav.del('chainy');
+                }
+                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "chainy"}, Ethplorer.drawChainy);
+            };
+            Ethplorer.drawPager(pagination.find('td'), data.pager.chainy, cb);
+            $('#address-chainy-tx .table').append(pagination);
+        }
+        Ethplorer.hideTableLoader();
         $('#address-chainy-tx').show();
     },
     drawPager: function(container, pageData, reloadCb){    
@@ -991,33 +1018,34 @@ Ethplorer = {
                     if('function' === typeof(_container['reloadCallback'])){
                         _container['reloadCallback'](1);
                     }
-                    Ethplorer.drawPager(_container, _pd);
                 }
             }
         }(container, pageData));
 
         var pager = $('<UL>');
         pager.addClass('pagination pagination-sm');
-        if(recordsCount){
-            setTimeout(function(_container, _count, _total){
-                return function(){
-                    var str = _count + ' total';
-                    if(_count < _total){
-                        str = 'Filtered ' + _count + ' records of ' + _total + ' total';
-                    }
-                    _container.parents('.block').find('.total-records').text(str);
-                    var filter = Ethplorer.Nav.get('filter');
-                    if(filter){
-                        _container.parents('.table').find('a.local-link').each(function(){
-                            var text = $(this).text();
-                            if(0 === text.indexOf('0x')){
-                                $(this).html(text.replace(new RegExp(filter, 'g'), '<span class="filer-mark">' + filter + '</span>'))
-                            }
-                        });
-                    }
+        setTimeout(function(_container, _count, _total){
+            return function(){
+                var str = _count + ' total';
+                if(_count < _total){
+                    str = '<span class="filtered-totals">Filtered ' + _count + ' records of ' + _total + ' total</span>';
                 }
-            }(container, recordsCount, totalCount), 100);
-            
+                _container.parents('.block').find('.total-records').html(str);
+                var filter = Ethplorer.Nav.get('filter');
+                if(filter){
+                    _container.parents('.table').find('a.local-link').each(function(){
+                        var text = $(this).text();
+                        if(0 === text.indexOf('0x')){
+                            $(this).html(text.replace(new RegExp(filter, 'g'), '<span class="filer-mark">' + filter + '</span>'))
+                        }
+                    });
+                }
+            }
+        }(container, recordsCount, totalCount), 100);
+        
+        container.empty();
+
+        if(recordsCount){
             var pages = Math.ceil(recordsCount / Ethplorer.pageSize);
             var lastPage = true;
             for(var i=1; i<=pages; i++){
@@ -1035,8 +1063,6 @@ Ethplorer = {
                                 if('function' === typeof(_container['reloadCallback'])){
                                     _container['reloadCallback'](_page);
                                 }
-                                _pageData.page = 
-                                Ethplorer.drawPager(_container, {page: _page, records: _pageData.records, total: _pageData.total})
                                 e.preventDefault();
                             };
                         }(container, i, pageData));
@@ -1052,10 +1078,10 @@ Ethplorer = {
                 }
                 pager.append(page);
             }
+            container.append(pageSizeSelect);
+            container.append(pager);
         }
-        container.empty();
-        container.append(pageSizeSelect);
-        container.append(pager);
+
         if('function' === typeof(reloadCb)){
             container['reloadCallback'] = reloadCb;
         }
@@ -1130,13 +1156,24 @@ Ethplorer = {
 
     search: function(value){
         value = value.replace(/^\s+/, '').replace(/\s+$/, '');
-        if(Ethplorer.Utils.isAddress(value)){
-            document.location.href = '/address/' + value;
-            return;
-        }
-        if(Ethplorer.Utils.isTx(value)){
-            document.location.href = '/tx/' + value;
-            return;
+        if(value.length){
+            if(Ethplorer.Utils.isAddress(value)){
+                document.location.href = '/address/' + value;
+                return;
+            }else if(Ethplorer.Utils.isTx(value)){
+                document.location.href = '/tx/' + value;
+                return;
+            }else if(value.length < 20){
+                $.getJSON(Ethplorer.service, {search: value}, function(data){
+                    var empty = !(data && data.results && data.total);
+                    if(!empty){
+                        document.location.href = '/address/' + data.results[0][2];
+                        return;
+                    }
+                    Ethplorer.error('Nothing found');
+                });
+                return;
+            }
         }
         $('#search').val('');
         Ethplorer.error('Nothing found');
@@ -1181,13 +1218,21 @@ Ethplorer = {
         }
         $('#' + id).html(value);
     },
-
+    showTableLoader: function(){
+        $('.filter-box').addClass('processing');
+        $('.paginationFooter, .notFoundRow').parents('.table').addClass('unclickable');
+        $('.total-records').html('<i class="table-loading fa fa-spinner fa-spin fa-2x"></i>');
+    },
+    hideTableLoader: function(){
+        $('.filter-box').removeClass('processing');
+        $('.table').removeClass('unclickable');
+        $('.total-records').empty();
+    },
     showLoader: function(){
         Ethplorer.loaderTimeout = setTimeout(function(){
             $('#loader').show();
         }, 1000);
-    },
-    
+    },    
     hideLoader: function(){
         $('#loader').hide();
         if(Ethplorer.loaderTimeout){
@@ -1234,6 +1279,9 @@ Ethplorer = {
         updateHash: function(){
             var hash = Ethplorer.Nav.getString();
             if(hash != document.location.hash){
+                if(!hash){
+                    hash = 'ready'
+                }
                 document.location.hash = hash;
             }
         }
@@ -1338,13 +1386,6 @@ Ethplorer = {
             if(!/^0x/.test(data)){
                 return text;
             }
-            /*
-            var urlEtherscan = Ethplorer.Utils.getEtherscanAddress();
-            var isTx = Ethplorer.Utils.isTx(data);
-            var res = '<a target="_blank" class="external-link" href="' + urlEtherscan;
-            res += (isTx ? 'tx' : 'address');
-            res += ('/' + data + '"><i class="fa fa-external-link"></i>&nbsp;' + text + '</a>');
-            */
             var res = text;
             if(isContract){
                 res = 'Contract ' + res;

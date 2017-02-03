@@ -27,7 +27,7 @@ tr.paginationFooter td ul.pagination {
 
 .table.unclickable {
     opacity: 0.5;
-    pointer-events: none;   
+    pointer-events: none;
 }
 
 .navbar-inverse {
@@ -578,7 +578,7 @@ tr.paginationFooter td {
     position: absolute;
     top: -3px;
     right: 24px;
-    color: #8c8c8c;
+    color: #7b1818;
     cursor: pointer;
     display: none;
     font-size: 24px;
@@ -605,9 +605,24 @@ tr.paginationFooter td {
     background-color: black;
     color: white;
 }
+
 #filter_list.filled {
     border-color: #7b1818;
     color: #7b1818;
+}
+
+.filtered-totals {
+    color: #7b1818;
+}
+
+.filter-box.processing {
+    opacity: 0.3;
+    pointer-events: none;
+}
+
+#filter_list:focus {
+    outline: none;
+    box-shadow: 0 0 0px #000;
 }
 
 .notFoundRow td {
@@ -620,10 +635,35 @@ tr.paginationFooter td {
     background-color: white;
     border:1px solid #aaa;
     width: 350px;
-    height: 150px;
     display: none;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: -1px;
 }
 
+#search-quick-results .search-result {
+    color: #444;
+    overflow: hidden;
+    cursor: pointer;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+#search-quick-results .search-result:hover {
+    background-color: #eee;
+}
+
+#search-quick-results .search-more {
+    color: #aaa;
+    padding-top: 4px;
+    border-top: 1px dotted #aaa;
+    font-style: italic;
+}
+
+.table-loading {
+    margin-top: -5px;
+    margin-right: -10px;
+}
 
 /* Timer*/
 .timer{
@@ -871,9 +911,10 @@ a.token-update {
         width: 100%;
     }
 
+    #search-quick-results,
     #search {
         width: 100%;
-    }    
+    }
     
     #topmenu {
         position: absolute;

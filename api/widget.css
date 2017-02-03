@@ -136,6 +136,23 @@ a.tx-link:hover {
     opacity: 1; 
 }
 
+#ethplorer-top .tx-link {
+    max-width: 450px;
+}
+#ethplorer-top tr td:nth-child(3){
+    text-align: right;
+    color: white !important;
+}
+#ethplorer-top tr td:nth-child(1){
+    text-align: right;
+    padding-right: 10px;
+    color: #8a8c85 !important;
+    padding-bottom: 4px;
+}
+#ethplorer-top .tx-unknown {
+    color: #676767 !important;
+}
+
 @media screen and (min-width: 999px) {
     .tx-token {
         max-width: 160px;

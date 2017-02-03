@@ -59,7 +59,7 @@ if($page && (FALSE !== strpos($page, '='))){
 
 $result = array();
 
-if($search){
+if(strlen($search)){
     $result = $es->searchToken($search);
 }else if(false !== $data){
     $es->setPageSize($pageSize);
