@@ -873,6 +873,11 @@ class Ethplorer {
         $cache = 'daily_tx-' . ($token ? ($token . '-') : '') . $period;
         $result = $this->oCache->get($cache, false, true, 600);
         if(FALSE === $result){
+            // Chainy
+            if($token && ($token == self::ADDRESS_CHAINY)){
+                return $this->getChainyDailyTransactions($period);
+            }
+
             $aMatch = array("timestamp" => array('$gt' => time() - $period * 24 * 3600));
             if($token) $aMatch["contract"] = $token;
             $result = array();
@@ -1017,6 +1022,46 @@ class Ethplorer {
                     'input' => $tx['input'],
                     'link' => $link,
                 );
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Returns Chainy transactions grouped by days.
+     *
+     * @param  int $period  Number of days
+     * @return array
+     */
+    protected function getChainyDailyTransactions($period = 30){
+        $cache = 'chainy_daily_tx-' . $period;
+        $result = $this->oCache->get($cache, false, true, 600);
+        if(FALSE === $result){
+            $aMatch = array(
+                "timestamp" => array('$gt' => time() - $period * 24 * 3600),
+                "to" => self::ADDRESS_CHAINY
+            );
+            $result = array();
+            $dbData = $this->dbs['transactions']->aggregate(
+                array(
+                    array('$match' => $aMatch),
+                    array(
+                        '$group' => array(
+                            "_id" => array(
+                                "year"  => array('$year' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                "month"  => array('$month' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                "day"  => array( '$dayOfMonth' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                            ),
+                            'ts' =>  array('$first' => '$timestamp'),
+                            'cnt' => array('$sum' => 1)
+                        )
+                    ),
+                    array('$sort' => array('ts' => -1))
+                )
+            );
+            if(is_array($dbData) && !empty($dbData['result'])){
+                $result = $dbData['result'];
+                $this->oCache->save($cache, $result);
             }
         }
         return $result;
