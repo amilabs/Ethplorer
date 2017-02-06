@@ -1130,7 +1130,8 @@ class Ethplorer {
             'txsCount' => 99999
         );
         foreach($aTokens as $address => $aToken){
-            if((!empty($aToken['name']) && (strpos(strtolower($aToken['name']), strtolower($token)) !== FALSE)) || (!empty($aToken['symbol']) && (strpos(strtolower($aToken['symbol']), strtolower($token)) !== FALSE))){
+            $search = strtolower($token);
+            if((strpos($address, $search) !== FALSE) || (!empty($aToken['name']) && (strpos(strtolower($aToken['name']), $search) !== FALSE)) || (!empty($aToken['symbol']) && (strpos(strtolower($aToken['symbol']), $search) !== FALSE))){
                 $aToken['address'] = $address;
                 $found[] = $aToken;
             }
