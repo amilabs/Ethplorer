@@ -84,7 +84,7 @@ if($error){
             </div>
             <div id="navbar" class="navbar" style="margin-bottom: 0px;">
                 <ul class="nav navbar-nav navbar-right" id="searchform">
-                    <form onsubmit="Ethplorer.search($('#search').val()); return false;">
+                    <form id="search-form">
                         <input id="search" class="form-control" placeholder="Token name or symbol / TX hash / address" autocomplete="off" />
                         <div id="search-quick-results"></div>
                     </form>
