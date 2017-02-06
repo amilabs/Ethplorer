@@ -815,14 +815,11 @@ Ethplorer = {
             }
         }
         Ethplorer.hideTableLoader();
-        if(data.pager && data.pager.transfers && data.pager.transfers.total){
-            $('#' + tableId).show();
-        }else{
-            if(!data.token){
-                $('#' + tableId).hide();
-                $('.filter-box').hide();
-            }
+        if((!data.pager || !data.pager.transfers) && (!data.token)){
+            $('#' + tableId).hide();
+            $('.filter-box').hide();
         }
+        $('#' + tableId).show();
     },
 
     drawIssuances: function(address, issuancesData){
@@ -919,6 +916,7 @@ Ethplorer = {
             var totals = 'Summary of page is '+ totalVolume + " " + oToken.symbol;
             if(data.pager && data.pager.holders){
                 if(data.pager.holders.records > Ethplorer.pageSize){
+                    var tname = (oToken.name != 'N/A') ? oToken.name : '';
                     totals += (', which is ' + totalShare + "% of " + oToken.name + ' total supply');
                 }
             }
