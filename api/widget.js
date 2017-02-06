@@ -11,6 +11,8 @@ ethplorerWidget = {
     // Add Google loader for chart widgets
     addGoogleLoader: false,
 
+    chartWidgets: [],
+
     // Widget initialization
     init: function(selector, type, options, templates){
         if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') >= 0)){
@@ -56,6 +58,10 @@ ethplorerWidget = {
     loadGoogleCharts: function(){
         if(google && google.charts){
             google.charts.load('current', {packages: ['corechart']});
+
+            if(ethplorerWidget.chartWidgets && ethplorerWidget.chartWidgets.length)
+                for(var i=0; i<ethplorerWidget.chartWidgets.length; i++)
+                        ethplorerWidget.chartWidgets[i].load();
         }
     },
     appendEthplorerLink: function(el){
@@ -549,7 +555,6 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     };
 
     this.load = function(){
-        this.el.html(this.templates.loader);
         $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
     };
 
@@ -614,7 +619,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
 
     this.init = function(){
         this.el.addClass('widget-txs');
-        this.load();
+        this.el.html(this.templates.loader);
+        //this.load();
     };
 
     this.getRequestParams = function(additionalParams){
@@ -671,6 +677,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     });
 
     this.init();
+    ethplorerWidget.chartWidgets.push(this);
 };
 
 /**
