@@ -862,7 +862,7 @@ Ethplorer = {
             }
         }
         // Pager
-        if(data.pager && data.pager.issuances){
+        if(data.pager && data.pager.issuances && data.pager.issuances.total){
             var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
             Ethplorer.drawPager(pagination.find('td'), data.pager.issuances);
             $('#address-issuances .table').append(pagination);
@@ -926,7 +926,7 @@ Ethplorer = {
             $('#address-token-holders').find('.table').append('<tr class="notFoundRow"><td>No holders found</td></tr>');
         }
         // Pager
-        if(data.pager && data.pager.holders){
+        if(data.pager && data.pager.holders && data.pager.holders.total){
             var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
             Ethplorer.drawPager(pagination.find('td'), data.pager.holders);
             $('#address-token-holders .table').append(pagination);
