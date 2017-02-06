@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "114";
+$codeVersion = "116";
 
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $esCfg = require_once dirname(__FILE__) . '/service/config.php';
@@ -411,16 +411,24 @@ if($error){
                                 <td id="address-token-symbol" class="list-field"></td>
                             </tr>
                             <tr>
+                                <td>Total Supply</td>
+                                <td id="address-token-totalSupply" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Total In</td>
+                                <td id="address-token-totalIn" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Total Out</td>
+                                <td id="address-token-totalOut" class="list-field"></td>
+                            </tr>
+                            <tr>
                                 <td>Decimals</td>
                                 <td id="address-token-decimals" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Owner</td>
                                 <td id="address-token-owner" data-type="ethplorer" class="list-field"></td>
-                            </tr>
-                            <tr>
-                                <td>Total Supply</td>
-                                <td id="address-token-totalSupply" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Transfers</td>
@@ -433,14 +441,6 @@ if($error){
                             <tr>
                                 <td>Holders</td>
                                 <td id="address-token-holdersCount" class="list-field"></td>
-                            </tr>
-                            <tr>
-                                <td>Total In</td>
-                                <td id="address-token-totalIn" class="list-field"></td>
-                            </tr>
-                            <tr>
-                                <td>Total Out</td>
-                                <td id="address-token-totalOut" class="list-field"></td>
                             </tr>
                             </table>
                         </div>

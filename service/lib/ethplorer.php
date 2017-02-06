@@ -263,7 +263,6 @@ class Ethplorer {
                         $page = 1;
                     }
                     $result[$type] = $this->{$cmd}($address, $limit, $offset);;
-                    if(empty($result[$type])) unset($result[$type]);
                     $result['pager'][$type] = array(
                         'page' => $page,
                         'records' => $count,
@@ -1119,17 +1118,32 @@ class Ethplorer {
 
     public function searchToken($token){
         $result = array('results' => array(), 'total' => 0);
+        $found = array();
         $aTokens = $this->getTokens();
-        $i = 0;
         foreach($aTokens as $address => $aToken){
             if((!empty($aToken['name']) && (strpos(strtolower($aToken['name']), strtolower($token)) !== FALSE)) || (!empty($aToken['symbol']) && (strpos(strtolower($aToken['symbol']), strtolower($token)) !== FALSE))){
-                if($i < 6){
-                    $result['results'][] = array($aToken['name'], $aToken['symbol'], $address);
-                }
-                $i++;
+                $aToken['address'] = $address;
+                $found[] = $aToken;
             }
         }
+        uasort($found, array($this, 'sortTokensByTxsCount'));
+        $i = 0;
+        foreach($found as $aToken){
+            if($i < 6){
+                $result['results'][] = array($aToken['name'], $aToken['symbol'], $aToken['address']);
+            }
+            $i++;
+        }
         $result['total'] = $i;
+        $result['search'] = $token;
         return $result;
     }
+
+    public function sortTokensByTxsCount($a, $b) {
+        if($a['txsCount'] == $b['txsCount']){
+            return 0;
+        }
+        return ($a['txsCount'] < $b['txsCount']) ? 1 : -1;
+    }
+
 }
