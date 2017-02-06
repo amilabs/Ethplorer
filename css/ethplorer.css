@@ -584,15 +584,9 @@ tr.paginationFooter td {
     font-size: 24px;
 }
 
-/* Special Safari hack */
-@media screen and (min-color-index:0) and(-webkit-min-device-pixel-ratio:0) 
-{ @media {
-    .filter-clear {
-        top: -6px;
-    }      
-    }
-}}
-
+_::-webkit-:host:not(:root:root), .filter-clear {
+    top: -6px;
+}      
 
 #filter-error {
     color: #7b1818;

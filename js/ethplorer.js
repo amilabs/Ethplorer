@@ -631,6 +631,19 @@ Ethplorer = {
             Ethplorer.drawHolders(address, data);
             Ethplorer.drawIssuances(address, data);
 
+            if(data.pager && data.pager.transfers){
+                data.token.transfersCount = data.pager.transfers.total;
+            }
+            if(data.pager && data.pager.issuances){
+                data.token.issuancesCount = '';
+                if(data.pager.issuances.total){
+                    data.token.issuancesCount = data.pager.issuances.total;
+                }
+            }
+            if(data.pager && data.pager.holders){
+                data.token.holdersCount = data.pager.holders.total;
+            }
+
             var fields = [
                 'token', 'token.name', 'token.description', 'token.owner', 'token.totalSupply', 'token.totalIn', 'token.totalOut', 'token.decimals', 'token.symbol',
                 'token.txsCount', 'token.transfersCount', 'token.issuancesCount', 'token.holdersCount'
