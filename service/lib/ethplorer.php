@@ -1150,6 +1150,12 @@ class Ethplorer {
     }
 
     public function sortTokensByTxsCount($a, $b) {
+        if(!isset($a['txsCount'])){
+            $a['txsCount'] = 0;
+        }
+        if(!isset($b['txsCount'])){
+            $b['txsCount'] = 0;
+        }
         if($a['txsCount'] == $b['txsCount']){
             return 0;
         }
