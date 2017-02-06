@@ -1124,6 +1124,11 @@ class Ethplorer {
         $result = array('results' => array(), 'total' => 0);
         $found = array();
         $aTokens = $this->getTokens();
+        $aTokens['0xf3763c30dd6986b53402d41a8552b8f7f6a6089b'] = array(
+            'name' => 'Chainy',
+            'symbol' => false,
+            'txsCount' => 99999
+        );
         foreach($aTokens as $address => $aToken){
             if((!empty($aToken['name']) && (strpos(strtolower($aToken['name']), strtolower($token)) !== FALSE)) || (!empty($aToken['symbol']) && (strpos(strtolower($aToken['symbol']), strtolower($token)) !== FALSE))){
                 $aToken['address'] = $address;
