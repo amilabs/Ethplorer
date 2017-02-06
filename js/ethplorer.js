@@ -113,19 +113,13 @@ Ethplorer = {
                 $('#filter_list').attr('disabled', true)
                 
                 // Reload active tab, set other tabs as need to reload
-                var activeTab = $('.nav-tabs li.active').attr('id').replace('tab-', '');
-                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: activeTab}, Ethplorer['draw' + activeTab[0].toUpperCase() + activeTab.substr(1)]);
-                var tabs = ['transfers', 'issuances', 'chainy', 'holders'];
-                delete tabs[tabs.indexOf(activeTab)];
-                Ethplorer.reloadTabs = tabs;
+                Ethplorer.reloadTab(false, true);
             }
         });
         $('.nav-tabs li a').click(function(e){
             var tabName = $(this).parent().attr('id').replace('tab-', '');
             if(('undefined' !== typeof(Ethplorer.reloadTabs)) && (Ethplorer.reloadTabs.indexOf(tabName) >= 0)){
-                Ethplorer.showTableLoader();
-                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: tabName}, Ethplorer['draw' + tabName[0].toUpperCase() + tabName.substr(1)]);
-                delete Ethplorer.reloadTabs[Ethplorer.reloadTabs.indexOf(tabName)];
+                Ethplorer.reloadTab(tabName, false);
             }
         })
         if(localStorage && ('undefined' !== typeof(localStorage['tx-details-block']))){
@@ -204,6 +198,29 @@ Ethplorer = {
                 }, 500);
             }
         }, 100);
+    },
+    getActiveTab: function(){
+        return $('.nav-tabs li.active').attr('id').replace('tab-', '');
+    },
+    reloadTab: function(name, reloadOthers){
+        var tabs = ['transfers', 'issuances', 'chainy', 'holders'];
+        if(!name){ // Get active tab if name not set
+            name = Ethplorer.getActiveTab();
+        }
+        if((tabs.indexOf(name) < 0) || !$('.nav-tabs').length || $('.nav-tabs').hasClass('unclickable')){
+            return;
+        }
+        var methodName = 'draw' + name[0].toUpperCase() + name.substr(1);
+        if('undefined' !== typeof(Ethplorer[methodName])){
+            Ethplorer.showTableLoader();
+            Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: name}, Ethplorer[methodName]);
+        }
+        if(reloadOthers){
+            Ethplorer.reloadTabs = tabs;
+        }
+        if(('undefined' !== typeof(Ethplorer.reloadTabs)) && (Ethplorer.reloadTabs.indexOf(name) >= 0)){
+            delete Ethplorer.reloadTabs[Ethplorer.reloadTabs.indexOf(name)];
+        }
     },
     checkFilter: function(filter){
         return (!filter || /^[0-9a-fx]+$/.test(filter));
@@ -793,16 +810,7 @@ Ethplorer = {
             // Pager
             if(data.pager && data.pager.transfers){
                 var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-                var cb = function(page){
-                    Ethplorer.showTableLoader();
-                    if(page > 1){
-                        Ethplorer.Nav.set('transfers', page);
-                    }else{
-                        Ethplorer.Nav.del('transfers');
-                    }
-                    Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "transfers"}, Ethplorer.drawTransfers);
-                };
-                Ethplorer.drawPager(pagination.find('td'), data.pager.transfers, cb);
+                Ethplorer.drawPager(pagination.find('td'), data.pager.transfers);
                 $('#' + tableId + ' .table').append(pagination);
             }
         }
@@ -859,16 +867,7 @@ Ethplorer = {
         // Pager
         if(data.pager && data.pager.issuances){
             var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-            var cb = function(page){
-                Ethplorer.showTableLoader();
-                if(page > 1){
-                    Ethplorer.Nav.set('issuances', page);
-                }else{
-                    Ethplorer.Nav.del('issuances');
-                }
-                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "issuances"}, Ethplorer.drawIssuances);
-            };
-            Ethplorer.drawPager(pagination.find('td'), data.pager.issuances, cb);
+            Ethplorer.drawPager(pagination.find('td'), data.pager.issuances);
             $('#address-issuances .table').append(pagination);
         }
         Ethplorer.hideTableLoader();
@@ -931,16 +930,7 @@ Ethplorer = {
         // Pager
         if(data.pager && data.pager.holders){
             var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-            var cb = function(page){
-                Ethplorer.showTableLoader();
-                if(page > 1){
-                    Ethplorer.Nav.set('holders', page);
-                }else{
-                    Ethplorer.Nav.del('holders');
-                }
-                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "holders"}, Ethplorer.drawHolders);
-            };
-            Ethplorer.drawPager(pagination.find('td'), data.pager.holders, cb);
+            Ethplorer.drawPager(pagination.find('td'), data.pager.holders);
             $('#address-token-holders .table').append(pagination);
         }
         Ethplorer.hideTableLoader();
@@ -1007,22 +997,13 @@ Ethplorer = {
         // Pager
         if(data.pager && data.pager.chainy){
             var pagination = $('<tr class="paginationFooter"><td colspan="10"></td></tr>');
-            var cb = function(page){
-                Ethplorer.showTableLoader();
-                if(page > 1){
-                    Ethplorer.Nav.set('chainy', page);
-                }else{
-                    Ethplorer.Nav.del('chainy');
-                }
-                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: "chainy"}, Ethplorer.drawChainy);
-            };
-            Ethplorer.drawPager(pagination.find('td'), data.pager.chainy, cb);
+            Ethplorer.drawPager(pagination.find('td'), data.pager.chainy);
             $('#address-chainy-tx .table').append(pagination);
         }
         Ethplorer.hideTableLoader();
         $('#address-chainy-tx').show();
     },
-    drawPager: function(container, pageData, reloadCb){    
+    drawPager: function(container, pageData){    
         var currentPage     = pageData.page,
             recordsCount    = pageData.records,
             totalCount      = pageData.total;
@@ -1056,9 +1037,7 @@ Ethplorer = {
                             localStorage.setItem('pageSize', 10);
                         }
                     }
-                    if('function' === typeof(_container['reloadCallback'])){
-                        _container['reloadCallback'](1);
-                    }
+                    Ethplorer.reloadTab(false, true);
                 }
             }
         }(container, pageData));
@@ -1101,9 +1080,12 @@ Ethplorer = {
                         link.attr('href', '#');
                         link.click(function(_container, _page, _pageData){
                             return function(e){
-                                if('function' === typeof(_container['reloadCallback'])){
-                                    _container['reloadCallback'](_page);
+                                var tab = Ethplorer.getActiveTab();
+                                Ethplorer.Nav.set(tab, _page);
+                                if(_page <= 1){
+                                    Ethplorer.Nav.del(tab);
                                 }
+                                Ethplorer.reloadTab(tab);
                                 e.preventDefault();
                             };
                         }(container, i, pageData));
@@ -1121,10 +1103,6 @@ Ethplorer = {
             }
             container.append(pageSizeSelect);
             container.append(pager);
-        }
-
-        if('function' === typeof(reloadCb)){
-            container['reloadCallback'] = reloadCb;
         }
     },
 
