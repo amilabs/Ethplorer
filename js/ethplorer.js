@@ -706,6 +706,7 @@ Ethplorer = {
             title: '',
         };
         ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {type:'area', token: address, options: options});
+        ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
     },
 
     drawTransfers: function(address, transfersData){
