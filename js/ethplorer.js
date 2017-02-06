@@ -111,9 +111,23 @@ Ethplorer = {
                 Ethplorer.filter = filter;
                 Ethplorer.showTableLoader();
                 $('#filter_list').attr('disabled', true)
-                Ethplorer.route();
+                
+                // Reload active tab, set other tabs as need to reload
+                var activeTab = $('.nav-tabs li.active').attr('id').replace('tab-', '');
+                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: activeTab}, Ethplorer['draw' + activeTab[0].toUpperCase() + activeTab.substr(1)]);
+                var tabs = ['transfers', 'issuances', 'chainy', 'holders'];
+                delete tabs[tabs.indexOf(activeTab)];
+                Ethplorer.reloadTabs = tabs;
             }
         });
+        $('.nav-tabs li a').click(function(e){
+            var tabName = $(this).parent().attr('id').replace('tab-', '');
+            if(('undefined' !== typeof(Ethplorer.reloadTabs)) && (Ethplorer.reloadTabs.indexOf(tabName) >= 0)){
+                Ethplorer.showTableLoader();
+                Ethplorer.loadAddressData(Ethplorer.currentAddress, {refresh: tabName}, Ethplorer['draw' + tabName[0].toUpperCase() + tabName.substr(1)]);
+                delete Ethplorer.reloadTabs[Ethplorer.reloadTabs.indexOf(tabName)];
+            }
+        })
         if(localStorage && ('undefined' !== typeof(localStorage['tx-details-block']))){
             if('open' === localStorage['tx-details-block']){
                 $('.tx-details-link').addClass('closed');
@@ -577,7 +591,6 @@ Ethplorer = {
     },
 
     showAddressDetails: function(address, data){
-        $('#filter_list').attr('disabled', false)
         Ethplorer.currentAddress = address;
         Ethplorer.data = data;
         var titleAdd = '';
@@ -709,6 +722,7 @@ Ethplorer = {
     },
 
     drawTransfers: function(address, transfersData){
+        $('#filter_list').attr('disabled', false);
         for(var key in transfersData){
             Ethplorer.data[key] = transfersData[key];
         }
@@ -803,6 +817,7 @@ Ethplorer = {
     },
 
     drawIssuances: function(address, issuancesData){
+        $('#filter_list').attr('disabled', false);
         $('#address-issuances .table').empty();
         for(var key in issuancesData){
             Ethplorer.data[key] = issuancesData[key];
@@ -860,6 +875,7 @@ Ethplorer = {
     },
 
     drawHolders: function(address, holdersData){
+        $('#filter_list').attr('disabled', false);
         $('#address-token-holders .table').empty();
         for(var key in holdersData){
             Ethplorer.data[key] = holdersData[key];
@@ -931,6 +947,7 @@ Ethplorer = {
     },
 
     drawChainy: function(address, chainyData){
+        $('#filter_list').attr('disabled', false);
         $('#address-chainy-tx .table').empty();
         for(var key in chainyData){
             Ethplorer.data[key] = chainyData[key];
@@ -1008,6 +1025,9 @@ Ethplorer = {
         var currentPage     = pageData.page,
             recordsCount    = pageData.records,
             totalCount      = pageData.total;
+
+        container.parents('.block').find('.total-records').empty();
+
         var pageSizeSelect = $('<SELECT class="pageSize">');
         var sizes = [10, 25, 50, 100];
         for(var i=0; i<4; i++){
@@ -1242,12 +1262,14 @@ Ethplorer = {
     showTableLoader: function(){
         $('.filter-box').addClass('processing');
         $('.paginationFooter, .notFoundRow').parents('.table').addClass('unclickable');
-        $('.total-records').html('<i class="table-loading fa fa-spinner fa-spin fa-2x"></i>');
+        setTimeout(function(){
+            $('.total-records:visible').html('<i class="table-loading fa fa-spinner fa-spin fa-2x"></i>');
+        }, 500);
+        $('.nav-tabs').addClass('unclickable');
     },
     hideTableLoader: function(){
         $('.filter-box').removeClass('processing');
-        $('.table').removeClass('unclickable');
-        $('.total-records').empty();
+        $('.table, .nav-tabs').removeClass('unclickable');
     },
     showLoader: function(){
         Ethplorer.loaderTimeout = setTimeout(function(){
