@@ -121,6 +121,9 @@ Ethplorer = {
             if(('undefined' !== typeof(Ethplorer.reloadTabs)) && (Ethplorer.reloadTabs.indexOf(tabName) >= 0)){
                 Ethplorer.reloadTab(tabName, false);
             }
+            setTimeout(function(){
+                $("table").find("tr:visible:last").addClass("last");
+            }, 300);
         })
         if(localStorage && ('undefined' !== typeof(localStorage['tx-details-block']))){
             if('open' === localStorage['tx-details-block']){
