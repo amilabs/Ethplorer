@@ -338,20 +338,25 @@ class Ethplorer {
                 "tx" => $tx,
                 "contracts" => array()
             );
+            $tokenAddr = false;
             if(isset($tx["creates"]) && $tx["creates"]){
                 $result["contracts"][] = $tx["creates"];
+                $tokenAddr = $tx["creates"];
             }
             $fromContract = $this->getContract($tx["from"]);
             if($fromContract){
                 $result["contracts"][] = $tx["from"];
             }
             if(isset($tx["to"]) && $tx["to"]){
-                $toContract = $this->getContract($tx["to"]);
-                if($toContract){
-                    if($token = $this->getToken($tx["to"])){
-                        $result['token'] = $token;
-                    }
+                if($this->getContract($tx["to"])){
                     $result["contracts"][] = $tx["to"];
+                    $tokenAddr = $tx["to"];
+                }
+            }
+            $result["contracts"] = array_values(array_unique($result["contracts"]));
+            if($tokenAddr){
+                if($token = $this->getToken($tokenAddr)){
+                    $result['token'] = $token;
                     $result["operations"] = $this->getOperations($hash);
                     if(is_array($result["operations"]) && count($result["operations"])){
                         foreach($result["operations"] as $idx => $operation){
@@ -364,7 +369,6 @@ class Ethplorer {
                                 $result["operations"][$idx]['token'] = $token;
                             }
                         }
-                        $result["contracts"] = array_values(array_unique($result["contracts"]));
                     }
                 }
             }
