@@ -25,6 +25,11 @@ tr.paginationFooter td ul.pagination {
     margin-bottom: 4px;
 }
 
+.nav-tabs.unclickable {
+    pointer-events: none;
+}
+
+
 .table.unclickable {
     opacity: 0.5;
     pointer-events: none;

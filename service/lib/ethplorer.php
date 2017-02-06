@@ -338,20 +338,25 @@ class Ethplorer {
                 "tx" => $tx,
                 "contracts" => array()
             );
+            $tokenAddr = false;
             if(isset($tx["creates"]) && $tx["creates"]){
                 $result["contracts"][] = $tx["creates"];
+                $tokenAddr = $tx["creates"];
             }
             $fromContract = $this->getContract($tx["from"]);
             if($fromContract){
                 $result["contracts"][] = $tx["from"];
             }
             if(isset($tx["to"]) && $tx["to"]){
-                $toContract = $this->getContract($tx["to"]);
-                if($toContract){
-                    if($token = $this->getToken($tx["to"])){
-                        $result['token'] = $token;
-                    }
+                if($this->getContract($tx["to"])){
                     $result["contracts"][] = $tx["to"];
+                    $tokenAddr = $tx["to"];
+                }
+            }
+            $result["contracts"] = array_values(array_unique($result["contracts"]));
+            if($tokenAddr){
+                if($token = $this->getToken($tokenAddr)){
+                    $result['token'] = $token;
                     $result["operations"] = $this->getOperations($hash);
                     if(is_array($result["operations"]) && count($result["operations"])){
                         foreach($result["operations"] as $idx => $operation){
@@ -364,7 +369,6 @@ class Ethplorer {
                                 $result["operations"][$idx]['token'] = $token;
                             }
                         }
-                        $result["contracts"] = array_values(array_unique($result["contracts"]));
                     }
                 }
             }
@@ -1120,8 +1124,14 @@ class Ethplorer {
         $result = array('results' => array(), 'total' => 0);
         $found = array();
         $aTokens = $this->getTokens();
+        $aTokens['0xf3763c30dd6986b53402d41a8552b8f7f6a6089b'] = array(
+            'name' => 'Chainy',
+            'symbol' => false,
+            'txsCount' => 99999
+        );
         foreach($aTokens as $address => $aToken){
-            if((!empty($aToken['name']) && (strpos(strtolower($aToken['name']), strtolower($token)) !== FALSE)) || (!empty($aToken['symbol']) && (strpos(strtolower($aToken['symbol']), strtolower($token)) !== FALSE))){
+            $search = strtolower($token);
+            if((strpos($address, $search) !== FALSE) || (!empty($aToken['name']) && (strpos(strtolower($aToken['name']), $search) !== FALSE)) || (!empty($aToken['symbol']) && (strpos(strtolower($aToken['symbol']), $search) !== FALSE))){
                 $aToken['address'] = $address;
                 $found[] = $aToken;
             }
@@ -1140,6 +1150,12 @@ class Ethplorer {
     }
 
     public function sortTokensByTxsCount($a, $b) {
+        if(!isset($a['txsCount'])){
+            $a['txsCount'] = 0;
+        }
+        if(!isset($b['txsCount'])){
+            $b['txsCount'] = 0;
+        }
         if($a['txsCount'] == $b['txsCount']){
             return 0;
         }
