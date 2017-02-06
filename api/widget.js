@@ -642,9 +642,9 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             console.log(data);
             if(data && !data.error && data.txs && data.txs.length){
                 obj.widgetData = data.txs;
-                obj.el.find('.txs-loading').remove();
                 google.charts.setOnLoadCallback(
                     function(){
+                        obj.el.find('.txs-loading').remove();
                         obj.drawChart(data.txs);
                         ethplorerWidget.appendEthplorerLink(obj.el);
                         if('function' === typeof(obj.options.onLoad)){
