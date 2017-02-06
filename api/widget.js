@@ -8,6 +8,9 @@ ethplorerWidget = {
     // Widget types
     Type: {},
 
+    // Add Google loader for chart widgets
+    addGoogleLoader: false,
+
     // Widget initialization
     init: function(selector, type, options, templates){
         if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') >= 0)){
@@ -23,6 +26,9 @@ ethplorerWidget = {
             console.log('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>');
             return;
         }
+        if(type == 'dailyTX'){
+            ethplorerWidget.addGoogleLoader = true;
+        }
         var el = $(selector);
         if(!el.length){
             console.error('Cannot initialize Ethplorer widget: element ' + selector + ' not found.');
@@ -36,6 +42,20 @@ ethplorerWidget = {
             return new ethplorerWidget.Type[type](el, options, templates);
         }else{
             console.error('Cannot initialize Ethplorer widget: invalid widget type "' + type + '".');
+        }
+    },
+    loadScript: function(url, callback){
+        var head = document.getElementsByTagName('head')[0];
+        var script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.src = url;
+        script.onreadystatechange = callback;
+        script.onload = callback;
+        head.appendChild(script);
+    },
+    loadGoogleCharts: function(){
+        if(google && google.charts){
+            google.charts.load('current', {packages: ['corechart']});
         }
     },
     appendEthplorerLink: function(el){
@@ -653,10 +673,6 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     this.init();
 };
 
-if(google && google.charts){
-    google.charts.load('current', {packages: ['corechart']});
-}
-
 /**
  * Document on ready widgets initialization.
  * Initializes all widgets added using eWgs array.
@@ -668,6 +684,11 @@ if(google && google.charts){
             for(var i=0; i<eWgs.length; i++)
                 if('function' === typeof(eWgs[i]))
                     eWgs[i]();
+
+        if(ethplorerWidget.addGoogleLoader){
+            ethplorerWidget.addGoogleLoader = false;
+            ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
+        }
     }
     // add widget css
     var linkElem = document.createElement('link');
