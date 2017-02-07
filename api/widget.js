@@ -634,9 +634,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         var options = $.extend(true, def, this.options['options']);
 
         var tooltipFormatter = new google.visualization.DateFormat({ 
-            pattern: "MMM dd, yyyy z",
-            timeZone: 0
-        }); 
+            pattern: "MMM dd, yyyy '+UTC'"
+        });
         tooltipFormatter.format(data, 0);
 
         if(this.options['type'] == 'area') var chart = new google.visualization.AreaChart(this.el[0]);
