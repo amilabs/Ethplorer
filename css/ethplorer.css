@@ -644,11 +644,13 @@ _::-webkit-:host:not(:root:root), .filter-clear {
 }
 
 li.ui-menu-item.not-found {
+    opacity: 1 !important;
     color: #aaa;
     pointer-events: none;
 }
 
 li.ui-menu-item.have-more {
+    opacity: 1 !important;
     color: #aaa;
     padding-top: 4px;
     border-top: 1px dotted #aaa;

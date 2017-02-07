@@ -139,47 +139,46 @@ Ethplorer = {
             e.preventDefault();
         });
         $("#search").autocomplete({
-                source: function(request, response){
-                    var search = request.term;
-                    if(search in Ethplorer.searchCache){
-                        response(Ethplorer.searchCache[search]);
-                        return;
-                    }
-                    $.getJSON(Ethplorer.service, {search: search}, function(data, status, xhr){
-                        if(!data.total){
-                            data.results = [false];
-                        }else{
-                            if(data.total > data.results.length){
-                                data.results.push({more: (data.total - data.results.length)});
-                            }
+            source: function(request, response){
+                var search = request.term;
+                if(search in Ethplorer.searchCache){
+                    response(Ethplorer.searchCache[search]);
+                    return;
+                }
+                $.getJSON(Ethplorer.service, {search: search}, function(data, status, xhr){
+                    if(!data.total){
+                        data.results = [false];
+                    }else{
+                        if(data.total > data.results.length){
+                            data.results.push({more: (data.total - data.results.length)});
                         }
-                        Ethplorer.searchCache[search] = data.results;
-                        response(data.results);
-                    });
-                },
-                minLength: 1,
-                select: function(event, ui){
-                    if('undefined' !== typeof(ui.item[2])){
-                        document.location.href = '/address/' + ui.item[2];
                     }
+                    Ethplorer.searchCache[search] = data.results;
+                    response(data.results);
+                });
+            },
+            minLength: 1,
+            select: function(event, ui){
+                if('undefined' !== typeof(ui.item[2])){
+                    document.location.href = '/address/' + ui.item[2];
                 }
-            })
-            .autocomplete( "instance" )._renderItem = function(ul, res){
-                if(!res) return;
-                if('undefined' !== typeof(res[0])){
-                    var address = res[2];
-                    var text = (res[0] ? res[0] : "")  + (res[1] ? (' (' + res[1] + ')') : '');
-                    text = text.replace(new RegExp($('#search').val(), 'ig'), "<b>$&</b>");
-                    address = address.replace(new RegExp($('#search').val(), 'ig'), "<b>$&</b>");
-                    text += (' <span style="color:#aaa;">' + address + '</span>')
-                    return $('<li class="ui-menu-item">').append(text).appendTo(ul);
-                }
-                if('undefined' !== typeof(res.more)){
-                    return $('<li class="have-more ui-state-disabled">').append(res.more + ' results more...').appendTo(ul);
-                }
-                return $('<li class="not-found ui-state-disabled">').append('No results').appendTo(ul);
-
-            };
+            }
+        })
+        .autocomplete( "instance" )._renderItem = function(ul, res){
+            if(!res) return;
+            if('undefined' !== typeof(res[0])){
+                var address = res[2];
+                var text = (res[0] ? res[0] : "")  + (res[1] ? (' (' + res[1] + ')') : '');
+                text = text.replace(new RegExp($('#search').val(), 'ig'), "<b>$&</b>");
+                address = address.replace(new RegExp($('#search').val(), 'ig'), "<b>$&</b>");
+                text += (' <span style="color:#aaa;">' + address + '</span>')
+                return $('<li class="ui-menu-item">').append(text).appendTo(ul);
+            }
+            if('undefined' !== typeof(res.more)){
+                return $('<li class="have-more ui-state-disabled">').append(res.more + ' results more...').appendTo(ul);
+            }
+            return $('<li class="not-found ui-state-disabled">').append('No results').appendTo(ul);
+        };
         /*
         Ethplorer.searchInterval = setInterval(function(){
             var search = $('#search').val();
