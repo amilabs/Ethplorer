@@ -739,6 +739,8 @@ Ethplorer = {
         $('#ethplorer-daily-token').show();
         var options = {
             title: '',
+            hAxis: {title: ''},
+            vAxis: {title: ''}
         };
         ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {type:'area', token: address, options: options});
         ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
