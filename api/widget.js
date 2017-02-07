@@ -604,7 +604,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             },
             hAxis : {
                 title: '90 days token operations chart',
-                titleTextStyle: {color: '#B0B0B0'},
+                titleTextStyle: {color: '#B0B0B0', italic: false},
                 textPosition: 'out',
                 textStyle: {color: '#FFF'},
                 slantedText: false,
@@ -619,7 +619,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
             },
             vAxis: {
                 title: 'Token operations',
-                titleTextStyle: {color: '#B0B0B0'},
+                titleTextStyle: {color: '#B0B0B0', italic: false},
                 textStyle: {color: '#FFF'},
                 minValue: 0,
                 gridlines: {
