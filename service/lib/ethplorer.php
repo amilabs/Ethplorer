@@ -1140,6 +1140,7 @@ class Ethplorer {
         $i = 0;
         foreach($found as $aToken){
             if($i < 6){
+                $aToken += array('name' => '', 'symbol' => '');
                 $result['results'][] = array($aToken['name'], $aToken['symbol'], $aToken['address']);
             }
             $i++;
