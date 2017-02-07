@@ -202,17 +202,23 @@ Ethplorer = {
         }, 100);
     },
     getActiveTab: function(){
-        return $('.nav-tabs li.active').attr('id').replace('tab-', '');
+        var tab = ($('.nav-tabs:visible li.active').length) ? $('.nav-tabs:visible li.active').attr('id').replace('tab-', '') : false;
+        if(!tab){
+            if($('#address-transfers:visible').length){
+                tab = 'transfers';
+            }
+            if($('#address-chainy-tx:visible').length){
+                tab = 'chainy';
+            }
+        }
+        return tab;
     },
     reloadTab: function(name, reloadOthers){
         var tabs = ['transfers', 'issuances', 'chainy', 'holders'];
         if(!name){ // Get active tab if name not set
-            console.log('tab name not set');
             name = Ethplorer.getActiveTab();
         }
-        console.log('reload tab ' + name);
-        if((tabs.indexOf(name) < 0) || !$('.nav-tabs').length){
-            console.log('Tabs are unclickable!');
+        if(tabs.indexOf(name) < 0){
             return;
         }
         var methodName = 'draw' + name[0].toUpperCase() + name.substr(1);
@@ -648,7 +654,6 @@ Ethplorer = {
                     oToken.description = Ethplorer.Config.tokens[oToken.address].description;
                 }
             }
-            
             if(oToken.description){
                 oToken.description = $('<span>').text(oToken.description).html();
                 oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
@@ -721,7 +726,9 @@ Ethplorer = {
             $('.filter-box').addClass('in-tabs');
         }
 
-        Ethplorer.drawTransfers(address, data);
+        if(!data.contract || !data.contract.isChainy){
+            Ethplorer.drawTransfers(address, data);
+        }
 
         document.title = 'Ethplorer';
         document.title += (': ' + (titleAdd ? (titleAdd + ' -') : ''));
@@ -732,6 +739,7 @@ Ethplorer = {
         Ethplorer.hideLoader();
         $('#disqus_thread').show();
         $('#addressDetails').show();
+
         $("table").find("tr:visible:odd").addClass("odd");
         $("table").find("tr:visible:even").addClass("even");
         $("table").find("tr:visible:last").addClass("last");
@@ -826,6 +834,11 @@ Ethplorer = {
             $('#' + tableId).hide();
             $('.filter-box').hide();
         }
+
+        $(".table").find("tr:visible:odd").addClass("odd");
+        $(".table").find("tr:visible:even").addClass("even");
+        $(".table").find("tr:visible:last").addClass("last");
+
         $('#' + tableId).show();
     },
 
