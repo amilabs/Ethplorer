@@ -629,6 +629,29 @@ _::-webkit-:host:not(:root:root), .filter-clear {
     pointer-events: none;
 }
 
+.ui-autocomplete {
+    max-width: 350px;
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.ui-autocomplete li {
+    white-space: nowrap;
+}
+
+li.ui-menu-item.not-found {
+    color: #aaa;
+    pointer-events: none;
+}
+
+li.ui-menu-item.have-more {
+    color: #aaa;
+    padding-top: 4px;
+    border-top: 1px dotted #aaa;
+    font-style: italic;
+    pointer-events: none;    
+}
+
 #filter_list:focus {
     outline: none;
     box-shadow: 0 0 0px #000;
@@ -864,6 +887,10 @@ a.token-update {
     
     .filter-box.in-tabs #filter_list {
         width: 100%;
+    }
+
+    .ui-autocomplete {
+        max-width: 100%;
     }
     
     #ethplorer-path {
