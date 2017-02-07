@@ -23,6 +23,7 @@ ethplorerWidget = {
         templates = templates || {};
         type = type || 'tokenHistory';
         var widgetOptions = $.extend(true, {}, options);
+        if(widgetOptions.onLoad) delete widgetOptions.onLoad;
         options.widgetOptions = widgetOptions;
         options.widgetType = type;
         if('undefined' === typeof(jQuery)){
