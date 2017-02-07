@@ -100,7 +100,6 @@ Ethplorer = {
                                 }, 3000);
                             });
                         }
-                        
                         return;
                     }
                 }else{
@@ -208,9 +207,12 @@ Ethplorer = {
     reloadTab: function(name, reloadOthers){
         var tabs = ['transfers', 'issuances', 'chainy', 'holders'];
         if(!name){ // Get active tab if name not set
+            console.log('tab name not set');
             name = Ethplorer.getActiveTab();
         }
-        if((tabs.indexOf(name) < 0) || !$('.nav-tabs').length || $('.nav-tabs').hasClass('unclickable')){
+        console.log('reload tab ' + name);
+        if((tabs.indexOf(name) < 0) || !$('.nav-tabs').length){
+            console.log('Tabs are unclickable!');
             return;
         }
         var methodName = 'draw' + name[0].toUpperCase() + name.substr(1);
