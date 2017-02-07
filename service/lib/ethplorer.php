@@ -285,7 +285,7 @@ class Ethplorer {
             $result['pager']['transfers'] = array(
                 'page' => $this->getPager('transfers'),
                 'records' => $this->countOperations($address),
-                'total' => $this->countOperations($address. FALSE),
+                'total' => $this->countOperations($address, FALSE),
             );
         }
         return $result;

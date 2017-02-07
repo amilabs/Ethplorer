@@ -625,7 +625,7 @@ _::-webkit-:host:not(:root:root), .filter-clear {
 }
 
 .filter-box.processing {
-    opacity: 0.3;
+    opacity: 0.6;
     pointer-events: none;
 }
 
