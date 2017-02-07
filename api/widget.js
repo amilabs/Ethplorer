@@ -575,7 +575,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     this.api = ethplorerWidget.api + '/getDailyTX';
 
     this.templates = {
-        loader: '<div class="txs-loading">Loading daily token transactions...</div>',
+        loader: '<div class="txs-loading">Loading...</div>',
     };
 
     this.load = function(){
