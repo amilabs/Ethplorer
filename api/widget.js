@@ -575,7 +575,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     this.api = ethplorerWidget.api + '/getDailyTX';
 
     this.templates = {
-        loader: '<div class="txs-loading">Loading daily token transactions...</div>',
+        loader: '<div class="txs-loading">Loading...</div>',
     };
 
     this.load = function(){
@@ -584,7 +584,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
 
     this.drawChart = function(aTxData){
         var aData = [];
-        aData.push(['Day', 'Txs']);
+        aData.push(['Day', 'Token operations']);
         for(var i = aTxData.length - 1; i >= 0; i--){
             var aDailyData = aTxData[i];
             //console.log(aDailyData);
@@ -593,7 +593,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
 
         var data = google.visualization.arrayToDataTable(aData);
         var def = {
-            title: 'Daily TXs',
+            title: 'Ethereum Tokens Pulse',
             titleTextStyle: {
                 color: '#FFF',
             },
@@ -603,6 +603,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
                 format: 'MMM d',
             },
             hAxis : {
+                title: '90 days token operations chart',
+                titleTextStyle: {color: '#B0B0B0', italic: false},
                 textPosition: 'out',
                 textStyle: {color: '#FFF'},
                 slantedText: false,
@@ -616,8 +618,10 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
                 baselineColor: '#FFF'
             },
             vAxis: {
-                minValue: 0,
+                title: 'Token operations',
+                titleTextStyle: {color: '#B0B0B0', italic: false},
                 textStyle: {color: '#FFF'},
+                minValue: 0,
                 gridlines: {
                     color: "none"
                 },
