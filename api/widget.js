@@ -22,6 +22,8 @@ ethplorerWidget = {
         options = options || {};
         templates = templates || {};
         type = type || 'tokenHistory';
+        var widgetOptions = $.extend(true, {}, options);
+        options.widgetOptions = widgetOptions;
         options.widgetType = type;
         if('undefined' === typeof(jQuery)){
             console.error('Cannot initialize Ethplorer widget: jQuery not found.');
@@ -70,7 +72,7 @@ ethplorerWidget = {
         if(document.location.host !== host){
             obj.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>');
         }else{
-            obj.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></a>');
+            obj.el.append('<div style="text-align:center;font-size:11px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></a>');
             obj.el.find('.tx-link').data("widget", obj);
         }
     },
@@ -78,13 +80,7 @@ ethplorerWidget = {
         var widget = $(obj).data().widget,
             cr = "\n",
             id = widget.el.attr('id'),
-            widgetOptions = $.extend(true, {}, widget.options || {});
-
-        if(!$.isEmptyObject(widgetOptions)){
-            if(widgetOptions.widgetType == 'dailyTX' && widgetOptions.type && widgetOptions.type == 'column') delete widgetOptions.type;
-            if('undefined' !== widgetOptions.options && $.isEmptyObject(widgetOptions.options)) delete widgetOptions.options;
-            if(widgetOptions.widgetType) delete widgetOptions.widgetType;
-        }
+            widgetOptions = $.extend(true, {}, widget.options.widgetOptions || {});
 
         var widgetCode = '<div id="' + id + '"></div>' + cr;
         widgetCode += '<script type="text/javascript">' + cr;
