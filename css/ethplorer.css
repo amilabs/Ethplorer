@@ -391,10 +391,6 @@ a.dashed {
     overflow: hidden;
 }
 
-#get-widget {
-	display: none;
-}
-
 .same-address {
     opacity: 0.4;
 }

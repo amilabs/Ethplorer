@@ -83,6 +83,7 @@ ethplorerWidget = {
             id = widget.el.attr('id'),
             widgetOptions = $.extend(true, {}, widget.options.widgetOptions || {});
 
+        if('undefined' !== typeof(widgetOptions.getCode)) delete widgetOptions.getCode;
         var widgetCode = '<div id="' + id + '"></div>' + cr;
         widgetCode += '<script type="text/javascript">' + cr;
         widgetCode += 'if(typeof(eWgs) === \'undefined\'){ document.write(\'<scr\' + \'ipt src="/api/widget.js?\' + new Date().getTime().toString().substr(0,7) + \'" async></scr\' + \'ipt>\'); var eWgs = []; }' + cr;
