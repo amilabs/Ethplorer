@@ -73,7 +73,7 @@ ethplorerWidget = {
         if(document.location.host !== host){
             obj.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>');
         }else{
-            obj.el.append('<div style="text-align:center;font-size:11px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></a>');
+            obj.el.append('<div id="get-widget" style="text-align:center;font-size:11px;display:none;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>');
             obj.el.find('.tx-link').data("widget", obj);
         }
     },
@@ -593,18 +593,16 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
 
         var data = google.visualization.arrayToDataTable(aData);
         var def = {
-            title: 'Ethereum Tokens Pulse',
-            titleTextStyle: {
-                color: '#FFF',
-            },
+            title: '',
+            //titleTextStyle: {color: '#FFF'},
             //curveType: 'function',
             legend: { position: 'none' },
             tooltip: {
                 format: 'MMM d',
             },
             hAxis : {
-                title: '90 days token operations chart',
-                titleTextStyle: {color: '#B0B0B0', italic: false},
+                title: '',
+                //titleTextStyle: {color: '#B0B0B0', italic: false},
                 textPosition: 'out',
                 textStyle: {color: '#FFF'},
                 slantedText: false,
@@ -618,8 +616,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
                 baselineColor: '#FFF'
             },
             vAxis: {
-                title: 'Token operations',
-                titleTextStyle: {color: '#B0B0B0', italic: false},
+                title: '',
+                //titleTextStyle: {color: '#B0B0B0', italic: false},
                 textStyle: {color: '#FFF'},
                 minValue: 0,
                 gridlines: {
