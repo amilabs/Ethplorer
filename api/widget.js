@@ -72,8 +72,8 @@ ethplorerWidget = {
         var host = ethplorerWidget.url.split('//')[1];
         if(document.location.host !== host){
             obj.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>');
-        }else{
-            obj.el.append('<div id="get-widget" style="text-align:center;font-size:11px;display:none;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>');
+        }else if('undefined' !== typeof(obj.options.getCode) && obj.options.getCode){
+            obj.el.append('<div style="text-align:center;font-size:11px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>');
             obj.el.find('.tx-link').data("widget", obj);
         }
     },
@@ -83,6 +83,7 @@ ethplorerWidget = {
             id = widget.el.attr('id'),
             widgetOptions = $.extend(true, {}, widget.options.widgetOptions || {});
 
+        if('undefined' !== typeof(widgetOptions.getCode)) delete widgetOptions.getCode;
         var widgetCode = '<div id="' + id + '"></div>' + cr;
         widgetCode += '<script type="text/javascript">' + cr;
         widgetCode += 'if(typeof(eWgs) === \'undefined\'){ document.write(\'<scr\' + \'ipt src="/api/widget.js?\' + new Date().getTime().toString().substr(0,7) + \'" async></scr\' + \'ipt>\'); var eWgs = []; }' + cr;

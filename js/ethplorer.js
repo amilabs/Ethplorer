@@ -789,7 +789,7 @@ Ethplorer = {
         $("table").find("tr:visible:last").addClass("last");
 
         $('#ethplorer-daily-token').show();
-        ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {onLoad: function(){$('#get-widget').show();}, type:'area', token: address});
+        ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {getCode: true, type:'area', token: address});
         ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
     },
 
