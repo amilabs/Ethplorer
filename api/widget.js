@@ -73,10 +73,8 @@ ethplorerWidget = {
         if(document.location.host !== host){
             obj.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>');
         }else{
-            /*
-            obj.el.append('<div style="text-align:center;font-size:11px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></a>');
+            obj.el.append('<div id="get-widget" style="text-align:center;font-size:11px;display:none;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>');
             obj.el.find('.tx-link').data("widget", obj);
-            */
         }
     },
     getWidgetCode: function(obj){

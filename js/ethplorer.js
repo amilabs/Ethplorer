@@ -745,6 +745,7 @@ Ethplorer = {
         $("table").find("tr:visible:last").addClass("last");
 
         $('#ethplorer-daily-token').show();
+        $('#get-widget').show();
         var options = {
             title: '',
             hAxis: {title: ''},
