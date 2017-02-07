@@ -22,6 +22,10 @@ ethplorerWidget = {
         options = options || {};
         templates = templates || {};
         type = type || 'tokenHistory';
+        var widgetOptions = $.extend(true, {}, options);
+        if(widgetOptions.onLoad) delete widgetOptions.onLoad;
+        options.widgetOptions = widgetOptions;
+        options.widgetType = type;
         if('undefined' === typeof(jQuery)){
             console.error('Cannot initialize Ethplorer widget: jQuery not found.');
             console.log('Add next string in the <head> section of the page:');
@@ -64,11 +68,31 @@ ethplorerWidget = {
                         ethplorerWidget.chartWidgets[i].load();
         }
     },
-    appendEthplorerLink: function(el){
+    appendEthplorerLink: function(obj){
         var host = ethplorerWidget.url.split('//')[1];
         if(document.location.host !== host){
-            el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>')
+            obj.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>');
+        }else{
+            obj.el.append('<div style="text-align:center;font-size:11px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></a>');
+            obj.el.find('.tx-link').data("widget", obj);
         }
+    },
+    getWidgetCode: function(obj){
+        var widget = $(obj).data().widget,
+            cr = "\n",
+            id = widget.el.attr('id'),
+            widgetOptions = $.extend(true, {}, widget.options.widgetOptions || {});
+
+        var widgetCode = '<div id="' + id + '"></div>' + cr;
+        widgetCode += '<script type="text/javascript">' + cr;
+        widgetCode += 'if(typeof(eWgs) === \'undefined\'){ document.write(\'<scr\' + \'ipt src="/api/widget.js?\' + new Date().getTime().toString().substr(0,7) + \'" async></scr\' + \'ipt>\'); var eWgs = []; }' + cr;
+        widgetCode += 'eWgs.push(function(){ethplorerWidget.init(\'#' + id + '\', \'' + widget.options.widgetType + '\'';
+        if(!$.isEmptyObject(widgetOptions)){
+            widgetCode += ', ' + JSON.stringify(widgetOptions);
+        }
+        widgetCode += ');});' + cr + '</script>';
+
+        console.log(widgetCode);
     },
     // Tilda css hack
     fixTilda: function(){
@@ -330,7 +354,7 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
             this.el.append(txTable);
             this.el.append(txSmall);
 
-            ethplorerWidget.appendEthplorerLink(this.el);
+            ethplorerWidget.appendEthplorerLink(this);
             
             // Debug mode
             if(this.options.debug){
@@ -501,7 +525,7 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
                 txTable += '</table>';
                 obj.el.append(txTable);
 
-                ethplorerWidget.appendEthplorerLink(obj.el);
+                ethplorerWidget.appendEthplorerLink(obj);
 
                 if('function' === typeof(obj.options.onLoad)){
                     obj.options.onLoad();
@@ -607,9 +631,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         var options = $.extend(true, def, this.options['options']);
 
         var tooltipFormatter = new google.visualization.DateFormat({ 
-            pattern: "MMM dd, yyyy z",
-            timeZone: 0
-        }); 
+            pattern: "MMM dd, yyyy '+UTC'"
+        });
         tooltipFormatter.format(data, 0);
 
         if(this.options['type'] == 'area') var chart = new google.visualization.AreaChart(this.el[0]);
@@ -652,7 +675,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
                     function(){
                         obj.el.find('.txs-loading').remove();
                         obj.drawChart(data.txs);
-                        ethplorerWidget.appendEthplorerLink(obj.el);
+                        ethplorerWidget.appendEthplorerLink(obj);
                         if('function' === typeof(obj.options.onLoad)){
                             obj.options.onLoad();
                         }
@@ -671,7 +694,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         obj.resizeTimer = setTimeout(function(){
             if(obj.widgetData){
                 obj.drawChart(obj.widgetData);
-                ethplorerWidget.appendEthplorerLink(obj.el);
+                ethplorerWidget.appendEthplorerLink(obj);
             }
         }, 500);
     });
