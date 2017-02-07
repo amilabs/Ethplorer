@@ -593,10 +593,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
 
         var data = google.visualization.arrayToDataTable(aData);
         var def = {
-            title: 'Ethereum Tokens Pulse',
-            titleTextStyle: {
-                color: '#FFF',
-            },
+            title: '',
+            //titleTextStyle: {color: '#FFF'},
             //curveType: 'function',
             legend: { position: 'none' },
             tooltip: {

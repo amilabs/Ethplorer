@@ -745,13 +745,7 @@ Ethplorer = {
         $("table").find("tr:visible:last").addClass("last");
 
         $('#ethplorer-daily-token').show();
-        $('#get-widget').show();
-        var options = {
-            title: '',
-            hAxis: {title: ''},
-            vAxis: {title: ''}
-        };
-        ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {type:'area', token: address, options: options});
+        ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {onLoad: function(){$('#get-widget').show();}, type:'area', token: address});
         ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
     },
 
