@@ -73,14 +73,18 @@ ethplorerWidget = {
         if(document.location.host !== host){
             obj.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>');
         }else if('undefined' !== typeof(obj.options.getCode) && obj.options.getCode){
-            obj.el.append('<div style="text-align:center;font-size:11px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>');
+            var popupId = obj.el.attr('id') + '-code';
+            var popup = '<div id="' + popupId + '" title="Widget code"></div>';
+            obj.el.append('<div style="text-align:center;font-size:11px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>' + popup);
             obj.el.find('.tx-link').data("widget", obj);
+            $("#" + popupId).dialog({'autoOpen': false});
         }
     },
     getWidgetCode: function(obj){
         var widget = $(obj).data().widget,
             cr = "\n",
             id = widget.el.attr('id'),
+            popupId = id + '-code',
             widgetOptions = $.extend(true, {}, widget.options.widgetOptions || {});
 
         if('undefined' !== typeof(widgetOptions.getCode)) delete widgetOptions.getCode;
@@ -93,6 +97,8 @@ ethplorerWidget = {
         }
         widgetCode += ');});' + cr + '</script>';
 
+        $("#" + popupId).text(widgetCode);
+        $("#" + popupId).dialog('open');
         console.log(widgetCode);
     },
     // Tilda css hack
