@@ -77,7 +77,17 @@ ethplorerWidget = {
             obj.el.append('<div style="text-align:center;font-size:11px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>');
             obj.el.find('.tx-link').data("widget", obj);
             $("body").append('<div id="' + popupId + '" title="Widget code"></div>');
-            $("#" + popupId).dialog({'autoOpen': false, 'resizable': false, 'width': $(window).width() / 2, 'height': 'auto'}).css("font-size", "12px");
+            $("#" + popupId).dialog({
+                'autoOpen': false,
+                'resizable': false,
+                'width': $(window).width() / 2,
+                'height': 'auto',
+                'open': function(){
+                    $(this).parents(".ui-dialog:first").find(".ui-dialog-content").click(function(){
+                        ethplorerWidget.Utils.selectText(popupId);
+                    });
+                }
+            }).css("font-size", "12px");
         }
     },
     getWidgetCode: function(obj){
@@ -227,6 +237,17 @@ ethplorerWidget = {
             res = res.replace(/\.$/, '');
             return res;
         },
+        selectText: function(containerid){
+            if(document.selection){
+                var range = document.body.createTextRange();
+                range.moveToElementText(document.getElementById(containerid));
+                range.select();
+            }else if(window.getSelection){
+                var range = document.createRange();
+                range.selectNode(document.getElementById(containerid));
+                window.getSelection().addRange(range);
+            }
+        }
     }
 };
 
