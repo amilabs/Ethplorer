@@ -568,6 +568,7 @@ if($error){
     </div>
     <script>
         $(document).ready(function(){
+            $.fn.bootstrapBtn = $.fn.button.noConflict();
             Ethplorer.init();
         });
         if(Ethplorer.Config.ga){
