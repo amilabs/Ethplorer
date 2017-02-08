@@ -77,7 +77,7 @@ ethplorerWidget = {
             var popup = '<div id="' + popupId + '" title="Widget code"></div>';
             obj.el.append('<div style="text-align:center;font-size:11px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>' + popup);
             obj.el.find('.tx-link').data("widget", obj);
-            $("#" + popupId).dialog({'autoOpen': false});
+            $("#" + popupId).dialog({'autoOpen': false, 'resizable': false, 'width': 'auto', 'height': 'auto'}).css("font-size", "12px");
         }
     },
     getWidgetCode: function(obj){
@@ -98,6 +98,8 @@ ethplorerWidget = {
         widgetCode += ');});' + cr + '</script>';
 
         $("#" + popupId).text(widgetCode);
+        var popupContent = $("#" + popupId).html();
+        $("#" + popupId).html(popupContent.replace(/(\n)/gm, "<br/>"));
         $("#" + popupId).dialog('open');
         console.log(widgetCode);
     },
@@ -592,10 +594,28 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
     this.drawChart = function(aTxData){
         var aData = [];
         aData.push(['Day', 'Token operations']);
-        for(var i = aTxData.length - 1; i >= 0; i--){
+
+        var stDate = new Date(),
+            fnDate = new Date();
+        fnDate.setDate(stDate.getDate() - this.options.period);
+
+        var aCountData = {};
+        for(var i = 0; i < aTxData.length; i++){
             var aDailyData = aTxData[i];
-            //console.log(aDailyData);
-            aData.push([new Date(aDailyData._id.year, aDailyData._id.month - 1, aDailyData._id.day), aDailyData.cnt]);
+            aCountData[aDailyData._id.year + '-' + aDailyData._id.month + '-' + aDailyData._id.day] = aDailyData.cnt;
+        }
+
+        var curDate = true;
+        while(stDate > fnDate){
+            var key = stDate.getFullYear() + '-' + (stDate.getMonth() + 1) + '-' + stDate.getDate();
+            var cnt = ('undefined' !== typeof(aCountData[key])) ? aCountData[key] : 0;
+            if(curDate && cnt == 0){
+                curDate = false;
+                continue;
+            }
+            aData.push([new Date(stDate.getFullYear(), stDate.getMonth(), stDate.getDate()), cnt]);
+            var newDate = stDate.setDate(stDate.getDate() - 1);
+            stDate = new Date(newDate);
         }
 
         var data = google.visualization.arrayToDataTable(aData);
