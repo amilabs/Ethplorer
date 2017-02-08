@@ -74,10 +74,10 @@ ethplorerWidget = {
             obj.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>');
         }else if('undefined' !== typeof(obj.options.getCode) && obj.options.getCode){
             var popupId = obj.el.attr('id') + '-code';
-            var popup = '<div id="' + popupId + '" title="Widget code"></div>';
-            obj.el.append('<div style="text-align:center;font-size:11px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>' + popup);
+            obj.el.append('<div style="text-align:center;font-size:11px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>');
             obj.el.find('.tx-link').data("widget", obj);
-            $("#" + popupId).dialog({'autoOpen': false, 'resizable': false, 'width': 'auto', 'height': 'auto'}).css("font-size", "12px");
+            $("body").append('<div id="' + popupId + '" title="Widget code"></div>');
+            $("#" + popupId).dialog({'autoOpen': false, 'resizable': false, 'width': $(window).width() / 2, 'height': 'auto'}).css("font-size", "12px");
         }
     },
     getWidgetCode: function(obj){
@@ -722,6 +722,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         if(obj.resizeTimer) clearTimeout(obj.resizeTimer);
         obj.resizeTimer = setTimeout(function(){
             if(obj.widgetData){
+                obj.el.empty();
                 obj.drawChart(obj.widgetData);
                 ethplorerWidget.appendEthplorerLink(obj);
             }
