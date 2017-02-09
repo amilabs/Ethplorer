@@ -32,7 +32,7 @@ ethplorerWidget = {
             console.log('<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>');
             return;
         }
-        if(type == 'dailyTX'){
+        if(type == 'tokenHistoryGrouped'){
             ethplorerWidget.addGoogleLoader = true;
         }
         var el = $(selector);
@@ -578,14 +578,14 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
 }
 
 /**
- * Daily Token TXs Widget.
+ * Token history grouped Widget.
  *
  * @param {type} element
  * @param {type} options
  * @param {type} templates
  * @returns {undefined}
  */
-ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
+ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templates){
     this.el = element;
     this.widgetData = null;
     this.resizeTimer = null;
@@ -602,7 +602,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
         }
     }
 
-    this.api = ethplorerWidget.api + '/getDailyTX';
+    this.api = ethplorerWidget.api + '/getTokenHistoryGrouped';
 
     this.templates = {
         loader: '<div class="txs-loading">Loading...</div>',

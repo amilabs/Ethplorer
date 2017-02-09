@@ -19,7 +19,7 @@ class ethplorerController {
     protected $db;
     protected $command;
     protected $params = array();
-    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getDailyTX');
+    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getTokenHistoryGrouped');
     protected $defaults;
 
     public function __construct($es){
@@ -278,12 +278,12 @@ class ethplorerController {
     }
 
     /**
-     * /getDailyTX method implementation.
+     * /getTokenHistoryGrouped method implementation.
      *
      * @undocumented
      * @return array
      */
-    public function getDailyTX(){
+    public function getTokenHistoryGrouped(){
         $period = min(abs((int)$this->getRequest('period', 30)), 90);
         $token = $this->getRequest('token', FALSE);
         if(FALSE !== $token){
@@ -292,7 +292,7 @@ class ethplorerController {
                 $this->sendError(104, 'Invalid token address format');
             }
         }
-        $result = array('txs' => $this->db->getDailyTX($period, $token));
+        $result = array('txs' => $this->db->getTokenHistoryGrouped($period, $token));
         $this->sendResult($result);
     }
 

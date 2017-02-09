@@ -867,18 +867,18 @@ class Ethplorer {
     }
 
     /**
-     * Returns daily tx's list.
+     * Returns transactions grouped by days.
      *
      * @param int $period  Days from now
      * @return array
      */
-    public function getDailyTX($period = 30, $token = FALSE){
-        $cache = 'daily_tx-' . ($token ? ($token . '-') : '') . $period;
+    public function getTokenHistoryGrouped($period = 30, $token = FALSE){
+        $cache = 'token_history_grouped-' . ($token ? ($token . '-') : '') . $period;
         $result = $this->oCache->get($cache, false, true, 600);
         if(FALSE === $result){
             // Chainy
             if($token && ($token == self::ADDRESS_CHAINY)){
-                return $this->getChainyDailyTransactions($period);
+                return $this->getChainyTokenHistoryGrouped($period);
             }
 
             $aMatch = array("timestamp" => array('$gt' => time() - $period * 24 * 3600));
@@ -1036,7 +1036,7 @@ class Ethplorer {
      * @param  int $period  Number of days
      * @return array
      */
-    protected function getChainyDailyTransactions($period = 30){
+    protected function getChainyTokenHistoryGrouped($period = 30){
         $result = array();
         $aMatch = array(
             "timestamp" => array('$gt' => time() - $period * 24 * 3600),
