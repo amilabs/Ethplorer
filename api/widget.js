@@ -623,8 +623,8 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
 
         var aCountData = {};
         for(var i = 0; i < aTxData.length; i++){
-            var aDailyData = aTxData[i];
-            aCountData[aDailyData._id.year + '-' + aDailyData._id.month + '-' + aDailyData._id.day] = aDailyData.cnt;
+            var aDayData = aTxData[i];
+            aCountData[aDayData._id.year + '-' + aDayData._id.month + '-' + aDayData._id.day] = aDayData.cnt;
         }
 
         var curDate = true;
