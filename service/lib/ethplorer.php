@@ -733,7 +733,6 @@ class Ethplorer {
      * @return array
      */
     public function getLastTransfers(array $options = array()){
-        // evxProfiler::checkpoint('getAddressTransfers START [address=' . $address . ', limit=' . $limit . ']');
         $search = array();
         if(!isset($options['type'])){
             $search['type'] = 'transfer';
@@ -758,7 +757,6 @@ class Ethplorer {
         if(isset($options['timestamp']) && ($options['timestamp'] > 0)){
             $search['timestamp'] = array('$gt' => $options['timestamp']);
         }
-
         $cursor = $this->dbs['operations']
             ->find($search)
             ->sort($sort);
@@ -768,15 +766,12 @@ class Ethplorer {
         }
 
         $result = array();
-        $fetches = 0;
         foreach($cursor as $transfer){
             $token = $this->getToken($transfer['contract']);
             $transfer['token'] = $this->getToken($transfer['contract']);
             unset($transfer["_id"]);
             $result[] = $transfer;
-            $fetches++;
         }
-        // evxProfiler::checkpoint('getAddressTransfers FINISH [address=' . $address . '] with ' . $fetches . ' fetches]');
         return $result;
     }
 

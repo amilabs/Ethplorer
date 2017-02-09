@@ -323,7 +323,7 @@ class ethplorerController {
             $options['address'] = $address;
         }
         if(FALSE !== $this->getRequest('timestamp', FALSE)){
-            $options['timestamp'] = $this->getRequest('timestamp');
+            $options['timestamp'] = (int)$this->getRequest('timestamp');
         }
         if($addressHistoryMode){
             $token = $this->getRequest('token', FALSE);
