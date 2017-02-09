@@ -618,6 +618,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
 
         var stDate = new Date(),
             fnDate = new Date();
+        stDate.setDate(stDate.getDate() - 1);
         fnDate.setDate(stDate.getDate() - this.options.period);
 
         var aCountData = {};
