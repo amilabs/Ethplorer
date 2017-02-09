@@ -671,7 +671,8 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
                 gridlines: {
                     color: "none"
                 },
-                baselineColor: 'none'
+                baselineColor: 'none',
+                format: '#,###',
             },
             pointSize: 5,
             colors: ['#47C2FF'],
