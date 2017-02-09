@@ -592,7 +592,7 @@ ethplorerWidget.Type['dailyTX'] = function(element, options, templates){
 
     this.options = {
         period: 30,
-        type: 'column',
+        type: 'area',
         options: {}
     };
 
