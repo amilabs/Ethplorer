@@ -788,8 +788,8 @@ Ethplorer = {
         $("table").find("tr:visible:even").addClass("even");
         $("table").find("tr:visible:last").addClass("last");
 
-        $('#ethplorer-daily-token').show();
-        ethplorerWidget.init('#ethplorer-daily-token', 'dailyTX', {getCode: true, type:'area', token: address});
+        $('#token-history-grouped-widget').show();
+        ethplorerWidget.init('#token-history-grouped-widget', 'tokenHistoryGrouped', {getCode: true, type:'area', token: address});
         ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
     },
 

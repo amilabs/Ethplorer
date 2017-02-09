@@ -383,7 +383,7 @@ a.dashed {
     text-overflow: ellipsis
 }
 
-#ethplorer-daily-token {
+#token-history-grouped-widget {
     display: none;
     overflow: hidden;
     text-align: center;
@@ -960,7 +960,7 @@ a.token-update {
         top: -4px;
     }
 
-	.daily-widget {
+	.token-history-grouped-widget {
 		padding: 0px !important;
 	}
 }

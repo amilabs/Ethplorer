@@ -125,7 +125,7 @@ if($error){
                 <div class="clearfix"></div>
 
                 <style>
-                    #ethplorer-daily-token {
+                    #token-history-grouped-widget {
                         margin-top: 0 !important;
                         margin-bottom: 0 !important;
                         padding: 0 !important;
@@ -134,8 +134,8 @@ if($error){
                 </style>
                 <div>
                     <div class="hidden-xs col-sm-1"></div>
-                    <div class="col-xs-12 col-sm-10 daily-widget">
-                        <div id="ethplorer-daily-token"></div>
+                    <div class="col-xs-12 col-sm-10 token-history-grouped-widget">
+                        <div id="token-history-grouped-widget"></div>
                     </div>
                     <div class="hidden-xs col-sm-1"></div>
                 </div>
