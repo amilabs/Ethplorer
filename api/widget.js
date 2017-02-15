@@ -721,12 +721,12 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
     this.refreshWidget = function(obj){
         return function(data){
             console.log(data);
-            if(data && !data.error && data.txs && data.txs.length){
-                obj.widgetData = data.txs;
+            if(data && !data.error && data.countTxs && data.countTxs.length){
+                obj.widgetData = data.countTxs;
                 google.charts.setOnLoadCallback(
                     function(){
                         obj.el.find('.txs-loading').remove();
-                        obj.drawChart(data.txs);
+                        obj.drawChart(data.countTxs);
                         ethplorerWidget.appendEthplorerLink(obj);
                         if('function' === typeof(obj.options.onLoad)){
                             obj.options.onLoad();
