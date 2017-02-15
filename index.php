@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "119";
+$codeVersion = "120";
 
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $esCfg = require_once dirname(__FILE__) . '/service/config.php';
@@ -69,6 +69,7 @@ if($error){
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="/js/bignumber.js"></script>
     <script src="/js/ethplorer.js?v=<?=$codeVersion?>"></script>
+    <script src="/js/ethplorer-search.js?v=<?=$codeVersion?>"></script>
     <script><?php
         // Build JS config from PHP code
         echo "Ethplorer.Config = " . json_encode($esCfg['client'], JSON_OBJECT_AS_ARRAY);

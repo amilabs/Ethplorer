@@ -636,6 +636,7 @@ _::-webkit-:host:not(:root:root), .filter-clear {
 }
 
 .ui-autocomplete li {
+    font-size: 12px;
     white-space: nowrap;
 }
 

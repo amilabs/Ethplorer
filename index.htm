@@ -18,11 +18,14 @@
         <link rel="stylesheet" href="css/tilda-blocks-2.8.css?t=1481025753" type="text/css" media="all" />
         <link rel="stylesheet" href="css/tilda-zoom-1.0.min.css" type="text/css" media="all" />
         <link rel="stylesheet" href="css/tilda-custom.css" type="text/css" media="all" />
+        <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
         <script src="js/jquery-1.10.2.min.js"></script>
+        <script src="js/jquery-ui.min.js"></script>
         <script src="js/tilda-scripts-2.7.min.js"></script>
         <script src="js/tilda-blocks-2.4.js?t=1481025753"></script>	
         <script src="js/tilda-zoom-1.0.min.js"></script>
         <script src="js/tilda-forms-1.0.js"></script>
+        <script src="js/ethplorer-search.js"></script>
     </head>
 <body class="t-body" style="margin:0;">
     <div id="allrecords" class="t-records" data-hook="blocks-collection-content-node" data-tilda-project-id="11344" data-tilda-page-id="226253" data-tilda-page-alias="ethplorer" >
@@ -188,10 +191,10 @@
                 <div class="t-container_100 ">
                     <div class="t-width t-width_100 ">
                         <script>
-                            $('.js-form-proccess').submit(function(e){
-                                var val = $('input[name="data"]').val().toLowerCase().replace(/^\s+/, '').replace(/\s+$/, '');
+                            EthplorerSearch.init($('.js-form-proccess'), $('.js-form-proccess input[name="data"]'), function(val){
+                                var val = val.toLowerCase().replace(/^\s+/, '').replace(/\s+$/, '');
                                 if(/^0x[0-9a-f]{40}$/.test(val) || /^0x[0-9a-f]{64}$/.test(val)){
-                                    document.location.href = $(this).attr('action') + val;
+                                    document.location.href = '/search/' + val;
                                 } else if(val.length){
                                       setTimeout(function(){
                                         $('input[name="data"]').parent().addClass('js-error-control-box');
@@ -199,7 +202,6 @@
                                         $('.js-errorbox-all .js-rule-error-all').text('Invalid Format');
                                     }, 100);
                                 }
-                                e.preventDefault();
                             });
                         </script>
                     </div>  

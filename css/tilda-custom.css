@@ -58,3 +58,32 @@ a.t-btn {
         padding: 0 10px;
     }
 }
+
+#ui-id-1 {
+    margin-top: 4px !important;
+}
+
+.ui-autocomplete {
+    overflow: hidden;
+    border-radius: 4px;
+}
+
+.ui-autocomplete li {
+    font-size: 16px;
+    white-space: nowrap;
+}
+
+li.ui-menu-item.not-found {
+    opacity: 1 !important;
+    color: #aaa;
+    pointer-events: none;
+}
+
+li.ui-menu-item.have-more {
+    opacity: 1 !important;
+    color: #aaa;
+    padding-top: 4px;
+    border-top: 1px dotted #aaa;
+    font-style: italic;
+    pointer-events: none;    
+}
