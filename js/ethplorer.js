@@ -21,6 +21,7 @@ Ethplorer = {
     filter: '',
     searchCache: {},
     init: function(){
+        Ethplorer.isProd = ('ethplorer.io' === document.location.host);
         BigNumber.config({ ERRORS: false });
         Ethplorer.Nav.init();
         if(localStorage && ('undefined' !== typeof(localStorage['pageSize']))){
@@ -116,7 +117,7 @@ Ethplorer = {
                 Ethplorer.reloadTab(false, true);
             }
         });
-        $('.nav-tabs li a').click(function(e){
+        $('.nav-tabs li a').click(function(){
             var tabName = $(this).parent().attr('id').replace('tab-', '');
             if(('undefined' !== typeof(Ethplorer.reloadTabs)) && (Ethplorer.reloadTabs.indexOf(tabName) >= 0)){
                 Ethplorer.reloadTab(tabName, false);
@@ -124,7 +125,7 @@ Ethplorer = {
             setTimeout(function(){
                 $("table").find("tr:visible:last").addClass("last");
             }, 300);
-        })
+        });
         if(localStorage && ('undefined' !== typeof(localStorage['tx-details-block']))){
             if('open' === localStorage['tx-details-block']){
                 $('.tx-details-link').addClass('closed');
@@ -561,8 +562,7 @@ Ethplorer = {
         $('.address-type').text(data.isContract ? 'Contract' : 'Address');
         $('#ethplorer-path').show();
         data.address = address;
-        data.balance = parseFloat(data.balance) * 1e+18;
-        Ethplorer.fillValues('address', data, ['address', 'balance']);
+        Ethplorer.fillValues('address', data, ['address', 'balance', 'balanceIn', 'balanceOut']);
         $('#address-token-balances, #address-token-details').hide();
         if(data.isContract && data.contract.isChainy){
             titleAdd = 'Chainy Information';
@@ -635,21 +635,21 @@ Ethplorer = {
             $('#address-token-balances table').empty();
             for(var k=0; k<data.balances.length; k++){
                 var balance = data.balances[k];
+                var oToken = Ethplorer.prepareToken(data.tokens[balance.contract]);
+                var row = $('<TR>');
+                row.append('<TD>' + Ethplorer.Utils.getEthplorerLink(balance.contract, oToken.name, false) + '</TD>');
+                var qty = Ethplorer.Utils.toBig(balance.balance).div(Math.pow(10, oToken.decimals));
+                var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals, true) + ' ' + oToken.symbol;
                 if(balance.totalIn || balance.totalOut){
-                    var oToken = Ethplorer.prepareToken(data.tokens[balance.contract]);
-                    var row = $('<TR>');
-                    row.append('<TD>' + Ethplorer.Utils.getEthplorerLink(balance.contract, oToken.name, false) + '</TD>');
-                    var qty = Ethplorer.Utils.toBig(balance.balance).div(Math.pow(10, oToken.decimals));
-                    var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals, true) + ' ' + oToken.symbol;
                     value += '<br />';
                     var totalIn = Ethplorer.Utils.toBig(balance.totalIn).div(Math.pow(10, oToken.decimals));
                     var totalOut = Ethplorer.Utils.toBig(balance.totalOut).div(Math.pow(10, oToken.decimals));
                     value += ('<div class="total-in-out-small">Total In: ' + Ethplorer.Utils.formatNum(totalIn, true, oToken.decimals, true) + '<br />');
                     value += ('Total Out: ' + Ethplorer.Utils.formatNum(totalOut, true, oToken.decimals, true) + '</div>');
-                    row.append('<TD>' + value + '</TD>');
-                    row.find('td:eq(1)').addClass('text-right');
-                    $('#address-token-balances table').append(row);
-                }                
+                }
+                row.append('<TD>' + value + '</TD>');
+                row.find('td:eq(1)').addClass('text-right');
+                $('#address-token-balances table').append(row);
             }
             $('#address-token-balances').show();
         }
@@ -679,9 +679,11 @@ Ethplorer = {
         $("table").find("tr:visible:even").addClass("even");
         $("table").find("tr:visible:last").addClass("last");
 
-        $('#token-history-grouped-widget').show();
-        ethplorerWidget.init('#token-history-grouped-widget', 'tokenHistoryGrouped', {getCode: true, type:'area', token: address});
-        ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
+        if(!Ethplorer.isProd){
+            $('#token-history-grouped-widget').show();
+            ethplorerWidget.init('#token-history-grouped-widget', 'tokenHistoryGrouped', {getCode: true, type:'area', token: address});
+            ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
+        }
     },
 
     drawTransfers: function(address, transfersData){
@@ -1172,7 +1174,7 @@ Ethplorer = {
                 value = Ethplorer.Utils.formatNum(value, 'float' === type);
                 break;
             case 'ether':
-                value = Ethplorer.Utils.formatNum(Ethplorer.Utils.toBig(value).div(1e+18), true, 18, true) + ' ETHER';
+                value = Ethplorer.Utils.formatNum(value, true, 18, true) + ' ETHER';
                 break;
             case 'ethplorer':
                 value = Ethplorer.Utils.getEthplorerLink(value, value, (options.indexOf('no-contract') < 0) ? Ethplorer.knownContracts.indexOf(value) >= 0 : false);

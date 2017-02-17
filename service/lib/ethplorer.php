@@ -217,6 +217,8 @@ class Ethplorer {
         $refresh = isset($this->aPager['refresh']) ? $this->aPager['refresh'] : FALSE;
         if(!$refresh){
             $result['balance'] = $this->getBalance($address);
+            $result['balanceOut'] = $this->getEtherTotalOut($address);
+            $result['balanceIn'] = $result['balanceOut'] + $result['balance'];
         }
         $contract = $this->getContract($address);
         $token = FALSE;
@@ -323,6 +325,34 @@ class Ethplorer {
         return $result;
     }
 
+
+    public function getEtherTotalOut($address){
+        $result = 0;
+        if($this->isValidAddress($address)){
+            $cursor = $this->dbs['transactions']->aggregate(
+                array(
+                    array('$match' => array("from" => $address)),
+                    array(
+                        '$group' => array(
+                            "_id" => '$from',
+                            'out' => array('$sum' => '$value')
+                        )
+                    ),
+                )
+            );
+            if($cursor){
+                foreach($cursor as $record){
+                    if(isset($record[0])){
+                        if(isset($record[0]['out'])){
+                            $result += floatval($record[0]['out']);
+                        }
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
     /**
      * Returns advanced transaction data.
      *
@@ -389,12 +419,10 @@ class Ethplorer {
      * @return double
      */
     public function getBalance($address){
-        // evxProfiler::checkpoint('getBalance START [address=' . $address . ']');
         $balance = $this->_callRPC('eth_getBalance', array($address, 'latest'));
         if(false !== $balance){
             $balance = hexdec(str_replace('0x', '', $balance)) / pow(10, 18);
         }
-        // evxProfiler::checkpoint('getBalance FINISH [address=' . $address . ']');
         return $balance;
     }
 

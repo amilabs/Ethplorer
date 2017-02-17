@@ -70,10 +70,6 @@ if($error){
     <script src="/js/bignumber.js"></script>
     <script src="/js/ethplorer.js?v=<?=$codeVersion?>"></script>
     <script src="/js/ethplorer-search.js?v=<?=$codeVersion?>"></script>
-    <script><?php
-        // Build JS config from PHP code
-        echo "Ethplorer.Config = " . json_encode($esCfg['client'], JSON_OBJECT_AS_ARRAY);
-    ?></script>
 </head>
 <body>
     <div style="position: relative; min-height: 100vh;">
@@ -360,6 +356,14 @@ if($error){
                                 <td id="address-balance" data-type="ether" class="list-field"></td>
                             </tr>
                             <tr>
+                                <td>Total In</td>
+                                <td id="address-balanceIn" data-type="ether" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Total Out</td>
+                                <td id="address-balanceOut" data-type="ether" class="list-field"></td>
+                            </tr>
+                            <tr>
                                 <td>Transactions</td>
                                 <td id="address-token-txsCount" data-type="int" class="list-field"></td>
                             </tr>
@@ -568,6 +572,11 @@ if($error){
     </div>
     </div>
     <script>
+    <?php
+        // Build JS config from PHP code
+        echo "Ethplorer.Config = " . json_encode($esCfg['client'], JSON_OBJECT_AS_ARRAY);
+    ?>
+
         $(document).ready(function(){
             $.fn.bootstrapBtn = $.fn.button.noConflict();
             Ethplorer.init();
