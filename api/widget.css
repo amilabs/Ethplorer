@@ -100,8 +100,8 @@ a.tx-link:hover {
     padding-bottom: 10px;
     background-color: rgba(0, 0, 0, 0.4);
     text-align: center;
-    margin-top: 32px;
-    margin-bottom: 16px;
+    /*margin-top: 32px;
+    margin-bottom: 16px;*/
     color: #D0D0D0;
 }
 .txs.small {
