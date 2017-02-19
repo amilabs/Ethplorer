@@ -15,10 +15,7 @@ ethplorerWidget = {
 
     // Widget initialization
     init: function(selector, type, options, templates){
-        if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') >= 0)){
-            ethplorerWidget.api = '//' + document.location.host + '/api';
-            ethplorerWidget.url = '//' + document.location.host
-        }
+        ethplorerWidget.fixPath();
         options = options || {};
         templates = templates || {};
         type = type || 'tokenHistory';
@@ -58,6 +55,14 @@ ethplorerWidget = {
         script.onreadystatechange = callback;
         script.onload = callback;
         head.appendChild(script);
+    },
+    addStyles: function(){
+        ethplorerWidget.fixPath();
+        var linkElem = document.createElement('link');
+        linkElem.setAttribute("rel", 'stylesheet');
+        linkElem.setAttribute("type", 'text/css');
+        linkElem.setAttribute("href", ethplorerWidget.api + '/widget.css');
+        document.getElementsByTagName("head")[0].appendChild(linkElem);
     },
     loadGoogleCharts: function(){
         if(google && google.charts){
@@ -113,11 +118,6 @@ ethplorerWidget = {
         $("#" + popupId).dialog('open');
         console.log(widgetCode);
     },
-    // Tilda css hack
-    fixTilda: function(){
-        var height = parseInt($('.t-cover__wrapper').height());
-        $('.t-cover, .t-cover__carrier, .t-cover__wrapper, .t-cover__filter').height(height + 'px');
-    },
     parseTemplate: function(template, data){
         var res = template;
         for(var key in data){
@@ -125,6 +125,18 @@ ethplorerWidget = {
             res = res.replace(reg, data[key]);
         }
         return res;
+    },
+    // Tilda css hack
+    fixTilda: function(){
+        var height = parseInt($('.t-cover__wrapper').height());
+        $('.t-cover, .t-cover__carrier, .t-cover__wrapper, .t-cover__filter').height(height + 'px');
+    },
+    // Use local path for develop instances
+    fixPath: function(){
+        if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') >= 0)){
+            ethplorerWidget.api = '//' + document.location.host + '/api';
+            ethplorerWidget.url = '//' + document.location.host
+        }
     },
     Utils: {
         link: function(data, text, title, hash, addClass){
@@ -311,7 +323,8 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
     };
 
     this.init = function(){
-        this.el.addClass('widget-txs');
+        this.el.addClass('ethplorer-widget');
+        this.el.addClass('theme-' + (this.options.theme ? this.options.theme : 'ethplorer'));
         this.interval = setInterval(this.refresh, 15000);
         this.load();
     };
@@ -518,7 +531,8 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
     };
 
     this.init = function(){
-        this.el.addClass('widget-txs');
+        this.el.addClass('ethplorer-widget');
+        this.el.addClass('theme-' + (this.options.theme ? this.options.theme : 'ethplorer'));
         this.load();
     };
 
@@ -693,7 +707,8 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
     };
 
     this.init = function(){
-        this.el.addClass('widget-txs');
+        this.el.addClass('ethlorer-widget');
+        this.el.addClass('theme-' + (this.options.theme ? this.options.theme : 'ethplorer'));
         this.el.html(this.templates.loader);
         //this.load();
     };
@@ -774,11 +789,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
         }
     }
     // add widget css
-    var linkElem = document.createElement('link');
-    linkElem.setAttribute("rel", 'stylesheet');
-    linkElem.setAttribute("type", 'text/css');
-    linkElem.setAttribute("href", 'https://api.ethplorer.io/widget.css');
-    document.getElementsByTagName("head")[0].appendChild(linkElem);
+    ethplorerWidget.addStyles();
     // autoload
     if(document.readyState === "interactive" || document.readyState === "complete"){
         ethpWiInit();

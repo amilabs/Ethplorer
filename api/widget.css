@@ -1,8 +1,21 @@
+/* Widget outfit */
+.ethplorer-widget {
+    text-align: center;
+}
+
+/* Loading */
+.txs-loading {
+    margin-top: 16px;
+    margin-bottom: 16px;
+}
+
+/* Transfer list widget */
 .txs {
     width: 100%;
     border: 0 !important;
     border-collapse: collapse;
 }
+
 .txs-header {
     font-family: 'Open Sans', sans-serif;
     padding: 5px;
@@ -10,10 +23,12 @@
     font-size: 1.3em;
     position:relative;
 }
-.txs-loading {
-    margin-top: 16px;
-    margin-bottom: 16px;
+
+.txs.small .tx-field {
+    padding-top: 0px;
+    font-size: 14px;
 }
+
 .tx-send {
     max-width: 120px;
     overflow: hidden;
@@ -22,6 +37,7 @@
     padding-left: 8px;
     padding-right: 8px;
 }
+
 .tx-field {
     font-family: 'Open Sans', sans-serif;
     text-align: left;
@@ -34,10 +50,7 @@
     padding-left: 5px;
     padding-right: 5px;
 }
-.txs.small .tx-field {
-    padding-top: 0px;
-    font-size: 14px;
-}
+
 .tx-token {
     min-width: 32px;
     max-width: 60px;
@@ -51,13 +64,35 @@
 .txs.small tr td:nth-child(2) {
     text-align: right;
 }
+.txs.small .tx-link {
+    max-width: 140px;
+}
+.txs.small .tx-amount {
+    max-width: 200px;
+}
+.txs.small {
+    display: none;
+}
+.txs tr.hidden {
+    transform: rotateX(-90deg);
+    transition: all 1s cubic-bezier(.36,-0.64,.34,1.76);    
+    opacity: 0;
+}
+.txs tr.hidden.new {
+    opacity: 1;
+    transform: none;
+    transition: all 1s cubic-bezier(.36,-0.64,.34,1.76);
+}
+
 .tx-date {
     max-width: 80px;
     text-align: center;
 }
+
 .tx-hash {
     max-width: 80px;
 }
+
 a.tx-link, a.tx-link:visited, a.tx-link:hover {
     color: #47C2FF !important;
     display: inline-block;
@@ -65,9 +100,7 @@ a.tx-link, a.tx-link:visited, a.tx-link:hover {
     overflow: hidden;
     text-overflow: ellipsis !important;
 }
-.txs.small .tx-link {
-    max-width: 140px;
-}
+
 a.tx-link, a.tx-link:visited {
    text-decoration: none !important;
 }
@@ -86,37 +119,7 @@ a.tx-link:hover {
     text-overflow: ellipsis !important;
     color: white !important;
 }
-.txs.small .tx-amount {
-    max-width: 200px;
-}
-.widget-txs {
-    font-family: 'Open Sans', sans-serif;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-    padding-left: 4px;
-    padding-right: 4px;
-    padding-top: 4px;
-    padding-bottom: 10px;
-    background-color: rgba(0, 0, 0, 0.4);
-    text-align: center;
-    /*margin-top: 32px;
-    margin-bottom: 16px;*/
-    color: #D0D0D0;
-}
-.txs.small {
-    display: none;
-}
-.txs tr.hidden {
-    transform: rotateX(-90deg);
-    transition: all 1s cubic-bezier(.36,-0.64,.34,1.76);    
-    opacity: 0;
-}
-.txs tr.hidden.new {
-    opacity: 1;
-    transform: none;
-    transition: all 1s cubic-bezier(.36,-0.64,.34,1.76);
-}
+
 .txs-debug {
     position: absolute;
     right: 5px;
@@ -179,4 +182,19 @@ a.tx-link:hover {
     .txs.small .tx-link {
         max-width: 140px;
     }    
-}    
+}
+
+/* THEME: ethplorer */
+.ethplorer-widget.theme-ethplorer {
+    font-family: 'Open Sans', sans-serif;
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 4px;
+    padding-right: 4px;
+    padding-top: 4px;
+    padding-bottom: 10px;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: #D0D0D0;
+}
+
