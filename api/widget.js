@@ -13,6 +13,8 @@ ethplorerWidget = {
 
     chartWidgets: [],
 
+    cssVersion: 1,
+
     // Widget initialization
     init: function(selector, type, options, templates){
         ethplorerWidget.fixPath();
@@ -61,7 +63,7 @@ ethplorerWidget = {
         var linkElem = document.createElement('link');
         linkElem.setAttribute("rel", 'stylesheet');
         linkElem.setAttribute("type", 'text/css');
-        linkElem.setAttribute("href", ethplorerWidget.api + '/widget.css');
+        linkElem.setAttribute("href", ethplorerWidget.api + '/widget.css?v=' + ethplorerWidget.cssVersion);
         document.getElementsByTagName("head")[0].appendChild(linkElem);
     },
     loadGoogleCharts: function(){
