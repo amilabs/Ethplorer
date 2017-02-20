@@ -310,9 +310,11 @@ class ethplorerController {
         $result = array(
             'operations' => array()
         );
-        $address = $this->getParam(0, '');
-        $address = strtolower($address);
-        if((!$address && $addressHistoryMode) || ($address && (!$this->db->isValidAddress($address)))){
+        $address = $this->getParam(0, FALSE);
+        if($address){
+            $address = strtolower($address);
+        }
+        if((!$address && $addressHistoryMode) || ((FALSE !== $address) && (!$this->db->isValidAddress($address)))){
             $this->sendError(104, 'Invalid address format');
         }
         $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 10;
