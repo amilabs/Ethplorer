@@ -707,7 +707,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
     };
 
     this.init = function(){
-        this.el.addClass('ethlorer-widget');
+        this.el.addClass('ethplorer-widget');
         this.el.addClass('theme-' + (this.options.theme ? this.options.theme : 'ethplorer'));
         this.el.html(this.templates.loader);
         //this.load();
