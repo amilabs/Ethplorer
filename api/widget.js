@@ -607,6 +607,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
     this.options = {
         period: 30,
         type: 'area',
+        theme: 'light',
         options: {}
     };
 
@@ -657,17 +658,13 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
         var data = google.visualization.arrayToDataTable(aData);
         var def = {
             title: '',
-            //titleTextStyle: {color: '#FFF'},
-            //curveType: 'function',
             legend: { position: 'none' },
             tooltip: {
                 format: 'MMM d',
             },
             hAxis : {
                 title: '',
-                //titleTextStyle: {color: '#B0B0B0', italic: false},
                 textPosition: 'out',
-                textStyle: {color: '#FFF'},
                 slantedText: false,
                 maxAlternation: 1,
                 maxTextLines: 1,
@@ -675,25 +672,26 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
                 gridlines: {
                     count: 10,
                     color: "none"
-                },
-                baselineColor: '#FFF'
+                }
             },
             vAxis: {
                 title: '',
-                //titleTextStyle: {color: '#B0B0B0', italic: false},
-                textStyle: {color: '#FFF'},
                 minValue: 0,
                 gridlines: {
                     color: "none"
                 },
-                baselineColor: 'none',
                 format: '#,###',
             },
             pointSize: 5,
-            colors: ['#47C2FF'],
-            backgroundColor: { fill:'transparent' }
-            //bar: {groupWidth: '80%'}
         };
+        if(this.options['theme'] == 'dark'){
+            def.colors = ['#47C2FF'];
+            def.backgroundColor = {fill: 'transparent'};
+            def.hAxis.textStyle = {color: '#FFF'};
+            def.hAxis.baselineColor = '#FFF';
+            def.vAxis.textStyle = {color: '#FFF'};
+            def.vAxis.baselineColor = 'none';
+        }
         var options = $.extend(true, def, this.options['options']);
 
         var tooltipFormatter = new google.visualization.DateFormat({ 
@@ -714,7 +712,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
     };
 
     this.getRequestParams = function(additionalParams){
-        var requestOptions = ['period', 'token', 'type'];
+        var requestOptions = ['period', 'token', 'type', 'theme'];
         var params = {
             apiKey: 'freekey',
         };
