@@ -213,3 +213,9 @@
 .theme-dark {
     color: white;
 }
+
+a.widget-code,
+a.widget-code:visited
+a.widget-code:hover {
+   text-decoration: dashed !important;
+}
