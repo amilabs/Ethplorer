@@ -81,6 +81,7 @@ ethplorerWidget = {
         if(document.location.host !== host){
             obj.el.append(divLink + '<a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a></div>');
         }else if('undefined' !== typeof(obj.options.getCode) && obj.options.getCode){
+            var divLink = '<div style="text-align:center;font-size:16px;padding-top:10px;padding-bottom:4px;">';
             var popupId = obj.el.attr('id') + '-code';
             obj.el.append(divLink + '<a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>');
             obj.el.find('.tx-link').data("widget", obj);
@@ -695,15 +696,15 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
         };
         if(this.options['theme'] == 'dark'){
             def.colors = ['#47C2FF'];
-            def.titleTextStyle = {color: '#FFF'};
+            def.titleTextStyle = {color: '#DEDEDE'};
             def.backgroundColor = {fill: 'transparent'};
 
-            def.hAxis.textStyle = {color: '#FFF'};
-            def.hAxis.titleTextStyle.color = '#FFF';
-            def.hAxis.baselineColor = '#FFF';
+            def.hAxis.textStyle = {color: '#DEDEDE'};
+            def.hAxis.titleTextStyle.color = '#DEDEDE';
+            def.hAxis.baselineColor = '#DEDEDE';
 
-            def.vAxis.textStyle = {color: '#FFF'};
-            def.vAxis.titleTextStyle.color = '#FFF';
+            def.vAxis.textStyle = {color: '#DEDEDE'};
+            def.vAxis.titleTextStyle.color = '#DEDEDE';
             def.vAxis.baselineColor = 'none';
         }
         var options = $.extend(true, def, this.options['options']);
