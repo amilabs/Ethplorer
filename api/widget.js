@@ -77,11 +77,12 @@ ethplorerWidget = {
     },
     appendEthplorerLink: function(obj){
         var host = ethplorerWidget.url.split('//')[1];
+        var divLink = '<div style="text-align:center;font-size:11px;padding-top:10px;padding-bottom:4px;">';
         if(document.location.host !== host){
-            obj.el.append('<div style="text-align:center;font-size:11px;padding-top:12px;padding-bottom:2px;"><a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a>');
+            obj.el.append(divLink + '<a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a></div>');
         }else if('undefined' !== typeof(obj.options.getCode) && obj.options.getCode){
             var popupId = obj.el.attr('id') + '-code';
-            obj.el.append('<div style="text-align:center;font-size:11px;"><a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>');
+            obj.el.append(divLink + '<a class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>');
             obj.el.find('.tx-link').data("widget", obj);
             $("body").append('<div id="' + popupId + '" title="Widget code"></div>');
             $("#" + popupId).dialog({
