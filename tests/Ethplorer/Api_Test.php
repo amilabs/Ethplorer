@@ -162,8 +162,8 @@ class Api_Test extends PHPUnit_Framework_TestCase{
         $this->assertEquals(0, $aResult['value']);
         $this->assertEquals(63000, $aResult['gasLimit']);
         $this->assertEquals(37274, $aResult['gasUsed']);
-        $this->assertEquals(1, $aResult['logs']);
-        $this->assertEquals(1, $aResult['operations']);
+        $this->assertEquals(1, count($aResult['logs']));
+        $this->assertEquals(1, count($aResult['operations']));
     }
 
     /**
