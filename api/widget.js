@@ -696,9 +696,9 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
         if(this.options['theme'] == 'dark'){
             def.colors = ['#47C2FF'];
             def.backgroundColor = {fill: 'transparent'};
-            def.hAxis.textStyle.color = '#FFF';
+            def.hAxis.textStyle = {color: '#FFF'};
             def.hAxis.baselineColor = '#FFF';
-            def.vAxis.textStyle.color = '#FFF';
+            def.vAxis.textStyle = {color: '#FFF'};
             def.vAxis.baselineColor = 'none';
         }
         var options = $.extend(true, def, this.options['options']);
