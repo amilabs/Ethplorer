@@ -151,7 +151,7 @@ class Api_Test extends PHPUnit_Framework_TestCase{
         // Token transaction with single operation
         $tx = '0x91D6024517497c5740e1d8a4786779c257caa6d852b7c7365a0368e0ab2ebf86';
         $aResult = $this->rq($cmd, $tx, array('apiKey' => 'freekey'));
-        $aMandatoryFields = array("hash", "timestamp", "blockNumber", "confirmations", "success", "from", "to", "value", "input", "gasLimit", "gasUsed", "logs", "operations");
+        $aMandatoryFields = array("hash", /* "timestamp", */ "blockNumber", "confirmations", "success", "from", "to", "value", "input", "gasLimit", "gasUsed", "logs", "operations");
         $this->checkArray($aResult, $aMandatoryFields);
         $this->assertEquals(strtolower($tx), $aResult['hash']);
         // $this->assertEquals(strtolower($tx), $aResult['timestamp']);
