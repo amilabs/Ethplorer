@@ -667,6 +667,9 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
             },
             hAxis : {
                 title: '',
+                titleTextStyle: {
+                    italic: false
+                },
                 textPosition: 'out',
                 slantedText: false,
                 maxAlternation: 1,
@@ -679,6 +682,9 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
             },
             vAxis: {
                 title: 'Token operations',
+                titleTextStyle: {
+                    italic: false
+                },
                 minValue: 0,
                 gridlines: {
                     color: "none"
@@ -690,9 +696,9 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
         if(this.options['theme'] == 'dark'){
             def.colors = ['#47C2FF'];
             def.backgroundColor = {fill: 'transparent'};
-            def.hAxis.textStyle = {color: '#FFF'};
+            def.hAxis.textStyle.color = '#FFF';
             def.hAxis.baselineColor = '#FFF';
-            def.vAxis.textStyle = {color: '#FFF'};
+            def.vAxis.textStyle.color = '#FFF';
             def.vAxis.baselineColor = 'none';
         }
         var options = $.extend(true, def, this.options['options']);
