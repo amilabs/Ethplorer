@@ -190,7 +190,7 @@ class Api_Test extends PHPUnit_Framework_TestCase{
         $this->assertEquals(1481877751, $aResult['operations'][0]['timestamp']);
         $this->assertEquals(strtolower($tx), $aResult['operations'][0]['transactionHash']);
         $this->assertEquals("transfer", $aResult['operations'][0]['type']);
-        $this->assertEquals("108901800000000000000", $aResult['operations'][0]['valuie']);
+        $this->assertEquals("108901800000000000000", $aResult['operations'][0]['value']);
         $this->assertEquals("REP", $aResult['operations'][0]['tokenInfo']['symbol']);
 
         // Token transaction with multiple operations: we check operations order only
@@ -210,10 +210,10 @@ class Api_Test extends PHPUnit_Framework_TestCase{
 
         // Unknown hash
         $aResult = $this->rq($cmd, $tx);
-        $this->assertEquals(404, $aResult['error']['code']);
+        $this->assertEquals(404, $aResult['error']['code'], array('apiKey' => 'freekey'));
 
         // Invalid hash format
-        $aResult = $this->rq($cmd, str_replace('0x', 'xx', $tx));
+        $aResult = $this->rq($cmd, str_replace('0x', 'xx', $tx), array('apiKey' => 'freekey'));
         $this->assertEquals(102, $aResult['error']['code']);
 
         // No API Key
