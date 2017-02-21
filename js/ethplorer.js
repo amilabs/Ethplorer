@@ -684,7 +684,7 @@ Ethplorer = {
         if(!Ethplorer.isProd){
             $('#token-history-grouped-widget').show();
             var widgetTitle = (oToken && oToken.name) ? (oToken.name + ' token pulse') : '';
-            ethplorerWidget.init('#token-history-grouped-widget', 'tokenHistoryGrouped', {getCode: true, type:'area', token: address, options: {title: widgetTitle}});
+            ethplorerWidget.init('#token-history-grouped-widget', 'tokenHistoryGrouped', {theme: 'dark', getCode: true, token: address, options: {title: widgetTitle}});
             ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
         }
     },
