@@ -127,6 +127,8 @@ if($error){
                         margin-bottom: 0 !important;
                         padding: 0 !important;
                         max-width: 86% !important;
+                        margin-left: auto;
+                        margin-right: auto;
                     }
                 </style>
                 <div>
