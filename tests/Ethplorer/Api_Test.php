@@ -148,6 +148,23 @@ class Api_Test extends PHPUnit_Framework_TestCase{
      */
     public function testGetTxInfo_OK(){
         $cmd = 'getTxInfo';
+        // Not a token transaction
+        $tx = '0xd98FF0f44e4700c26bcf00413bf2d3aaaf1d4e8d306b68dea4bcbd940b9063a0';
+        $aResult = $this->rq($cmd, $tx, array('apiKey' => 'freekey'));
+        $aMandatoryFields = array("hash", "blockNumber", "confirmations", "success", "from", "to", "value", "input", "gasLimit", "gasUsed", "logs");
+        $this->checkArray($aResult, $aMandatoryFields);
+        $this->assertEquals(strtolower($tx), $aResult['hash']);
+        // $this->assertEquals(strtolower($tx), $aResult['timestamp']);
+        $this->assertEquals(759019, $aResult['blockNumber']);
+        $this->assertEquals(true, $aResult['success']);
+        $this->assertEquals("0x4bb96091ee9d802ed039c4d1a5f6216f90f81b01", $aResult['from']);
+        $this->assertEquals("0xc1c9c914552dc4e110c57e6d946870c5752c7aac", $aResult['to']);
+        $this->assertEquals(0, $aResult['value']);
+        $this->assertEquals("0x", $aResult['input']);
+        $this->assertEquals(41000, $aResult['gasLimit']);
+        $this->assertEquals(0, $aResult['gasUsed']);
+        $this->assertEquals(0, count($aResult['logs']));
+
         // Token transaction with single operation
         $tx = '0x91D6024517497c5740e1d8a4786779c257caa6d852b7c7365a0368e0ab2ebf86';
         $aResult = $this->rq($cmd, $tx, array('apiKey' => 'freekey'));
@@ -163,7 +180,49 @@ class Api_Test extends PHPUnit_Framework_TestCase{
         $this->assertEquals(63000, $aResult['gasLimit']);
         $this->assertEquals(37274, $aResult['gasUsed']);
         $this->assertEquals(1, count($aResult['logs']));
+        $this->assertEquals("0x48c80f1f4d53d5951e5d5438b54cba84f29f32a5", $aResult['logs'][0]['address']);
+        $this->assertEquals("0x000000000000000000000000000000000000000000000005e750ea1d10a28000", $aResult['logs'][0]['data']);
+        $this->assertEquals(3, count($aResult['logs'][0]['topics']));
+        $this->assertEquals("0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef", $aResult['logs'][0]['topics'][0]);
         $this->assertEquals(1, count($aResult['operations']));
+        $this->assertEquals("0xcab65db421ec1afdfb3a18fedb82ba24142e5e45", $aResult['operations'][0]['from']);
+        $this->assertEquals("0x6fc51e87f55bd76ef83d6dc622ea9ad4ba72a056", $aResult['operations'][0]['to']);
+        $this->assertEquals(1481877751, $aResult['operations'][0]['timestamp']);
+        $this->assertEquals(strtolower($tx), $aResult['operations'][0]['transactionHash']);
+        $this->assertEquals("transfer", $aResult['operations'][0]['type']);
+        $this->assertEquals("108901800000000000000", $aResult['operations'][0]['valuie']);
+        $this->assertEquals("REP", $aResult['operations'][0]['tokenInfo']['symbol']);
+
+        // Token transaction with multiple operations: we check operations order only
+        $tx = '0xe1a33ccdf62f9b4d0dd6f369a61e01120be151275794163c38fb7e890e428dc7';
+        $aResult = $this->rq($cmd, $tx, array('apiKey' => 'freekey'));
+        $this->assertEquals(1, count($aResult['operations']));
+        $this->assertEquals("0x96477a1c968a0e64e53b7ed01d0d6e4a311945c2", $aResult['operations'][0]['tokenInfo']['address']);
+        $this->assertEquals("0xc66ea802717bfb9833400264dd12c2bceaa34a6d", $aResult['operations'][1]['tokenInfo']['address']);
+    }
+
+    /**
+     * @covers
+     */
+    public function testGetTxInfo_Error(){
+        $cmd = 'getTxInfo';
+        $tx = '0xd98FF0f44e4700c26bcf00413bf2d3aaaf1d4e8d306b68dea4bcbd940b9063a1';
+
+        // Unknown hash
+        $aResult = $this->rq($cmd, $tx);
+        $this->assertEquals(404, $aResult['error']['code']);
+
+        // Invalid hash format
+        $aResult = $this->rq($cmd, str_replace('0x', 'xx', $tx));
+        $this->assertEquals(102, $aResult['error']['code']);
+
+        // No API Key
+        $aResult = $this->rq($cmd, $testAddress);
+        $this->assertEquals(1, $aResult['error']['code']);
+
+        // Invalid API key
+        $aResult = $this->rq($cmd, $testAddress, array('apiKey' => 'freekey1'));
+        $this->assertEquals(1, $aResult['error']['code']);
     }
 
     /**
