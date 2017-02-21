@@ -699,6 +699,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
             def.backgroundColor = {fill: 'transparent'};
 
             def.hAxis.textStyle = {color: '#FFF'};
+            def.hAxis.titleTextStyle.color = '#FFF';
             def.hAxis.baselineColor = '#FFF';
 
             def.vAxis.textStyle = {color: '#FFF'};
