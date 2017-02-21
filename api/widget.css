@@ -209,3 +209,7 @@
 .theme-light {
     background-color: white;
 }
+
+.theme-dark {
+    color: white;
+}
