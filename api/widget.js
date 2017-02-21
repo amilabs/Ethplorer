@@ -678,7 +678,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
                 }
             },
             vAxis: {
-                title: '',
+                title: 'Token operations',
                 minValue: 0,
                 gridlines: {
                     color: "none"
