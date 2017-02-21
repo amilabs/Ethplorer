@@ -214,8 +214,8 @@
     color: white;
 }
 
-a.widget-code,
-a.widget-code:visited
-a.widget-code:hover {
+#widget-code-link,
+#widget-code-link:visited
+#widget-code-link:hover {
    text-decoration: dashed !important;
 }

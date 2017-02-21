@@ -83,7 +83,7 @@ ethplorerWidget = {
         }else if('undefined' !== typeof(obj.options.getCode) && obj.options.getCode){
             var divLink = '<div style="text-align:center;font-size:16px;padding-top:10px;padding-bottom:4px;">';
             var popupId = obj.el.attr('id') + '-code';
-            obj.el.append(divLink + '<a class="tx-link widget-code" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>');
+            obj.el.append(divLink + '<a id="widget-code-link" class="tx-link" href="javascript:void(0)" onclick="ethplorerWidget.getWidgetCode(this);">Get widget code</a></div>');
             obj.el.find('.tx-link').data("widget", obj);
             $("body").append('<div id="' + popupId + '" title="Widget code"></div>');
             $("#" + popupId).dialog({
