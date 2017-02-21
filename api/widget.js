@@ -681,7 +681,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
                 }
             },
             vAxis: {
-                title: 'Token operations',
+                title: '',
                 titleTextStyle: {
                     italic: false
                 },
