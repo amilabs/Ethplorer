@@ -269,7 +269,6 @@ class Api_Test extends PHPUnit_Framework_TestCase{
         $this->checkArray($aResult, $aMandatoryFields);
         $this->assertEquals(5, count($aResult['operations']));
         // Check Max Limit
-        $testAddress = '0x6b9b275da653e270c0ad462a0e3dcd9906719fdc';
         $aResult = $this->rq($cmd, $testAddress, array('apiKey' => 'freekey', 'limit' => 500));
         $aMandatoryFields = array('operations');
         $this->checkArray($aResult, $aMandatoryFields);
