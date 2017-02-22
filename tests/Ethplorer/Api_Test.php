@@ -245,7 +245,7 @@ class Api_Test extends PHPUnit_Framework_TestCase{
         $aMandatoryFields = array('from', 'to', 'timestamp', 'tokenInfo', 'tokenInfo.address', 'tokenInfo.totalSupply', 'transactionHash', 'type', 'value');
         $this->checkArray($aOperation, $aMandatoryFields);
         for($i=0; $i<9; $i++){
-            $this->assertEquals('0xff71Cb760666ab06aa73f34995b42dd4b85ea07b', $aResult['operations'][$i]['address']);
+            $this->assertEquals('0xff71Cb760666ab06aa73f34995b42dd4b85ea07b', $aResult['operations'][$i]['tokenInfo']['address']);
         }
         // Check Type
         $testAddress = '0x6b9b275da653e270c0ad462a0e3dcd9906719fdc';
@@ -281,13 +281,9 @@ class Api_Test extends PHPUnit_Framework_TestCase{
      */
     public function testGetTokenHistory_Error(){
         $cmd = 'getTokenHistory';
-        $testAddress = '0xd98FF0f44e4700c26bcf00413bf2d3aaaf1d4e8d306b68dea4bcbd940b9063a1';
+        $testAddress = '0x6b9b275da653e270c0ad462a0e3dcd9906719fdc';
 
-        // Unknown hash
-        $aResult = $this->rq($cmd, $testAddress, array('apiKey' => 'freekey'));
-        $this->assertEquals(404, $aResult['error']['code']);
-
-        // Invalid hash format
+        // Invalid address format
         $aResult = $this->rq($cmd, str_replace('0x', 'xx', $testAddress), array('apiKey' => 'freekey'));
         $this->assertEquals(104, $aResult['error']['code']);
 
