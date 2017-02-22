@@ -720,6 +720,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
         tooltipFormatter.format(data, 0);
 
         if(this.options['type'] == 'area') var chart = new google.visualization.AreaChart(this.el[0]);
+        else if(this.options['type'] == 'line') var chart = new google.visualization.LineChart(this.el[0]);
         else var chart = new google.visualization.ColumnChart(this.el[0]);
         chart.draw(data, options);
     };
