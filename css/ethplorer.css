@@ -104,13 +104,13 @@ tr.paginationFooter td ul.pagination {
     border-top-right-radius: 8px;
 }
 
-.content-page table td {
+.content-page table.table td {
     color: white;
     border: 0 !important;
     min-width: 120px;
 }
 
-.content-page table td:first-child {
+.content-page table.table td:first-child {
     padding: 8px 8px 8px 28px;
 }
 
@@ -130,15 +130,15 @@ tr.odd {
     background: #202020;
 }
 
-.content-page tr.blue {
+.content-page .table tr.blue {
     background-color: #1396e2 !important;
 }
 
-.content-page tr.green {
+.content-page .table tr.green {
     background-color: #27ae60 !important;
 }
 
-.content-page tr.red {
+.content-page .table tr.red {
     background-color: #c0392b !important;
 }
 

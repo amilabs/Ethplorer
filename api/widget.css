@@ -41,12 +41,13 @@
 
 .ethplorer-widget .tx-field {
     text-align: left;
-    padding-top: 10px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis !important;
     color: #47C2FF !important;
     border: 0 !important;
+    padding-top: 10px;
+    padding-bottom: 0px;
     padding-left: 5px;
     padding-right: 5px;
 }
@@ -212,10 +213,10 @@
     color: #D0D0D0;
 }
 
-.theme-light {
+.ethplorer-widget.theme-light {
     background-color: white;
 }
 
-.theme-dark {
+.ethplorer-widget.theme-dark {
     color: #DEDEDE;
 }
