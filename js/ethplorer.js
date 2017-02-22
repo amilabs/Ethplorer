@@ -63,6 +63,9 @@ Ethplorer = {
             localStorage['tx-details-block'] = 'open';
             $('.tx-details-link').addClass('closed');
             $('#tx-details-block').show();
+            $("#tx-details-block").find("tr:visible:odd").addClass("odd");
+            $("#tx-details-block").find("tr:visible:even").addClass("even");
+            $("#tx-details-block").find("tr:visible:last").addClass("last");
         });
         $(document).on('click', '.tx-details-close', function(){
             localStorage['tx-details-block'] = 'closed';
