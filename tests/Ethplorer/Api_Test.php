@@ -196,7 +196,7 @@ class Api_Test extends PHPUnit_Framework_TestCase{
         // Token transaction with multiple operations: we check operations order only
         $tx = '0xe1a33ccdf62f9b4d0dd6f369a61e01120be151275794163c38fb7e890e428dc7';
         $aResult = $this->rq($cmd, $tx, array('apiKey' => 'freekey'));
-        $this->assertEquals(1, count($aResult['operations']));
+        $this->assertEquals(2, count($aResult['operations']));
         $this->assertEquals("0x96477a1c968a0e64e53b7ed01d0d6e4a311945c2", $aResult['operations'][0]['tokenInfo']['address']);
         $this->assertEquals("0xc66ea802717bfb9833400264dd12c2bceaa34a6d", $aResult['operations'][1]['tokenInfo']['address']);
     }
@@ -209,12 +209,87 @@ class Api_Test extends PHPUnit_Framework_TestCase{
         $tx = '0xd98FF0f44e4700c26bcf00413bf2d3aaaf1d4e8d306b68dea4bcbd940b9063a1';
 
         // Unknown hash
-        $aResult = $this->rq($cmd, $tx);
-        $this->assertEquals(404, $aResult['error']['code'], array('apiKey' => 'freekey'));
+        $aResult = $this->rq($cmd, $tx, array('apiKey' => 'freekey'));
+        $this->assertEquals(404, $aResult['error']['code']);
 
         // Invalid hash format
         $aResult = $this->rq($cmd, str_replace('0x', 'xx', $tx), array('apiKey' => 'freekey'));
         $this->assertEquals(102, $aResult['error']['code']);
+
+        // No API Key
+        $aResult = $this->rq($cmd, $tx);
+        $this->assertEquals(1, $aResult['error']['code']);
+
+        // Invalid API key
+        $aResult = $this->rq($cmd, $tx, array('apiKey' => 'freekey1'));
+        $this->assertEquals(1, $aResult['error']['code']);
+    }
+
+    public function testGetTokenHistory_OK(){
+        $cmd = 'getTokenHistory';
+        $testAddress = FALSE;
+        $aResult = $this->rq($cmd, $testAddress, array('apiKey' => 'freekey'));
+        $aMandatoryFields = array('operations');
+        $this->checkArray($aResult, $aMandatoryFields);
+        $this->assertEquals(10, count($aResult['operations']));
+        $aOperation = $aResult['operations'][0];
+        $aMandatoryFields = array('from', 'to', 'timestamp', 'tokenInfo', 'tokenInfo.address', 'tokenInfo.totalSupply', 'transactionHash', 'type', 'value');
+        $this->checkArray($aOperation, $aMandatoryFields);
+
+        $testAddress = '0xFf71Cb760666Ab06aa73f34995b42dd4b85ea07b';
+        $aResult = $this->rq($cmd, $testAddress, array('apiKey' => 'freekey'));
+        $aMandatoryFields = array('operations');
+        $this->checkArray($aResult, $aMandatoryFields);
+        $this->assertEquals(10, count($aResult['operations']));
+        $aOperation = $aResult['operations'][0];
+        $aMandatoryFields = array('from', 'to', 'timestamp', 'tokenInfo', 'tokenInfo.address', 'tokenInfo.totalSupply', 'transactionHash', 'type', 'value');
+        $this->checkArray($aOperation, $aMandatoryFields);
+        for($i=0; $i<9; $i++){
+            $this->assertEquals('0xff71Cb760666ab06aa73f34995b42dd4b85ea07b', $aResult['operations'][$i]['address']);
+        }
+        // Check Type
+        $testAddress = '0x6b9b275da653e270c0ad462a0e3dcd9906719fdc';
+        $aResult = $this->rq($cmd, $testAddress, array('apiKey' => 'freekey', 'type' => 'issuance'));
+        $aMandatoryFields = array('operations');
+        $this->checkArray($aResult, $aMandatoryFields);
+        $this->assertEquals(3, count($aResult['operations']));
+        for($i=0; $i<9; $i++){
+            $this->assertEquals('issuance', $aResult['operations'][$i]['type']);
+        }
+        // Not a token, no operations
+        $testAddress = '0x1b9b275da653e270c0ad462a0e3dcd9906719fdc';
+        $aResult = $this->rq($cmd, $testAddress, array('apiKey' => 'freekey', 'type' => 'issuance'));
+        $aMandatoryFields = array('operations');
+        $this->checkArray($aResult, $aMandatoryFields);
+        $this->assertEquals(0, count($aResult['operations']));
+        // Check Limit
+        $testAddress = '0x6b9b275da653e270c0ad462a0e3dcd9906719fdc';
+        $aResult = $this->rq($cmd, $testAddress, array('apiKey' => 'freekey', 'limit' => 5));
+        $aMandatoryFields = array('operations');
+        $this->checkArray($aResult, $aMandatoryFields);
+        $this->assertEquals(5, count($aResult['operations']));
+        // Check Max Limit
+        $testAddress = '0x6b9b275da653e270c0ad462a0e3dcd9906719fdc';
+        $aResult = $this->rq($cmd, $testAddress, array('apiKey' => 'freekey', 'limit' => 500));
+        $aMandatoryFields = array('operations');
+        $this->checkArray($aResult, $aMandatoryFields);
+        $this->assertEquals(10, count($aResult['operations']));
+    }
+
+    /**
+     * @covers
+     */
+    public function testGetTokenHistory_Error(){
+        $cmd = 'getTokenHistory';
+        $testAddress = '0xd98FF0f44e4700c26bcf00413bf2d3aaaf1d4e8d306b68dea4bcbd940b9063a1';
+
+        // Unknown hash
+        $aResult = $this->rq($cmd, $testAddress, array('apiKey' => 'freekey'));
+        $this->assertEquals(404, $aResult['error']['code']);
+
+        // Invalid hash format
+        $aResult = $this->rq($cmd, str_replace('0x', 'xx', $testAddress), array('apiKey' => 'freekey'));
+        $this->assertEquals(104, $aResult['error']['code']);
 
         // No API Key
         $aResult = $this->rq($cmd, $testAddress);
