@@ -390,8 +390,8 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
                 return;
             }
             this.ts = data.operations[0].timestamp;
-            var txTable = '<table class="txs big">';
-            var txSmall = '<table class="txs small">';
+            var txTable = '<table class="txs big-screen-table">';
+            var txSmall = '<table class="txs small-screen-table">';
             for(var i=0; i<data.operations.length; i++){
                 var rowData = this.prepareData(data.operations[i]);
                 txTable += ethplorerWidget.parseTemplate(this.templates.bigScreenTable, rowData);
@@ -422,8 +422,8 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
     this.cbRefresh = function(data){
         if(data && !data.error && data.operations && data.operations.length){
             this.ts = data.operations[0].timestamp;
-            var txTable = this.el.find(".txs.big");
-            var txSmall = this.el.find(".txs.small");
+            var txTable = this.el.find(".txs.big-screen-table");
+            var txSmall = this.el.find(".txs.small-screen-table");
             for(var i=0; i<data.operations.length; i++){
                 var rowData = this.prepareData(data.operations[i]);
                 var bigRows = $(ethplorerWidget.parseTemplate(this.templates.bigScreenTable, rowData));
