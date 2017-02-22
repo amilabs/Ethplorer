@@ -622,6 +622,9 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
     }
 
     this.api = ethplorerWidget.api + '/getTokenHistoryGrouped';
+    if(options && options.address){
+        this.api += ('/' + options.address.toString().toLowerCase());
+    }
 
     this.templates = {
         loader: '<div class="txs-loading">Loading...</div>',
@@ -727,7 +730,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
     };
 
     this.getRequestParams = function(additionalParams){
-        var requestOptions = ['period', 'token', 'type', 'theme'];
+        var requestOptions = ['period', 'address', 'type', 'theme'];
         var params = {
             apiKey: 'freekey',
         };
