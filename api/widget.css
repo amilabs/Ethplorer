@@ -159,10 +159,15 @@
     padding-right: 10px;
     color: #8a8c85 !important;
     padding-bottom: 4px;
+    max-width: 32px;
 }
-.ethplorer-widget.widget-topTokens .tx-unknown {
+.ethplorer-widget.widget-topTokens a.tx-link.tx-unknown {
     color: #676767 !important;
 }
+.ethplorer-widget.widget-topTokens a.tx-link {
+    max-width: 350px;
+}
+
 
 @media screen and (min-width: 999px) {
     .ethplorer-widget .tx-token {
