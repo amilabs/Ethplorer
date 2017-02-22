@@ -253,7 +253,7 @@ class Api_Test extends PHPUnit_Framework_TestCase{
         $aMandatoryFields = array('operations');
         $this->checkArray($aResult, $aMandatoryFields);
         $this->assertEquals(3, count($aResult['operations']));
-        for($i=0; $i<9; $i++){
+        for($i=0; $i<2; $i++){
             $this->assertEquals('issuance', $aResult['operations'][$i]['type']);
         }
         // Not a token, no operations
