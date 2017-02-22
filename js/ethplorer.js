@@ -690,7 +690,7 @@ Ethplorer = {
                 {
                     theme: 'dark',
                     getCode: true,
-                    token: address,
+                    address: address,
                     options: {title: widgetTitle, vAxis: {title: 'Token operations'}, hAxis: {title: '30 days token operations chart'}}
                 }
             );
