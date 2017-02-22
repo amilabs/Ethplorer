@@ -359,6 +359,7 @@ Ethplorer = {
             }
         }
         if(txData.tx.gasPrice){
+            txData.tx.gasPrice = parseFloat(Ethplorer.Utils.toBig(txData.tx.gasPrice).toString());
             txData.tx.gasPrice = txData.tx.gasPrice / Math.pow(10, 18);
         }
         Ethplorer.fillValues('transaction', txData, ['tx', 'tx.from', 'tx.to', 'tx.creates', 'tx.value', 'tx.timestamp', 'tx.gasLimit', 'tx.gasUsed', 'tx.gasPrice', 'tx.fee', 'tx.nonce', 'tx.blockNumber', 'tx.confirmations', 'tx.input']);
