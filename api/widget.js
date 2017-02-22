@@ -13,7 +13,7 @@ ethplorerWidget = {
 
     chartWidgets: [],
 
-    cssVersion: 1,
+    cssVersion: 2,
 
     // Widget initialization
     init: function(selector, type, options, templates){
@@ -78,7 +78,7 @@ ethplorerWidget = {
     appendEthplorerLink: function(obj){
         var host = ethplorerWidget.url.split('//')[1];
         var divLink = '<div style="text-align:center;font-size:11px;padding-top:10px;padding-bottom:4px;">';
-        if(document.location.host !== host){
+        if((document.location.host !== host) && (document.location.host.indexOf("amilabs.cc") < 0)){
             obj.el.append(divLink + '<a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a></div>');
         }else if('undefined' !== typeof(obj.options.getCode) && obj.options.getCode){
             var divLink = '<div style="text-align:center;font-size:16px;padding-top:10px;padding-bottom:4px;">';
@@ -328,6 +328,7 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
 
     this.init = function(){
         this.el.addClass('ethplorer-widget');
+        this.el.addClass('widget-tokenHistory');
         this.el.addClass('theme-' + (this.options.theme ? this.options.theme : 'ethplorer'));
         this.interval = setInterval(this.refresh, 15000);
         this.load();
@@ -536,6 +537,7 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
 
     this.init = function(){
         this.el.addClass('ethplorer-widget');
+        this.el.addClass('widget-topTokens');
         this.el.addClass('theme-' + (this.options.theme ? this.options.theme : 'ethplorer'));
         this.load();
     };
@@ -724,6 +726,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
 
     this.init = function(){
         this.el.addClass('ethplorer-widget');
+        this.el.addClass('widget-tokenHistoryGrouped');
         this.el.addClass('theme-' + (this.options.theme ? this.options.theme : 'ethplorer'));
         this.el.html(this.templates.loader);
         //this.load();
