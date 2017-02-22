@@ -2,6 +2,7 @@
 .ethplorer-widget {
     text-align: center;
     font-family: 'Open Sans', sans-serif;
+    min-height: 200px;
 }
 
 /* Loading */
