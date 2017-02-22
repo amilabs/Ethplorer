@@ -290,14 +290,14 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
         loader: '<div class="txs-loading">Loading...</div>',
         debug: '<div class="txs-debug"><div class="txs-stop"></div></div>',
         // Big table row
-        big:    '<tr>' + 
+        bigScreenTable: '<tr>' + 
                     '<td class="tx-field tx-date">%time%</td>' + 
                     '<td class="tx-field tx-transfer"><span class="tx-send">from </span>%from%<span class="tx-send">to</span>%to%</td>' + 
                     '<td class="tx-field tx-amount">%amount%</td>' +
                     '<td class="tx-field tx-token">%token%</td>' +
                 '</tr>',
         // Small table row
-        small:  '<tr>' +
+        smallScreenTable: '<tr>' +
                     '<td class="tx-field tx-date">%time%</td>' +
                     '<td class="tx-field tx-transfer"><span class="tx-send">from </span>%from%</td>' +
                 '</tr><tr>' +
@@ -394,8 +394,8 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
             var txSmall = '<table class="txs small">';
             for(var i=0; i<data.operations.length; i++){
                 var rowData = this.prepareData(data.operations[i]);
-                txTable += ethplorerWidget.parseTemplate(this.templates.big, rowData);
-                txSmall += ethplorerWidget.parseTemplate(this.templates.small, rowData);
+                txTable += ethplorerWidget.parseTemplate(this.templates.bigScreenTable, rowData);
+                txSmall += ethplorerWidget.parseTemplate(this.templates.smallScreenTable, rowData);
             }
             txSmall += '</table>';
             txTable += '</table>';
@@ -426,8 +426,8 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
             var txSmall = this.el.find(".txs.small");
             for(var i=0; i<data.operations.length; i++){
                 var rowData = this.prepareData(data.operations[i]);
-                var bigRows = $(ethplorerWidget.parseTemplate(this.templates.big, rowData));
-                var smallRows = $(ethplorerWidget.parseTemplate(this.templates.small, rowData));
+                var bigRows = $(ethplorerWidget.parseTemplate(this.templates.bigScreenTable, rowData));
+                var smallRows = $(ethplorerWidget.parseTemplate(this.templates.smallScreenTable, rowData));
                 bigRows.addClass('hidden');
                 smallRows.addClass('hidden');
                 txTable.prepend(bigRows);
