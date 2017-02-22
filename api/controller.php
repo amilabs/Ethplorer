@@ -288,14 +288,14 @@ class ethplorerController {
      */
     public function getTokenHistoryGrouped(){
         $period = min(abs((int)$this->getRequest('period', 30)), 90);
-        $token = $this->getRequest('token', FALSE);
-        if(FALSE !== $token){
-            $token = strtolower($token);
-            if(!$this->db->isValidAddress($token)){
+        $address = $this->getParam(0, FALSE);
+        if($address){
+            $address = strtolower($address);
+            if(!$this->db->isValidAddress($address)){
                 $this->sendError(104, 'Invalid token address format');
             }
         }
-        $result = array('countTxs' => $this->db->getTokenHistoryGrouped($period, $token));
+        $result = array('countTxs' => $this->db->getTokenHistoryGrouped($period, $address));
         $this->sendResult($result);
     }
 

@@ -892,20 +892,21 @@ class Ethplorer {
     /**
      * Returns transactions grouped by days.
      *
-     * @param int $period  Days from now
+     * @param int $period      Days from now
+     * @param string $address  Address
      * @return array
      */
-    public function getTokenHistoryGrouped($period = 30, $token = FALSE){
-        $cache = 'token_history_grouped-' . ($token ? ($token . '-') : '') . $period;
+    public function getTokenHistoryGrouped($period = 30, $address = FALSE){
+        $cache = 'token_history_grouped-' . ($address ? ($address . '-') : '') . $period;
         $result = $this->oCache->get($cache, false, true, 600);
         if(FALSE === $result){
             // Chainy
-            if($token && ($token == self::ADDRESS_CHAINY)){
+            if($address && ($address == self::ADDRESS_CHAINY)){
                 return $this->getChainyTokenHistoryGrouped($period);
             }
 
             $aMatch = array("timestamp" => array('$gt' => time() - $period * 24 * 3600));
-            if($token) $aMatch["contract"] = $token;
+            if($address) $aMatch["contract"] = $address;
             $result = array();
             $dbData = $this->dbs['operations']->aggregate(
                 array(
