@@ -189,7 +189,7 @@
     .ethplorer-widget .widget-txs {
         max-width: 360px;
     }
-    .ethplorer-widget .txs {
+    .ethplorer-widget .txs.big-screen-table {
         display: none;
     }
     .ethplorer-widget .txs.small-screen-table {

@@ -961,9 +961,9 @@ a.token-update {
         top: -4px;
     }
 
-	.token-history-grouped-widget {
-		padding: 0px !important;
-	}
+    .token-history-grouped-widget {
+            padding: 0px !important;
+    }
 }
 
 @-webkit-keyframes minhand{
