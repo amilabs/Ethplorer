@@ -72,7 +72,7 @@ if($error){
     <script src="/js/ethplorer-search.js?v=<?=$codeVersion?>"></script>
 </head>
 <body>
-    <div style="position: relative; min-height: 100vh;">
+<div style="position: relative; min-height: 100vh;">
     <nav class="navbar navbar-inverse" style="padding-bottom:0px; padding-top:0px;">
         <div class="container">
             <div class="navbar-header">
@@ -86,7 +86,8 @@ if($error){
                     </form>
                 </ul>
                 <ul class="nav navbar-nav navbar-right" id="topmenu">
-                    <li style="padding:16px; cursor:pointer;" onclick="document.location.href='/about.html';">About</li>
+                    <li onclick="document.location.href='/widgets';">Widgets</li>
+                    <li onclick="document.location.href='https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API';">API</li>
                 </ul>
             </div>
         </div>
@@ -553,6 +554,7 @@ if($error){
     })();
     </script>
     <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <?php /*
     <div class="navbar navbar-inverse footer" role="navigation" style="background:#0f0f0f;">
         <div class="container">
             <div class="text-center">
@@ -572,41 +574,76 @@ if($error){
             </div>
         </div>
     </div>
+     */ ?>
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-3">
+                    <a href="#" style="color:#ffffff;font-size:28px;font-weight:600;"><img src="/images/ethplorerlogowhite400.png" style="max-width: 140px;" alt=""></a>
+                    <div>
+                        <div style="color:#eeeeee;">© 2016-2017 <a href="https://everex.one/" target="_blank" class="small-link">Everex</a>
+                            <br><a href="mailto:support@ethplorer.io" class="small-link">support@ethplorer.io</a>
+                            <br><a href="/privacy" class="small-link">Privacy &amp; Terms</a><br>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-3">
+                    <div class="footer-links" style="color: #ffffff;">
+                        <ul>
+                            <li><span style="font-weight: 600;"><a href="/about">About</a> </span></li>
+                            <li><a href="/widgets" style="" rel=""><strong>Widgets</strong></a></li>
+                            <li><span style="font-weight: 600;"><a href="/about#disqus_thread">Discuss ethplorer</a></span></li>
+                            <li><span style="font-weight: 600;"><a href="https://github.com/EverexIO/Ethplorer">Sources</a></span></li>
+                            <li><span style="font-weight: 600;"><a href="https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API">API</a></span></li>
+                            <li><a href="https://github.com/EverexIO/Ethplorer/issues"><strong>Submit Idea</strong></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div style="color:#eeeeee;" data-customstyle="yes">
+                        <strong>Donation:</strong><br>
+                        <br>ETH:<br>0x0dE0BCb0703ff8F1aEb8C892eDbE692683bD8030
+                        <br>BTC:<br>1MKVGqyJA9YkVRuDsGCvnYVJ6ivNtfe289
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <script>
-    <?php
-        // Build JS config from PHP code
-        echo "Ethplorer.Config = " . json_encode($esCfg['client'], JSON_OBJECT_AS_ARRAY);
-    ?>
+</div>
+<script>
+<?php
+    // Build JS config from PHP code
+    echo "Ethplorer.Config = " . json_encode($esCfg['client'], JSON_OBJECT_AS_ARRAY);
+?>
 
-        $(document).ready(function(){
-            $.fn.bootstrapBtn = $.fn.button.noConflict();
-            Ethplorer.init();
-        });
-        if(Ethplorer.Config.ga){
-            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-            })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    $(document).ready(function(){
+        $.fn.bootstrapBtn = $.fn.button.noConflict();
+        Ethplorer.init();
+    });
+    if(Ethplorer.Config.ga){
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-            ga('create', Ethplorer.Config.ga, 'auto');
-            ga('send', 'pageview');
-        }
-    </script>
-    <!-- Facebook Pixel Code -->
-    <script>
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-    document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init', '1629579527306661');
-    fbq('track', 'PageView');
-    </script>
-    <noscript><img height="1" width="1" style="display:none"
-    src="https://www.facebook.com/tr?id=1629579527306661&ev=PageView&noscript=1"
-    /></noscript>
-    <!-- DO NOT MODIFY -->
-    <!-- End Facebook Pixel Code -->
+        ga('create', Ethplorer.Config.ga, 'auto');
+        ga('send', 'pageview');
+    }
+</script>
+<!-- Facebook Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+document,'script','https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1629579527306661');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1629579527306661&ev=PageView&noscript=1"
+/></noscript>
+<!-- DO NOT MODIFY -->
+<!-- End Facebook Pixel Code -->
 </body>
 </html>

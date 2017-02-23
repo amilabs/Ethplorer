@@ -1,8 +1,10 @@
 RewriteEngine on
 
+RewriteRule ^about$ about.html [L,QSA]
 RewriteRule ^last$ last.html [L,QSA]
-
 RewriteRule ^top$ top.html [L,QSA]
+RewriteRule ^widgets$ widgets.html [L,QSA]
+RewriteRule ^privacy$ privacy.html [L,QSA]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
@@ -18,6 +20,6 @@ RewriteRule ^search/(.*) index.php [L,QSA]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^(.*) index.htm [L,QSA]
+RewriteRule ^(.*) index.html [L,QSA]
 
-RewriteRule ^$ index.htm [L,QSA]
+RewriteRule ^$ index.html [L,QSA]

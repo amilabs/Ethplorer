@@ -1,3 +1,5 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,500,600,700&subset=latin,cyrillic);
+
 body {
     padding: 0px;
     background-color: #000;
@@ -33,6 +35,14 @@ tr.paginationFooter td ul.pagination {
 .table.unclickable {
     opacity: 0.5;
     pointer-events: none;
+}
+
+#navbar {
+    min-height: 80px;
+}
+
+#navbar .navbar-right {
+    padding-top: 14px;
 }
 
 .navbar-inverse {
@@ -74,6 +84,17 @@ tr.paginationFooter td ul.pagination {
     border-bottom: 0px dashed transparent;
 }
 
+#topmenu li {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    color: black;
+    font-weight: 600;
+    box-sizing: content-box;
+    -webkit-font-smoothing: antialiased;
+    padding: 16px;
+    cursor:pointer;
+}
+
 #network {
     color: white;
     line-height: 34px;
@@ -92,7 +113,6 @@ tr.paginationFooter td ul.pagination {
 
 .content-page .block {
     background-color: black;
-    /*padding: 20px;*/
     border-radius: 8px;
     margin-top: 20px;
 }
@@ -188,7 +208,8 @@ pre.list-field {
 #search {
     margin-top: 8px;
     margin-right: 15px !important;
-    width: 350px;    
+    width: 350px;
+    margin-left: 25px;
 }
 
 .subnav {
@@ -232,20 +253,35 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 }
 
 .footer {
-    position: absolute;
-    bottom: 0px;
-    padding-bottom: 0px;
-    margin-top: 20px;
-    margin-bottom: 0px;
-    width: 100%;
-    min-height: 70px;
-    height: 70px;
+    font-family: 'Open Sans', sans-serif;
+    padding-top:60px;
+    padding-bottom:75px;
+    background-color:#0d0d0d;    
 }
 
-.footer .copyrights {
-    position: absolute;
-    width: 150px;
-    top: 8px;
+.footer .small-link {
+    color:#eeeeee !important;
+    text-decoration: none;
+    border-bottom: 2px solid #eeeeee;
+    box-shadow: inset 0px -1px 0px 0px #eeeeee;
+    -webkit-box-shadow: inset 0px -1px 0px 0px #eeeeee;
+    -moz-box-shadow: inset 0px -1px 0px 0px #eeeeee;
+    font-size: 12px;
+}
+
+.footer-links li {
+    display: block;
+    margin-bottom: 10px;
+}
+
+.footer-links li a{
+    color: #ffffff;
+    font-weight: inherit;
+    border-bottom: 2px solid #1396e2;
+    -webkit-box-shadow: inset 0px -1px 0px 0px #1396e2;
+    -moz-box-shadow: inset 0px -1px 0px 0px #1396e2;
+    box-shadow: inset 0px -1px 0px 0px #1396e2;
+    text-decoration: none;
 }
 
 #disqus_thread {
@@ -270,15 +306,16 @@ td.list-field {
 .navbar-logo {
     float: left;
     height: 50px;
-    padding: 15px 15px;
+    padding: 25px 15px;
     line-height: 20px;
-    width: 160px;
+    width: 170px;
     position: absolute;
     z-index: 10000;
+    padding-left: 0px;
 }
 
 .navbar-logo img {
-  width: 160px;
+  width: 170px;
   cursor: pointer;
 }
 
@@ -870,13 +907,17 @@ a.token-update {
     color: #337ab7 !important;
 }
 
-@media screen and (max-width: 479px) {
-    a.token-update {
-        display: none;
+@media screen and (max-width: 991px) {
+    #topmenu li {
+        padding-right: 0px;
     }
 }
 
+
 @media screen and (max-width: 767px) {
+    .navbar-nav>li {
+        float: left;
+    }    
     
     .filter-box.in-tabs {
         text-align: right;
@@ -940,12 +981,12 @@ a.token-update {
     }
 
     #navbar {
-        height: 95px;
+        height: 115px;
     }
     
     #searchform {
         position: absolute;
-        top: 30px;
+        top: 35px;
         right: 0px;
         width: 100%;
     }
@@ -953,6 +994,7 @@ a.token-update {
     #search-quick-results,
     #search {
         width: 100%;
+        margin-left: 0px;
     }
     
     #topmenu {
@@ -963,6 +1005,21 @@ a.token-update {
 
     .token-history-grouped-widget {
             padding: 0px !important;
+    }
+}
+
+@media screen and (max-width: 479px) {
+    a.token-update {
+        display: none;
+    }
+    #topmenu li {
+        padding: 8px;
+    }
+    .navbar-logo {
+        width: 140px;
+    }
+    .navbar-logo img {
+        width: 140px;
     }
 }
 
