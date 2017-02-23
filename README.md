@@ -11,14 +11,17 @@ Explore sender, receiver and amount of transaction in token units.
 
 ![alt tag](https://github.com/EverexIO/Ethplorer/blob/develop/images/ethplorer-home2.png)
 
-# Widgets
+
+# Widgets for third-party websites
 ![alt tag](https://github.com/EverexIO/Ethplorer/blob/develop/images/augur-widget.png)
 
 [Samples and instructions for widget usage] (http://ethplorer.io/widgets)
 
+
 # API
 
 Documentation available at [WIKI pages ](https://github.com/EverexIO/Ethplorer/wiki/ethplorer-api).
+
 
 # Installation
 
@@ -31,6 +34,7 @@ git clone https://github.com/everexio/ethplorer.git ethplorer
 ```
 
 Make sure your web server supports .htaccess and mod_rewrite.
+
 
 # Configure
 
