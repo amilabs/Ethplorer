@@ -95,6 +95,17 @@
     max-width: 80px;
 }
 
+.ethplorer-widget a.widget-code-link,
+.ethplorer-widget a.widget-code-link:visited,
+.ethplorer-widget a.widget-code-link:hover {
+    color: #47C2FF !important;
+    display: inline-block;
+    max-width: 350px;
+    overflow: hidden;
+    text-overflow: ellipsis !important;
+	text-decoration: dashed !important;
+}
+
 .ethplorer-widget a.tx-link,
 .ethplorer-widget a.tx-link:visited,
 .ethplorer-widget a.tx-link:hover {
