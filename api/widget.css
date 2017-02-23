@@ -103,7 +103,8 @@
     max-width: 350px;
     overflow: hidden;
     text-overflow: ellipsis !important;
-	text-decoration: dashed !important;
+	text-decoration: none !important;
+	border-bottom: 1px dashed #47C2FF;
 }
 
 .ethplorer-widget a.tx-link,
