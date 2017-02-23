@@ -20,6 +20,7 @@ Ethplorer = {
     service: "/service/service.php",
     filter: '',
     searchCache: {},
+    saveData: function(){},
     init: function(){
         Ethplorer.isProd = ('ethplorer.io' === document.location.host);
         BigNumber.config({ ERRORS: false });
@@ -74,6 +75,9 @@ Ethplorer = {
         });
         $(document).on('click', '[data-toggle="tab"]', function(){
             Ethplorer.Nav.set('tab', $(this).parent().attr('id'));
+        });
+        $('#download').click(function(){
+            Ethplorer.downloadData($(this).attr('data-address'));
         });
         if(Ethplorer.Nav.get('tab')){
             $('#' + Ethplorer.Nav.get('tab') +' a').click();
@@ -139,6 +143,31 @@ Ethplorer = {
             }
         }
         EthplorerSearch.init($('#search-form'), $('#search'), Ethplorer.search);
+
+        // implement save to file function
+        var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
+        if(Blob && URL){
+            Ethplorer.saveData = function(data, name, mimetype){
+                var blob, url;
+                if(!mimetype) mimetype = 'application/octet-stream';
+                if('download' in document.createElement('a')){
+                    blob = new Blob([data], {type: mimetype});
+                    url = URL.createObjectURL(blob);
+                    var link = document.createElement('a');
+                    link.setAttribute('href', url);
+                    link.setAttribute('download', name || 'ethplorer.data');
+                    var event = document.createEvent('MouseEvents');
+                    event.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
+                    link.dispatchEvent(event);
+                }
+                setTimeout(function(){ URL.revokeObjectURL(url); }, 250);
+            };
+        }else if(!/\bMSIE\b/.test(navigator.userAgent)){
+            Ethplorer.saveData = function(data, name, mimetype){
+                if(!mimetype) mimetype = 'application/octet-stream';
+                window.open("data:" + mimetype + "," + encodeURIComponent(data), '_blank', '');
+            };
+        }
     },
     getActiveTab: function(){
         var tab = ($('.nav-tabs:visible li.active').length) ? $('.nav-tabs:visible li.active').attr('id').replace('tab-', '') : false;
@@ -1229,6 +1258,17 @@ Ethplorer = {
             clearTimeout(Ethplorer.loaderTimeout);
         }
         setTimeout(function(){ $('#disqus_thread iframe').css('height', ''); }, 100);
+    },
+    downloadData: function(address){
+        console.log('Download data for ' + address);
+        address = address.replace(/^\s+/, '').replace(/\s+$/, '');
+        if(address.length && Ethplorer.Utils.isAddress(address)){
+            var data = {data: address, csv: true};
+            $.get(Ethplorer.service, data, function(data, textStatus, jqXHR){
+                console.log(data);
+                Ethplorer.saveData(data, 'ethplorer.csv', 'text/csv');
+            });
+        }
     },
     Nav: {
         data: {},
