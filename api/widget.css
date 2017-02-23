@@ -179,7 +179,7 @@
     color: #676767 !important;
 }
 .ethplorer-widget.widget-topTokens a.tx-link {
-    max-width: 350px;
+    max-width: 60vw;
 }
 
 
@@ -200,7 +200,7 @@
     .ethplorer-widget .widget-txs {
         max-width: 360px;
     }
-    .ethplorer-widget .txs {
+    .ethplorer-widget .txs.big-screen-table {
         display: none;
     }
     .ethplorer-widget .txs.small-screen-table {
