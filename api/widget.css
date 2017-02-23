@@ -168,7 +168,7 @@
     color: #676767 !important;
 }
 .ethplorer-widget.widget-topTokens a.tx-link {
-    max-width: 350px;
+    max-width: 60vw;
 }
 
 
