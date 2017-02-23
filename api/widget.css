@@ -9,6 +9,8 @@
 .ethplorer-widget .txs-loading {
     margin-top: 16px;
     margin-bottom: 16px;
+    min-height: 100px;
+    padding-top: 80px;
 }
 
 /* Transfer list widget */
