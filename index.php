@@ -130,11 +130,6 @@ if($error){
                         margin-left: auto;
                         margin-right: auto;
                     }
-                    .ethplorer-widget a.tx-link,
-                    .ethplorer-widget a.tx-link:visited,
-                    .ethplorer-widget a.tx-link:hover {
-                        text-decoration: dashed !important;
-                    }
                 </style>
                 <div>
                     <div class="hidden-xs col-sm-1"></div>
