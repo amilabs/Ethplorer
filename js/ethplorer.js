@@ -686,19 +686,21 @@ Ethplorer = {
         $("table").find("tr:visible:last").addClass("last");
 
         if(!Ethplorer.isProd){
-            $('#token-history-grouped-widget').show();
-            var widgetTitle = (oToken && oToken.name) ? (oToken.name + ' token pulse') : '';
-            ethplorerWidget.init(
-                '#token-history-grouped-widget',
-                'tokenHistoryGrouped',
-                {
-                    theme: 'dark',
-                    getCode: true,
-                    address: address,
-                    options: {title: widgetTitle, vAxis: {title: 'Token operations'}, hAxis: {title: '30 days token operations chart'}}
-                }
-            );
-            ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
+            if(data.isContract || data.token){
+                $('#token-history-grouped-widget').show();
+                var widgetTitle = (oToken && oToken.name) ? (oToken.name + ' token pulse') : '';
+                ethplorerWidget.init(
+                    '#token-history-grouped-widget',
+                    'tokenHistoryGrouped',
+                    {
+                        theme: 'dark',
+                        getCode: true,
+                        address: address,
+                        options: {title: widgetTitle, vAxis: {title: 'Token operations'}, hAxis: {title: '30 days token operations chart'}}
+                    }
+                );
+                ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
+            }
         }
     },
 
