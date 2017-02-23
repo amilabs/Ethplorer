@@ -257,6 +257,9 @@ a.local-link, a.local-link:visited, a.local-link:hover {
     padding-top:60px;
     padding-bottom:75px;
     background-color:#0d0d0d;    
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
 }
 
 .footer .small-link {
@@ -287,7 +290,7 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 #disqus_thread {
     margin-top: 60px;
     display: none;
-    padding-bottom: 70px;
+    padding-bottom: 170px;
 }
 
 td.list-field {
