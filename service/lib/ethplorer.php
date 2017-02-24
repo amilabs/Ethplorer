@@ -388,17 +388,17 @@ class Ethplorer {
                 if($token = $this->getToken($tokenAddr)){
                     $result['token'] = $token;
                 }
-                $result["operations"] = $this->getOperations($hash);
-                if(is_array($result["operations"]) && count($result["operations"])){
-                    foreach($result["operations"] as $idx => $operation){
-                        if($result["operations"][$idx]['contract'] !== $tx["to"]){
-                            $result["contracts"][] = $operation['contract'];
-                        }
-                        if($token = $this->getToken($operation['contract'])){
-                            $result['token'] = $token;
-                            $result["operations"][$idx]['type'] = ucfirst($operation['type']);
-                            $result["operations"][$idx]['token'] = $token;
-                        }
+            }
+            $result["operations"] = $this->getOperations($hash);
+            if(is_array($result["operations"]) && count($result["operations"])){
+                foreach($result["operations"] as $idx => $operation){
+                    if($result["operations"][$idx]['contract'] !== $tx["to"]){
+                        $result["contracts"][] = $operation['contract'];
+                    }
+                    if($token = $this->getToken($operation['contract'])){
+                        $result['token'] = $token;
+                        $result["operations"][$idx]['type'] = ucfirst($operation['type']);
+                        $result["operations"][$idx]['token'] = $token;
                     }
                 }
             }
