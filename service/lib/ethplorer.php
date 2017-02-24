@@ -851,12 +851,13 @@ class Ethplorer {
     }
 
     /**
-     * Returns data of transfers made by specified address for downloading in CSV format.
+     * Returns data of operations made by specified address for downloading in CSV format.
      *
      * @param string $address  Address
+     * @param string $type     Operations type
      * @return array
      */
-    public function getAddressOperationsCSV($address){
+    public function getAddressOperationsCSV($address, $type = 'transfer'){
         $limit = 1000;
 
         $cache = 'address_operations_csv-' . $address . '-' . $limit;
@@ -865,14 +866,27 @@ class Ethplorer {
             $cr = "\r\n";
             $spl = ";";
             $result = 'date;txhash;from;to;token-name;token-address;value' . $cr;
-            $operations = $this->getAddressOperations($address, $limit);
+
+            $options = array(
+                'address' => $address,
+                'type' => $type,
+                'limit' => $limit
+            );
+            $operations = $this->getLastTransfers($options);
+            //return json_encode($operations);
             foreach($operations as $record){
                 $date = date("Y-m-d H:i:s", $record['timestamp']);
                 $hash = $record['transactionHash'];
                 $from = isset($record['from']) ? $record['from'] : '';
                 $to = isset($record['to']) ? $record['to'] : '';
+                $tokenName = '';
+                $tokenAddress = '';
+                if(isset($record['token'])){
+                    $tokenName = isset($record['token']['name']) ? $record['token']['name'] : '';
+                    $tokenAddress = isset($record['token']['address']) ? $record['token']['address'] : '';
+                }
                 $value = $record['value'];
-                $result .= $date . $spl . $hash . $spl . $from . $spl . $to . $spl . $value . $cr;
+                $result .= $date . $spl . $hash . $spl . $from . $spl . $to . $spl . $tokenName . $spl . $tokenAddress . $spl . $value . $cr;
             }
         }
         return $result;
