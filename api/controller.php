@@ -19,7 +19,7 @@ class ethplorerController {
     protected $db;
     protected $command;
     protected $params = array();
-    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory');
+    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getTokenHistoryGrouped');
     protected $defaults;
 
     public function __construct($es){
@@ -80,16 +80,17 @@ class ethplorerController {
      * @return void
      */
     public function run(){
+        $result = FALSE;
         $command = $this->getCommand();
         if($command && in_array($command, $this->apiCommands) && method_exists($this, $command)){
             $key = $this->getRequest('apiKey', FALSE);
             if(!$key || !$this->db->checkAPIkey($key)){
                 $this->sendError(1, 'Invalid API key');
             }
-            $this->defaults = $this->db->getAPIKeyDefaults($key, $this->getCommand());
-            $result = call_user_func(array($this, $this->getCommand()));
-            $this->sendResult($result);
+            $this->defaults = $this->db->getAPIKeyDefaults($key, $command);
+            $result = call_user_func(array($this, $command));
         }
+        return $result;
     }
 
     /**
@@ -98,7 +99,8 @@ class ethplorerController {
      * @return array
      */
     public function getTokenInfo(){
-        $address = $this->getParam(0, FALSE);
+        $address = $this->getParam(0, '');
+        $address = strtolower($address);
         if((FALSE === $address)){
             $this->sendError(103, 'Missing address');
         }
@@ -123,7 +125,8 @@ class ethplorerController {
      * @return array
      */
     public function getAddressInfo(){
-        $address = $this->getParam(0, FALSE);
+        $address = $this->getParam(0, '');
+        $address = strtolower($address);
         $onlyToken = $this->getRequest('token', FALSE);
         if((FALSE === $address)){
             $this->sendError(103, 'Missing address');
@@ -189,7 +192,8 @@ class ethplorerController {
      * @return array
      */
     public function getTxInfo(){
-        $txHash = $this->getParam(0, FALSE);
+        $txHash = $this->getParam(0, '');
+        $txHash = strtolower($txHash);
         if((FALSE === $txHash)){
             $this->sendError(101, 'Missing transaction hash');
         }
@@ -262,6 +266,40 @@ class ethplorerController {
     }
 
     /**
+     * /getTopTokens method implementation.
+     *
+     * @undocumented
+     * @return array
+     */
+    public function getTopTokens(){
+        $maxLimit = is_array($this->defaults) && isset($this->defaults['maxLimit']) ? $this->defaults['maxLimit'] : 50;
+        $maxPeriod = is_array($this->defaults) && isset($this->defaults['maxPeriod']) ? $this->defaults['maxPeriod'] : 90;
+        $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
+        $period = min(abs((int)$this->getRequest('period', 10)), $maxPeriod);
+        $result = array('tokens' => $this->db->getTopTokens($limit, $period));
+        $this->sendResult($result);
+    }
+
+    /**
+     * /getTokenHistoryGrouped method implementation.
+     *
+     * @undocumented
+     * @return array
+     */
+    public function getTokenHistoryGrouped(){
+        $period = min(abs((int)$this->getRequest('period', 30)), 90);
+        $address = $this->getParam(0, FALSE);
+        if($address){
+            $address = strtolower($address);
+            if(!$this->db->isValidAddress($address)){
+                $this->sendError(104, 'Invalid token address format');
+            }
+        }
+        $result = array('countTxs' => $this->db->getTokenHistoryGrouped($period, $address));
+        $this->sendResult($result);
+    }
+
+    /**
      *
      * Common method to get token and address operation history.
      *
@@ -281,10 +319,15 @@ class ethplorerController {
         }
         $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 10;
         $options = array(
-            'address'   => $address,
             'type'      => $this->getRequest('type', FALSE),
             'limit'     => min(abs((int)$this->getRequest('limit', 10)), $maxLimit),
         );
+        if(FALSE !== $address){
+            $options['address'] = $address;
+        }
+        if(FALSE !== $this->getRequest('timestamp', FALSE)){
+            $options['timestamp'] = (int)$this->getRequest('timestamp');
+        }
         if($addressHistoryMode){
             $token = $this->getRequest('token', FALSE);
             if(FALSE !== $token){

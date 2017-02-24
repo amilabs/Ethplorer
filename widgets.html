@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Ethplorer: Widgets and Charts for Ethereum Tokens</title>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
+	<link rel="stylesheet" href="/css/ethplorer.css?v=100>">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="referrer" content="never" />
+	<meta name="referrer" content="no-referrer" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link rel="apple-touch-icon" sizes="180x180" href="https://ethplorer.io/apple-touch-icon.png">
+	<link rel="icon" type="image/png" href="https://ethplorer.io/favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="https://ethplorer.io/favicon-16x16.png" sizes="16x16">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+	<script src="https://ethplorer.io/js/bignumber.js"></script>
+	<script src="https://ethplorer.io/js/ethplorer.js?v=99"></script>
+	<script src="https://ethplorer.io/js/ethplorer-search.js?v=99"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js"></script>
+
+	<style type="text/css">
+		.bg-white{
+			color: #000;
+			background-color: #fff;
+		}
+		.text-white {
+			color: #dedede;
+		}
+		div.bg-gray	{
+			background-color: #ccc !important;
+		}
+		div.bg-dark	{
+			background-color: #333 !important;
+		}
+		.round-top {
+			border-top-left-radius: 8px;
+			border-top-right-radius: 8px;
+			min-height: 8px;
+		}
+		.round-bottom {
+			border-bottom-left-radius: 8px;
+			border-bottom-right-radius: 8px;
+			min-height: 8px;
+		}
+		.space-bottom {
+			margin-bottom: 40px;			
+		}
+		.space-top {
+			margin-top: 40px;			
+		}
+		.add-paddings {
+			padding: 20px;
+		}
+		.widget-code {
+			background: #000;
+			color: #dedede;
+			width:70%;
+			min-height: 200px;
+			font-size: 0.9em;
+			margin-right: auto; margin-left: auto;
+		}
+		h1, h2 {
+			margin-bottom: 20px;
+		}
+		p {
+			font-size: 1.2em;
+		}
+
+
+	</style>
+	
+	<script>
+
+	   function getWidgetCode(ta){
+			var res = '';
+			var el = $('#' + ta);
+
+			if(!el.length) return;
+
+			$('[data-textarea="' + ta + '"]').each(function(){
+				var val = $('<div>').append($(this).clone()).html().replace(/\sdata\-textarea\=\".*\"/g, '');
+				res = res + val + "\n";
+			});
+
+			var editor = ace.edit(ta);
+			editor.setReadOnly(true);
+			editor.setTheme("ace/theme/monokai");
+			editor.setValue(res);
+			editor.resize();
+
+			editor.getSession().setMode("ace/mode/html");
+			editor.renderer.setShowGutter(false);
+			editor.setDisplayIndentGuides(false);
+			editor.setShowPrintMargin(false);
+	   }
+
+	   $(document).ready(function(){
+	       getWidgetCode('ethplorer-textarea-1');
+	       getWidgetCode('ethplorer-textarea-2');
+	       getWidgetCode('ethplorer-textarea-3');
+	       getWidgetCode('ethplorer-textarea-4');
+	       getWidgetCode('ethplorer-textarea-10');
+	       getWidgetCode('ethplorer-textarea-11');
+	       getWidgetCode('ethplorer-textarea-12');
+   	       getWidgetCode('ethplorer-textarea-13');
+	   });
+
+
+	</script>
+
+</head>
+<body>
+	<div style="position: relative; min-height: 100vh;">
+            <nav class="navbar navbar-inverse" style="padding-bottom:0px; padding-top:0px;">
+                <div class="container">
+                    <div class="navbar-header">
+                      <a class="navbar-logo" href="/"><img title="Ethplorer" src="/images/ethplorer-logo-48.png"></a>
+                    </div>
+                    <div id="navbar" class="navbar" style="margin-bottom: 0px;">
+                        <ul class="nav navbar-nav navbar-right" id="searchform">
+                            <form id="search-form">
+                                <input id="search" class="form-control" placeholder="Token name or symbol / TX hash / address" autocomplete="off" />
+                                <div id="search-quick-results"></div>
+                            </form>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right" id="topmenu">
+                            <li onclick="document.location.href='/widgets';">Widgets</li>
+                            <li onclick="document.location.href='https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API';">API</li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+		<div class="container">
+			<div class="starter-template">
+				<div id="page-create" class="page">
+
+					<div class="block">
+						<div class="row text-white">
+							<div class="hidden-xs col-sm-1"></div>
+							<div class="col-xs-12 col-sm-10">
+								<h1 class="text-center">Widgets and Charts for Ethereum Tokens</h1>
+							</div>
+							<div class="hidden-xs col-sm-1"></div>
+						</div>
+						<div class="row text-white text-justify space-bottom">
+							<div class="hidden-xs col-sm-3"></div>
+							<div class="col-xs-12 col-sm-6">
+								<p>
+									Display the activity of your token right from your website! Ethplorer offers a few modes of highly customizable widgets. Popular widget modes are Token Activity Chart (for the last month), Recent Transactions, Top Ethereum tokens activity. 
+								</p>
+								<p>
+									Charts are based on Google Charts, so you can customize it as you like by referring to <a href="https://developers.google.com/chart/" target="_blank">Google Charts instructions.</a> 
+								</p>
+								<p>
+									Below see different samples of widgets and customizations. 
+								</p>
+								<p style="font-size: 1.0em;">
+									<i>Note: the most simple way to get a widget for your token is 1) find your token in Ethplorer, and 2) use the widget link there. </i>
+								</p>
+							</div>
+							<div class="hidden-xs col-sm-3"></div>
+						</div>
+
+						<div class="row">
+							<div class="hidden-xs col-sm-2"></div>
+							<div class="col-xs-12 col-sm-8">
+								<div class="bg-gray add-paddings space-bottom round-top round-bottom">
+									<h3>How to install widget code</h3>
+									<textarea style="width: 100%" rows="9">
+
+	1. Add jQuery in the HEAD section of your page (if not present):
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+
+	2. Get any widget code displayed below, put div placeholder and code somewhere in BODY section.
+
+	3. Customize widget data and style using options and styles (optional).
+
+    								</textarea>
+
+ 
+								</div>
+							</div>
+							<div class="hidden-xs col-sm-2"></div>
+						</div>
+					</div>
+					
+					<div class="block">
+						<div class="row bg-white round-top round-bottom">
+							<div class="hidden-xs col-sm-2"></div>
+							<div class="col-xs-12 col-sm-8">
+								<h2 class="text-center">Chart Widgets</h2>
+							</div>
+							<div class="hidden-xs col-sm-2"></div>
+						</div>
+					</div>
+
+					<div class="content-page space-bottom" style="display:block">
+						<div class="row">
+							<div class="hidden-xs col-sm-2"></div>
+							<div class="col-xs-12 col-sm-8">
+								<div class="block">
+									<div class="row">
+										<div class="block-header text-center"><h3>Token Activity Chart</h3></div>
+									</div>
+									<div class="row">
+										<div class="bg-gray">
+
+<div id="token-history-grouped-1" data-textarea="ethplorer-textarea-1"></div>
+<script type="text/javascript" data-textarea="ethplorer-textarea-1">
+	if(typeof(eWgs) === 'undefined'){ document.write('<scr' + 'ipt src="https://api.ethplorer.io/widget.js?' + new Date().getTime().toString().substr(0,7) + '" async></scr' + 'ipt>'); var eWgs = []; }
+	eWgs.push(function(){
+		ethplorerWidget.init(
+	                '#token-history-grouped-1', // Placeholder element
+	                'tokenHistoryGrouped',    	// Widget type
+	                {
+	                	// token address
+	                	'address': '0x48c80f1f4d53d5951e5d5438b54cba84f29f32a5', 
+	                	options: {
+	                		'title': 'Augur Rep Token Pulse', 
+	                		'pointSize': 5, 
+	                		'vAxis': {
+	                			'title': 'Token operations', 
+	                		}
+	                	}
+	                }
+
+            	);
+	});
+</script>
+
+										</div>
+									</div>
+									<div class="row bg-gray">
+										<div class="text-center space-top">
+												<h4>Widget html code</h4>
+												<p>
+													Setup in options 'token' and 'title' parameters to address and name of your token.
+												</p>
+												<div id="ethplorer-textarea-1" class="widget-code"></div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="bg-gray round-bottom"></div>
+									</div>
+								</div>
+							</div>
+							<div class="hidden-xs col-sm-2"></div>
+						</div>    
+					</div>
+
+					<div class="content-page space-bottom" style="display:block">
+						<div class="row">
+							<div class="hidden-xs col-sm-2"></div>
+							<div class="col-xs-12 col-sm-8">
+								<div class="block">
+									<div class="row">
+										<div class="block-header text-center"><h3>Customized Tokens Activity Chart</h3></div>
+									</div>
+									<div class="row">
+										<div class="bg-gray">
+
+<div id="token-history-grouped-2" data-textarea="ethplorer-textarea-2"></div>
+<script type="text/javascript" data-textarea="ethplorer-textarea-2">
+	if(typeof(eWgs) === 'undefined'){ document.write('<scr' + 'ipt src="https://api.ethplorer.io/widget.js?' + new Date().getTime().toString().substr(0,7) + '" async></scr' + 'ipt>'); var eWgs = []; }
+	eWgs.push(function(){
+		ethplorerWidget.init(
+	                '#token-history-grouped-2', // Placeholder element
+	                'tokenHistoryGrouped',    // Widget type
+	                {
+	                	'period': 10,
+	                	'type': 'column',		// supported types: area, column, line
+	                	options: {
+	                		'title': 'Ethereum Tokens Pulse', 
+	                		'pointSize': 2, 
+	                		'hAxis': {
+	                			'title': '10 days token operations chart', 
+	                			'titleTextStyle': {
+	                				'color': '#3366CC', 
+	                				'italic': true
+	                			}
+	                		}, 
+	                		'vAxis': {
+	                			'title': 'Token operations', 
+	                		}
+	                	}
+	                }
+
+            	);
+	});
+</script>
+
+										</div>
+									</div>
+									<div class="row bg-gray">
+										<div class="text-center space-top">
+												<h4>Widget html code</h4>
+												<div id="ethplorer-textarea-2" class="widget-code"></div>
+
+												<script>
+												   getWidgetCode('ethplorer-textarea-2');
+												</script>
+										</div>
+									</div>
+									<div class="row">
+										<div class="bg-gray round-bottom"></div>
+									</div>
+								</div>
+							</div>
+							<div class="hidden-xs col-sm-2"></div>
+						</div>    
+					</div>
+
+
+
+					<div class="content-page space-bottom" style="display:block">
+						<div class="row">
+							<div class="hidden-xs col-sm-2"></div>
+							<div class="col-xs-12 col-sm-8">
+								<div class="block">
+									<div class="row">
+										<div class="block-header text-center"><h3>Dark Theme Chart</h3></div>
+									</div>
+									<div class="row">
+										<div class="bg-dark">
+
+<div id="token-history-grouped-3" data-textarea="ethplorer-textarea-3"></div>
+<script type="text/javascript" data-textarea="ethplorer-textarea-3">
+	if(typeof(eWgs) === 'undefined'){ document.write('<scr' + 'ipt src="https://api.ethplorer.io/widget.js?' + new Date().getTime().toString().substr(0,7) + '" async></scr' + 'ipt>'); var eWgs = []; }
+	eWgs.push(function(){
+		ethplorerWidget.init(
+	                '#token-history-grouped-3', // Placeholder element
+	                'tokenHistoryGrouped',    // Widget type
+	                {
+	                	'theme': 'dark',
+	                	options: {
+
+	                		'title': 'Ethereum Tokens Pulse', 
+	                		'hAxis': {
+	                			'title': '90 days token operations chart', 
+	                		}, 
+	                		'vAxis': {
+	                			'title': 'Token operations', 
+	                		}
+	                	}
+	                }
+
+            	);
+	});
+</script>
+
+										</div>
+									</div>
+									<div class="row bg-gray">
+										<div class="text-center space-top">
+												<h4>Widget html code</h4>
+												<div id="ethplorer-textarea-3" class="widget-code"></div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="bg-gray round-bottom"></div>
+									</div>
+								</div>
+							</div>
+							<div class="hidden-xs col-sm-2"></div>
+						</div>    
+					</div>
+
+					<div class="block">
+						<div class="row bg-white round-top round-bottom">
+							<div class="hidden-xs col-sm-2"></div>
+							<div class="col-xs-12 col-sm-8">
+								<h2 class="text-center">Text Widgets</h2>
+							</div>
+							<div class="hidden-xs col-sm-2"></div>
+						</div>
+					</div>
+
+					<div class="content-page space-bottom" style="display:block">
+						<div class="row">
+							<div class="hidden-xs col-sm-2"></div>
+							<div class="col-xs-12 col-sm-8">
+								<div class="block">
+									<div class="row">
+										<div class="block-header text-center"><h3>Recent Token Activity</h3></div>
+									</div>
+									<div class="row">
+										<div class="bg-gray" style="padding-top: 20px;">
+
+<div id="token-txs-10" data-textarea="ethplorer-textarea-10"></div>
+<script type="text/javascript" data-textarea="ethplorer-textarea-10">
+	if(typeof(eWgs) === 'undefined'){ document.write('<scr' + 'ipt src="https://api.ethplorer.io/widget.js?' + new Date().getTime().toString().substr(0,7) + '" async></scr' + 'ipt>'); var eWgs = []; }
+	eWgs.push(function(){
+		ethplorerWidget.init(
+	                '#token-txs-10', 	// Placeholder element
+	                'tokenHistory',    	// Widget type
+	                {
+	                	'address': '0x48c80f1f4d53d5951e5d5438b54cba84f29f32a5', 	// keep empty to show all tokens
+	                	'limit': 5,	// Number of records to show	
+	                }
+
+            	);
+	});
+</script>
+
+										</div>
+									</div>
+									<div class="row bg-gray">
+										<div class="text-center space-top">
+												<h4>Widget html code</h4>
+												<div id="ethplorer-textarea-10" class="widget-code"></div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="bg-gray round-bottom"></div>
+									</div>
+								</div>
+							</div>
+							<div class="hidden-xs col-sm-2"></div>
+						</div>    
+					</div>
+
+					<div class="content-page space-bottom" style="display:block">
+						<div class="row">
+							<div class="hidden-xs col-sm-2"></div>
+							<div class="col-xs-12 col-sm-8">
+								<div class="block">
+									<div class="row">
+										<div class="block-header text-center"><h3>Customized Token Activity Widget</h3></div>
+									</div>
+									<div class="row">
+										<div class="bg-gray" style="padding-top: 20px;">
+
+<style data-textarea="ethplorer-textarea-11">
+    #token-txs-11 {
+    	line-height: 1.8;
+        border-radius: 8px;
+        max-width: 700px !important;
+        background-blend-mode: darken;
+    	background-color: rgba(21,12,70,0.9);
+    }
+    #token-txs-11 .txs.big-screen-table td .tx-amount{
+    	display: inline-block;
+        width: 150px;
+	} 
+    #token-txs-11 .txs.big-screen-table td .tx-link{
+        max-width: 120px;
+    }
+    #token-txs-11 .txs.big-screen-table td .tx-link:last-child{
+        max-width: 150px;
+    }   
+	#token-txs-11 .txs.big-screen-table td .tx-amount a{
+	     max-width: 110px !important;
+	}
+</style>
+<div id="token-txs-11" data-textarea="ethplorer-textarea-11"></div>
+<script type="text/javascript" data-textarea="ethplorer-textarea-11">
+	if(typeof(eWgs) === 'undefined'){ document.write('<scr' + 'ipt src="https://api.ethplorer.io/widget.js?' + new Date().getTime().toString().substr(0,7) + '" async></scr' + 'ipt>'); var eWgs = []; }
+	eWgs.push(function(){
+		ethplorerWidget.init(
+	                '#token-txs-11', 	// Placeholder element
+	                'tokenHistory',    	// Widget type
+	                {
+	                	'address': '0x48c80f1f4d53d5951e5d5438b54cba84f29f32a5', 	// keep empty to show all tokens
+	                	'limit': 5,													// Number of records to show	
+	                },
+	                {
+	                	'header': '<div class="txs-header">WETH Recent Transactions</div>',	// customized header
+	                	'loader': '<div class="txs-loading">* L * O * A * D * I * N * G *<br><small>Please wait...</small></div>',	// customized loader
+	                	'bigScreenTable':    '<tr><td>%from% <span class="tx-send">sent</span> <span class="tx-amount">%amount% %token%</span> <span class="tx-send">to</span> %to% <span class="tx-send">at</span><span class="tx-date"> %datetime%</span></td></tr>'
+
+	                }
+
+            	);
+	});
+</script>
+
+										</div>
+									</div>
+									<div class="row bg-gray">
+										<div class="text-center space-top">
+												<h4>Widget html code</h4>
+												<div id="ethplorer-textarea-11" class="widget-code"></div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="bg-gray round-bottom"></div>
+									</div>
+								</div>
+							</div>
+							<div class="hidden-xs col-sm-2"></div>
+						</div>    
+					</div>
+
+
+
+					<div class="content-page space-bottom" style="display:block">
+						<div class="row">
+							<div class="hidden-xs col-sm-2"></div>
+							<div class="col-xs-12 col-sm-8">
+								<div class="block">
+									<div class="row">
+										<div class="block-header text-center"><h3>Top Tokens by Activity</h3></div>
+									</div>
+									<div class="row">
+										<div class="" style="padding-top: 20px;">
+
+<div id="token-txs-12" data-textarea="ethplorer-textarea-12"></div>
+<script type="text/javascript" data-textarea="ethplorer-textarea-12">
+	if(typeof(eWgs) === 'undefined'){ document.write('<scr' + 'ipt src="https://api.ethplorer.io/widget.js?' + new Date().getTime().toString().substr(0,7) + '" async></scr' + 'ipt>'); var eWgs = []; }
+	eWgs.push(function(){
+		ethplorerWidget.init(
+	                '#token-txs-12', 	// Placeholder element
+	                'topTokens',    	// Widget type
+	                {
+	                	'limit': 10,		// Number of records to show	
+	                	'period': 30	// period of calculating
+	                }
+
+            	);
+	});
+</script>
+
+										</div>
+									</div>
+									<div class="row bg-gray">
+										<div class="text-center space-top">
+												<h4>Widget html code</h4>
+												<div id="ethplorer-textarea-12" class="widget-code"></div>
+										</div>
+									</div>
+									<div class="row">
+										<div class="bg-gray round-bottom"></div>
+									</div>
+								</div>
+							</div>
+							<div class="hidden-xs col-sm-2"></div>
+						</div>    
+					</div>
+
+
+
+					<div class="content-page space-bottom" style="display:block">
+					&nbsp;
+					</div>
+
+
+				</div>
+			</div>
+		</div>
+		<div id="disqus_thread" class="container"></div>
+		<script>
+
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables */
+    /*
+    var disqus_config = function () {
+          this.page.url = PAGE_URL;  // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = PAGE_IDENTIFIER; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    */
+    (function() { // DON'T EDIT BELOW THIS LINE
+    	var d = document, s = d.createElement('script');
+    	s.src = '//https-ethplorer-io.disqus.com/embed.js';
+    	s.setAttribute('data-timestamp', +new Date());
+    	(d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <div class="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-xs-3">
+                    <a href="#" style="color:#ffffff;font-size:28px;font-weight:600;"><img src="/images/ethplorerlogowhite400.png" style="max-width: 140px;" alt=""></a>
+                    <div>
+                        <div style="color:#eeeeee;">© 2016-2017 <a href="https://everex.one/" target="_blank" class="small-link">Everex</a>
+                            <br><a href="mailto:support@ethplorer.io" class="small-link">support@ethplorer.io</a>
+                            <br><a href="/privacy" class="small-link">Privacy &amp; Terms</a><br>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xs-3">
+                    <div class="footer-links" style="color: #ffffff;">
+                        <ul>
+                            <li><span style="font-weight: 600;"><a href="/about">About</a> </span></li>
+                            <li><a href="/widgets" style="" rel=""><strong>Widgets</strong></a></li>
+                            <li><span style="font-weight: 600;"><a href="/about#disqus_thread">Discuss ethplorer</a></span></li>
+                            <li><span style="font-weight: 600;"><a href="https://github.com/EverexIO/Ethplorer">Sources</a></span></li>
+                            <li><span style="font-weight: 600;"><a href="https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API">API</a></span></li>
+                            <li><a href="https://github.com/EverexIO/Ethplorer/issues"><strong>Submit Idea</strong></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div>
+                    <div style="color:#eeeeee;" data-customstyle="yes">
+                        <strong>Donation:</strong><br>
+                        <br>ETH:<br>0x0dE0BCb0703ff8F1aEb8C892eDbE692683bD8030
+                        <br>BTC:<br>1MKVGqyJA9YkVRuDsGCvnYVJ6ivNtfe289
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+	$(document).ready(function(){
+		EthplorerSearch.init($('#search-form'), $('#search'), Ethplorer.search);
+	});
+	if(Ethplorer.Config.ga){
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+			(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+			m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', Ethplorer.Config.ga, 'auto');
+		ga('send', 'pageview');
+	}
+</script>
+<!-- Facebook Pixel Code -->
+<script>
+	!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+		n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+		n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+		t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+			document,'script','https://connect.facebook.net/en_US/fbevents.js');
+		fbq('init', '1629579527306661');
+		fbq('track', 'PageView');
+	</script>
+	<noscript><img height="1" width="1" style="display:none"
+		src="https://www.facebook.com/tr?id=1629579527306661&ev=PageView&noscript=1"
+		/></noscript>
+		<!-- DO NOT MODIFY -->
+		<!-- End Facebook Pixel Code -->
+	</body>
+	</html>

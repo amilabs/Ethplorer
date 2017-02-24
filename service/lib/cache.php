@@ -86,15 +86,22 @@ class evxCache {
      * @param boolean  $loadIfNeeded
      * @return mixed
      */
-    public function get($entryName, $default = null, $loadIfNeeded = false){
+    public function get($entryName, $default = NULL, $loadIfNeeded = FALSE, $cacheLifetime = FALSE){
         $result = $default;
         if($this->exists($entryName)){
             $result = $this->aData[$entryName];
         }elseif($loadIfNeeded){
             $filename = $this->path . '/' . $entryName . ".tmp";
             if(file_exists($filename)){
-                $contents = file_get_contents($filename);
-                $result = json_decode($contents, true);
+                if(FALSE !== $cacheLifetime){
+                    $fileTime = filemtime($filename);
+                    if((time() - $fileTime) > $cacheLifetime){
+                        @unlink($filename);
+                        return $result;
+                    }
+                }
+                $contents = @file_get_contents($filename);
+                $result = json_decode($contents, TRUE);
             }
         }
         return $result;
