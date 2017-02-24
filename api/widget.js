@@ -696,9 +696,13 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
                     italic: false
                 },
                 minValue: 0,
+                viewWindow: {
+                    min: 0
+                },
                 gridlines: {
                     color: "none"
                 },
+                maxValue: 3,
                 format: '#,###',
             },
             pointSize: 5,
