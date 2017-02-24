@@ -1,11 +1,12 @@
 # Ethplorer
 
-Ethereum tokens and transactions viewer.
+Ethereum tokens viewer.
 
-View tokens developed with Ethereum's [ERC20 (before known as EIP20)](https://github.com/ethereum/EIPs/issues/20) standard.
+Easy to view tokens and custom data. Users first.
 
-Explore sender, receiver and amount of transaction in token units.
+Support tokens developed with Ethereum's [ERC20 (before known as EIP20)](https://github.com/ethereum/EIPs/issues/20) standard.
 
+Provides API, Widgets for websites.
 
 [Online version at Ethplorer.io](https://ethplorer.io)
 
