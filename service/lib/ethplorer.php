@@ -851,6 +851,34 @@ class Ethplorer {
     }
 
     /**
+     * Returns data of transfers made by specified address for downloading in CSV format.
+     *
+     * @param string $address  Address
+     * @return array
+     */
+    public function getAddressOperationsCSV($address){
+        $limit = 1000;
+
+        $cache = 'address_operations_csv-' . $address . '-' . $limit;
+        $result = $this->oCache->get($cache, false, true, 24 * 3600);
+        if(FALSE === $result){
+            $cr = "\r\n";
+            $spl = ";";
+            $result = 'date;txhash;from;to;token-name;token-address;value' . $cr;
+            $operations = $this->getAddressOperations($address, $limit);
+            foreach($operations as $record){
+                $date = date("Y-m-d H:i:s", $record['timestamp']);
+                $hash = $record['transactionHash'];
+                $from = isset($record['from']) ? $record['from'] : '';
+                $to = isset($record['to']) ? $record['to'] : '';
+                $value = $record['value'];
+                $result .= $date . $spl . $hash . $spl . $from . $spl . $to . $spl . $value . $cr;
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Returns top tokens list.
      *
      * @todo: count number of transactions with "transfer" operation

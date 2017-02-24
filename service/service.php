@@ -22,11 +22,21 @@ $es = Ethplorer::db(require_once dirname(__FILE__) . '/config.php');
 $data = isset($_GET["data"]) ? $_GET["data"] : false;
 $page = isset($_GET["page"]) ? $_GET["page"] : false;
 $refresh = isset($_GET["refresh"]) ? $_GET["refresh"] : false;
+$csv = isset($_GET["csv"]) ? $_GET["csv"] : false;
 
 $search = isset($_GET["search"]) ? $_GET["search"] : false;
 
 // Allow cross-domain ajax requests
 header('Access-Control-Allow-Origin: *');
+
+// Download as CSV
+if($csv){
+    if((false !== $data) && $es->isValidAddress($data)){
+        $result = $es->getAddressOperationsCSV($data);
+        echo $result;
+    }
+    die;
+}
 
 $pageSize = 10;
 

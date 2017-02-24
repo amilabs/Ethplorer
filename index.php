@@ -481,7 +481,7 @@ if($error){
                                     </div>
                                     <table class="table"></table>
                                 </div>
-                                <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
+                                <small>* all dates are displayed for <span class="local-time-offset"></span> timezone <!--<span class="export-csv"><a id="download" href="javascript:void(0)" data-address="<?php echo $rParts[2];?>">Export as CSV</a></span>--></small>
                             </div>
                         </div>
                         <div id="token-issuances-tab" class="tab-pane fade">

@@ -467,6 +467,11 @@ a.dashed {
     margin-bottom: 20px;
 }
 
+.export-csv {
+	float: right;
+	padding-right: 16px;
+}
+
 #address-chainy-tx .table tr td:nth-child(4){
     white-space: nowrap;
 }
