@@ -48,6 +48,7 @@ if($error){
         die();
     }
 }
+$csvExport = '';//' <span class="export-csv"><a class="download" href="javascript:void(0)" data-address="' . $rParts[2] . '">Export as CSV</a></span>';
 ?><!DOCTYPE html>
 <html>
 <head>
@@ -481,7 +482,7 @@ if($error){
                                     </div>
                                     <table class="table"></table>
                                 </div>
-                                <small>* all dates are displayed for <span class="local-time-offset"></span> timezone <!--<span class="export-csv"><a id="download" href="javascript:void(0)" data-address="<?php echo $rParts[2];?>">Export as CSV</a></span>--></small>
+                                <small>* all dates are displayed for <span class="local-time-offset"></span> timezone<?php echo $csvExport;?></small>
                             </div>
                         </div>
                         <div id="token-issuances-tab" class="tab-pane fade">
@@ -517,7 +518,7 @@ if($error){
                             </div>
                             <table class="table"></table>
                         </div>
-                        <small>* all dates are displayed for <span class="local-time-offset"></span> timezone</small>
+                        <small>* all dates are displayed for <span class="local-time-offset"></span> timezone<?php echo $csvExport;?></small>
                     </div>
                     <div class="col-xs-12" id="address-chainy-tx" style="display:none;">
                         <div class="block">
