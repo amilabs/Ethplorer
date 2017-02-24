@@ -714,7 +714,7 @@ Ethplorer = {
         $("table").find("tr:visible:even").addClass("even");
         $("table").find("tr:visible:last").addClass("last");
 
-        if(!Ethplorer.isProd){
+        if(true || !Ethplorer.isProd){
             if(data.isContract || data.token){
                 $('#token-history-grouped-widget').show();
                 var widgetTitle = (oToken && oToken.name) ? (oToken.name + ' token pulse') : '';
