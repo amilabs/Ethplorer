@@ -124,7 +124,6 @@ ethplorerWidget = {
         var popupContent = $("#" + popupId).html();
         $("#" + popupId).html(popupContent.replace(/(\n)/gm, "<br/>"));
         $("#" + popupId).dialog('open');
-        console.log(widgetCode);
     },
     parseTemplate: function(template, data){
         var res = template;
