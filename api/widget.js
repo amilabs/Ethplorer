@@ -108,9 +108,9 @@ ethplorerWidget = {
 
         if('undefined' !== typeof(widgetOptions.getCode)) delete widgetOptions.getCode;
 
-        var widgetCode = 'Add jQuery in the HEAD section of your page (if not present):' + cr;
+        var widgetCode = '1. Add jQuery in the HEAD section of your page (if not present):' + cr;
         widgetCode += '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>' + cr + cr;
-        widgetCode += 'Put code displayed below somewhere in BODY section.' + cr + cr;
+        widgetCode += '2. Put code displayed below somewhere in BODY section.' + cr + cr;
         widgetCode += '<div id="' + id + '"></div>' + cr;
         widgetCode += '<script type="text/javascript">' + cr;
         widgetCode += 'if(typeof(eWgs) === \'undefined\'){ document.write(\'<scr\' + \'ipt src="/api/widget.js?\' + new Date().getTime().toString().substr(0,7) + \'" async></scr\' + \'ipt>\'); var eWgs = []; }' + cr;
