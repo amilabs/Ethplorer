@@ -48,7 +48,7 @@ if($error){
         die();
     }
 }
-$csvExport = '';//' <span class="export-csv"><a class="download" href="javascript:void(0)" data-address="' . $rParts[2] . '">Export as CSV</a></span>';
+$csvExport = ' <span class="export-csv"><a class="download" href="javascript:void(0)" data-address="' . $rParts[2] . '">Export as CSV</a></span>';
 ?><!DOCTYPE html>
 <html>
 <head>
