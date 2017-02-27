@@ -872,8 +872,18 @@ class Ethplorer {
                 'type' => $type,
                 'limit' => $limit
             );
-            $operations = $this->getLastTransfers($options);
-            //return json_encode($operations);
+            $aTokens = array();
+            $addTokenInfo = true;
+            $isContract = $this->getContract($address);
+            if($isContract){
+                $addTokenInfo = false;
+            }
+            $isToken = $this->getToken($address);
+            if($isToken){
+                $operations = $this->getLastTransfers($options);
+            }else{
+                $operations = $this->getAddressOperations($address, $limit);
+            }
             foreach($operations as $record){
                 $date = date("Y-m-d H:i:s", $record['timestamp']);
                 $hash = $record['transactionHash'];
@@ -881,9 +891,11 @@ class Ethplorer {
                 $to = isset($record['to']) ? $record['to'] : '';
                 $tokenName = '';
                 $tokenAddress = '';
-                if(isset($record['token'])){
-                    $tokenName = isset($record['token']['name']) ? $record['token']['name'] : '';
-                    $tokenAddress = isset($record['token']['address']) ? $record['token']['address'] : '';
+                // TODO: add tokens info cache
+                if($addTokenInfo && isset($record['contract'])){
+                    $token = $this->getToken($record['contract']);
+                    $tokenName = isset($token['name']) ? $token['name'] : '';
+                    $tokenAddress = isset($token['address']) ? $token['address'] : '';
                 }
                 $value = $record['value'];
                 $result .= $date . $spl . $hash . $spl . $from . $spl . $to . $spl . $tokenName . $spl . $tokenAddress . $spl . $value . $cr;

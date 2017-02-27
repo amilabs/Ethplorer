@@ -76,7 +76,7 @@ Ethplorer = {
         $(document).on('click', '[data-toggle="tab"]', function(){
             Ethplorer.Nav.set('tab', $(this).parent().attr('id'));
         });
-        $('#download').click(function(){
+        $('.download').click(function(){
             Ethplorer.downloadData($(this).attr('data-address'));
         });
         if(Ethplorer.Nav.get('tab')){
