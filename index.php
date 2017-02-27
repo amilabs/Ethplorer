@@ -24,7 +24,11 @@ $es = Ethplorer::db($esCfg);
 
 $error = TRUE;
 $header = "";
-$rParts = explode('/', $_SERVER['REQUEST_URI']);
+$uri = $_SERVER['REQUEST_URI'];
+if(FALSE !== strpos($uri, '?')){
+    $uri = substr($uri, 0, strpos($uri, '?'));
+}
+$rParts = explode('/', $uri);
 foreach($rParts as $i => $part){
     $rParts[$i] = strtolower($part);
 }
