@@ -26,6 +26,7 @@
             body {
                 /* background: url(/images/bg.jpg) top left no-repeat black; */
                 background: linear-gradient(to top, #000, #152e47);
+                font-family: 'Open Sans', sans-serif;
             }
             .topdiv {
                 position: relative; 
@@ -119,6 +120,12 @@
                 font-size: 16px;
                 padding-right: 12px;
             }
+            @media screen and (min-width:768px){
+                .wide-stripe {
+                    margin-left: -23% !important;
+                    margin-right: -23% !important;
+                }
+            }
         </style>
 
         <script>
@@ -209,14 +216,11 @@
 
                         <div class="block">
                             <div class="row text-white">
-                                <div class="hidden-xs col-sm-1"></div>
-                                <div class="col-xs-12 col-sm-10">
+                                <div class="col-xs-12">
                                     <h1 class="text-left">Widgets and Charts<br />for Ethereum Tokens</h1>
                                 </div>
-                                <div class="hidden-xs col-sm-1"></div>
                             </div>
                             <div class="row text-white text-justify space-bottom">
-                                <div class="hidden-xs col-sm-1"></div>
                                 <div class="col-xs-12 col-sm-8">
                                     <p>
                                         Display the activity of your token right from your website! Ethplorer offers a few modes of highly customizable widgets. Popular widget modes are Token Activity Chart (for the last month), Recent Transactions, Top Ethereum tokens activity. 
@@ -227,16 +231,19 @@
                                     <p>
                                         Below see different samples of widgets and customizations. 
                                     </p>
-                                    <p style="font-size: 1.0em;">
-                                        <i>Note: the most simple way to get a widget for your token is 1) find your token in Ethplorer, and 2) use the widget link there. </i>
-                                    </p>
                                 </div>
-                                <div class="hidden-xs col-sm-1"></div>
+                                <div class="col-xs-12 col-sm-4">
+                                    <div class="alert alert-info">
+                                        <p style="font-size: 1.0em;">
+                                            <i>Note: the most simple way to get a widget for your token is 1) find your token in Ethplorer, and 2) use the widget link there. </i>
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="row bg-white">
-                                <div class="hidden-xs col-sm-2"></div>
-                                <div class="col-xs-12 col-sm-8">
+                            <div class="row bg-white wide-stripe">
+                                <div class="hidden-xs col-sm-3"></div>
+                                <div class="col-xs-12 col-sm-6">
                                     <div class="add-paddings space-bottom round-top round-bottom">
                                         <h3>How to install widget code</h3>
                                         <div>
@@ -253,7 +260,7 @@
 
                                     </div>
                                 </div>
-                                <div class="hidden-xs col-sm-2"></div>
+                                <div class="hidden-xs col-sm-3"></div>
                             </div>
                         </div>
                         
