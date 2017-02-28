@@ -69,7 +69,7 @@
                 background: #000;
                 color: #dedede;
                 /* width:70%; */
-                min-height: 200px;
+                min-height: 300px;
                 font-size: 0.9em;
                 /* margin-right: auto; margin-left: auto; */
                 margin: 6px;
@@ -105,6 +105,7 @@
                 font-size: 20px;
                 line-height: 32px;
                 padding-left: 8px;
+                margin: 2px;
             }
             .ui-widget-header {
                 text-align: left;
@@ -127,6 +128,11 @@
                 .wide-stripe {
                     margin-left: -23% !important;
                     margin-right: -23% !important;
+                }
+            }
+            @media screen and (max-width:767px){
+                .topdiv {
+                    padding-bottom: 350px;
                 }
             }
         </style>
@@ -288,7 +294,7 @@
                                 <div class="hidden-xs col-sm-2"></div>
                                 <div class="col-xs-12 col-sm-8">
                                     <div class="block">
-                                        <div class="row">
+                                        <div class="row" style="margin-bottom: 16px;">
                                             <div class="col-xs-8 text-white">
                                                 <h3>Token Activity Chart</h3>
                                             </div>
@@ -339,7 +345,7 @@ eWgs.push(function () {
                                 <div class="hidden-xs col-sm-2"></div>
                                 <div class="col-xs-12 col-sm-8">
                                     <div class="block">
-                                        <div class="row">
+                                        <div class="row" style="margin-bottom: 16px;">
                                             <div class="col-xs-8 text-white">
                                                 <h3>Customized Tokens Activity Chart</h3>
                                             </div>
@@ -399,7 +405,7 @@ eWgs.push(function () {
                                 <div class="hidden-xs col-sm-2"></div>
                                 <div class="col-xs-12 col-sm-8">
                                     <div class="block">
-                                        <div class="row">
+                                        <div class="row" style="margin-bottom: 16px;">
                                             <div class="col-xs-8 text-white">
                                                 <h3>Dark Theme Chart</h3>
                                             </div>

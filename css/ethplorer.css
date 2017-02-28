@@ -802,7 +802,7 @@ li.ui-menu-item.have-more {
 
 @media screen and (max-width: 640px) {
     .footer {
-        line-height: 12px;
+        /* line-height: 18px; */
         font-size: 12px;
     }
     .footer .copyrights {
