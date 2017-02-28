@@ -342,6 +342,7 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
         var params = {
             apiKey: 'ethplorer.widget',
             type: 'transfer',
+            domain: document.location.hostname
         };
         for(var key in this.options){
             if(requestOptions.indexOf(key) >= 0){
@@ -549,6 +550,7 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
         var requestOptions = ['limit', 'period'];
         var params = {
             apiKey: 'freekey',
+            domain: document.location.hostname
         };
         for(var key in this.options){
             if(requestOptions.indexOf(key) >= 0){
@@ -744,6 +746,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
         var requestOptions = ['period', 'address', 'type', 'theme'];
         var params = {
             apiKey: 'freekey',
+            domain: document.location.hostname
         };
         for(var key in this.options){
             if(requestOptions.indexOf(key) >= 0){
