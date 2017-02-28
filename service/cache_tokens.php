@@ -18,3 +18,5 @@
 require dirname(__FILE__) . '/lib/ethplorer.php';
 
 Ethplorer::db(require_once dirname(__FILE__) . '/config.php')->getTokens(true);
+Ethplorer::db(require_once dirname(__FILE__) . '/config.php')->getTopTokens(10, 90);
+Ethplorer::db(require_once dirname(__FILE__) . '/config.php')->getTopTokens(50, 90);

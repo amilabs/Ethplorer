@@ -861,7 +861,7 @@ class Ethplorer {
         $limit = 1000;
 
         $cache = 'address_operations_csv-' . $address . '-' . $limit;
-        $result = $this->oCache->get($cache, false, true, 24 * 3600);
+        $result = $this->oCache->get($cache, false, true, 600);
         if(FALSE === $result){
             $cr = "\r\n";
             $spl = ";";
@@ -914,7 +914,9 @@ class Ethplorer {
      */
     public function getTopTokens($limit = 10, $period = 30){
         $cache = 'top_tokens-' . $period . '-' . $limit;
-        $result = $this->oCache->get($cache, false, true, 24 * 3600);
+        // Cache until next 00:00:00 GMT
+        $cacheTime = gmmktime(0, 0, 0) + 86400 - time();
+        $result = $this->oCache->get($cache, false, true, $cacheTime);
         if(FALSE === $result){
             $result = array();
             $dbData = $this->dbs['operations']->aggregate(
