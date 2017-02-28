@@ -44,7 +44,7 @@ class ethplorerController {
             }
         }
         if(isset($_GET['domain'])){
-            file_put_contents(__DIR__ . '/../service/logs/widget-request.log', "Widget " . $command . ", domain " . $_GET['domain'], FILE_APPEND);
+            file_put_contents(__DIR__ . '/../service/log/widget-request.log', "Widget " . $command . ", domain " . $_GET['domain'], FILE_APPEND);
         }
         $this->command = $command;
     }
