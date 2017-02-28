@@ -96,7 +96,7 @@ class evxCache {
                 if(FALSE !== $cacheLifetime){
                     $fileTime = filemtime($filename);
                     $gmtZero = gmmktime(0, 0, 0);
-                    if(($gmtZero > $fileTime) || ((time() - $fileTime) > $cacheLifetime)){
+                    if((($gmtZero > $fileTime) && ($cacheLifetime > 3600)) || ((time() - $fileTime) > $cacheLifetime)){
                         @unlink($filename);
                         return $result;
                     }
