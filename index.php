@@ -583,7 +583,7 @@ $csvExport = ' <span class="export-csv"><a class="download" href="javascript:voi
     <div class="footer">
         <div class="container">
             <div class="row">
-                <div class="col-xs-3">
+                <div class="col-xs-6 col-sm-3">
                     <a href="#" style="color:#ffffff;font-size:28px;font-weight:600;"><img src="/images/ethplorerlogowhite400.png" style="max-width: 140px;" alt=""></a>
                     <div>
                         <div style="color:#eeeeee;">© 2016-2017 <a href="https://everex.one/" target="_blank" class="small-link">Everex</a>
@@ -592,7 +592,7 @@ $csvExport = ' <span class="export-csv"><a class="download" href="javascript:voi
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-3">
+                <div class="col-xs-6 col-sm-3">
                     <div class="footer-links" style="color: #ffffff;">
                         <ul>
                             <li><span style="font-weight: 600;"><a href="/about">About</a> </span></li>
@@ -604,7 +604,7 @@ $csvExport = ' <span class="export-csv"><a class="download" href="javascript:voi
                         </ul>
                     </div>
                 </div>
-                <div>
+                <div class="col-xs-12 col-sm-6">
                     <div style="color:#eeeeee;" data-customstyle="yes">
                         <strong>Donation:</strong><br>
                         <br>ETH:<br>0x0dE0BCb0703ff8F1aEb8C892eDbE692683bD8030
