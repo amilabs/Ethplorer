@@ -138,13 +138,13 @@
                 left:0px;
                 display: none;
             }
-            .widget-title {
+            .widget-title,
+            .widget-title-charts {
                 max-width: 700px;
                 margin-left: auto !important;
                 margin-right: auto !important;
             }
             .widget-title-charts {
-                max-width: 780px;
                 margin-bottom: 16px;
             }
             @media screen and (min-width:768px){
@@ -284,7 +284,7 @@
                             </div>
                         </div>
                         
-                        <div class="block">
+                        <div class="block" style="margin-top: 32px;">
                             <div class="row">
                                 <div class="hidden-xs col-sm-2"></div>
                                 <div class="col-xs-12 col-sm-8 text-white">
@@ -309,7 +309,7 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row widget-title">
                                             <div>
 <div id="token-history-grouped-1" data-textarea="ethplorer-textarea-1"></div>
 <script type="text/javascript" data-textarea="ethplorer-textarea-1">
@@ -361,7 +361,7 @@ eWgs.push(function () {
                                             </div>
                                         </div>
 
-                                        <div class="row">
+                                        <div class="row widget-title">
                                             <div class="bg-gray">
 
 <div id="token-history-grouped-2" data-textarea="ethplorer-textarea-2"></div>
@@ -420,7 +420,7 @@ eWgs.push(function () {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="row">
+                                        <div class="row widget-title">
                                             <div class="bg-dark">
 
 <div id="token-history-grouped-3" data-textarea="ethplorer-textarea-3"></div>
@@ -543,6 +543,7 @@ eWgs.push(function () {
     #token-txs-11 .txs.big-screen-table td .tx-amount{
         display: inline-block;
         width: 150px;
+        white-space: nowrap;
     } 
     #token-txs-11 .txs.big-screen-table td .tx-link{
         max-width: 120px;
@@ -550,9 +551,13 @@ eWgs.push(function () {
     #token-txs-11 .txs.big-screen-table td .tx-link:last-child{
         max-width: 150px;
     }   
-    #token-txs-11 .txs.big-screen-table td .tx-amount a{
+    #token-txs-11 .txs.big-screen-table td .tx-amount a:nth-child(1){
         max-width: 110px !important;
     }
+    #token-txs-11 .txs.big-screen-table td .tx-amount  a:nth-child(2){
+        max-width: 50px !important;
+    }
+
 </style>
 <div id="token-txs-11" data-textarea="ethplorer-textarea-11"></div>
 <script type="text/javascript" data-textarea="ethplorer-textarea-11">
