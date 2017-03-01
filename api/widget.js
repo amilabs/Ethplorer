@@ -140,11 +140,10 @@ ethplorerWidget = {
     },
     // Use local path for develop instances
     fixPath: function(){
-        /*
         if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') >= 0)){
             ethplorerWidget.api = '//' + document.location.host + '/api';
             ethplorerWidget.url = '//' + document.location.host
-        }*/
+        }
     },
     Utils: {
         link: function(data, text, title, hash, addClass){
