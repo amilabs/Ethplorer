@@ -140,10 +140,11 @@ ethplorerWidget = {
     },
     // Use local path for develop instances
     fixPath: function(){
+        /*
         if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') >= 0)){
             ethplorerWidget.api = '//' + document.location.host + '/api';
             ethplorerWidget.url = '//' + document.location.host
-        }
+        }*/
     },
     Utils: {
         link: function(data, text, title, hash, addClass){
@@ -632,7 +633,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
     if(options && options.address){
         this.api += ('/' + options.address.toString().toLowerCase());
     }
-
+    
     this.templates = {
         loader: '<div class="txs-loading">Loading...</div>',
     };
@@ -647,8 +648,9 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
 
         var stDate = new Date(),
             fnDate = new Date();
-        stDate.setDate(stDate.getDate() - 1);
-        fnDate.setDate(stDate.getDate() - this.options.period);
+        var date = stDate.getDate();
+        stDate.setDate(date - 1);
+        fnDate.setDate(date - this.options.period - 1);
 
         var aCountData = {};
         for(var i = 0; i < aTxData.length; i++){
@@ -765,7 +767,6 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
 
     this.refreshWidget = function(obj){
         return function(data){
-            console.log(data);
             if(data && !data.error && data.countTxs /*&& data.countTxs.length*/){
                 obj.widgetData = data.countTxs;
                 google.charts.setOnLoadCallback(
