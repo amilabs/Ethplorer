@@ -127,10 +127,25 @@
                 font-size: 16px;
                 padding-right: 12px;
             }
+            .wide-stripe {
+                min-height: 200px;
+            }
+            .wide-stripe-layer {
+                position: absolute;
+                width: 100vw;
+                min-height: 200px;
+                background: white;
+                left: -17px;
+                display: none;
+            }
+            .widget-title {
+                max-width: 700px;
+                margin-left: auto !important;
+                margin-right: auto !important;
+            }
             @media screen and (min-width:768px){
-                .wide-stripe {
-                    margin-left: -23% !important;
-                    margin-right: -23% !important;
+                .wide-stripe-layer {
+                    display: block;
                 }
             }
             @media screen and (max-width:767px){
@@ -167,14 +182,13 @@
                     $("#" + ta + '-popup').prepend('<div class="popup-descr">' + $("#" + ta + '-popup').attr('data-description') + '</div>');
                 }
 
-
                 var butt = $('<BUTTON>');
                 butt.addClass('btn btn-info');
                 butt.text('Get Code');
                 butt.click(function(_ta){
                     return function(){
                         $("#" + _ta + '-popup').dialog('open');
-                    }
+                    };
                 }(ta));
                 $("#" + ta + '-popup').after(butt);
                 $("#" + ta + '-popup').attr('title', 'Widget Code');
@@ -222,10 +236,9 @@
                     </div>
                 </div>
             </nav>
-            <div class="container gradient">
+            <div class="container">
                 <div class="starter-template">
                     <div id="page-create" class="page">
-
                         <div class="block">
                             <div class="row text-white">
                                 <div class="hidden-xs col-sm-2"></div>
@@ -237,22 +250,16 @@
                             <div class="row text-white space-bottom">
                                 <div class="hidden-xs col-sm-2"></div>
                                 <div class="col-xs-12 col-sm-5">
-                                    <p>
-                                        Display the activity of your token right from your website! Ethplorer offers a few modes of highly customizable widgets. Popular widget modes are Token Activity Chart (for the last month), Recent Transactions, Top Ethereum tokens activity. 
-                                    </p>
-                                    <p>
-                                        Charts are based on Google Charts, so you can customize it as you like by referring to <a href="https://developers.google.com/chart/" target="_blank">Google Charts instructions.</a> 
-                                    </p>
-                                    <p>
-                                        Below see different samples of widgets and customizations. 
-                                    </p>
+                                    <p>Display the activity of your token right from your website! Ethplorer offers a few modes of highly customizable widgets. Popular widget modes are Token Activity Chart (for the last month), Recent Transactions, Top Ethereum tokens activity.</p>
+                                    <p>Charts are based on Google Charts, so you can customize it as you like by referring to <a href="https://developers.google.com/chart/" target="_blank">Google Charts instructions.</a></p>
+                                    <p>Below see different samples of widgets and customizations.</p>
                                 </div>
                                 <div class="col-xs-12 col-sm-3">
                                     <div class="alert alert-info">
                                         <p style="font-size: 1.0em;">
                                             <i>Note: the most simple way to get a widget for your token is 
-                                                <br />1) find your token in Ethplorer, and 
-                                                <br />2) use the widget link there. </i>
+                                            <br />1) find your token in Ethplorer, and 
+                                            <br />2) use the widget link there. </i>
                                         </p>
                                     </div>
                                 </div>
@@ -260,25 +267,14 @@
                             </div>
 
                             <div class="row bg-white wide-stripe">
-                                <div class="hidden-xs col-sm-2"></div>
-                                <div class="col-xs-12 col-sm-8">
-                                    <div class="add-paddings space-bottom round-top round-bottom">
-                                        <h3>How to install widget code</h3>
-                                        <div>
-
-	1. Add jQuery in the HEAD section of your page (if not present):
-        <pre>&lt;script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"&gt;&lt;/script&gt;</pre>
-
-	2. Get any widget code displayed below, put div placeholder and code somewhere in BODY section.<br/>
-
-	3. Customize widget data and style using options and styles (optional).
-
-                                        </div>
-
-
-                                    </div>
+                                <div class='wide-stripe-layer'></div>
+                                <div class="col-xs-12 add-paddings">
+                                    <h3>How to install widget code</h3>
+1. Add jQuery in the HEAD section of your page (if not present):
+<pre>&lt;script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"&gt;&lt;/script&gt;</pre>
+2. Get any widget code displayed below, put div placeholder and code somewhere in BODY section.<br/>
+3. Customize widget data and style using options and styles (optional).
                                 </div>
-                                <div class="hidden-xs col-sm-2"></div>
                             </div>
                         </div>
                         
@@ -297,7 +293,7 @@
                                 <div class="hidden-xs col-sm-2"></div>
                                 <div class="col-xs-12 col-sm-8">
                                     <div class="block">
-                                        <div class="row" style="margin-bottom: 16px;">
+                                        <div class="row widget-title" style="margin-bottom: 16px;">
                                             <div class="col-xs-8 text-white">
                                                 <h3>Token Activity Chart</h3>
                                             </div>
@@ -348,7 +344,7 @@ eWgs.push(function () {
                                 <div class="hidden-xs col-sm-2"></div>
                                 <div class="col-xs-12 col-sm-8">
                                     <div class="block">
-                                        <div class="row" style="margin-bottom: 16px;">
+                                        <div class="row widget-title" style="margin-bottom: 16px;">
                                             <div class="col-xs-8 text-white">
                                                 <h3>Customized Tokens Activity Chart</h3>
                                             </div>
@@ -408,7 +404,7 @@ eWgs.push(function () {
                                 <div class="hidden-xs col-sm-2"></div>
                                 <div class="col-xs-12 col-sm-8">
                                     <div class="block">
-                                        <div class="row" style="margin-bottom: 16px;">
+                                        <div class="row widget-title" style="margin-bottom: 16px;">
                                             <div class="col-xs-8 text-white">
                                                 <h3>Dark Theme Chart</h3>
                                             </div>
@@ -472,7 +468,7 @@ eWgs.push(function () {
                                 <div class="hidden-xs col-sm-2"></div>
                                 <div class="col-xs-12 col-sm-8">
                                     <div class="block">
-                                        <div class="row">
+                                        <div class="row widget-title">
                                             <div class="col-xs-8 text-white">
                                                 <h3>Recent Token Activity</h3>
                                             </div>
@@ -514,10 +510,10 @@ eWgs.push(function () {
 
                         <div class="content-page space-bottom" style="display:block">
                             <div class="row">
-                                <div class="hidden-xs col-sm-2"></div>
-                                <div class="col-xs-12 col-sm-8">
+                                <div class="hidden-xs col-sm-2 col-md-1"></div>
+                                <div class="col-xs-12 col-sm-8 col-md-10">
                                     <div class="block">
-                                        <div class="row">
+                                        <div class="row widget-title">
                                             <div class="col-xs-8 text-white">
                                                 <h3>Customized Token Activity Widget</h3>
                                             </div>
@@ -581,7 +577,7 @@ eWgs.push(function () {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="hidden-xs col-sm-2"></div>
+                                <div class="hidden-xs col-sm-2 col-md-1"></div>
                             </div>    
                         </div>
 
@@ -592,7 +588,7 @@ eWgs.push(function () {
                                 <div class="hidden-xs col-sm-2"></div>
                                 <div class="col-xs-12 col-sm-8">
                                     <div class="block">
-                                        <div class="row">
+                                        <div class="row widget-title">
                                             <div class="col-xs-8 text-white">
                                                 <h3>Top Tokens by Activity</h3>
                                             </div>
