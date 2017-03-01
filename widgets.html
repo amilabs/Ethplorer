@@ -27,6 +27,7 @@
                 /* background: url(/images/bg.jpg) top left no-repeat black; */
                 background: linear-gradient(to top, #000, #152e47);
                 font-family: 'Open Sans', sans-serif;
+                overflow-y: hidden;
             }
             .topdiv {
                 position: relative; 
@@ -272,13 +273,15 @@
 
                             <div class="row bg-white wide-stripe">
                                 <div class='wide-stripe-layer'></div>
-                                <div class="col-xs-12 add-paddings">
+                                <div class="hidden-xs col-sm-2"></div>
+                                <div class="col-xs-12 col-sm-8 add-paddings">
                                     <h3>How to install widget code</h3>
 1. Add jQuery in the HEAD section of your page (if not present):
 <pre>&lt;script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"&gt;&lt;/script&gt;</pre>
 2. Get any widget code displayed below, put div placeholder and code somewhere in BODY section.<br/>
 3. Customize widget data and style using options and styles (optional).
                                 </div>
+                                <div class="hidden-xs col-sm-2"></div>
                             </div>
                         </div>
                         
