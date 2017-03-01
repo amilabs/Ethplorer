@@ -294,7 +294,7 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 #disqus_thread {
     margin-top: 60px;
     display: none;
-    padding-bottom: 170px;
+    padding-bottom: 320px;
 }
 
 td.list-field {
@@ -927,6 +927,11 @@ a.token-update {
 
 
 @media screen and (max-width: 767px) {
+
+    #disqus_thread {
+        padding-bottom: 430px;
+    }
+
     .navbar-nav>li {
         float: left;
     }    
