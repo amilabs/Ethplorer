@@ -341,9 +341,12 @@ ethplorerWidget.Type['tokenHistory'] = function(element, options, templates){
         var requestOptions = ['limit', 'address', 'timestamp'];
         var params = {
             apiKey: 'ethplorer.widget',
-            type: 'transfer',
-            domain: document.location.hostname
+            type: 'transfer'
         };
+        if('undefined' === typeof(this.pathReported)){
+            params['domain'] = document.location.href;
+            this.pathReported = true;
+        }
         for(var key in this.options){
             if(requestOptions.indexOf(key) >= 0){
                 params[key] = this.options[key];
@@ -549,9 +552,12 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
     this.getRequestParams = function(additionalParams){
         var requestOptions = ['limit', 'period'];
         var params = {
-            apiKey: 'freekey',
-            domain: document.location.hostname
+            apiKey: 'freekey'
         };
+        if('undefined' === typeof(this.pathReported)){
+            params['domain'] = document.location.href;
+            this.pathReported = true;
+        }
         for(var key in this.options){
             if(requestOptions.indexOf(key) >= 0){
                 params[key] = this.options[key];
@@ -746,9 +752,12 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
     this.getRequestParams = function(additionalParams){
         var requestOptions = ['period', 'address', 'type', 'theme'];
         var params = {
-            apiKey: 'freekey',
-            domain: document.location.hostname
+            apiKey: 'freekey'
         };
+        if('undefined' === typeof(this.pathReported)){
+            params['domain'] = document.location.href;
+            this.pathReported = true;
+        }
         for(var key in this.options){
             if(requestOptions.indexOf(key) >= 0){
                 params[key] = this.options[key];
