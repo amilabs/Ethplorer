@@ -549,11 +549,12 @@ tr.paginationFooter td {
 }
 
 #address-token-holders tr td:nth-child(4) {
-    max-width: 215px;
-    width: 215px;
+    max-width: 220px;
+    width: 220px;
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: right;
+    white-space: nowrap;
 }
 
 #address-token-holders tr td:nth-child(5) {
