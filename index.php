@@ -81,7 +81,8 @@ $csvExport = ' <span class="export-csv"><a class="download" href="javascript:voi
     <nav class="navbar navbar-inverse" style="padding-bottom:0px; padding-top:0px;">
         <div class="container">
             <div class="navbar-header">
-              <a class="navbar-logo" href="/"><img title="Ethplorer" src="/images/ethplorer-logo-48.png"></a>
+                <a class="navbar-logo-small" href="/"><img title="Ethplorer" src="/favicon.ico"></a>
+                <a class="navbar-logo" href="/"><img title="Ethplorer" src="/images/ethplorer-logo-48.png"></a>
             </div>
             <div id="navbar" class="navbar" style="margin-bottom: 0px;">
                 <ul class="nav navbar-nav navbar-right" id="searchform">
@@ -91,6 +92,7 @@ $csvExport = ' <span class="export-csv"><a class="download" href="javascript:voi
                     </form>
                 </ul>
                 <ul class="nav navbar-nav navbar-right" id="topmenu">
+                    <li onclick="document.location.href='/top';">TOP-50</li>
                     <li onclick="document.location.href='/widgets';">Widgets</li>
                     <li onclick="document.location.href='https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API';">API</li>
                 </ul>

@@ -5,7 +5,7 @@
         <link rel="stylesheet" href="/css/jquery-ui.min.css">
         <link rel="stylesheet" href="/css/bootstrap.min.css">
 	<link rel="stylesheet" href="/css/font-awesome.min.css">
-        <link rel="stylesheet" href="/css/ethplorer.css?v=101>">
+        <link rel="stylesheet" href="/css/ethplorer.css?v=102>">
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="referrer" content="never" />
@@ -15,11 +15,11 @@
         <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32">
         <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
         <script src="/js/jquery-1.10.2.min.js"></script>
-        <script src="/js/jquery-ui.min.js?v=101"></script>
+        <script src="/js/jquery-ui.min.js?v=102"></script>
         <script src="/js/bootstrap.min.js"></script>
         <script src="/js/bignumber.js"></script>
-        <script src="/js/ethplorer.js?v=101"></script>
-        <script src="/js/ethplorer-search.js?v=101"></script>
+        <script src="/js/ethplorer.js?v=102"></script>
+        <script src="/js/ethplorer-search.js?v=102"></script>
         <script src="/js/ace.js"></script>
 
         <style type="text/css">
@@ -233,6 +233,7 @@
             <nav class="navbar navbar-inverse" style="padding-bottom:0px; padding-top:0px;">
                 <div class="container">
                     <div class="navbar-header">
+                        <a class="navbar-logo-small" href="/"><img title="Ethplorer" src="/favicon.ico"></a>
                         <a class="navbar-logo" href="/"><img title="Ethplorer" src="/images/ethplorer-logo-48.png"></a>
                     </div>
                     <div id="navbar" class="navbar" style="margin-bottom: 0px;">
@@ -243,6 +244,7 @@
                             </form>
                         </ul>
                         <ul class="nav navbar-nav navbar-right" id="topmenu">
+                            <li onclick="document.location.href='/top';">TOP-50</li>
                             <li onclick="document.location.href = '/widgets';">Widgets</li>
                             <li onclick="document.location.href = 'https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API';">API</li>
                         </ul>

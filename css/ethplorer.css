@@ -326,6 +326,23 @@ td.list-field {
   cursor: pointer;
 }
 
+.navbar-logo-small {
+    float: left;
+    height: 50px;
+    padding: 25px 15px;
+    line-height: 20px;
+    width: 32px;
+    position: absolute;
+    z-index: 10000;
+    padding-left: 0px;
+    display: none;
+}
+
+.navbar-logo-small img {
+  height: 32px;
+  cursor: pointer;
+}
+
 .table tr.last td:first-child {
     border-bottom-left-radius: 8px;
 }
@@ -923,6 +940,12 @@ a.token-update {
     #topmenu li {
         padding-right: 0px;
     }
+    .navbar-logo {
+        display: none;
+    }
+    .navbar-logo-small {
+        display: block;
+    }
 }
 
 
@@ -1016,7 +1039,7 @@ a.token-update {
     
     #topmenu {
         position: absolute;
-        right: -15px;
+        right: 0px;
         top: -4px;
     }
 
@@ -1031,12 +1054,6 @@ a.token-update {
     }
     #topmenu li {
         padding: 8px;
-    }
-    .navbar-logo {
-        width: 140px;
-    }
-    .navbar-logo img {
-        width: 140px;
     }
 }
 
