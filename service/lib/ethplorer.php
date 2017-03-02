@@ -17,6 +17,9 @@
 
 require_once __DIR__ . '/cache.php';
 require_once __DIR__ . '/profiler.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+
+use \Litipk\BigNumbers\Decimal as Decimal;
 
 class Ethplorer {
 
@@ -810,7 +813,7 @@ class Ethplorer {
      * @param int $limit       Maximum number of records
      * @return array
      */
-    public function getAddressOperations($address, $limit = 10, $offset = FALSE){
+    public function getAddressOperations($address, $limit = 10, $offset = FALSE, array $aTypes = array('transfer', 'issuance', 'burn', 'mint')){
         $search = array(
             '$or' => array(
                 array("from"    => $address),
@@ -833,7 +836,7 @@ class Ethplorer {
                 )
             );
         }
-        $search['type'] = array('$in' => array('transfer', 'issuance', 'burn', 'mint'));
+        $search['type'] = array('$in' => $aTypes);
 
         $cursor = $this->dbs['operations']->find($search)->sort(array("timestamp" => -1));
         if($offset){
@@ -878,12 +881,16 @@ class Ethplorer {
             if($isContract){
                 $addTokenInfo = false;
             }
+            $ten = Decimal::create(10);
+            $dec = false;
             $isToken = $this->getToken($address);
             if($isToken){
                 $operations = $this->getLastTransfers($options);
+                $dec = Decimal::create($isToken['decimals']);
             }else{
-                $operations = $this->getAddressOperations($address, $limit);
+                $operations = $this->getAddressOperations($address, $limit, FALSE, array('transfer'));
             }
+            $aTokenInfo = array();
             foreach($operations as $record){
                 $date = date("Y-m-d H:i:s", $record['timestamp']);
                 $hash = $record['transactionHash'];
@@ -891,13 +898,21 @@ class Ethplorer {
                 $to = isset($record['to']) ? $record['to'] : '';
                 $tokenName = '';
                 $tokenAddress = '';
-                // TODO: add tokens info cache
                 if($addTokenInfo && isset($record['contract'])){
-                    $token = $this->getToken($record['contract']);
-                    $tokenName = isset($token['name']) ? $token['name'] : '';
-                    $tokenAddress = isset($token['address']) ? $token['address'] : '';
+                    $contract = $record['contract'];
+                    $token = isset($aTokenInfo[$contract]) ? $aTokenInfo[$contract] : $this->getToken($contract);
+                    if($token){
+                        $tokenName = isset($token['name']) ? $token['name'] : '';
+                        $tokenAddress = isset($token['address']) ? $token['address'] : '';
+                        if(isset($token['decimals'])) $dec = Decimal::create($token['decimals']);
+                        if(!isset($aTokenInfo[$contract])) $aTokenInfo[$contract] = $token;
+                    }
                 }
                 $value = $record['value'];
+                if($dec){
+                    $value = Decimal::create($record['value']);
+                    $value = $value->div($ten->pow($dec), 4);
+                }
                 $result .= $date . $spl . $hash . $spl . $from . $spl . $to . $spl . $tokenName . $spl . $tokenAddress . $spl . $value . $cr;
             }
         }

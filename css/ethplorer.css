@@ -489,6 +489,12 @@ a.dashed {
 	padding-right: 16px;
 }
 
+.export-csv-spinner {
+	float: right;
+	padding-right: 16px;
+	display: none;
+}
+
 #address-chainy-tx .table tr td:nth-child(4){
     white-space: nowrap;
 }

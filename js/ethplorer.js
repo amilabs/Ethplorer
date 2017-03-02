@@ -77,6 +77,8 @@ Ethplorer = {
             Ethplorer.Nav.set('tab', $(this).parent().attr('id'));
         });
         $('.download').click(function(){
+            $('.export-csv').hide();
+            $('.export-csv-spinner').show();
             Ethplorer.downloadData($(this).attr('data-address'));
         });
         if(Ethplorer.Nav.get('tab')){
@@ -1265,8 +1267,10 @@ Ethplorer = {
         if(address.length && Ethplorer.Utils.isAddress(address)){
             var data = {data: address, csv: true};
             $.get(Ethplorer.service, data, function(data, textStatus, jqXHR){
-                console.log(data);
+                //console.log(data);
                 Ethplorer.saveData(data, 'ethplorer.csv', 'text/csv');
+                $('.export-csv').show();
+                $('.export-csv-spinner').hide();
             });
         }
     },
