@@ -915,6 +915,7 @@ class Ethplorer {
                 }
                 $result .= $date . $spl . $hash . $spl . $from . $spl . $to . $spl . $tokenName . $spl . $tokenAddress . $spl . $value . $cr;
             }
+            $this->oCache->save($cache, $result);
         }
         return $result;
     }
