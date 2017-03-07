@@ -354,10 +354,11 @@ Ethplorer = {
                 ascii: Ethplorer.Utils.hex2ascii(oTx.input)
             };
             var obj = Ethplorer.Utils.parseJData(oTx.input);
-            if(false !== obj){
-                $('#transaction-tx-parsed').text(JSON.stringify(obj, null, 4));
-                $('#tx-parsed').show();
-                var isChainy = false;
+            var isChainy = false;
+            if(oTx.to && ('0xf3763c30dd6986b53402d41a8552b8f7f6a6089b' === oTx.to)){
+                var input = Ethplorer.Utils.hex2ascii(oTx.input.substring(136));
+                obj = JSON.parse(input);
+                Ethplorer.dataFields['transaction-tx-input']['ascii'] = input;
                 if(('undefined' !== typeof(obj['id'])) && ('CHAINY' === obj['id'])){
                     // Chainy transaction
                     var chainyTypes = {
@@ -382,7 +383,7 @@ Ethplorer = {
                     var log = oTx.receipt && oTx.receipt.logs && oTx.receipt.logs.length ? oTx.receipt.logs[0] : false;
                     if(log && log.topics && log.topics.length && (0 === log.topics[0].indexOf("0xdad5c"))){
                         try {
-                            var data = log.data.slice(192).replace(/0+$/, '');
+                            var data = log.data.slice(194).replace(/0+$/, '');
                             var link = Ethplorer.Utils.hex2ascii(data);
                             $('#chainy-link').html('<a href="' + link + '" target="_blank" class="local-link"><i class="fa fa-external-link"></i>&nbsp;' + link + '</a>');
                         }catch(e){}
@@ -390,6 +391,10 @@ Ethplorer = {
                     $('.chainy').show();
                     isChainy = true;
                 }
+            }
+            if(false !== obj){
+                $('#transaction-tx-parsed').text(JSON.stringify(obj, null, 4));
+                $('#tx-parsed').show();
                 if(obj.description){
                     var msg = obj.description;
                     if(obj.link){
