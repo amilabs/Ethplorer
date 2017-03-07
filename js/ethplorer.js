@@ -406,6 +406,7 @@ Ethplorer = {
                     var msgid = isChainy ? "#chainy-message" : '#transaction-tx-message';
                     msg = $('<span>').text(msg).html();
                     msg = msg.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
+                    msg = msg.replace(/~~~(.*)~~~\n?/g, '<h4>$1</h4>');
                     msg = msg.replace(/\n/g, '<br />');
                     $(msgid).html(msg);
                 }
@@ -651,6 +652,7 @@ Ethplorer = {
             if(oToken.description){
                 oToken.description = $('<span>').text(oToken.description).html();
                 oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
+                oToken.description = oToken.description.replace(/~~~(.*)~~~\n?/g, '<h4>$1</h4>');
                 oToken.description = oToken.description.replace(/\n/g, '<br />');
             }
             if(oToken.image){
