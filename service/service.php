@@ -23,6 +23,7 @@ $data = isset($_GET["data"]) ? $_GET["data"] : false;
 $page = isset($_GET["page"]) ? $_GET["page"] : false;
 $refresh = isset($_GET["refresh"]) ? $_GET["refresh"] : false;
 $csv = isset($_GET["csv"]) ? $_GET["csv"] : false;
+$hash = isset($_GET["hash"]) ? $_GET["hash"] : false;
 
 $search = isset($_GET["search"]) ? $_GET["search"] : false;
 
@@ -31,8 +32,20 @@ header('Access-Control-Allow-Origin: *');
 
 // Download as CSV
 if($csv){
-    if((false !== $data) && $es->isValidAddress($data)){
+    if((false !== $data) && (false !== $hash) && $es->isValidAddress($data)){
+        $md5 = md5('/service/service.php?csv=1&data=' . $data);
+        if($md5 !== $hash){
+            die;
+        }
+
         $result = $es->getAddressOperationsCSV($data);
+        header('Content-Description: File Transfer');
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=ethplorer.csv');
+        header('Content-Length: ' . strlen($result));
+        header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
+        header('Expires: 0');
+        header('Pragma: public');
         echo $result;
     }
     die;
