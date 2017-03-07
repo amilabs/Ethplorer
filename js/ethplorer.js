@@ -77,7 +77,10 @@ Ethplorer = {
             Ethplorer.Nav.set('tab', $(this).parent().attr('id'));
         });
         $('.download').click(function(){
-            var href = $(this).attr("href") + '&hash=' + md5($(this).attr("href"));
+            var href = $(this).attr("href");
+            if(href.indexOf('&hash') == -1){
+                href += '&hash=' + md5($(this).attr("href"));
+            }
             $(this).attr("href", href);
             /*$('.export-csv').hide();
             $('.export-csv-spinner').show();
