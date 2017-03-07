@@ -1107,7 +1107,7 @@ class Ethplorer {
         }
         foreach($cursor as $tx){
             if(!empty($tx['receipt']['logs'])){
-                $link = substr($tx['receipt']['logs'][0]['data'], 192);
+                $link = substr($tx['receipt']['logs'][0]['data'], 194);
                 $link = preg_replace("/0+$/", "", $link);
                 if((strlen($link) % 2) !== 0){
                     $link = $link . '0';

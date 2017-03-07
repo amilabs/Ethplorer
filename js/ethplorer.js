@@ -953,7 +953,8 @@ Ethplorer = {
                 var type = '';
                 var link = '';
                 if(tx.link){
-                    var obj = Ethplorer.Utils.parseJData(tx.input);
+                    var input = Ethplorer.Utils.hex2ascii(tx.input.substring(138));
+                    var obj = JSON.parse(input);
                     if(false !== obj){
                         var chainyTypes = {
                             'R': 'Redirect',
