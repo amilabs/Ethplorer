@@ -27,7 +27,7 @@ $hash = isset($_GET["hash"]) ? $_GET["hash"] : false;
 
 if($hash){
     if((false !== $data) && $es->isValidAddress($data)){
-        $md5 = md5('/service/csv.php?data=' . $data);
+        $md5 = md5('/service/csv.php?data=' . $data . date("Y-n-j"));
         if($md5 == $hash){
             $result = $es->getAddressOperationsCSV($data);
             header('Content-Description: File Transfer');
