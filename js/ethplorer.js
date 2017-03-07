@@ -77,9 +77,11 @@ Ethplorer = {
             Ethplorer.Nav.set('tab', $(this).parent().attr('id'));
         });
         $('.download').click(function(){
-            $('.export-csv').hide();
+            var href = $(this).attr("href") + '&hash=' + md5($(this).attr("href"));
+            $(this).attr("href", href);
+            /*$('.export-csv').hide();
             $('.export-csv-spinner').show();
-            Ethplorer.downloadData($(this).attr('data-address'));
+            Ethplorer.downloadData($(this).attr('data-address'));*/
         });
         if(Ethplorer.Nav.get('tab')){
             $('#' + Ethplorer.Nav.get('tab') +' a').click();
@@ -147,6 +149,18 @@ Ethplorer = {
         EthplorerSearch.init($('#search-form'), $('#search'), Ethplorer.search);
 
         // implement save to file function
+        /*Ethplorer.saveData = function(data, name, mimetype){
+            var file = new File([data], name, {type: mimetype + ";charset=utf-8"});
+            saveAs(file);
+            saveAs(
+                  new Blob(
+                      [data]
+                    , {type: mimetype}
+                )
+                , name
+            );
+        };
+
         var URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
         if(Blob && URL){
             Ethplorer.saveData = function(data, name, mimetype){
@@ -169,7 +183,7 @@ Ethplorer = {
                 if(!mimetype) mimetype = 'application/octet-stream';
                 window.open("data:" + mimetype + "," + encodeURIComponent(data), '_blank', '');
             };
-        }
+        }*/
     },
     getActiveTab: function(){
         var tab = ($('.nav-tabs:visible li.active').length) ? $('.nav-tabs:visible li.active').attr('id').replace('tab-', '') : false;
