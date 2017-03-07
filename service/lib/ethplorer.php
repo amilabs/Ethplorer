@@ -868,7 +868,7 @@ class Ethplorer {
         if(FALSE === $result){
             $cr = "\r\n";
             $spl = ";";
-            $result = 'date;txhash;from;to;token-name;token-address;value' . $cr;
+            $result = 'date;txhash;from;to;token-name;token-address;value;symbol' . $cr;
 
             $options = array(
                 'address' => $address,
@@ -883,10 +883,14 @@ class Ethplorer {
             }
             $ten = Decimal::create(10);
             $dec = false;
+            $tokenName = '';
+            $tokenSymbol = '';
             $isToken = $this->getToken($address);
             if($isToken){
                 $operations = $this->getLastTransfers($options);
                 $dec = Decimal::create($isToken['decimals']);
+                $tokenName = isset($isToken['name']) ? $isToken['name'] : '';
+                $tokenSymbol = isset($isToken['symbol']) ? $isToken['symbol'] : '';
             }else{
                 $operations = $this->getAddressOperations($address, $limit, FALSE, array('transfer'));
             }
@@ -896,13 +900,15 @@ class Ethplorer {
                 $hash = $record['transactionHash'];
                 $from = isset($record['from']) ? $record['from'] : '';
                 $to = isset($record['to']) ? $record['to'] : '';
-                $tokenName = '';
                 $tokenAddress = '';
                 if($addTokenInfo && isset($record['contract'])){
+                    $tokenName = '';
+                    $tokenSymbol = '';
                     $contract = $record['contract'];
                     $token = isset($aTokenInfo[$contract]) ? $aTokenInfo[$contract] : $this->getToken($contract);
                     if($token){
                         $tokenName = isset($token['name']) ? $token['name'] : '';
+                        $tokenSymbol = isset($token['symbol']) ? $token['symbol'] : '';
                         $tokenAddress = isset($token['address']) ? $token['address'] : '';
                         if(isset($token['decimals'])) $dec = Decimal::create($token['decimals']);
                         if(!isset($aTokenInfo[$contract])) $aTokenInfo[$contract] = $token;
@@ -913,7 +919,7 @@ class Ethplorer {
                     $value = Decimal::create($record['value']);
                     $value = $value->div($ten->pow($dec), 4);
                 }
-                $result .= $date . $spl . $hash . $spl . $from . $spl . $to . $spl . $tokenName . $spl . $tokenAddress . $spl . $value . $cr;
+                $result .= $date . $spl . $hash . $spl . $from . $spl . $to . $spl . $tokenName . $spl . $tokenAddress . $spl . $value . $spl . $tokenSymbol . $cr;
             }
             $this->oCache->save($cache, $result);
         }

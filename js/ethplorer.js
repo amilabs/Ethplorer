@@ -77,9 +77,11 @@ Ethplorer = {
             Ethplorer.Nav.set('tab', $(this).parent().attr('id'));
         });
         $('.download').click(function(){
+            var date = new Date();
+            var hashDate = date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
             var href = $(this).attr("href");
             if(href.indexOf('&hash') == -1){
-                href += '&hash=' + md5($(this).attr("href"));
+                href += '&hash=' + md5($(this).attr("href") + hashDate);
             }
             $(this).attr("href", href);
             /*$('.export-csv').hide();
