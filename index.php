@@ -52,7 +52,7 @@ if($error){
         die();
     }
 }
-$csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"></i> Export...</span><span class="export-csv"><a class="download" target="_blank" href="/service/csv.php?data=' . $rParts[2] . '">Export as CSV</a></span>';
+$csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"></i> Export...</span><span class="export-csv"><a class="download" rel="nofollow" target="_blank" href="/service/csv.php?data=' . $rParts[2] . '">Export as CSV</a></span>';
 ?><!DOCTYPE html>
 <html>
 <head>
