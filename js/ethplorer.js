@@ -365,8 +365,8 @@ Ethplorer = {
                 try {
                     obj = JSON.parse(input);
                 }catch(e){
-                    console.log(e.message);
-                    console.log(obj);
+//                  console.log(e.message);
+//                  console.log(input);
                 }
                 Ethplorer.dataFields['transaction-tx-input']['ascii'] = input;
                 if(('undefined' !== typeof(obj['id'])) && ('CHAINY' === obj['id'])){
@@ -375,7 +375,7 @@ Ethplorer = {
                         'R': 'Redirect',
                         'T': 'Text',
                         'H': 'Hash',
-                        'L': 'File Hash',
+                        'L': 'File Link',
                         'E': 'Encrypted'
                     };
                     titleAdd = 'Chainy ' + chainyTypes[obj['type']];
@@ -987,10 +987,10 @@ Ethplorer = {
                     var input = Ethplorer.Utils.hex2ascii(tx.input.substring(138));
                     var obj = false;
                     try {
-                        obj = JSON.parse(input);
+                        obj = JSON.parse(input.replace(/0+$/, ''));
                     }catch(e){
-                        console.log(e.message);
-                        console.log(obj);
+//                      console.log(e.message);
+//                      console.log(input);
                     }
                     if(false !== obj){
                         var chainyTypes = {
