@@ -361,7 +361,7 @@ Ethplorer = {
             var obj = Ethplorer.Utils.parseJData(oTx.input);
             var isChainy = false;
             if(oTx.to && ('0xf3763c30dd6986b53402d41a8552b8f7f6a6089b' === oTx.to)){
-                var input = Ethplorer.Utils.hex2ascii(oTx.input.substring(136));
+                var input = Ethplorer.Utils.hex2ascii(oTx.input.substring(136).replace(/0+$/, ''));
                 try {
                     obj = JSON.parse(input);
                 }catch(e){
@@ -984,7 +984,7 @@ Ethplorer = {
                 var type = '';
                 var link = '';
                 if(tx.link){
-                    var input = Ethplorer.Utils.hex2ascii(tx.input.substring(138));
+                    var input = Ethplorer.Utils.hex2ascii(tx.input.substring(138).replace(/0+$/, ''));
                     var obj = false;
                     try {
                         obj = JSON.parse(input.replace(/0+$/, ''));
