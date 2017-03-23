@@ -412,6 +412,9 @@ class Ethplorer {
         if(is_array($result) && is_array($result['tx'])){
             $result['tx']['confirmations'] = $this->oCache->get('lastBlock') - $result['tx']['blockNumber'] + 1;
         }
+        if(is_array($result) && is_array($result['token'])){
+            $result['token'] = $this->getToken($result['token']['address']);
+        }
         return $result;
     }
 

@@ -375,7 +375,7 @@ Ethplorer = {
                         'R': 'Redirect',
                         'T': 'Text',
                         'H': 'Hash',
-                        'L': 'File Link',
+                        'L': 'File Hash',
                         'E': 'Encrypted'
                     };
                     titleAdd = 'Chainy ' + chainyTypes[obj['type']];
