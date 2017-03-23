@@ -362,7 +362,12 @@ Ethplorer = {
             var isChainy = false;
             if(oTx.to && ('0xf3763c30dd6986b53402d41a8552b8f7f6a6089b' === oTx.to)){
                 var input = Ethplorer.Utils.hex2ascii(oTx.input.substring(136));
-                obj = JSON.parse(input);
+                try {
+                    obj = JSON.parse(input);
+                }catch(e){
+                    console.log(e.message);
+                    console.log(obj);
+                }
                 Ethplorer.dataFields['transaction-tx-input']['ascii'] = input;
                 if(('undefined' !== typeof(obj['id'])) && ('CHAINY' === obj['id'])){
                     // Chainy transaction
@@ -980,7 +985,13 @@ Ethplorer = {
                 var link = '';
                 if(tx.link){
                     var input = Ethplorer.Utils.hex2ascii(tx.input.substring(138));
-                    var obj = JSON.parse(input);
+                    var obj = false;
+                    try {
+                        obj = JSON.parse(input);
+                    }catch(e){
+                        console.log(e.message);
+                        console.log(obj);
+                    }
                     if(false !== obj){
                         var chainyTypes = {
                             'R': 'Redirect',
