@@ -375,7 +375,7 @@ Ethplorer = {
                         'R': 'Redirect',
                         'T': 'Text',
                         'H': 'Hash',
-                        'L': 'File Hash',
+                        'L': ('undefined' !== typeof(obj['url'])) ? 'File Link' : 'File Hash',
                         'E': 'Encrypted'
                     };
                     titleAdd = 'Chainy ' + chainyTypes[obj['type']];
@@ -997,7 +997,7 @@ Ethplorer = {
                             'R': 'Redirect',
                             'T': 'Text',
                             'H': 'Hash',
-                            'L': 'File Hash',
+                            'L': ('undefined' !== typeof(obj['url'])) ? 'File Link' : 'File Hash',
                             'E': 'Encrypted'
                         };
                         type = chainyTypes[obj.type];
