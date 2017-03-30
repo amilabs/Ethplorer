@@ -771,11 +771,13 @@ Ethplorer = {
             }
         }else{
             // Wait 3 seconds and retry
+            /*
             setTimeout(function(_data){
                 return function(){
                     Ethplorer.showAddressWidget(_data);
                 }
             }(data), 3000);
+            */
         }
     },
 
