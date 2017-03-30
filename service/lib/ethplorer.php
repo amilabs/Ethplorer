@@ -239,6 +239,14 @@ class Ethplorer {
                     'total' => $this->filter ? $this->countChainy(FALSE) : $count
                 );
             }
+        }else{
+            $token = $this->getToken($address);
+            if(is_array($token)){
+                $result['isContract'] = TRUE;
+                // @todo
+                $result['contract'] = array();
+                $result["token"] = $token;
+            }
         }
         if($result['isContract'] && isset($result['token'])){
             $result['pager'] = array('pageSize' => $limit);
