@@ -790,7 +790,7 @@ Ethplorer = {
                     var divData = $('<div>').addClass('hash-from-to');
                     var tdQty = $('<td>').addClass('hide-small text-right');
                     var date = Ethplorer.Utils.ts2date(tx.timestamp, false);
-                    var value = Ethplorer.Utils.formatNum(qty, true, txToken.decimals ? txToken.decimals : 18, 2) + ' ' + txToken.symbol;
+                    var value = Ethplorer.Utils.formatNum(qty, true, txToken.decimals, 2) + ' ' + txToken.symbol;
                     var token = Ethplorer.Utils.getEthplorerLink(tx.contract, txToken.name, false);
                     var from = tx.from ? ((tx.from !== address) ? Ethplorer.Utils.getEthplorerLink(tx.from) : ('<span class="same-address">' + address + '</span>')) : false;
                     var to = tx.to ? ((tx.to !== address) ? Ethplorer.Utils.getEthplorerLink(tx.to) : ('<span class="same-address">' + address + '</span>')) : false;
@@ -1168,11 +1168,6 @@ Ethplorer = {
         if(oToken.decimals){
             oToken.decimals = parseInt(Ethplorer.Utils.toBig(oToken.decimals).toString());
             // To handle ether-like tokens with 18 decimals
-            if(parseInt(oToken.totalSupply.toString()) >= 1e+18){
-                if(!oToken.decimals){
-                    oToken.decimals = 18;
-                }
-            }
             if(oToken.decimals > 20){ // Too many decimals, must be invalid value, use 0 instead
                 oToken.decimals = 0;
             }
@@ -1181,6 +1176,13 @@ Ethplorer = {
             oToken.totalIn = oToken.totalIn / k;
             oToken.totalOut = oToken.totalOut / k;
         }
+        if(parseInt(oToken.totalSupply.toString()) >= 1e+18){
+            if(!oToken.decimals){
+                oToken.estimatedDecimals = true;
+                oToken.decimals = 18;
+            }
+        }
+
         oToken.totalSupply = Ethplorer.Utils.formatNum(oToken.totalSupply, true, oToken.decimals, true);
         oToken.totalIn = Ethplorer.Utils.formatNum(oToken.totalIn, true, oToken.decimals, true);
         oToken.totalOut = Ethplorer.Utils.formatNum(oToken.totalOut, true, oToken.decimals, true);
@@ -1383,14 +1385,16 @@ Ethplorer = {
             if(('object' === typeof(num)) && ('undefined' !== typeof(num.c))){
                 num = parseFloat(Ethplorer.Utils.toBig(num).toString());
             }
+            if('undefined' === typeof(cutZeroes)){
+                cutZeroes = true;
+            }
             cutZeroes = !!cutZeroes;
             withDecimals = !!withDecimals;
-            decimals = decimals || 2;
+            decimals = ('undefined' !== typeof(decimals)) ? decimals : 2;
             
             if((num.toString().indexOf("e+") > 0)){
                 return num.toString();
             }
-            
             if((num.toString().indexOf("e-") > 0) && withDecimals){
                 var parts = num.toString().split("e-");
                 var res = parts[0].replace('.', '');
@@ -1417,6 +1421,9 @@ Ethplorer = {
                 }else{
                     res += padZero('.', parseInt(zeroCount) + 1);
                 }
+            }
+            if(cutZeroes && !decimals){
+                res = res.split('.')[0];
             }
             return res;
         },
