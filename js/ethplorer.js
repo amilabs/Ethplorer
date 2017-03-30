@@ -747,6 +747,12 @@ Ethplorer = {
         $("table").find("tr:visible:even").addClass("even");
         $("table").find("tr:visible:last").addClass("last");
 
+        Ethplorer.showAddressWidget(data);
+    },
+
+    showAddressWidget: function(data){
+        var oToken = Ethplorer.prepareToken(data.token);
+        var address = Ethplorer.currentAddress;
         if(ethplorerWidget && (true || !Ethplorer.isProd)){
             if(data.isContract || data.token){
                 $('#token-history-grouped-widget').show();
@@ -763,8 +769,14 @@ Ethplorer = {
                 );
                 ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
             }
+        }else{
+            // Wait 3 seconds and retry
+            setTimeout(function(_data){
+                Ethplorer.showAddressWidget(_data);
+            }(data), 3000);
         }
     },
+
 
     drawTransfers: function(address, transfersData){
         $('#filter_list').attr('disabled', false);
