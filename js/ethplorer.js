@@ -747,7 +747,7 @@ Ethplorer = {
         $("table").find("tr:visible:even").addClass("even");
         $("table").find("tr:visible:last").addClass("last");
 
-        Ethplorer.showAddressWidget(data);
+        // Ethplorer.showAddressWidget(data);
     },
 
     showAddressWidget: function(data){
