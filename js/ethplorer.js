@@ -771,13 +771,11 @@ Ethplorer = {
             }
         }else{
             // Wait 3 seconds and retry
-            /*
             setTimeout(function(_data){
                 return function(){
                     Ethplorer.showAddressWidget(_data);
                 }
             }(data), 3000);
-            */
         }
     },
 
@@ -796,10 +794,10 @@ Ethplorer = {
         }else{
             for(var i=0; i<data.transfers.length; i++){
                 var tx = data.transfers[i];
-                var qty = Ethplorer.Utils.toBig(tx.value);
+                var qty = parseFloat(tx.value);// Ethplorer.Utils.toBig(tx.value);
                 if(parseInt(qty.toString())){
                     var txToken = Ethplorer.prepareToken(data.token ? data.token : data.tokens[tx.contract]);
-                    qty = qty.div(Math.pow(10, txToken.decimals));
+                    qty = qty / Math.pow(10, txToken.decimals);
                     var row = $('<tr>');
                     var tdDate = $('<td>').addClass('hide-small');
                     var tdData = $('<td>');
@@ -890,10 +888,10 @@ Ethplorer = {
                     tx.type = 'issuance';
                 }
                 var type = (tx.type && ('burn' === tx.type)) ? '&#128293;&nbsp;Burn' : '&#9874;&nbsp;Issuance';
-                var qty = Ethplorer.Utils.toBig(tx.value);
+                var qty = parseFloat(tx.value);
                 if(!isNaN(parseInt(qty.toString()))){
                     var opClass = (tx.type.toString().toLowerCase() !== 'burn') ? 'incoming' : 'outgoing';
-                    var qty = Ethplorer.Utils.toBig(tx.value).div(Math.pow(10, oToken.decimals));
+                    qty = qty / Math.pow(10, oToken.decimals);
                     var row = $('<tr>');
                     var tdDate = $('<td>');
                     var tdHash = $('<td>').addClass('list-field table-hash-field');
