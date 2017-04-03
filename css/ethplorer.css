@@ -45,6 +45,10 @@ tr.paginationFooter td ul.pagination {
     padding-top: 14px;
 }
 
+#error-reason {
+    padding-left: 0px;
+}
+
 .navbar-inverse {
     background-color: #fff;
     padding-top: 8px;
