@@ -25,6 +25,12 @@ $es = Ethplorer::db($esCfg);
 $error = TRUE;
 $header = "";
 $uri = $_SERVER['REQUEST_URI'];
+
+// Uri to lowercase
+if(preg_match("/[A-Z]+/", $uri)){
+    header("Location: " . strtolower($uri));
+    die();
+}
 if(FALSE !== strpos($uri, '?')){
     $uri = substr($uri, 0, strpos($uri, '?'));
 }
