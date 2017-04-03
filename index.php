@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "140";
+$codeVersion = "141";
 
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $esCfg = require_once dirname(__FILE__) . '/service/config.php';
@@ -48,7 +48,7 @@ if(3 === count($rParts)){
 }
 if($error){
     if(isset($rParts[1]) && !$rParts[1]){
-        header('Location:index.htm');
+        header('Location:/');
         die();
     }
 }

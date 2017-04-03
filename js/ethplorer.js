@@ -25,11 +25,10 @@ Ethplorer = {
         Ethplorer.isProd = ('ethplorer.io' === document.location.host);
         BigNumber.config({ ERRORS: false });
         Ethplorer.Nav.init();
-        if(localStorage && ('undefined' !== typeof(localStorage['pageSize']))){
-            Ethplorer.pageSize = localStorage['pageSize'];
-            if(Ethplorer.pageSize > 10){
-                Ethplorer.Nav.set('pageSize', Ethplorer.pageSize);
-            }
+        Ethplorer.Storage.init();
+        Ethplorer.pageSize = Ethplorer.Storage.get('pageSize', 10);
+        if(Ethplorer.pageSize > 10){
+            Ethplorer.Nav.set('pageSize', Ethplorer.pageSize);
         }
         if(Ethplorer.Nav.get('pageSize')){
             Ethplorer.pageSize = Ethplorer.Nav.get('pageSize');
@@ -61,7 +60,7 @@ Ethplorer = {
             }
         });
         $(document).on('click', '.tx-details-link', function(){
-            localStorage['tx-details-block'] = 'open';
+            Ethplorer.Storage.set('tx-details-block', 'open');
             $('.tx-details-link').addClass('closed');
             $('#tx-details-block').show();
             $("#tx-details-block").find("tr:visible:odd").addClass("odd");
@@ -69,7 +68,7 @@ Ethplorer = {
             $("#tx-details-block").find("tr:visible:last").addClass("last");
         });
         $(document).on('click', '.tx-details-close', function(){
-            localStorage['tx-details-block'] = 'closed';
+            Ethplorer.Storage.set('tx-details-block', 'closed');
             $('.tx-details-link').removeClass('closed');
             $('#tx-details-block').hide();
         });
@@ -142,14 +141,13 @@ Ethplorer = {
                 $("table").find("tr:visible:last").addClass("last");
             }, 300);
         });
-        if(localStorage && ('undefined' !== typeof(localStorage['tx-details-block']))){
-            if('open' === localStorage['tx-details-block']){
-                $('.tx-details-link').addClass('closed');
-                $('#tx-details-block').show();
-            }else{
-                $('.tx-details-link').removeClass('closed');
-                $('#tx-details-block').hide();
-            }
+        var blockStatus = Ethplorer.Storage.get('tx-details-block', 'open');
+        if('open' === blockStatus){
+            $('.tx-details-link').addClass('closed');
+            $('#tx-details-block').show();
+        }else{
+            $('.tx-details-link').removeClass('closed');
+            $('#tx-details-block').hide();
         }
         EthplorerSearch.init($('#search-form'), $('#search'), Ethplorer.search);
 
@@ -238,7 +236,7 @@ Ethplorer = {
                 Ethplorer.search(pathData.arg);
                 break;
             default:
-                Ethplorer.error('Invalid action');
+                Ethplorer.error('Invalid request');
         }
     },
     error: function(message){
@@ -1079,14 +1077,10 @@ Ethplorer = {
                     Ethplorer.pageSize = ps;
                     if(Ethplorer.pageSize > 10){
                         Ethplorer.Nav.set('pageSize', ps);
-                        if(localStorage){
-                            localStorage.setItem('pageSize', ps);
-                        }
+                        Ethplorer.Storage.set('pageSize', ps);
                     }else{
                         Ethplorer.Nav.del('pageSize');
-                        if(localStorage){
-                            localStorage.setItem('pageSize', 10);
-                        }
+                        Ethplorer.Storage.set('pageSize', 10);
                     }
                     Ethplorer.reloadTab(false, true);
                 }
@@ -1371,6 +1365,35 @@ Ethplorer = {
                     hash = 'ready'
                 }
                 document.location.hash = hash;
+            }
+        }
+    },
+    // localStorage wrapper
+    Storage: {
+        safariInkognito: false,
+        data: {},
+        init: function(){
+            try {
+                localStorage.setItem('testItem', 1);
+                localStorage.removeItem('testItem');
+            }catch(e){
+                Ethplorer.Storage.safariInkognito = true;
+            }
+        },
+        get: function(key, defaultValue){
+            var result = defaultValue;
+            if(!Ethplorer.Storage.safariInkognito && localStorage && (null !== localStorage.getItem(key))){
+                result = localStorage.getItem(key);
+            }else if('undefined' !== typeof(Ethplorer.Storage.data[key])){
+                result = Ethplorer.Storage.data[key];
+            }
+            return result;
+        },
+        set: function(key, value){
+            if(!Ethplorer.Storage.safariInkognito){
+                localStorage.setItem(key, value);
+            }else{
+                Ethplorer.Storage.data[key] = value;
             }
         }
     },
