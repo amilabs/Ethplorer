@@ -88,10 +88,7 @@ class Ethplorer {
         );
 
         $this->oCache = new evxCache($this->aSettings['cacheDir']);
-        if(!isset($this->aSettings['ethereum'])){
-            throw new Exception("Ethereum configuration not found");
-        }
-        if(isset($this->aSettings['mongo']) && (FALSE !== $this->aSettings['mongo'])){
+        if(isset($this->aSettings['mongo']) && is_array($this->aSettings['mongo'])){
             if(class_exists("MongoClient")){
                 $oMongo = new MongoClient($this->aSettings['mongo']['server']);
                 $oDB = $oMongo->{$this->aSettings['mongo']['dbName']};
@@ -1203,6 +1200,9 @@ class Ethplorer {
      * @return array
      */
     protected function _callRPC($method, $params = array()){
+        if(!isset($this->aSettings['ethereum'])){
+            throw new Exception("Ethereum configuration not found");
+        }
         $data = array(
             'jsonrpc' => "2.0",
             'id'      => time(),

@@ -18,16 +18,14 @@
 $codeVersion = "141";
 
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
-$esCfg = require_once dirname(__FILE__) . '/service/config.php';
-$esCfg['mongo'] = FALSE; // No mongo connection
-$es = Ethplorer::db($esCfg);
+$es = Ethplorer::db(array());
 
 $error = TRUE;
 $header = "";
 $uri = $_SERVER['REQUEST_URI'];
 
 // Uri to lowercase
-if(preg_match("/[A-Z]+/", $uri)){
+if(preg_match("/[A-Z]+/", $uri) && (FALSE === strpos($uri, '1dea4'))){
     header("Location: " . strtolower($uri));
     die();
 }
@@ -81,6 +79,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
     <script src="/js/bignumber.js"></script>
     <script src="/js/ethplorer.js?v=<?=$codeVersion?>"></script>
     <script src="/js/ethplorer-search.js?v=<?=$codeVersion?>"></script>
+    <script src="/js/config.js"></script>
     <script src="/js/md5.min.js"></script>
 </head>
 <body>
@@ -567,28 +566,6 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
         (d.head || d.body).appendChild(s);
     })();
     </script>
-    <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <?php /*
-    <div class="navbar navbar-inverse footer" role="navigation" style="background:#0f0f0f;">
-        <div class="container">
-            <div class="text-center">
-                    <a href="/about.html" style="color: white;">About</a>
-                    &nbsp;&nbsp;&nbsp;
-                    <a href="/about.html#disqus_thread"  style="color: white;">Discuss ethplorer</a>
-                    &nbsp;&nbsp;&nbsp;
-                    <a href="https://github.com/EverexIO/Ethplorer" target="_blank">Sources</a>
-                    &nbsp;&nbsp;&nbsp;
-                    <a href="https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API" target="_blank">API</a>
-            </div>
-            <div class="copyrights">
-                <span style="color:white;">(c) 2016</span> <a href="https://everex.one" target="_blank">Everex</a>
-                &nbsp;&nbsp;&nbsp;
-                <a href="mailto://support@ethplorer.io">support@ethplorer.io</a><br>
-                <a href="/privacy.html">Privacy & Terms</a>
-            </div>
-        </div>
-    </div>
-     */ ?>
     <div class="footer">
         <div class="container">
             <div class="row">
@@ -604,7 +581,6 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                 <div class="col-xs-6 col-sm-3">
                     <div class="footer-links" style="color: #ffffff;">
                         <ul>
-                            <li><span style="font-weight: 600;"><a href="/about">About</a> </span></li>
                             <li><a href="/widgets" style="" rel=""><strong>Widgets</strong></a></li>
                             <li><span style="font-weight: 600;"><a href="/about#disqus_thread">Discuss ethplorer</a></span></li>
                             <li><span style="font-weight: 600;"><a href="https://github.com/EverexIO/Ethplorer">Sources</a></span></li>
@@ -625,39 +601,28 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
     </div>
 </div>
 <script>
-<?php
-    // Build JS config from PHP code
-    echo "Ethplorer.Config = " . json_encode($esCfg['client'], JSON_OBJECT_AS_ARRAY);
-?>
+$(document).ready(function(){
+    $.fn.bootstrapBtn = $.fn.button.noConflict();
+    Ethplorer.init();
+});
+if(Ethplorer.Config.ga){
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-    $(document).ready(function(){
-        $.fn.bootstrapBtn = $.fn.button.noConflict();
-        Ethplorer.init();
-    });
-    if(Ethplorer.Config.ga){
-        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-
-        ga('create', Ethplorer.Config.ga, 'auto');
-        ga('send', 'pageview');
-    }
+    ga('create', Ethplorer.Config.ga, 'auto');
+    ga('send', 'pageview');
+}
+if(Ethplorer.Config.fb){
+    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+    document,'script','https://connect.facebook.net/en_US/fbevents.js');
+    fbq('init', Ethplorer.Config.fb);
+    fbq('track', 'PageView');
+}
 </script>
-<!-- Facebook Pixel Code -->
-<script>
-!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-document,'script','https://connect.facebook.net/en_US/fbevents.js');
-fbq('init', '1629579527306661');
-fbq('track', 'PageView');
-</script>
-<noscript><img height="1" width="1" style="display:none"
-src="https://www.facebook.com/tr?id=1629579527306661&ev=PageView&noscript=1"
-/></noscript>
-<!-- DO NOT MODIFY -->
-<!-- End Facebook Pixel Code -->
 </body>
 </html>

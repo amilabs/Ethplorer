@@ -22,6 +22,9 @@ Ethplorer = {
     searchCache: {},
     saveData: function(){},
     init: function(){
+        if('undefined' !== typeof(ethplorerConfig)){
+            Ethplorer.Config = ethplorerConfig;
+        }
         Ethplorer.isProd = ('ethplorer.io' === document.location.host);
         BigNumber.config({ ERRORS: false });
         Ethplorer.Nav.init();

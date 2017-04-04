@@ -1,5 +1,8 @@
 <?php
 return array(
+
+    'ga'     => '',
+    'fb'     => '',
     "mongo" => array(
         "server" => "mongodb://127.0.0.1:27017",
         "dbName" => "everex-db",
