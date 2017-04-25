@@ -111,7 +111,7 @@ class ethplorerController {
 
             if(!$result){
                 $result = call_user_func(array($this, $command));
-                if((FALSE !== $timestamp) && $cacheId && (FALSE === $result)){
+                if((FALSE !== $timestamp) && $cacheId && (FALSE !== $result)){
                     $oCache->save($cacheId, $result);
                 }
             }
