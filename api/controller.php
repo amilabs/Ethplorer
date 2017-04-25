@@ -104,7 +104,7 @@ class ethplorerController {
             $timestamp = $this->getRequest('timestamp', FALSE);
 
             if(FALSE !== $timestamp){
-                $cacheId = 'API-' . $command . md5($_SERVER["REQUEST_URI"]);
+                $cacheId = 'API-' . $command  . '-' . md5($_SERVER["REQUEST_URI"]);
                 $oCache = $this->db->getCache();
                 $result = $oCache->get($cacheId, FALSE, TRUE, 360);
             }
