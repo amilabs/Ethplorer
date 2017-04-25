@@ -21,11 +21,13 @@ class ethplorerController {
     protected $params = array();
     protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getTokenHistoryGrouped');
     protected $defaults;
+    protected $startTime;
 
     public function __construct($es){
         if(!($es instanceof Ethplorer)){
             $this->sendError(3, 'Database connection failed');
         }
+        $this->startTime = microtime(TRUE);
         $this->db = $es;
         $command = isset($_GET["cmd"]) ? $_GET["cmd"] : FALSE;
         if(!$command){
@@ -43,11 +45,15 @@ class ethplorerController {
                 }
             }
         }
-        if(isset($_GET['domain'])){
-            $date = date("Y-m-d H:i");
-            file_put_contents(__DIR__ . '/../service/log/widget-request.log', "[$date] Widget $command, domain {$_GET['domain']}\n", FILE_APPEND);
-        }
         $this->command = $command;
+    }
+
+    public function __destruct(){
+        if(isset($_GET['domain'])){
+            $ms = round(microtime(TRUE) - $this->startTime / 1000, 4);
+            $date = date("Y-m-d H:i");
+            file_put_contents(__DIR__ . '/../service/log/widget-request.log', "[$date] Widget: {$this->command}, source: {$_GET['domain']}, {$ms} s.\n", FILE_APPEND);
+        }
     }
 
     public function getCommand(){
