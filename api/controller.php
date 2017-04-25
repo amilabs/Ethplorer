@@ -49,7 +49,7 @@ class ethplorerController {
     }
 
     public function __destruct(){
-        $ms = round((microtime(TRUE) - $this->startTime) / 1000, 4);
+        $ms = round(microtime(TRUE) - $this->startTime, 4);
         $date = date("Y-m-d H:i");
         $key = $this->getRequest('apiKey', "-");
         $source = $this->getRequest('domain', FALSE);
