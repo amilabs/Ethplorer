@@ -49,11 +49,14 @@ class ethplorerController {
     }
 
     public function __destruct(){
-        if(isset($_GET['domain'])){
-            $ms = round((microtime(TRUE) - $this->startTime) / 1000, 4);
-            $date = date("Y-m-d H:i");
-            file_put_contents(__DIR__ . '/../service/log/widget-request.log', "[$date] Widget: {$this->command}, source: {$_GET['domain']}, {$ms} s.\n", FILE_APPEND);
+        $ms = round((microtime(TRUE) - $this->startTime) / 1000, 4);
+        $date = date("Y-m-d H:i");
+        $key = $this->getRequest('apiKey', "-");
+        $source = $this->getRequest('domain', FALSE);
+        if($source){
+            file_put_contents(__DIR__ . '/../service/log/widget-request.log', "[$date] Widget: {$this->command}, source: {$source}\n", FILE_APPEND);
         }
+        file_put_contents(__DIR__ . '/../service/log/api-request.log', "[$date] Call: {$this->command}, Key: {$key} URI: {$_SERVER["REQUEST_URI"]}, IP: {$_SERVER['REMOTE_ADDR']}, {$ms} s.\n", FILE_APPEND);
     }
 
     public function getCommand(){
