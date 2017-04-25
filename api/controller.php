@@ -50,7 +50,7 @@ class ethplorerController {
 
     public function __destruct(){
         if(isset($_GET['domain'])){
-            $ms = round(microtime(TRUE) - $this->startTime / 1000, 4);
+            $ms = round((microtime(TRUE) - $this->startTime) / 1000, 4);
             $date = date("Y-m-d H:i");
             file_put_contents(__DIR__ . '/../service/log/widget-request.log', "[$date] Widget: {$this->command}, source: {$_GET['domain']}, {$ms} s.\n", FILE_APPEND);
         }
