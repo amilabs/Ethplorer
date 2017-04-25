@@ -110,6 +110,15 @@ class Ethplorer {
     }
 
     /**
+     * Returns cache object
+     *
+     * @return evxCache
+     */
+    public function getCache(){
+        return $this->oCache;
+    }
+
+    /**
      * Singleton getter.
      *
      * @return Ethereum
