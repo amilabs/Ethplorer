@@ -303,7 +303,12 @@ Ethplorer = {
         }
 
         if('undefined' !== typeof(oOperation.formatted)){
-            oOperation.value = Ethplorer.Utils.toBig(oOperation.value).div(Math.pow(10, oToken.decimals));
+            if(Ethplorer.Utils.isSafari()){
+                oOperation.value = parseFloat(Ethplorer.Utils.toBig(oOperation.value).toString());
+                oOperation.value = oOperation.value / Math.pow(10, oToken.decimals);
+            }else{
+                oOperation.value = Ethplorer.Utils.toBig(oOperation.value).div(Math.pow(10, oToken.decimals));
+            }
             oOperation.value = Ethplorer.Utils.formatNum(oOperation.value, true, oToken.decimals, true);
             oOperation.value = oToken.symbol ? (oOperation.value + ' ' + oToken.symbol) : oOperation.value;
             oOperation.formatted = true;
@@ -465,7 +470,12 @@ Ethplorer = {
                     op.index = idx;
                     var opToken = Ethplorer.prepareToken(op.token);
                     if('undefined' !== typeof(op.value)){
-                        op.value = Ethplorer.Utils.toBig(op.value).div(Math.pow(10, opToken.decimals));
+                        if(Ethplorer.Utils.isSafari()){
+                            op.value = parseFloat(Ethplorer.Utils.toBig(op.value).toString());
+                            op.value = op.value / Math.pow(10, opToken.decimals);
+                        }else{
+                            op.value = Ethplorer.Utils.toBig(op.value).div(Math.pow(10, opToken.decimals));
+                        }
                         op.value = Ethplorer.Utils.formatNum(op.value, true, opToken.decimals, true);
                         op.value = opToken.symbol ? (op.value + ' ' + opToken.symbol) : op.value;
                         op.symbol = opToken.symbol;
@@ -707,12 +717,24 @@ Ethplorer = {
                 var oToken = Ethplorer.prepareToken(data.tokens[balance.contract]);
                 var row = $('<TR>');
                 row.append('<TD>' + Ethplorer.Utils.getEthplorerLink(balance.contract, oToken.name, false) + '</TD>');
-                var qty = Ethplorer.Utils.toBig(balance.balance).div(Math.pow(10, oToken.decimals));
+                var qty = Ethplorer.Utils.toBig(balance.balance);
+                if(Ethplorer.Utils.isSafari()){
+                    qty = parseFloat(qty.toString()) / Math.pow(10, oToken.decimals);
+                }else{
+                    qty = qty.div(Math.pow(10, oToken.decimals));
+                }
                 var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals, true) + ' ' + oToken.symbol;
                 if(balance.totalIn || balance.totalOut){
                     value += '<br />';
-                    var totalIn = Ethplorer.Utils.toBig(balance.totalIn).div(Math.pow(10, oToken.decimals));
-                    var totalOut = Ethplorer.Utils.toBig(balance.totalOut).div(Math.pow(10, oToken.decimals));
+                    var totalIn = Ethplorer.Utils.toBig(balance.totalIn);
+                    var totalOut = Ethplorer.Utils.toBig(balance.totalOut);
+                    if(Ethplorer.Utils.isSafari()){
+                        totalIn = parseFloat(totalIn.toString()) / Math.pow(10, oToken.decimals);
+                        totalOut = parseFloat(totalOut.toString()) / Math.pow(10, oToken.decimals);
+                    }else{
+                        totalIn = totalIn.div(Math.pow(10, oToken.decimals));
+                        totalOut = totalOut.div(Math.pow(10, oToken.decimals));
+                    }
                     value += ('<div class="total-in-out-small">Total In: ' + Ethplorer.Utils.formatNum(totalIn, true, oToken.decimals, true) + '<br />');
                     value += ('Total Out: ' + Ethplorer.Utils.formatNum(totalOut, true, oToken.decimals, true) + '</div>');
                 }
@@ -754,7 +776,7 @@ Ethplorer = {
     showAddressWidget: function(data){
         var oToken = Ethplorer.prepareToken(data.token);
         var address = Ethplorer.currentAddress;
-        if(ethplorerWidget && (true || !Ethplorer.isProd)){
+        if(()'undefined' !== typeof(ethplorerWidget)) && (true || !Ethplorer.isProd)){
             if(data.isContract || data.token){
                 $('#token-history-grouped-widget').show();
                 var widgetTitle = (oToken && oToken.name) ? (oToken.name + ' token pulse') : '';
@@ -1183,7 +1205,11 @@ Ethplorer = {
                 oToken.decimals = 0;
             }
             var k = Math.pow(10, oToken.decimals);
-            oToken.totalSupply = oToken.totalSupply.div(k);
+            if(Ethplorer.Utils.isSafari()){
+                oToken.totalSupply = parseFloat(oToken.totalSupply.toString()) / k;
+            }else{
+                oToken.totalSupply = oToken.totalSupply.div(k);
+            }
             oToken.totalIn = oToken.totalIn / k;
             oToken.totalOut = oToken.totalOut / k;
         }
@@ -1619,5 +1645,11 @@ Ethplorer = {
             }
             return res;
         },
+        
+        isSafari: function(){
+            var isIphone = /(iPhone)/i.test(navigator.userAgent);
+            var isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
+            return isIphone || isSafari;
+        }
     }
 };
