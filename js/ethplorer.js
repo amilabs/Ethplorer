@@ -776,7 +776,7 @@ Ethplorer = {
     showAddressWidget: function(data){
         var oToken = Ethplorer.prepareToken(data.token);
         var address = Ethplorer.currentAddress;
-        if(()'undefined' !== typeof(ethplorerWidget)) && (true || !Ethplorer.isProd)){
+        if(('undefined' !== typeof(ethplorerWidget)) && (true || !Ethplorer.isProd)){
             if(data.isContract || data.token){
                 $('#token-history-grouped-widget').show();
                 var widgetTitle = (oToken && oToken.name) ? (oToken.name + ' token pulse') : '';
