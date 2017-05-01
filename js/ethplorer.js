@@ -723,7 +723,7 @@ Ethplorer = {
                 }else{
                     qty = qty.div(Math.pow(10, oToken.decimals));
                 }
-                var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals, true) + ' ' + oToken.symbol;
+                var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals, true, true) + ' ' + oToken.symbol;
                 if(balance.totalIn || balance.totalOut){
                     value += '<br />';
                     var totalIn = Ethplorer.Utils.toBig(balance.totalIn);
