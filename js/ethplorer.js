@@ -309,7 +309,7 @@ Ethplorer = {
             }else{
                 oOperation.value = Ethplorer.Utils.toBig(oOperation.value).div(Math.pow(10, oToken.decimals));
             }
-            oOperation.value = Ethplorer.Utils.formatNum(oOperation.value, true, oToken.decimals, true);
+            oOperation.value = Ethplorer.Utils.formatNum(oOperation.value, true, oToken.decimals, true, true);
             oOperation.value = oToken.symbol ? (oOperation.value + ' ' + oToken.symbol) : oOperation.value;
             oOperation.formatted = true;
         }
@@ -476,7 +476,7 @@ Ethplorer = {
                         }else{
                             op.value = Ethplorer.Utils.toBig(op.value).div(Math.pow(10, opToken.decimals));
                         }
-                        op.value = Ethplorer.Utils.formatNum(op.value, true, opToken.decimals, true);
+                        op.value = Ethplorer.Utils.formatNum(op.value, true, opToken.decimals, true, true);
                         op.value = opToken.symbol ? (op.value + ' ' + opToken.symbol) : op.value;
                         op.symbol = opToken.symbol;
                     }
@@ -1436,7 +1436,7 @@ Ethplorer = {
          * @param {bool} cutZeroes
          * @returns {string}
          */
-        formatNum: function(num, withDecimals /* = false */, decimals /* = 2 */, cutZeroes /* = false */){
+        formatNum: function(num, withDecimals /* = false */, decimals /* = 2 */, cutZeroes /* = false */, noE /* = false */){
             if(!num){
                 num = 0;
             }
@@ -1459,6 +1459,15 @@ Ethplorer = {
             decimals = ('undefined' !== typeof(decimals)) ? decimals : 2;
             
             if((num.toString().indexOf("e+") > 0)){
+                if(noE){
+                    var parts = num.toString().split('e+');
+                    var ch = parts[0].replace('.', '');
+                    var st = parseInt(parts[1]) - (ch.length - 1);
+                    for(var i = 0; i < st; i++){
+                        ch += '0';
+                    }
+                    num = ch.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+                }
                 return num.toString();
             }
             if((num.toString().indexOf("e-") > 0) && withDecimals){
