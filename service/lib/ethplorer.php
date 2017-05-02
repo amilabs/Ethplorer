@@ -759,17 +759,16 @@ class Ethplorer {
      * @return array
      */
     public function getAddressBalances($address, $withZero = true){
-        // evxProfiler::checkpoint('getAddressBalances START [address=' . $address . ']');
-        $cursor = $this->dbs['balances']->find(array("address" => $address));
+        $search = array("address" => $address);
+        if(!$withZero){
+            $search['balance'] = array('$gt' => 0);
+        }
+        $cursor = $this->dbs['balances']->find($search, array('contract', 'balance', 'totalIn', 'totalOut'));
         $result = array();
-        $fetches = 0;
         foreach($cursor as $balance){
             unset($balance["_id"]);
-            // @todo: $withZero flag implementation
             $result[] = $balance;
-            $fetches++;
         }
-        // evxProfiler::checkpoint('getAddressBalances FINISH [address=' . $address . '] with ' . $fetches . ' fetches]');
         return $result;
     }
 

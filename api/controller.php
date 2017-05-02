@@ -186,7 +186,7 @@ class ethplorerController {
                 $result['tokenInfo'] = $token;
             }
         }
-        $balances = $this->db->getAddressBalances($address);
+        $balances = $this->db->getAddressBalances($address, FALSE);
         if(is_array($balances) && !empty($balances)){
             $result['tokens'] = array();
             foreach($balances as $balance){
