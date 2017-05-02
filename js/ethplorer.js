@@ -723,6 +723,10 @@ Ethplorer = {
                 }else{
                     qty = qty.div(Math.pow(10, oToken.decimals));
                 }
+                if(!parseFloat(qty.toString()) && !(balance.totalIn || balance.totalOut)){
+                    // No balance and no movement - skip
+                    continue;
+                }
                 var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals, true, true) + ' ' + oToken.symbol;
                 if(balance.totalIn || balance.totalOut){
                     value += '<br />';
