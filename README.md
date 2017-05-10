@@ -40,3 +40,9 @@ Make sure your web server supports .htaccess and mod_rewrite.
 # Configure
 
 Copy service/config.sample.php to service/config.php and specify service addresses.
+
+# Disclaimer
+
+By using Ethplorer code fully or partially, API, widgets or any other service on your website or app for commerce or non-profit activities, you hereby grant permission and allow us to use your business name and/or trademark in our marketing or advertising. 
+
+
