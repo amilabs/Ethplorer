@@ -100,6 +100,7 @@ class ethplorerController {
             if(!$key || !$this->db->checkAPIkey($key)){
                 $this->sendError(1, 'Invalid API key');
             }
+            $this->defaults = $this->db->getAPIKeyDefaults($key, $command);
 
             $timestamp = $this->getRequest('timestamp', FALSE);
 
