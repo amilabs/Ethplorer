@@ -1248,6 +1248,19 @@ class Ethplorer {
             'symbol' => false,
             'txsCount' => 99999
         );
+        if(isset($this->aSettings['client']) && isset($this->aSettings['client']['tokens'])){
+            $aClientTokens = $this->aSettings['client']['tokens'];
+            foreach($aClientTokens as $address => $aClientToken){
+                if(isset($aTokens[$address])){
+                    if(isset($aClientToken['name'])){
+                        $aTokens[$address]['name'] = $aClientToken['name'];
+                    }
+                    if(isset($aClientToken['symbol'])){
+                        $aTokens[$address]['symbol'] = $aClientToken['symbol'];
+                    }
+                }
+            }
+        }
         foreach($aTokens as $address => $aToken){
             $search = strtolower($token);
             if((strpos($address, $search) !== FALSE) || (!empty($aToken['name']) && (strpos(strtolower($aToken['name']), $search) !== FALSE)) || (!empty($aToken['symbol']) && (strpos(strtolower($aToken['symbol']), $search) !== FALSE))){
