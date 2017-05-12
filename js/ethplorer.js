@@ -1306,7 +1306,7 @@ Ethplorer = {
             case 'price':
                 if(value && value.rate){
                     var rate = value;
-                    value = '$' + Ethplorer.Utils.formatNum(rate.rate, true, 2, true);
+                    value = '$ ' + Ethplorer.Utils.formatNum(rate.rate, true, 2, true);
                     if(rate.diff){
                         var cls = rate.diff > 0 ? 'diff-up' : 'diff-down';
                         var hint = 'Updated at ' + Ethplorer.Utils.ts2date(rate.ts, true);
