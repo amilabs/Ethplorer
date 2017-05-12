@@ -920,7 +920,10 @@ li.ui-menu-item.have-more {
         padding-left: 8px;
     }
     .table tr td:first-child {
-        max-width: 70px;
+        max-width: 90px;
+    }
+    .table tr td:nth-child(2) {
+        text-align: right;
     }    
     .table tr td {
         font-size: 12px;
