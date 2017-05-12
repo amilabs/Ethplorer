@@ -921,7 +921,7 @@ li.ui-menu-item.have-more {
         padding-left: 8px !important;
     }
     .table tr td:nth-child(2) {
-        text-align: right;
+        /* text-align: right; */
     }    
     .table tr td {
         font-size: 12px;
