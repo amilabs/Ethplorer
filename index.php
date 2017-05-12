@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "145";
+$codeVersion = "146";
 
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $es = Ethplorer::db(array());
@@ -313,7 +313,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                                 </tr>
                                 <tr>
                                     <td>Value</td>
-                                    <td id="transaction-tx-value" class="list-field" data-type="ether"></td>
+                                    <td id="transaction-tx-value" class="list-field" data-type="ether-full"></td>
                                 </tr>
                                 <tr>
                                     <td>Gas Limit</td>
@@ -325,11 +325,11 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                                 </tr>
                                 <tr>
                                     <td>Gas Price</td>
-                                    <td id="transaction-tx-gasPrice" class="list-field" data-type="ether"></td>
+                                    <td id="transaction-tx-gasPrice" class="list-field" data-type="ether-full"></td>
                                 </tr>
                                 <tr>
                                     <td>TX Fee</td>
-                                    <td id="transaction-tx-fee" class="list-field" data-type="ether"></td>
+                                    <td id="transaction-tx-fee" class="list-field" data-type="ether-full"></td>
                                 </tr>
                                 <tr>
                                     <td>Nonce</td>
@@ -373,7 +373,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                             </tr>
                             <tr>
                                 <td>Balance</td>
-                                <td id="address-balance" data-type="ether" class="list-field"></td>
+                                <td id="address-balance" data-type="ether-full" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Total In</td>

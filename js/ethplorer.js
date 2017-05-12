@@ -19,6 +19,7 @@ Ethplorer = {
     pageSize: 10,
     service: "/service/service.php",
     filter: '',
+    ethPrice: 0,
     searchCache: {},
     saveData: function(){},
     init: function(){
@@ -266,6 +267,9 @@ Ethplorer = {
         }    
         $.getJSON(Ethplorer.service, {data: txHash}, function(_txHash){
             return function(data){
+                if(data.ethPrice){
+                    Ethplorer.ethPrice = data.ethPrice;
+                }
                 Ethplorer.showTxDetails(_txHash, data);
             }
         }(txHash));
@@ -302,10 +306,11 @@ Ethplorer = {
             oOperation.type = 'Issuance';
         }
 
+        var valFloat = parseFloat(Ethplorer.Utils.toBig(oOperation.value).toString());
+        valFloat =  valFloat / Math.pow(10, oToken.decimals)
         if('undefined' !== typeof(oOperation.formatted)){
             if(Ethplorer.Utils.isSafari()){
-                oOperation.value = parseFloat(Ethplorer.Utils.toBig(oOperation.value).toString());
-                oOperation.value = oOperation.value / Math.pow(10, oToken.decimals);
+                oOperation.value = valFloat;
             }else{
                 oOperation.value = Ethplorer.Utils.toBig(oOperation.value).div(Math.pow(10, oToken.decimals));
             }
@@ -313,10 +318,15 @@ Ethplorer = {
             oOperation.value = oToken.symbol ? (oOperation.value + ' ' + oToken.symbol) : oOperation.value;
             oOperation.formatted = true;
         }
+        var value = oOperation.value;
+        if(valFloat && oToken.price && oToken.price.rate){
+            value = value + '<br><span class="tx-value-price">($ ' + Ethplorer.Utils.formatNum(oToken.price.rate * valFloat) + ')</span>';
+        }
+        $('#transfer-operation-value').html(value);
 
         titleAdd += oOperation.type;
         $('.token-operation-type').text(oOperation['type']);
-        Ethplorer.fillValues('transfer', txData, ['operation', 'operation.from', 'operation.to', 'operation.value']);
+        Ethplorer.fillValues('transfer', txData, ['operation', 'operation.from', 'operation.to']);
         if(oTx.blockNumber){
             $('#txTokenStatus')[oOperation.success ? 'removeClass' : 'addClass']('text-danger');
             $('#txTokenStatus')[oOperation.success ? 'addClass' : 'removeClass']('text-success');                           
@@ -469,10 +479,12 @@ Ethplorer = {
                     var pos = ('undefined' !== typeof(op.priority)) ? op.priority : idx;
                     op.index = idx;
                     var opToken = Ethplorer.prepareToken(op.token);
+                    var valFloat = 0;
                     if('undefined' !== typeof(op.value)){
+                        valFloat = parseFloat(Ethplorer.Utils.toBig(op.value).toString());
+                        valFloat =  valFloat / Math.pow(10, oToken.decimals)
                         if(Ethplorer.Utils.isSafari()){
-                            op.value = parseFloat(Ethplorer.Utils.toBig(op.value).toString());
-                            op.value = op.value / Math.pow(10, opToken.decimals);
+                            op.value = valFloat;
                         }else{
                             op.value = Ethplorer.Utils.toBig(op.value).div(Math.pow(10, opToken.decimals));
                         }
@@ -480,6 +492,7 @@ Ethplorer = {
                         op.value = opToken.symbol ? (op.value + ' ' + opToken.symbol) : op.value;
                         op.symbol = opToken.symbol;
                     }
+
                     var opParties = '';
                     if(op.address){
                         op.to = op.address;
@@ -539,7 +552,15 @@ Ethplorer = {
                 }
                 titleAdd += oOperation.type;
                 $('.token-operation-type').text(oOperation.type);
-                Ethplorer.fillValues('transfer', txData, ['operation', 'operation.from', 'operation.to', 'operation.value']);
+                Ethplorer.fillValues('transfer', txData, ['operation', 'operation.from', 'operation.to']);
+                if(oOperation.value){
+                    var value = oOperation.value;
+                    if(valFloat && oToken.price && oToken.price.rate){
+                        value = value + '<br><span class="tx-value-price">($ ' + Ethplorer.Utils.formatNum(oToken.price.rate * valFloat) + ')</span>';
+                    }
+                    $('#transfer-operation-value').html(value);
+                }
+
                 if(oTx.blockNumber){
                     $('#txTokenStatus')[oOperation.success ? 'removeClass' : 'addClass']('text-danger');
                     $('#txTokenStatus')[oOperation.success ? 'addClass' : 'removeClass']('text-success');                           
@@ -627,6 +648,9 @@ Ethplorer = {
         }
         $.getJSON(Ethplorer.service, data, function(_address){
             return function(data){
+                if(data.ethPrice){
+                    Ethplorer.ethPrice = data.ethPrice;
+                }
                 callback(_address, data);
             }
         }(address));
@@ -728,6 +752,21 @@ Ethplorer = {
                     continue;
                 }
                 var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals, true, true) + ' ' + oToken.symbol;
+                if((parseFloat(qty.toString()) > 0) && oToken.price && oToken.price.rate){
+                    var rate = oToken.price;
+                    var price = rate.rate * parseFloat(qty.toString());
+                    value += ('<br><div class="balances-price">$ ' + Ethplorer.Utils.formatNum(price, true, 2, true) + ' ');
+                    if(rate.diff){
+                        var cls = rate.diff > 0 ? 'diff-up' : 'diff-down';
+                        var hint = 'Updated at ' + Ethplorer.Utils.ts2date(rate.ts, true);
+                        if(rate.diff > 0){
+                            rate.diff = '+' + rate.diff;
+                        }
+                        value = value + ' <span class="' + cls + '" title="' + hint + '">(' + rate.diff + '%)</span>'
+                    }
+                    value = value + '</div>';
+
+                }
                 if(balance.totalIn || balance.totalOut){
                     value += '<br />';
                     var totalIn = Ethplorer.Utils.toBig(balance.totalIn);
@@ -1321,6 +1360,16 @@ Ethplorer = {
                 break;
             case 'ether':
                 value = Ethplorer.Utils.formatNum(value, true, 18, true) + ' ETHER';
+                break;
+            case 'ether-full':
+                var res = Ethplorer.Utils.formatNum(value, true, 18, true) + ' ETHER';
+                if(value){
+                    var price = Ethplorer.Utils.formatNum(Ethplorer.ethPrice * value, true, 2, true);
+                    if('0.00' != price){
+                        res = res + ' ($ ' + price + ')';
+                    }
+                }
+                value = res;
                 break;
             case 'ethplorer':
                 value = Ethplorer.Utils.getEthplorerLink(value, value, (options.indexOf('no-contract') < 0) ? Ethplorer.knownContracts.indexOf(value) >= 0 : false);

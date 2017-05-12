@@ -478,6 +478,19 @@ a.dashed {
     color: #ae2525 !important;
 }
 
+.tx-value-price {
+    font-size: 0.9em;
+    color: white;
+    opacity: 0.6;
+}
+
+.balances-price {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9em;
+    display: inline-block;
+    float: right;
+}
+
 .hash-from-to {
     max-width: 40vw;
     overflow: hidden;
