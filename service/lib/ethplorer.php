@@ -439,6 +439,7 @@ class Ethplorer {
      * @return double
      */
     public function getBalance($address){
+        // @todo: cache
         $balance = $this->_callRPC('eth_getBalance', array($address, 'latest'));
         if(false !== $balance){
             $balance = hexdec(str_replace('0x', '', $balance)) / pow(10, 18);
@@ -607,7 +608,7 @@ class Ethplorer {
      */
     public function getToken($address){
         $cache = 'token-' . $address;
-        $result = $this->oCache->get($cache, false, true, 15);
+        $result = $this->oCache->get($cache, false, true, 30);
         if(FALSE === $result){
             $aTokens = $this->getTokens();
             $result = isset($aTokens[$address]) ? $aTokens[$address] : false;
@@ -631,6 +632,8 @@ class Ethplorer {
                     'issuancesCount' => $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address, FALSE),
                     'holdersCount' => ''
                 );
+                $price = $this->getTokenPrice($address);
+                $result['price'] = $price ? $price : false;
                 $this->oCache->save($cache, $result);
             }
         }
@@ -1200,6 +1203,39 @@ class Ethplorer {
         return $result;
     }
 
+    public function getETHPrice(){
+        $result = false;
+        $eth = $this->getTokenPrice('0x0000000000000000000000000000000000000000');
+        if(false !== $eth){
+            $result = $eth['rate'];
+        }
+        return $result;
+    }
+
+    public function getTokenPrice($address){
+        $result = false;
+        $cache = 'rates';
+        $rates = $this->oCache->get($cache, false, true, 1);
+        if(((FALSE === $rates) || (is_array($rates) && !isset($rates[$address]))) && isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates']))){
+            if(!is_array($rates)){
+                $rates = array();
+            }
+            if(isset($this->aSettings['currency'])){
+                $method = 'getCurrencyCurrent';
+                $params = array($address, 'USD');
+                $result = $this->_jsonrpcall($this->aSettings['currency'], $method, $params);
+                if($result){
+                    unset($result['code_from']);
+                    unset($result['code_to']);
+                    unset($result['bid']);
+                    $rates[$address] = $result;
+                    $this->oCache->save($cache, $rates);
+                }
+            }
+        }
+        return $result;
+    }
+
     /**
      * JSON RPC request implementation.
      *
@@ -1211,6 +1247,10 @@ class Ethplorer {
         if(!isset($this->aSettings['ethereum'])){
             throw new Exception("Ethereum configuration not found");
         }
+        return $this->_jsonrpcall($this->aSettings['ethereum'], $method, $params);
+    }
+
+    protected function _jsonrpcall($service, $method, $params = array()){
         $data = array(
             'jsonrpc' => "2.0",
             'id'      => time(),
@@ -1219,7 +1259,7 @@ class Ethplorer {
         );
         $result = false;
         $json = json_encode($data);
-        $ch = curl_init($this->aSettings['ethereum']);
+        $ch = curl_init($service);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/json',

@@ -470,6 +470,14 @@ a.dashed {
     color: #ae2525 !important;
 }
 
+.diff-up {
+    color: #1e8c1e !important;
+}
+
+.diff-down {
+    color: #ae2525 !important;
+}
+
 .hash-from-to {
     max-width: 40vw;
     overflow: hidden;

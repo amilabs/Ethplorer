@@ -249,6 +249,10 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                                     <td id="transaction-token-symbol" class="list-field"></td>
                                 </tr>
                                 <tr>
+                                    <td>Price</td>
+                                    <td id="transaction-token-price" data-type="price" class="list-field"></td>
+                                </tr>
+                                <tr>
                                     <td>Decimals</td>
                                     <td id="transaction-token-decimals" class="list-field"></td>
                                 </tr>
@@ -429,6 +433,10 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                             <tr>
                                 <td>Symbol</td>
                                 <td id="address-token-symbol" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Price</td>
+                                <td id="address-token-price" data-type="price" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Total Supply</td>

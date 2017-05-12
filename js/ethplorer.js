@@ -284,7 +284,7 @@ Ethplorer = {
         var txData = {tx: oTx, operation: op, token: oToken};
         
         $('.token-related td.list-field').empty();
-        Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
+        Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.price', 'token.decimals', 'token.owner', 'token.totalSupply']);
 
         if(oToken.estimatedDecimals){
             $('#transaction-token-decimals').append(' <small>(estimated)</small>');
@@ -449,7 +449,7 @@ Ethplorer = {
             
             txData.token = oToken;
 
-            Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.decimals', 'token.owner', 'token.totalSupply']);
+            Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.price', 'token.decimals', 'token.owner', 'token.totalSupply']);
 
             if(oToken.estimatedDecimals){
                 $('#transaction-token-decimals').append(' <small>(estimated)</small>');
@@ -699,7 +699,7 @@ Ethplorer = {
             }
 
             var fields = [
-                'token', 'token.name', 'token.description', 'token.owner', 'token.totalSupply', 'token.totalIn', 'token.totalOut', 'token.decimals', 'token.symbol',
+                'token', 'token.name', 'token.price', 'token.description', 'token.owner', 'token.totalSupply', 'token.totalIn', 'token.totalOut', 'token.decimals', 'token.symbol',
                 'token.txsCount', 'token.transfersCount', 'token.issuancesCount', 'token.holdersCount'
             ];
             
@@ -1302,6 +1302,22 @@ Ethplorer = {
             case 'int':
             case 'float':
                 value = Ethplorer.Utils.formatNum(value, 'float' === type);
+                break;
+            case 'price':
+                if(value && value.rate){
+                    var rate = value;
+                    value = '$' + Ethplorer.Utils.formatNum(rate.rate, true, 2, true);
+                    if(rate.diff){
+                        var cls = rate.diff > 0 ? 'diff-up' : 'diff-down';
+                        var hint = 'Updated at ' + Ethplorer.Utils.ts2date(rate.ts, true);
+                        if(rate.diff > 0){
+                            rate.diff = '+' + rate.diff;
+                        }
+                        value = value + ' <span class="' + cls + '" title="' + hint + '">(' + rate.diff + '%)</span>'
+                    }
+                }else{
+                    value = '';
+                }
                 break;
             case 'ether':
                 value = Ethplorer.Utils.formatNum(value, true, 18, true) + ' ETHER';

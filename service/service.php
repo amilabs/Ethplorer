@@ -74,4 +74,6 @@ if(strlen($search)){
     }
 }
 
+$result['ethPrice'] = $es->getETHPrice();
+
 echo json_encode($result);
