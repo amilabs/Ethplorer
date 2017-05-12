@@ -917,10 +917,8 @@ li.ui-menu-item.have-more {
         font-size: 14px;
     }
     .table tr td:first-child {
-        padding-left: 8px;
-    }
-    .table tr td:first-child {
         max-width: 90px;
+        padding-left: 8px !important;
     }
     .table tr td:nth-child(2) {
         text-align: right;
