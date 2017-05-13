@@ -1233,6 +1233,9 @@ class Ethplorer {
                 }
             }
         }
+        if(is_array($rates) && isset($rates[$address])){
+            $result = $rates[$address];
+        }
         return $result;
     }
 
