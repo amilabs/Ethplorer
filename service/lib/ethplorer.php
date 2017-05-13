@@ -1212,11 +1212,11 @@ class Ethplorer {
         return $result;
     }
 
-    public function getTokenPrice($address){
+    public function getTokenPrice($address, $updateCache = FALSE){
         $result = false;
         $cache = 'rates';
-        $rates = $this->oCache->get($cache, false, true, 1);
-        if(((FALSE === $rates) || (is_array($rates) && !isset($rates[$address]))) && isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates']))){
+        $rates = $this->oCache->get($cache, false, true);
+        if($updateCache || (((FALSE === $rates) || (is_array($rates) && !isset($rates[$address]))) && isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates'])))){
             if(!is_array($rates)){
                 $rates = array();
             }
