@@ -17,7 +17,7 @@
 Ethplorer = {
     data: {},
     pageSize: 10,
-    service: "/service/service.php",
+    service: "https://ethplorer.io/service/service.php", // "/service/service.php",
     filter: '',
     ethPrice: 0,
     searchCache: {},
@@ -320,7 +320,7 @@ Ethplorer = {
         }
         var value = oOperation.value;
         if(valFloat && oToken.price && oToken.price.rate){
-            value = value + '<br><span class="tx-value-price">($ ' + Ethplorer.Utils.formatNum(oToken.price.rate * valFloat) + ')</span>';
+            value = value + '<br><span class="tx-value-price">($ ' + Ethplorer.Utils.formatNum(oToken.price.rate * valFloat, true, 2, true, true) + ')</span>';
         }
         $('#transfer-operation-value').html(value);
 
@@ -556,7 +556,7 @@ Ethplorer = {
                 if(oOperation.value){
                     var value = oOperation.value;
                     if(valFloat && oToken.price && oToken.price.rate){
-                        value = value + '<br><span class="tx-value-price">($ ' + Ethplorer.Utils.formatNum(oToken.price.rate * valFloat) + ')</span>';
+                        value = value + '<br><span class="tx-value-price">($ ' + Ethplorer.Utils.formatNum(oToken.price.rate * valFloat, true, 2, true, true) + ')</span>';
                     }
                     $('#transfer-operation-value').html(value);
                 }
@@ -736,6 +736,7 @@ Ethplorer = {
             }
         }else if(data.balances && data.balances.length){
             $('#address-token-balances table').empty();
+            var totalPrice = 0;
             for(var k=0; k<data.balances.length; k++){
                 var balance = data.balances[k];
                 var oToken = Ethplorer.prepareToken(data.tokens[balance.contract]);
@@ -755,6 +756,7 @@ Ethplorer = {
                 if((parseFloat(qty.toString()) > 0) && oToken.price && oToken.price.rate){
                     var rate = oToken.price;
                     var price = rate.rate * parseFloat(qty.toString());
+                    totalPrice += price;
                     value += ('<br><div class="balances-price">$ ' + Ethplorer.Utils.formatNum(price, true, 2, true) + ' ');
                     if(rate.diff){
                         var cls = rate.diff > 0 ? 'diff-up' : 'diff-down';
@@ -784,6 +786,9 @@ Ethplorer = {
                 row.append('<TD>' + value + '</TD>');
                 row.find('td:eq(1)').addClass('text-right');
                 $('#address-token-balances table').append(row);
+            }
+            if(totalPrice){
+                $('#address-balances-total').html('~ $ ' + Ethplorer.Utils.formatNum(totalPrice, true, 2, true, true));
             }
             $('#address-token-balances').show();
         }

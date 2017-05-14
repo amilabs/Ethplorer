@@ -491,6 +491,15 @@ a.dashed {
     float: right;
 }
 
+#address-balances-total {
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 0.8em;
+    line-height: 1.6em;
+    display: inline-block;
+    float: right;
+    padding-right: 15px;
+}
+
 .hash-from-to {
     max-width: 40vw;
     overflow: hidden;
@@ -954,6 +963,11 @@ li.ui-menu-item.have-more {
     .navbar {
         margin-bottom: 0px;
     }
+    #address-balances-total {
+        font-size: 0.6em;
+        line-height: 2em;
+        padding-right: 5px;
+    }
 }
 
 .show_small {
@@ -984,6 +998,11 @@ a.token-update {
 
 @media screen and (max-width: 767px) {
 
+    #loader {
+        margin-top: -40px;
+    }    
+
+    
     #disqus_thread {
         padding-bottom: 430px;
     }
@@ -1087,6 +1106,13 @@ a.token-update {
     }
     #topmenu li {
         padding: 8px;
+    }
+}
+
+@media screen and (max-width: 359px) {
+    #address-balances-total {
+        font-size: 0.5em;
+        line-height: 2.5em;
     }
 }
 

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "146";
+$codeVersion = "147";
 
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $es = Ethplorer::db(array());
@@ -396,7 +396,11 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                     </div>
                     <div class="col-xs-12 col-md-6">
                         <div class="block" id="address-token-balances">
-                            <div class="block-header"><h3>Token Balances</h3></div>
+                            <div class="block-header">
+                                <h3>Token Balances
+                                    <div id="address-balances-total"></div>
+                                </h3>
+                            </div>
                             <table class="table"></table>
                         </div>
                         <div class="block" id="address-chainy-info">
