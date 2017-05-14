@@ -632,6 +632,18 @@ class Ethplorer {
                     'issuancesCount' => $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address, FALSE),
                     'holdersCount' => ''
                 );
+                if(isset($this->aSettings['client']) && isset($this->aSettings['client']['tokens'])){
+                    $aClientTokens = $this->aSettings['client']['tokens'];
+                    if(isset($aClientTokens[$address])){
+                        $aClientToken = $aClientTokens[$address];
+                        if(isset($aClientToken['name'])){
+                            $result['name'] = $aClientToken['name'];
+                        }
+                        if(isset($aClientToken['symbol'])){
+                            $result['symbol'] = $aClientToken['symbol'];
+                        }
+                    }
+                }
                 $price = $this->getTokenPrice($address);
                 $result['price'] = $price ? $price : false;
                 $this->oCache->save($cache, $result);
@@ -817,7 +829,6 @@ class Ethplorer {
 
         $result = array();
         foreach($cursor as $transfer){
-            $token = $this->getToken($transfer['contract']);
             $transfer['token'] = $this->getToken($transfer['contract']);
             unset($transfer["_id"]);
             $result[] = $transfer;
