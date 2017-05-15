@@ -525,6 +525,10 @@ a.dashed {
     display: inline-block;
 }
 
+.total-supply-usd {
+    opacity: 0.6;
+}
+
 .hash-from-to {
     max-width: 40vw;
     overflow: hidden;

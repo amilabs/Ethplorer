@@ -288,7 +288,16 @@ Ethplorer = {
         var txData = {tx: oTx, operation: op, token: oToken};
         
         $('.token-related td.list-field').empty();
-        Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.price', 'token.decimals', 'token.owner', 'token.totalSupply']);
+        Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.price', 'token.decimals', 'token.owner']);
+        var totalSupply = oToken.totalSupply;
+        if(oToken.price && oToken.price.rate){
+            var pf = parseFloat(totalSupply.replace(/\,/g,'').split(' ')[0]);
+            if(pf){
+                pf = Ethplorer.Utils.round(pf * oToken.price.rate, 2);
+                totalSupply = totalSupply + '<br><span class="total-supply-usd">$ ' + Ethplorer.Utils.formatNum(pf, true, 2, true) + '</span>';
+                $('#transaction-token-totalSupply').html(totalSupply);
+            }
+        }
 
         if(oToken.estimatedDecimals){
             $('#transaction-token-decimals').append(' <small>(estimated)</small>');
@@ -460,6 +469,15 @@ Ethplorer = {
             txData.token = oToken;
 
             Ethplorer.fillValues('transaction', txData, ['token', 'token.timestamp', 'token.contract', 'token.symbol', 'token.price', 'token.decimals', 'token.owner', 'token.totalSupply']);
+            var totalSupply = oToken.totalSupply;
+            if(oToken.price && oToken.price.rate){
+                var pf = parseFloat(totalSupply.replace(/\,/g,'').split(' ')[0]);
+                if(pf){
+                    pf = Ethplorer.Utils.round(pf * oToken.price.rate, 2);
+                    totalSupply = totalSupply + '<br><span class="total-supply-usd">$ ' + Ethplorer.Utils.formatNum(pf, true, 2, true) + '</span>';
+                    $('#transaction-token-totalSupply').html(totalSupply);
+                }
+            }
 
             if(oToken.estimatedDecimals){
                 $('#transaction-token-decimals').append(' <small>(estimated)</small>');
@@ -731,6 +749,17 @@ Ethplorer = {
             $('#tab-holders').show();
             
             Ethplorer.fillValues('address', data, fields);
+
+            var totalSupply = oToken.totalSupply;
+            if(oToken.price && oToken.price.rate){
+                var pf = parseFloat(totalSupply.replace(/\,/g,'').split(' ')[0]);
+                if(pf){
+                    pf = Ethplorer.Utils.round(pf * oToken.price.rate, 2);
+                    totalSupply = totalSupply + '<br><span class="total-supply-usd">$ ' + Ethplorer.Utils.formatNum(pf, true, 2, true) + '</span>';
+                    $('#address-token-totalSupply').html(totalSupply);
+                }
+            }
+
             if(oToken.estimatedDecimals){
                 $('#address-token-decimals').append(' <small>(estimated)</small>');
             }
