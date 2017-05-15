@@ -511,9 +511,18 @@ a.dashed {
     color: rgba(0, 0, 0, 0.6);
     font-size: 0.8em;
     line-height: 1.6em;
-    display: inline-block;
-    float: right;
+    display: block;
     padding-right: 15px;
+    width: 100%;
+    position: relative;
+    top: -25px;
+    text-align: right;
+    margin-bottom: -30px;
+}
+
+#address-balances-total-inner {
+    max-width: 250px;
+    display: inline-block;
 }
 
 .hash-from-to {
@@ -951,6 +960,9 @@ li.ui-menu-item.have-more {
     .footer-donation {
         font-size:12px;
     }
+    #address-balances-total-inner {
+        max-width: 150px;
+    }
 }
 
 @media screen and (max-width: 399px) {
@@ -1154,6 +1166,9 @@ a.token-update {
     #address-balances-total {
         font-size: 0.5em;
         line-height: 2.5em;
+    }
+    #address-balances-total-inner {
+        max-width: 100px;
     }
 }
 

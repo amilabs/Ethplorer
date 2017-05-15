@@ -736,6 +736,8 @@ Ethplorer = {
             }
         }else if(data.balances && data.balances.length){
             // Fill prices
+            var totalPrice = 0;
+            var lastTotalPrice = 0;
             for(var k=0; k<data.balances.length; k++){
                 var balance = data.balances[k];
                 var oToken = Ethplorer.prepareToken(data.tokens[balance.contract]);
@@ -745,14 +747,19 @@ Ethplorer = {
                 }else{
                     qty = qty.div(Math.pow(10, oToken.decimals));
                 }
+                var qFloat = parseFloat(qty.toString());
                 data.balances[k].qty = qty;
                 data.balances[k].price = false;
                 data.balances[k].balanceUSD = false;
-                if((parseFloat(qty.toString()) > 0) && oToken.price && oToken.price.rate){
+                if((qFloat > 0) && oToken.price && oToken.price.rate){
                     data.balances[k].price = oToken.price.rate;
-                    data.balances[k].balanceUSD = oToken.price.rate * parseFloat(qty.toString());
+                    data.balances[k].balanceUSD = Ethplorer.Utils.round(oToken.price.rate * qFloat, 2);
+                    var lastRate = oToken.price.diff > -100 ? (oToken.price.rate / (1 + oToken.price.diff / 100)) : 0;
+                    lastTotalPrice += Ethplorer.Utils.round(qFloat * lastRate, 2);
+                    totalPrice += data.balances[k].balanceUSD;
                 }
             }
+            var totalDiff = Ethplorer.Utils.round(Ethplorer.Utils.pdiff(totalPrice, lastTotalPrice), 2);
             // Sort
             var balances = data.balances.sort(function(a,b){
                 if(a.price && !b.price) return -1;
@@ -764,11 +771,8 @@ Ethplorer = {
                 return 0;
             });
             
-            console.log(balances);
-            
             // Show
             $('#address-token-balances table').empty();
-            var totalPrice = 0;
             for(var k=0; k<balances.length; k++){
                 var balance = balances[k];
                 var oToken = Ethplorer.prepareToken(data.tokens[balance.contract]);
@@ -782,7 +786,6 @@ Ethplorer = {
                 if(balances[k].price && balances[k].balanceUSD){
                     var rate = oToken.price;
                     var price = balances[k].balanceUSD;
-                    totalPrice += price;
                     value += ('<br><div class="balances-price">$ ' + Ethplorer.Utils.formatNum(price, true, 2, true) + ' ');
                     if(rate.diff){
                         var cls = rate.diff > 0 ? 'diff-up' : 'diff-down';
@@ -815,7 +818,16 @@ Ethplorer = {
                 $('#address-token-balances table').append(row);
             }
             if(totalPrice){
-                $('#address-balances-total').html('~ $ ' + Ethplorer.Utils.formatNum(totalPrice, true, 2, true, true));
+                var value = '~ $ ' + Ethplorer.Utils.formatNum(totalPrice, true, 2, true, true);
+                if(totalDiff){
+                    var cls = totalDiff > 0 ? 'diff-up' : 'diff-down';
+                    if(totalDiff > 0){
+                        totalDiff = '+' + totalDiff;
+                    }
+                    value = value + ' <span class="' + cls + '">(' + totalDiff + '%)</span>';
+                    console.log(value);
+                }
+                $('#address-balances-total').html('<span id="address-balances-total-inner">' + value + '</span>');
             }
             $('#address-token-balances').show();
         }
@@ -1567,7 +1579,7 @@ Ethplorer = {
                     for(var i = 0; i < st; i++){
                         ch += '0';
                     }
-                    num = ch.replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+                    num = ch.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 }
                 return num.toString();
             }
@@ -1584,7 +1596,7 @@ Ethplorer = {
                 num = math('round', num, decimals);
             }
             var parts = num.toString().split('.');
-            var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             var zeroCount = cutZeroes ? 2 : decimals;
             if(withDecimals && decimals){
                 if(parts.length > 1){
@@ -1760,6 +1772,32 @@ Ethplorer = {
             var isIphone = /(iPhone)/i.test(navigator.userAgent);
             var isSafari = !!navigator.userAgent.match(/Version\/[\d\.]+.*Safari/);
             return isIphone || isSafari;
+        },
+        round: function(val, decimals){
+            decimals = decimals ? parseInt(decimals) : 0;
+            var k = decimals ? Math.pow(10, decimals) : 1;
+
+            return Math.round(val * k) / k;
+        },
+        floor: function(val, decimals)
+        {
+            decimals = decimals ? parseInt(decimals) : 0;
+            var k = decimals ? Math.pow(10, decimals) : 1;
+
+            return Math.floor(val * k) / k;
+        },
+        pdiff: function(a, b){
+            var res = 100;
+            if(a !== b){
+                if(a && b){
+                    res = (a / b) * 100 - 100;
+                }else{
+                    res *= ((a - b) < 0) ? -1 : 1;
+                }
+            }else{
+                res = 0;
+            }
+            return res;
         }
     }
 };
