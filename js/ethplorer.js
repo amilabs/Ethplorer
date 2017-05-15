@@ -967,6 +967,14 @@ Ethplorer = {
                     if(!from && tx.address){
                         value = (tx.type && ('burn' === tx.type)) ? '-' + value + '<br>&#128293;&nbsp;Burn' : value + '<br>&#9874;&nbsp;Issuance';
                     }
+                    if(txToken.price && txToken.price.rate){
+                        var pf = parseFloat(value.replace(/\,/g,'').split(' ')[0]);
+                        if(pf){
+                            pf = Ethplorer.Utils.round(pf * txToken.price.rate, 2);
+                            var usdval = Ethplorer.Utils.formatNum(Math.abs(pf), true, 2, true);
+                            value = value + '<br><span class="transfer-usd">$ ' + usdval + '</span>';
+                        }
+                    }
                     divData.html(
                         '<span class="show_small">Date:&nbsp;' + date + '<br></span>' +
                         (!data.token ? ('<span class="address-token-inline">Token:&nbsp;' + token + '<br></span>') : '') +
@@ -1084,6 +1092,15 @@ Ethplorer = {
                     balance = balance + ' ' + oToken.symbol;
                 }else if(oToken.name){
                 }
+                if(oToken.price && oToken.price.rate){
+                    var pf = parseFloat(balance.replace(/\,/g,'').split(' ')[0]);
+                    if(pf){
+                        pf = Ethplorer.Utils.round(pf * oToken.price.rate, 2);
+                        var usdval = Ethplorer.Utils.formatNum(Math.abs(pf), true, 2, true);
+                        balance = balance + '<br><span class="transfer-usd">$ ' + usdval + '</span>';
+                    }
+                }
+
                 var address = Ethplorer.Utils.getEthplorerLink(holder['address'], holder['address'], false);
                 var shareDiv = '<div><div class="holder-gauge" style="width:' + holder['share'] + '%;"></div><div class="holder-gauge-value">&nbsp;' + holder['share'] + '%</div></div>'
                 var page = (data.pager && data.pager.holders) ? data.pager.holders.page : 1;
