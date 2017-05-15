@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "147";
+$codeVersion = "148";
 
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $es = Ethplorer::db(array());
