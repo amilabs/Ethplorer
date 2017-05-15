@@ -101,6 +101,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                     <li onclick="document.location.href='/top';">TOP-50</li>
                     <li onclick="document.location.href='/widgets';">Widgets</li>
                     <li onclick="document.location.href='https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API';">API</li>
+                    <li onclick="document.location.href='https://ethplorer.io/#subscribe';">Subscribe</li>
                 </ul>
             </div>
         </div>
@@ -581,8 +582,8 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
     <div class="footer">
         <div class="container">
             <div class="row">
-                <div class="col-xs-6 col-sm-3">
-                    <a href="#" style="color:#ffffff;font-size:28px;font-weight:600;"><img src="/images/ethplorerlogowhite400.png" style="max-width: 140px;" alt=""></a>
+                <div class="col-xs-7 col-sm-3">
+                    <a href="#"><img src="/images/ethplorerlogowhite400.png" style="max-width: 140px;" alt=""></a>
                     <div>
                         <div style="color:#eeeeee;">© 2016-2017 <a href="https://everex.one/" target="_blank" class="small-link">Everex</a>
                             <br><a href="mailto:support@ethplorer.io" class="small-link">support@ethplorer.io</a>
@@ -590,23 +591,26 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                         </div>
                     </div>
                 </div>
-                <div class="col-xs-6 col-sm-3">
-                    <div class="footer-links" style="color: #ffffff;">
-                        <ul>
-                            <li><a href="/widgets" style="" rel=""><strong>Widgets</strong></a></li>
-                            <li><span style="font-weight: 600;"><a href="/about#disqus_thread">Discuss ethplorer</a></span></li>
-                            <li><span style="font-weight: 600;"><a href="https://github.com/EverexIO/Ethplorer">Sources</a></span></li>
-                            <li><span style="font-weight: 600;"><a href="https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API">API</a></span></li>
-                            <li><a href="https://github.com/EverexIO/Ethplorer/issues"><strong>Submit Idea</strong></a></li>
-                        </ul>
-                    </div>
+                <div class="col-xs-5 col-sm-2 col-md-2 footer-links">
+                    <ul>
+                        <li><a href="/widgets">Widgets</a></li>
+                        <li><a href="https://github.com/EverexIO/Ethplorer">Sources</a></li>
+                        <li><a href="https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API">API</a></li>
+                        <li><a href="https://github.com/EverexIO/Ethplorer/issues">Github Issue</a></li>
+                    </ul>
                 </div>
-                <div class="col-xs-12 col-sm-6">
-                    <div style="color:#eeeeee;" data-customstyle="yes">
-                        <strong>Donation:</strong><br>
-                        <br>ETH:<br>0x0dE0BCb0703ff8F1aEb8C892eDbE692683bD8030
-                        <br>BTC:<br>1MKVGqyJA9YkVRuDsGCvnYVJ6ivNtfe289
-                    </div>
+                <div class="col-xs-5 col-sm-2 col-md-3 footer-links">
+                    <ul>
+                        <li><a href="https://ethplorer.io/#contact">Contact</a></li>
+                        <li><a href="https://ethplorer.io/#subscribe">Subscribe</a></li>
+                        <li><a href="https://www.reddit.com/r/ethplorer/">Discuss at Reddit</a></li>
+                        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSemDE0-vqUnJ7ToRdt1qR95iTbaMfq0FRXt7INMMJrm1IO4dQ/viewform?c=0&w=1">Update your Token info</a></li>
+                    </ul>
+                </div>
+                <div class="col-xs-7 col-sm-5 col-md-4 footer-donation">
+                    <strong>Donation:</strong><br>
+                    <br>ETH:<br>0x0dE0BCb0703ff8F1aEb8C892eDbE692683bD8030
+                    <br>BTC:<br>1MKVGqyJA9YkVRuDsGCvnYVJ6ivNtfe289
                 </div>
             </div>
         </div>

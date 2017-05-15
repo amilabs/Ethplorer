@@ -793,6 +793,18 @@ Ethplorer = {
             $('#address-token-balances').show();
         }
 
+$(document).ready(function() { 
+    setTimeout(function(){
+        if(document.location.hash.indexOf('contact') > 0){
+             $('a[href="#contact"]:eq(0)').click();
+        }
+        if(document.location.hash.indexOf('subscribe') > 0){
+            $('a[href="#subscribe"]:eq(0)').click();
+        }
+    }, 1000);
+});
+
+
         if(!data.isContract || !data.token){
             $('.nav-tabs').hide();
             $('.filter-box').addClass('out-of-tabs');

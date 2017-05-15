@@ -287,12 +287,28 @@ a.local-link, a.local-link:visited, a.local-link:hover {
 
 .footer-links li a{
     color: #ffffff;
-    font-weight: inherit;
+    font-weight: 600;
     border-bottom: 2px solid #1396e2;
     -webkit-box-shadow: inset 0px -1px 0px 0px #1396e2;
     -moz-box-shadow: inset 0px -1px 0px 0px #1396e2;
     box-shadow: inset 0px -1px 0px 0px #1396e2;
     text-decoration: none;
+}
+
+.footer-links ul {
+    -webkit-padding-start: 0px;
+}
+
+.footer-donation {
+    color:#eeeeee;
+    /* overflow: hidden;
+    text-overflow: ellipsis; */
+    word-wrap: break-word;
+}
+
+.footer-links,
+.footer-donation {
+    padding-right: 0px;
 }
 
 #disqus_thread {
@@ -852,6 +868,12 @@ li.ui-menu-item.have-more {
     white-space: nowrap;
 }
 
+@media screen and (max-width: 1199px) {
+    .footer-donation {
+        font-size:12.8px;
+    }
+}
+
 @media screen and (min-width: 640px) {
     .nav-tabs li a {
         font-size: 24px !important;
@@ -886,6 +908,10 @@ li.ui-menu-item.have-more {
     .address-token-inline {
         display: inline;
     }    
+    .footer-links,
+    .footer-donation {
+        font-size:12.3px;
+    }
 }
 
 @media screen and (min-width: 400px) and (max-width: 991px) {
@@ -920,6 +946,10 @@ li.ui-menu-item.have-more {
     }
     td.table-type-field {
         display: none;
+    }
+    .footer-links,
+    .footer-donation {
+        font-size:12px;
     }
 }
 
@@ -968,6 +998,10 @@ li.ui-menu-item.have-more {
         line-height: 2em;
         padding-right: 5px;
     }
+    .footer-links,
+    .footer-donation {
+        font-size:11px;
+    }
 }
 
 .show_small {
@@ -994,7 +1028,6 @@ a.token-update {
         display: block;
     }
 }
-
 
 @media screen and (max-width: 767px) {
 
@@ -1105,11 +1138,19 @@ a.token-update {
         display: none;
     }
     #topmenu li {
-        padding: 8px;
+        padding-left: 8px;
+        padding-bottom: 8px;
+        padding-top: 10px;
+        padding-right: 0px;    
     }
 }
 
 @media screen and (max-width: 359px) {
+    #topmenu li {
+        padding-left: 10px;
+        padding-top: 13px;
+        font-size: 15px;
+    }
     #address-balances-total {
         font-size: 0.5em;
         line-height: 2.5em;
