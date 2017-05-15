@@ -828,6 +828,8 @@ Ethplorer = {
                     console.log(value);
                 }
                 $('#address-balances-total').html('<span id="address-balances-total-inner">' + value + '</span>');
+            }else{
+                $('#address-balances-total').html('&nbsp;');
             }
             $('#address-token-balances').show();
         }
