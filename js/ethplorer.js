@@ -735,27 +735,53 @@ Ethplorer = {
                 $('#address-token-decimals').append(' <small>(estimated)</small>');
             }
         }else if(data.balances && data.balances.length){
-            $('#address-token-balances table').empty();
-            var totalPrice = 0;
+            // Fill prices
             for(var k=0; k<data.balances.length; k++){
                 var balance = data.balances[k];
                 var oToken = Ethplorer.prepareToken(data.tokens[balance.contract]);
-                var row = $('<TR>');
-                row.append('<TD>' + Ethplorer.Utils.getEthplorerLink(balance.contract, oToken.name, false) + '</TD>');
                 var qty = Ethplorer.Utils.toBig(balance.balance);
                 if(Ethplorer.Utils.isSafari()){
                     qty = parseFloat(qty.toString()) / Math.pow(10, oToken.decimals);
                 }else{
                     qty = qty.div(Math.pow(10, oToken.decimals));
                 }
+                data.balances[k].qty = qty;
+                data.balances[k].price = false;
+                data.balances[k].balanceUSD = false;
+                if((parseFloat(qty.toString()) > 0) && oToken.price && oToken.price.rate){
+                    data.balances[k].price = oToken.price.rate;
+                    data.balances[k].balanceUSD = oToken.price.rate * parseFloat(qty.toString());
+                }
+            }
+            // Sort
+            var balances = data.balances.sort(function(a,b){
+                if(a.price && !b.price) return -1;
+                if(b.price && !a.price) return 1;
+                if(a.balanceUSD < b.balanceUSD)
+                    return 1;
+                if (a.balanceUSD > b.balanceUSD)
+                    return -1;
+                return 0;
+            });
+            
+            console.log(balances);
+            
+            // Show
+            $('#address-token-balances table').empty();
+            var totalPrice = 0;
+            for(var k=0; k<balances.length; k++){
+                var balance = balances[k];
+                var oToken = Ethplorer.prepareToken(data.tokens[balance.contract]);
+                var row = $('<TR>');
+                var qty = balance.qty;
                 if(!parseFloat(qty.toString()) && !(balance.totalIn || balance.totalOut)){
                     // No balance and no movement - skip
                     continue;
                 }
                 var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals, true, true) + ' ' + oToken.symbol;
-                if((parseFloat(qty.toString()) > 0) && oToken.price && oToken.price.rate){
+                if(balances[k].price && balances[k].balanceUSD){
                     var rate = oToken.price;
-                    var price = rate.rate * parseFloat(qty.toString());
+                    var price = balances[k].balanceUSD;
                     totalPrice += price;
                     value += ('<br><div class="balances-price">$ ' + Ethplorer.Utils.formatNum(price, true, 2, true) + ' ');
                     if(rate.diff){
@@ -783,6 +809,7 @@ Ethplorer = {
                     value += ('<div class="total-in-out-small">Total In: ' + Ethplorer.Utils.formatNum(totalIn, true, oToken.decimals, true) + '<br />');
                     value += ('Total Out: ' + Ethplorer.Utils.formatNum(totalOut, true, oToken.decimals, true) + '</div>');
                 }
+                row.append('<TD>' + Ethplorer.Utils.getEthplorerLink(balance.contract, oToken.name, false) + '</TD>');
                 row.append('<TD>' + value + '</TD>');
                 row.find('td:eq(1)').addClass('text-right');
                 $('#address-token-balances table').append(row);
@@ -792,18 +819,6 @@ Ethplorer = {
             }
             $('#address-token-balances').show();
         }
-
-$(document).ready(function() { 
-    setTimeout(function(){
-        if(document.location.hash.indexOf('contact') > 0){
-             $('a[href="#contact"]:eq(0)').click();
-        }
-        if(document.location.hash.indexOf('subscribe') > 0){
-            $('a[href="#subscribe"]:eq(0)').click();
-        }
-    }, 1000);
-});
-
 
         if(!data.isContract || !data.token){
             $('.nav-tabs').hide();
