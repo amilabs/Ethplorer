@@ -782,9 +782,9 @@ Ethplorer = {
                 data.balances[k].balanceUSD = false;
                 if((qFloat > 0) && oToken.price && oToken.price.rate){
                     data.balances[k].price = oToken.price.rate;
-                    data.balances[k].balanceUSD = Ethplorer.Utils.round(oToken.price.rate * qFloat, 2);
+                    data.balances[k].balanceUSD = oToken.price.rate * qFloat;
                     var lastRate = oToken.price.diff > -100 ? (oToken.price.rate / (1 + oToken.price.diff / 100)) : 0;
-                    lastTotalPrice += Ethplorer.Utils.round(qFloat * lastRate, 2);
+                    lastTotalPrice += qFloat * lastRate;
                     totalPrice += data.balances[k].balanceUSD;
                 }
             }
@@ -815,7 +815,7 @@ Ethplorer = {
                 if(balances[k].price && balances[k].balanceUSD){
                     var rate = oToken.price;
                     var price = balances[k].balanceUSD;
-                    value += ('<br><div class="balances-price">$ ' + Ethplorer.Utils.formatNum(price, true, 2, true) + ' ');
+                    value += ('<br><div class="balances-price" title="$' + price + '">$ ' + Ethplorer.Utils.formatNum(price, true, 2, true) + ' ');
                     if(rate.diff){
                         var cls = rate.diff > 0 ? 'diff-up' : 'diff-down';
                         var hint = 'Updated at ' + Ethplorer.Utils.ts2date(rate.ts, true);
@@ -853,10 +853,10 @@ Ethplorer = {
                     if(totalDiff > 0){
                         totalDiff = '+' + totalDiff;
                     }
-                    value = value + ' <span class="' + cls + '">(' + totalDiff + '%)</span>';
+                    value = value + ' <span class="' + cls + '">(' + Ethplorer.Utils.round(totalDiff, 2) + '%)</span>';
                     console.log(value);
                 }
-                $('#address-balances-total').html('<span id="address-balances-total-inner">' + value + '</span>');
+                $('#address-balances-total').html('<span id="address-balances-total-inner" title="$' + totalPrice + '">' + value + '</span>');
             }else{
                 $('#address-balances-total').html('&nbsp;');
             }
