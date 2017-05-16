@@ -822,7 +822,7 @@ Ethplorer = {
                         if(rate.diff > 0){
                             rate.diff = '+' + rate.diff;
                         }
-                        value = value + ' <span class="' + cls + '" title="' + hint + '">(' + rate.diff + '%)</span>'
+                        value = value + ' <span class="' + cls + '" title="' + hint + '">(' + Ethplorer.Utils.round(rate.diff, 2) + '%)</span>'
                     }
                     value = value + '</div>';
 
@@ -1444,7 +1444,7 @@ Ethplorer = {
                         if(rate.diff > 0){
                             rate.diff = '+' + rate.diff;
                         }
-                        value = value + ' <span class="' + cls + '" title="' + hint + '">(' + rate.diff + '%)</span>'
+                        value = value + ' <span class="' + cls + '" title="' + hint + '">(' + Ethplorer.Utils.round(rate.diff, 2) + '%)</span>'
                     }
                 }else{
                     value = '';
