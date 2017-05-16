@@ -1050,7 +1050,16 @@ Ethplorer = {
                     tdDate.find('a').attr('title', Ethplorer.Utils.ts2date(tx.timestamp, true));
                     tdHash.html(Ethplorer.Utils.getEthplorerLink(tx.transactionHash));
                     tdOpType.html(type);
-                    tdQty.html((tx.type !== 'burn' ? '+' : '-') + Ethplorer.Utils.formatNum(qty, true, oToken.decimals ? oToken.decimals : 18, 2) + ((oToken.symbol) ? '&nbsp;' + oToken.symbol : ''));
+                    var value = (tx.type !== 'burn' ? '+' : '-') + Ethplorer.Utils.formatNum(qty, true, oToken.decimals ? oToken.decimals : 18, 2) + ((oToken.symbol) ? '&nbsp;' + oToken.symbol : '');
+                    if(oToken.price && oToken.price.rate){
+                        var pf = parseFloat(value.replace(/\,/g,'').split(' ')[0]);
+                        if(pf){
+                            pf = Ethplorer.Utils.round(pf * oToken.price.rate, 2);
+                            var usdval = Ethplorer.Utils.formatNum(Math.abs(pf), true, 2, true);
+                            value = value + '<br><span class="transfer-usd">$ ' + usdval + '</span>';
+                        }
+                    }                    
+                    tdQty.html(value);
                     row.append(tdDate, tdHash, tdOpType, tdQty);
                     $('#address-issuances .table').append(row);
                 }
