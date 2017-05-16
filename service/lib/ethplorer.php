@@ -645,6 +645,9 @@ class Ethplorer {
                     }
                 }
                 $price = $this->getTokenPrice($address);
+                if(is_array($price)){
+                    $price['currency'] = 'USD';
+                }
                 $result['price'] = $price ? $price : false;
                 $this->oCache->save($cache, $result);
             }
