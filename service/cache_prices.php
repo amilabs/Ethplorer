@@ -20,4 +20,5 @@ require dirname(__FILE__) . '/lib/ethplorer.php';
 $aConfig = require_once dirname(__FILE__) . '/config.php';
 foreach($aConfig['updateRates'] as $address){
     Ethplorer::db($aConfig)->getTokenPrice($address, TRUE);
+    Ethplorer::db($aConfig)->getTokenPriceHistory($address, TRUE);
 }

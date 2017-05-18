@@ -1253,6 +1253,30 @@ class Ethplorer {
         return $result;
     }
 
+    public function getTokenPriceHistory($address, $updateCache = FALSE){
+        $result = false;
+        $cache = 'rates-history';
+        $rates = $this->oCache->get($cache, false, true);
+        if($updateCache || (((FALSE === $rates) || (is_array($rates) && !isset($rates[$address]))) && isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates'])))){
+            if(!is_array($rates)){
+                $rates = array();
+            }
+            if(isset($this->aSettings['currency'])){
+                $method = 'getCurrencyHistory';
+                $params = array($address, 'USD');
+                $result = $this->_jsonrpcall($this->aSettings['currency'], $method, $params);
+                if($result){
+                    $rates[$address] = $result;
+                    $this->oCache->save($cache, $rates);
+                }
+            }
+        }
+        if(is_array($rates) && isset($rates[$address])){
+            $result = $rates[$address];
+        }
+        return $result;
+    }
+
     /**
      * JSON RPC request implementation.
      *
