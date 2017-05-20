@@ -1022,6 +1022,13 @@ class Ethplorer {
                     $result[] = $aToken;
                 }
                 usort($result, array($this, '_sortByVolume'));
+                $res = [];
+                foreach($result as $i => $item){
+                    if($i < $limit){
+                        $res[] = $item;
+                    }
+                }
+                $result = $res;
             }
             $this->oCache->save($cache, $result);
         }
