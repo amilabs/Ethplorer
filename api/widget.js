@@ -239,7 +239,7 @@ ethplorerWidget = {
                 num = math('round', num, decimals);
             }
             var parts = num.toString().split('.');
-            var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             var zeroCount = cutZeroes ? 2 : decimals;
             if(withDecimals && decimals){
                 if(parts.length > 1){
@@ -601,7 +601,8 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
         return {
             address: ethplorerWidget.Utils.link(data.address, data.address, data.address),
             name: ethplorerWidget.Utils.link(data.address, name, name, false, data.name ? "" : "tx-unknown"),
-            opCount: data.opCount
+            opCount: data.opCount,
+            price: (data.price && data.price.rate) ? ('$ ' + ethplorerWidget.Utils.formatNum(data.price.rate, true, 2, true)) : ''
         };
     };
 

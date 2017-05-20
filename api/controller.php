@@ -302,7 +302,26 @@ class ethplorerController {
         $maxPeriod = is_array($this->defaults) && isset($this->defaults['maxPeriod']) ? $this->defaults['maxPeriod'] : 90;
         $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
         $period = min(abs((int)$this->getRequest('period', 10)), $maxPeriod);
+        $criteria = $this->getRequest('criteria', 'byOperationsCount');
+        $result = false;
+        switch($criteria){
+            case 'byCurrentVolume':
+                $result = $this->_getTopByCurrentVolume($limit);
+                break;
+            case 'byOperationsCount':
+            default:
+                $result = $this->_getTopByOperationsCount($limit, $period);
+        }
+        return $result;
+    }
+
+    protected function _getTopByOperationsCount($limit, $period){
         $result = array('tokens' => $this->db->getTopTokens($limit, $period));
+        $this->sendResult($result);
+    }
+
+    protected function _getTopByCurrentVolume($limit){
+        $result = array('tokens' => $this->db->getTopTokensByCurrentVolume($limit));
         $this->sendResult($result);
     }
 

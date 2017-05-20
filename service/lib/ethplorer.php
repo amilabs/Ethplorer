@@ -999,6 +999,36 @@ class Ethplorer {
     }
 
     /**
+     * Returns top tokens list by current volume.
+     *
+     * @todo: count number of transactions with "transfer" operation
+     * @param int $limit   Maximum records number
+     * @return array
+     */
+    public function getTopTokensByCurrentVolume($limit = 10){
+        $cache = 'top_tokens-by-current-volume-' . $period;
+        $result = $this->oCache->get($cache, false, true, 600);
+        if(FALSE === $result){
+            $aTokens = $this->getTokens();
+            $result = array();
+            foreach($aTokens as $aToken){
+                $aPrice = $this->getTokenPrice($aToken['address']);
+                if($aPrice){
+                    $aToken['volume'] = $aPrice['rate'] * $aToken['totalSupply'];
+                    $result[] = $aToken;
+                }
+                usort($result, array($this, '_sortByVolume'));
+            }
+            $this->oCache->save($cache, $result);
+        }
+        return $result;
+    }
+
+    protected function _sortByVolume($a, $b){
+        return ($a['volume'] == $b['volume']) ? 0 : (($a['volume'] > $b['volume']) ? 1 : -1);
+    }
+
+    /**
      * Returns transactions grouped by days.
      *
      * @param int $period      Days from now
