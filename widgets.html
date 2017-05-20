@@ -318,7 +318,7 @@
 <div id="token-history-grouped-1" data-textarea="ethplorer-textarea-1"></div>
 <script type="text/javascript" data-textarea="ethplorer-textarea-1">
 if (typeof (eWgs) === 'undefined') {
-    document.write('<scr' + 'ipt src="/api/widget.js?' + new Date().getTime().toString().substr(0, 7) + '" async></scr' + 'ipt>');
+    document.write('<scr' + 'ipt src="https://api.ethplorer.io/widget.js?' + new Date().getTime().toString().substr(0, 7) + '" async></scr' + 'ipt>');
     var eWgs = [];
 }
 eWgs.push(function () {
@@ -362,7 +362,7 @@ eWgs.push(function () {
 <div id="token-history-grouped-2" data-textarea="ethplorer-textarea-2"></div>
 <script type="text/javascript" data-textarea="ethplorer-textarea-2">
     if (typeof (eWgs) === 'undefined') {
-        document.write('<scr' + 'ipt src="/api/widget.js?' + new Date().getTime().toString().substr(0, 7) + '" async></scr' + 'ipt>');
+        document.write('<scr' + 'ipt src="https://api.ethplorer.io/widget.js?' + new Date().getTime().toString().substr(0, 7) + '" async></scr' + 'ipt>');
         var eWgs = [];
     }
     eWgs.push(function () {
@@ -413,7 +413,7 @@ eWgs.push(function () {
 <div id="token-history-grouped-3" data-textarea="ethplorer-textarea-3"></div>
 <script type="text/javascript" data-textarea="ethplorer-textarea-3">
     if (typeof (eWgs) === 'undefined') {
-        document.write('<scr' + 'ipt src="/api/widget.js?' + new Date().getTime().toString().substr(0, 7) + '" async></scr' + 'ipt>');
+        document.write('<scr' + 'ipt src="https://api.ethplorer.io/widget.js?' + new Date().getTime().toString().substr(0, 7) + '" async></scr' + 'ipt>');
         var eWgs = [];
     }
     eWgs.push(function () {
@@ -464,7 +464,7 @@ eWgs.push(function () {
 <div id="token-txs-10" data-textarea="ethplorer-textarea-10"></div>
 <script type="text/javascript" data-textarea="ethplorer-textarea-10">
     if (typeof (eWgs) === 'undefined') {
-        document.write('<scr' + 'ipt src="/api/widget.js?' + new Date().getTime().toString().substr(0, 7) + '" async></scr' + 'ipt>');
+        document.write('<scr' + 'ipt src="https://api.ethplorer.io/widget.js?' + new Date().getTime().toString().substr(0, 7) + '" async></scr' + 'ipt>');
         var eWgs = [];
     }
     eWgs.push(function () {
@@ -523,5 +523,144 @@ eWgs.push(function () {
     }
 
 </style>
+<div id="token-txs-11" data-textarea="ethplorer-textarea-11"></div>
+<script type="text/javascript" data-textarea="ethplorer-textarea-11">
+    if (typeof (eWgs) === 'undefined') {
+        document.write('<scr' + 'ipt src="https://api.ethplorer.io/widget.js?' + new Date().getTime().toString().substr(0, 7) + '" async></scr' + 'ipt>');
+        var eWgs = [];
+    }
+    eWgs.push(function () {
+        ethplorerWidget.init(
+            '#token-txs-11', // Placeholder element
+            'tokenHistory', // Widget type
+            {
+                address: '0x48c80f1f4d53d5951e5d5438b54cba84f29f32a5', // keep empty to show all tokens
+                limit: 5, // Number of records to show	
+            },
+            {
+                header: '<div class="txs-header">WETH Recent Transactions</div>', // customized header
+                loader: '<div class="txs-loading">* L * O * A * D * I * N * G *<br><small>Please wait...</small></div>', // customized loader
+                bigScreenTable: '<tr><td>%from% <span class="tx-send">sent</span> <span class="tx-amount">%amount% %token%</span> <span class="tx-send">to</span> %to% <span class="tx-send">at</span><span class="tx-date"> %datetime%</span></td></tr>'
+
+            }
+
+        );
+    });
+</script>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="content-page space-bottom" style="display:block">
+                            <div class="block">
+                                <div class="row widget-title">
+                                    <div class="col-xs-8 text-white">
+                                        <h3>Top Tokens by Activity</h3>
+                                    </div>
+                                    <div class="col-xs-4 text-right">
+                                        <div id="ethplorer-textarea-12-popup">
+                                            <div id="ethplorer-textarea-12" class="widget-code"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="padding-top: 20px;">
+<div id="token-txs-12" data-textarea="ethplorer-textarea-12"></div>
+<script type="text/javascript" data-textarea="ethplorer-textarea-12">
+    if (typeof (eWgs) === 'undefined') {
+        document.write('<scr' + 'ipt src="https://api.ethplorer.io/widget.js?' + new Date().getTime().toString().substr(0, 7) + '" async></scr' + 'ipt>');
+        var eWgs = [];
+    }
+    eWgs.push(function () {
+        ethplorerWidget.init(
+            '#token-txs-12', // Placeholder element
+            'topTokens', // Widget type
+            {
+                limit: 10, // Number of records to show	
+                period: 30 // period of calculating
+            }
+
+        );
+    });
+</script>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="content-page space-bottom" style="display:block">
+                            &nbsp;
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div id="disqus_thread" class="container"></div>
+            <script>
+                (function () { // DON'T EDIT BELOW THIS LINE
+                    var d = document, s = d.createElement('script');
+                    s.src = '//https-ethplorer-io.disqus.com/embed.js';
+                    s.setAttribute('data-timestamp', +new Date());
+                    (d.head || d.body).appendChild(s);
+                })();
+            </script>
+            <div class="footer">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-xs-7 col-sm-3">
+                            <a href="#"><img src="/images/ethplorerlogowhite400.png" style="max-width: 140px;" alt=""></a>
+                            <div>
+                                <div style="color:#eeeeee;">© 2016-2017 <a href="https://everex.one/" target="_blank" class="small-link">Everex</a>
+                                    <br><a href="mailto:support@ethplorer.io" class="small-link">support@ethplorer.io</a>
+                                    <br><a href="/privacy" class="small-link">Privacy &amp; Terms</a><br>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-5 col-sm-2 col-md-2 footer-links">
+                            <ul>
+                                <li><a href="/widgets">Widgets</a></li>
+                                <li><a href="https://github.com/EverexIO/Ethplorer">Sources</a></li>
+                                <li><a href="https://github.com/EverexIO/Ethplorer/wiki/Ethplorer-API">API</a></li>
+                                <li><a href="https://github.com/EverexIO/Ethplorer/issues">Github Issue</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-xs-5 col-sm-2 col-md-3 footer-links">
+                            <ul>
+                                <li><a href="https://ethplorer.io/#contact">Contact</a></li>
+                                <li><a href="https://ethplorer.io/#subscribe">Subscribe</a></li>
+                                <li><a href="https://www.reddit.com/r/ethplorer/">Discuss at Reddit</a></li>
+                                <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSemDE0-vqUnJ7ToRdt1qR95iTbaMfq0FRXt7INMMJrm1IO4dQ/viewform?c=0&w=1">Update your Token info</a></li>
+                            </ul>
+                        </div>
+                        <div class="col-xs-7 col-sm-5 col-md-4 footer-donation">
+                            <strong>Donation:</strong><br>
+                            <br>ETH:<br>0x0dE0BCb0703ff8F1aEb8C892eDbE692683bD8030
+                            <br>BTC:<br>1MKVGqyJA9YkVRuDsGCvnYVJ6ivNtfe289
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            $(document).ready(function () {
+                EthplorerSearch.init($('#search-form'), $('#search'), Ethplorer.search);
+            });
+            if(Ethplorer.Config.ga){
+                (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+                ga('create', Ethplorer.Config.ga, 'auto');
+                ga('send', 'pageview');
+            }
+            if(Ethplorer.Config.fb){
+                !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+                n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+                document,'script','https://connect.facebook.net/en_US/fbevents.js');
+                fbq('init', Ethplorer.Config.fb);
+                fbq('track', 'PageView');
+            }
+        </script>
     </body>
 </html>
