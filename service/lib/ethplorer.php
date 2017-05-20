@@ -1013,8 +1013,8 @@ class Ethplorer {
             $result = array();
             foreach($aTokens as $aToken){
                 $aPrice = $this->getTokenPrice($aToken['address']);
-                if($aPrice){
-                    $aToken['volume'] = $aPrice['rate'] * $aToken['totalSupply'];
+                if($aPrice && $aToken['totalSupply']){
+                    $aToken['volume'] = $aPrice['rate'] * $aToken['totalSupply'] / pow(10, $aToken['decimals']);
                     $result[] = $aToken;
                 }
                 usort($result, array($this, '_sortByVolume'));
@@ -1025,7 +1025,7 @@ class Ethplorer {
     }
 
     protected function _sortByVolume($a, $b){
-        return ($a['volume'] == $b['volume']) ? 0 : (($a['volume'] > $b['volume']) ? 1 : -1);
+        return ($a['volume'] == $b['volume']) ? 0 : (($a['volume'] > $b['volume']) ? -1 : 1);
     }
 
     /**
