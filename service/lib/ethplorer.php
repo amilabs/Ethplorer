@@ -1014,6 +1014,10 @@ class Ethplorer {
             foreach($aTokens as $aToken){
                 $aPrice = $this->getTokenPrice($aToken['address']);
                 if($aPrice && $aToken['totalSupply']){
+                    $aCorrectedToken = $this->getToken($aToken['address']);
+                    if(isset($aCorrectedToken['name'])){
+                        $aToken['name'] = $aCorrectedToken['name'];
+                    }
                     $aToken['volume'] = $aPrice['rate'] * $aToken['totalSupply'] / pow(10, $aToken['decimals']);
                     $result[] = $aToken;
                 }
