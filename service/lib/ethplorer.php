@@ -1006,7 +1006,7 @@ class Ethplorer {
      * @return array
      */
     public function getTopTokensByCurrentVolume($limit = 10){
-        $cache = 'top_tokens-by-current-volume-' . $period;
+        $cache = 'top_tokens-by-current-volume-' . $limit;
         $result = $this->oCache->get($cache, false, true, 600);
         if(FALSE === $result){
             $aTokens = $this->getTokens();
