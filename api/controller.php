@@ -308,6 +308,9 @@ class ethplorerController {
             case 'byCurrentVolume':
                 $result = $this->_getTopByCurrentVolume($limit);
                 break;
+            case 'byPeriodVolume':
+                $result = $this->_getTopByPeriodVolume($limit, $period);
+                break;
             case 'byOperationsCount':
             default:
                 $result = $this->_getTopByOperationsCount($limit, $period);
@@ -322,6 +325,11 @@ class ethplorerController {
 
     protected function _getTopByCurrentVolume($limit){
         $result = array('tokens' => $this->db->getTopTokensByCurrentVolume($limit));
+        $this->sendResult($result);
+    }
+
+    protected function _getTopByPeriodVolume($limit, $period){
+        $result = array('tokens' => $this->db->getTopTokensByPeriodVolume($limit, $period));
         $this->sendResult($result);
     }
 
