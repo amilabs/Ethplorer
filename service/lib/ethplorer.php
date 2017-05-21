@@ -781,6 +781,7 @@ class Ethplorer {
         if(!$withZero){
             $search['balance'] = array('$gt' => 0);
         }
+        $search['totalIn'] = array('$gt' => 0);
         $cursor = $this->dbs['balances']->find($search, array('contract', 'balance', 'totalIn', 'totalOut'));
         $result = array();
         foreach($cursor as $balance){
