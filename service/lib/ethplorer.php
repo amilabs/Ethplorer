@@ -1024,14 +1024,14 @@ class Ethplorer {
                         array(
                             array('$match' => array(
                                     "timestamp" => array('$gt' => time() - $period * 24 * 3600),
-                                    "type" => "transfer",
+                                    'type' => array('$in' => array('transfer', 'issuance', 'burn', 'mint')),
                                     "contract" => $aToken['address']
                                 )
                             ),
                             array(
                                 '$group' => array(
                                     "_id" => '$contract',
-                                    'cnt' => array('$sum' => '$value')
+                                    'cnt' => array('$sum' => '$intValue')
                                 )
                             )
                         )
