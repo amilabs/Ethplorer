@@ -377,9 +377,13 @@ class Ethplorer {
      * @param int     $limit
      * @return array
      */
-    public function getTransactions($address, $limit = 10){
+    public function getTransactions($address, $limit = 10, $showZero = FALSE){
         $result = array();
-        $cursor = $this->dbs['transactions']->find(array('$or' => array(array("from" => $address), array("to" => $address))))->sort(array("timestamp" => -1))->limit($limit);
+        $search = array(array('$or' => array(array("from" => $address), array("to" => $address))));
+        if(!$showZero){
+            $search['value'] = array('$gt' => 0);
+        }
+        $cursor = $this->dbs['transactions']->find($search)->sort(array("timestamp" => -1))->limit($limit);
         foreach($cursor as $tx){
             unset($tx["_id"]);
             $result[] = array(

@@ -310,7 +310,8 @@ class ethplorerController {
 
         $maxLimit = is_array($this->defaults) && isset($this->defaults['maxLimit']) ? $this->defaults['maxLimit'] : 50;
         $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
-        $result = $this->db->getTransactions($address, $limit);
+        $showZeroValue = !!$this->getRequest('showZeroValue', FALSE);
+        $result = $this->db->getTransactions($address, $limit, $showZeroValue);
 
         $this->sendResult($result);
     }
