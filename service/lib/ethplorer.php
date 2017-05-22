@@ -1406,9 +1406,9 @@ class Ethplorer {
         return $result;
     }
 
-    public function getTokenPriceHistory($address, $updateCache = FALSE){
+    public function getTokenPriceHistory($address, $period = 0, $updateCache = FALSE){
         $result = false;
-        $cache = 'rates-history-' . $address;
+        $cache = 'rates-history-' . ($period > 0 ? ('period-' . $period . '-') : '' ) . $address;
         $rates = $this->oCache->get($cache, false, true);
         if($updateCache || (((FALSE === $rates) || (is_array($rates) && !isset($rates[$address]))) && isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates'])))){
             if(!is_array($rates)){
@@ -1419,7 +1419,19 @@ class Ethplorer {
                 $params = array($address, 'USD');
                 $result = $this->_jsonrpcall($this->aSettings['currency'], $method, $params);
                 if($result){
-                    $rates[$address] = $result;
+                    $aPriceHistory = array();
+                    if($period){
+                        $tsStart = time() - $period * 24 * 60 * 60;
+                        for($i = 0; $i < count($result); $i++){
+                            if($result[$i]['ts'] < $tsStart){
+                                continue;
+                            }
+                            $aPriceHistory[] = $result[$i];
+                        }
+                    }else{
+                        $aPriceHistory = $result;
+                    }
+                    $rates[$address] = $aPriceHistory;
                     $this->oCache->save($cache, $rates);
                 }
             }

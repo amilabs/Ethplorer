@@ -392,7 +392,7 @@ class ethplorerController {
                 $this->sendError(104, 'Invalid token address format');
             }
         }
-        $result = array('countTxs' => $this->db->getTokenPriceHistory($address));
+        $result = array('countTxs' => $this->db->getTokenPriceHistory($address, $period));
         $this->sendResult($result);
     }
 
