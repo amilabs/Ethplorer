@@ -386,6 +386,7 @@ class Ethplorer {
                 'timestamp' => $tx['timestamp'],
                 'from' => $tx['from'],
                 'to' => $tx['to'],
+                'hash' => $tx['hash'],
                 'value' => $tx['value'],
                 'input' => $tx['input'],
             );
