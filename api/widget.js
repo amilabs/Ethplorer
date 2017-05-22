@@ -869,7 +869,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
     }
 
     this.api = ethplorerWidget.api + '/getTokenHistoryGrouped';
-    this.apiPrice = ethplorerWidget.api + '/getChainyTokenHistoryGrouped';
+    this.apiPrice = ethplorerWidget.api + '/getTokenPriceHistoryGrouped';
     if(options && options.address){
         this.api += ('/' + options.address.toString().toLowerCase());
         this.apiPrice += ('/' + options.address.toString().toLowerCase());
@@ -1075,7 +1075,6 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
 
         // draw chart
         dashboard.bind(control, chart);
-        //dashboard.draw(dataTable);
         dashboard.draw(data);
     };
 
@@ -1114,17 +1113,13 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         return function(data){
             if(data && !data.error && data.countTxs){
                 obj.widgetData = data.countTxs;
-                //google.setOnLoadCallback(
-                  //  function(){
-                        obj.el.find('.txs-loading').remove();
-                        obj.drawChart(data.countTxs);
-                        ethplorerWidget.appendEthplorerLink(obj);
-                        if('function' === typeof(obj.options.onLoad)){
-                            obj.options.onLoad();
-                        }
-                        setTimeout(ethplorerWidget.fixTilda, 300);
-                    //}
-                //);
+                obj.el.find('.txs-loading').remove();
+                obj.drawChart(data.countTxs);
+                ethplorerWidget.appendEthplorerLink(obj);
+                if('function' === typeof(obj.options.onLoad)){
+                    obj.options.onLoad();
+                }
+                setTimeout(ethplorerWidget.fixTilda, 300);
             }else{
                 obj.el.find('.txs-loading').remove();
             }

@@ -19,7 +19,7 @@ class ethplorerController {
     protected $db;
     protected $command;
     protected $params = array();
-    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getTokenHistoryGrouped');
+    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getTokenHistoryGrouped', 'tokenPriceHistoryGrouped');
     protected $defaults;
     protected $startTime;
 
@@ -349,6 +349,25 @@ class ethplorerController {
             }
         }
         $result = array('countTxs' => $this->db->getTokenHistoryGrouped($period, $address));
+        $this->sendResult($result);
+    }
+
+    /**
+     * /getTokenPriceHistoryGrouped method implementation.
+     *
+     * @undocumented
+     * @return array
+     */
+    public function getTokenPriceHistoryGrouped(){
+        $period = min(abs((int)$this->getRequest('period', 30)), 90);
+        $address = $this->getParam(0, FALSE);
+        if($address){
+            $address = strtolower($address);
+            if(!$this->db->isValidAddress($address)){
+                $this->sendError(104, 'Invalid token address format');
+            }
+        }
+        $result = array('countTxs' => $this->db->getTokenPriceHistory($address));
         $this->sendResult($result);
     }
 
