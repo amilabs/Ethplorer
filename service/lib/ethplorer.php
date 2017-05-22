@@ -371,6 +371,29 @@ class Ethplorer {
     }
 
     /**
+     * Returns transactions list for a specific address.
+     *
+     * @param string  $address
+     * @param int     $limit
+     * @return array
+     */
+    public function getTransactions($address, $limit = 10){
+        $result = array();
+        $cursor = $this->dbs['transactions']->find(array('$or' => array(array("from" => $address), array("to" => $address))))->sort(array("timestamp" => -1))->limit($limit);
+        foreach($cursor as $tx){
+            unset($tx["_id"]);
+            $result[] = array(
+                'timestamp' => $tx['timestamp'],
+                'from' => $tx['from'],
+                'to' => $tx['to'],
+                'value' => $tx['value'],
+                'input' => $tx['input'],
+            );
+        }
+        return $result;
+    }
+
+    /**
      * Returns advanced transaction data.
      *
      * @param string  $hash  Transaction hash
@@ -1007,6 +1030,7 @@ class Ethplorer {
      * @return array
      */
     public function getTopTokensByPeriodVolume($limit = 10, $period = 30){
+        set_time_limit(0);
         $cache = 'top_tokens-by-period-volume-' . $limit . '-' . $period;
         $result = $this->oCache->get($cache, false, true, 24 * 3600);
         if(FALSE === $result){
@@ -1020,26 +1044,51 @@ class Ethplorer {
                         $aToken['name'] = $aCorrectedToken['name'];
                     }
 
+                    $aMatch = array(
+                        "contract" => $aToken['address'],
+                        'type' => array('$in' => array('transfer', 'issuance', 'burn', 'mint')),
+                        "timestamp" => array('$gt' => time() - $period * 24 * 3600),
+                    );
                     $dbData = $this->dbs['operations']->aggregate(
                         array(
-                            array('$match' => array(
-                                    "timestamp" => array('$gt' => time() - $period * 24 * 3600),
-                                    'type' => array('$in' => array('transfer', 'issuance', 'burn', 'mint')),
-                                    "contract" => $aToken['address']
-                                )
-                            ),
+                            array('$match' => $aMatch),
                             array(
                                 '$group' => array(
-                                    "_id" => '$contract',
-                                    'cnt' => array('$sum' => '$intValue')
+                                    "_id" => array(
+                                        "year"  => array('$year' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                        "month"  => array('$month' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                        "day"  => array( '$dayOfMonth' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                    ),
+                                    'ts' =>  array('$first' => '$timestamp'),
+                                    'sum' => array('$sum' => 1/*'$intValue'*/)
                                 )
-                            )
+                            ),
+                            array('$sort' => array('ts' => -1)),
                         )
                     );
-                    if(is_array($dbData) && !empty($dbData['result'])){
-                        $total = $dbData['result'][0]['cnt'];
+
+                    if($dbData && $dbData['result']){
+                        var_dump($dbData);
+                        die();
                     }
-                    $aToken['volume'] = $total / pow(10, $aToken['decimals']) * $price;
+                    /*
+                    $aOperations = $this->dbs['operations']->find(array(
+                        "contract" => $aToken['address'],
+                        'type' => array('$in' => array('transfer', 'issuance', 'burn', 'mint')),
+                        "timestamp" => array('$gt' => time() - $period * 24 * 3600),
+                    ), array('timestamp', 'intValue'));
+
+                    if($aOperations){
+                        foreach($aOperations as $aOperation){
+                            if(!isset($aToken['volume'])){
+                                $aToken['volume'] = 0;
+                            }
+                            $rate = $this->_getRateByTimestamp($aToken['address'], $aOperation['timestamp']);
+                            $aToken['volume'] += ($aOperation['intValue'] / pow(10, $aToken['decimals'])) * $rate;
+                        }
+                    }
+                     */
+
                     $result[] = $aToken;
                 }
                 usort($result, array($this, '_sortByVolume'));
@@ -1372,6 +1421,41 @@ class Ethplorer {
         }
         if(is_array($rates) && isset($rates[$address])){
             $result = $rates[$address];
+        }
+        return $result;
+    }
+
+    protected function _getRateByTimestamp($address, $timestamp){
+        $result = 0;
+        $aHistory = $this->getTokenPriceHistory($address);
+        if(is_array($aHistory)){
+            foreach($aHistory as $aRecord){
+                if(isset($aRecord['open'])){
+                    $ts = $aRecord['ts'];
+                    if($ts <= $timestamp){
+                        $result = $aRecord['open'];
+                    }else{
+                        break;
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    protected function _getRateByDate($address, $date){
+        $result = 0;
+        $aHistory = $this->getTokenPriceHistory($address);
+        $aHistoryByDate = array();
+        if(is_array($aHistory)){
+            foreach($aHistory as $aRecord){
+                if(isset($aRecord['open'])){
+                    $date = $aRecord['date'];
+                    if(isset($aHistoryByDate[$date])){
+                        continue;
+                    }
+                }
+            }
         }
         return $result;
     }

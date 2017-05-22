@@ -19,7 +19,7 @@ class ethplorerController {
     protected $db;
     protected $command;
     protected $params = array();
-    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getTokenHistoryGrouped');
+    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressTransactions', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getTokenHistoryGrouped');
     protected $defaults;
     protected $startTime;
 
@@ -289,6 +289,30 @@ class ethplorerController {
      */
     public function getAddressHistory(){
         return $this->_getHistory(TRUE);
+    }
+
+    /**
+     * /getAddressTransactions method implementation.
+     *
+     * @return array
+     */
+    public function getAddressTransactions(){
+        $address = $this->getParam(0, '');
+        $address = strtolower($address);
+        $onlyToken = $this->getRequest('token', FALSE);
+        if((FALSE === $address)){
+            $this->sendError(103, 'Missing address');
+        }
+        $address = strtolower($address);
+        if(!$this->db->isValidAddress($address)){
+            $this->sendError(104, 'Invalid address format');
+        }
+
+        $maxLimit = is_array($this->defaults) && isset($this->defaults['maxLimit']) ? $this->defaults['maxLimit'] : 50;
+        $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
+        $result = $this->db->getTransactions($address, $limit);
+
+        $this->sendResult($result);
     }
 
     /**
