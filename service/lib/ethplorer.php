@@ -1426,7 +1426,7 @@ class Ethplorer {
                             if($result[$i]['ts'] < $tsStart){
                                 continue;
                             }
-                            $aPriceHistory[] = $price;
+                            $aPriceHistory[] = $result[$i];
                         }
                     }else{
                         $aPriceHistory = $result;
