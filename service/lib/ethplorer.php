@@ -379,7 +379,7 @@ class Ethplorer {
      */
     public function getTransactions($address, $limit = 10, $showZero = FALSE){
         $result = array();
-        $search = array(array('$or' => array(array("from" => $address), array("to" => $address))));
+        $search = array('$or' => array(array("from" => $address), array("to" => $address)));
         if(!$showZero){
             $search[] = array('value' => array('$gt' => 0));
         }

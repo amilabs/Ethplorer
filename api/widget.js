@@ -556,7 +556,8 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
             row += '<td class="tx-field" title="">%volume%</td>';
             break;
         default:
-            row = row +'<td class="tx-field" title="%opCount% operations">%opCount%</td>' + '</tr>';
+            row += '<td class="tx-field">%name%</td>';
+            row = row + '<td class="tx-field" title="%opCount% operations">%opCount%</td>' + '</tr>';
     }
     
     this.templates.row = row;
