@@ -781,6 +781,7 @@ class Ethplorer {
         if(!$withZero){
             $search['balance'] = array('$gt' => 0);
         }
+        $search['totalIn'] = array('$gt' => 0);
         $cursor = $this->dbs['balances']->find($search, array('contract', 'balance', 'totalIn', 'totalOut'));
         $result = array();
         foreach($cursor as $balance){
@@ -996,6 +997,104 @@ class Ethplorer {
             }
         }
         return $result;
+    }
+
+    /**
+     * Returns top tokens list by current volume.
+     *
+     * @todo: count number of transactions with "transfer" operation
+     * @param int $limit   Maximum records number
+     * @return array
+     */
+    public function getTopTokensByPeriodVolume($limit = 10, $period = 30){
+        $cache = 'top_tokens-by-period-volume-' . $limit . '-' . $period;
+        $result = $this->oCache->get($cache, false, true, 24 * 3600);
+        if(FALSE === $result){
+            $aTokens = $this->getTokens();
+            $result = array();
+            foreach($aTokens as $aToken){
+                $aPrice = $this->getTokenPrice($aToken['address']);
+                if($aPrice && $aToken['totalSupply']){
+                    $aCorrectedToken = $this->getToken($aToken['address']);
+                    if(isset($aCorrectedToken['name'])){
+                        $aToken['name'] = $aCorrectedToken['name'];
+                    }
+
+                    $dbData = $this->dbs['operations']->aggregate(
+                        array(
+                            array('$match' => array(
+                                    "timestamp" => array('$gt' => time() - $period * 24 * 3600),
+                                    'type' => array('$in' => array('transfer', 'issuance', 'burn', 'mint')),
+                                    "contract" => $aToken['address']
+                                )
+                            ),
+                            array(
+                                '$group' => array(
+                                    "_id" => '$contract',
+                                    'cnt' => array('$sum' => '$intValue')
+                                )
+                            )
+                        )
+                    );
+                    if(is_array($dbData) && !empty($dbData['result'])){
+                        $total = $dbData['result'][0]['cnt'];
+                    }
+                    $aToken['volume'] = $total / pow(10, $aToken['decimals']) * $price;
+                    $result[] = $aToken;
+                }
+                usort($result, array($this, '_sortByVolume'));
+
+                $res = [];
+                foreach($result as $i => $item){
+                    if($i < $limit){
+                        $res[] = $item;
+                    }
+                }
+                $result = $res;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Returns top tokens list by current volume.
+     *
+     * @todo: count number of transactions with "transfer" operation
+     * @param int $limit   Maximum records number
+     * @return array
+     */
+    public function getTopTokensByCurrentVolume($limit = 10){
+        $cache = 'top_tokens-by-current-volume-' . $limit;
+        $result = $this->oCache->get($cache, false, true, 600);
+        if(FALSE === $result){
+            $aTokens = $this->getTokens();
+            $result = array();
+            foreach($aTokens as $aToken){
+                $aPrice = $this->getTokenPrice($aToken['address']);
+                if($aPrice && $aToken['totalSupply']){
+                    $aCorrectedToken = $this->getToken($aToken['address']);
+                    if(isset($aCorrectedToken['name'])){
+                        $aToken['name'] = $aCorrectedToken['name'];
+                    }
+                    $aToken['volume'] = $aPrice['rate'] * $aToken['totalSupply'] / pow(10, $aToken['decimals']);
+                    $result[] = $aToken;
+                }
+                usort($result, array($this, '_sortByVolume'));
+                $res = [];
+                foreach($result as $i => $item){
+                    if($i < $limit){
+                        $res[] = $item;
+                    }
+                }
+                $result = $res;
+            }
+            $this->oCache->save($cache, $result);
+        }
+        return $result;
+    }
+
+    protected function _sortByVolume($a, $b){
+        return ($a['volume'] == $b['volume']) ? 0 : (($a['volume'] > $b['volume']) ? -1 : 1);
     }
 
     /**

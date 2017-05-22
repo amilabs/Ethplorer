@@ -254,7 +254,7 @@ ethplorerWidget = {
                 num = math('round', num, decimals);
             }
             var parts = num.toString().split('.');
-            var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
             var zeroCount = cutZeroes ? 2 : decimals;
             if(withDecimals && decimals){
                 if(parts.length > 1){
@@ -532,18 +532,32 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
         }
     }
 
+    var row = '<tr>' + 
+        '<td class="tx-field">%position%</td>' + 
+        '<td class="tx-field">%name%</td>';
+
+    var criteria = options.criteria ? options.criteria : false;
+
     this.api = ethplorerWidget.api + '/getTopTokens';
 
     this.templates = {
         header: '<div class="txs-header">Top %limit% tokens for %period% days</div>',
         loader: '<div class="txs-loading">Loading...</div>',
-        // Big table row
-        row:    '<tr>' + 
-                    '<td class="tx-field">%position%</td>' + 
-                    '<td class="tx-field">%name%</td>' +
-                    '<td class="tx-field" title="%opCount% operations">%opCount%</td>' +
-                '</tr>',
     };
+
+    switch(criteria){
+        case 'byPrice':
+            row = row +'<td class="tx-field" title="">%price%</td>';
+            break;
+        case 'byCurrentVolume':
+            this.templates.header = '<div class="txs-header">Top %limit% tokens</div>';
+            row = row +'<td class="tx-field" title="">%volume%</td>';
+            break;
+        default:
+            row = row +'<td class="tx-field" title="%opCount% operations">%opCount%</td>' + '</tr>';
+    }
+    
+    this.templates.row = row;
 
     // Override default templates with custom
     if('object' === typeof(templates)){
@@ -565,7 +579,7 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
     };
 
     this.getRequestParams = function(additionalParams){
-        var requestOptions = ['limit', 'period'];
+        var requestOptions = ['limit', 'period', 'criteria'];
         var params = {
             apiKey: 'freekey'
         };
@@ -616,7 +630,9 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
         return {
             address: ethplorerWidget.Utils.link(data.address, data.address, data.address),
             name: ethplorerWidget.Utils.link(data.address, name, name, false, data.name ? "" : "tx-unknown"),
-            opCount: data.opCount
+            opCount: data.opCount,
+            price: (data.price && data.price.rate) ? ('$ ' + ethplorerWidget.Utils.formatNum(data.price.rate, true, 2, true)) : '',
+            volume: data.volume ? ('$ ' + ethplorerWidget.Utils.formatNum(data.volume, true, 2, true)) : ''
         };
     };
 
