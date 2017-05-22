@@ -381,7 +381,7 @@ class Ethplorer {
         $result = array();
         $search = array('$or' => array(array("from" => $address), array("to" => $address)));
         if(!$showZero){
-            $search[] = array('value' => array('$gt' => 0));
+            $search = array('$and' => array($search, array('value' => array('$gt' => 0))));
         }
         $cursor = $this->dbs['transactions']->find($search)->sort(array("timestamp" => -1))->limit($limit);
         foreach($cursor as $tx){
