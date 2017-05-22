@@ -10,8 +10,10 @@ ethplorerWidget = {
 
     // Add Google loader for chart widgets
     addGoogleLoader: false,
+    addGoogleAPI: false,
 
     chartWidgets: [],
+    chartControlWidgets: [],
 
     cssVersion: 8,
 
@@ -33,6 +35,9 @@ ethplorerWidget = {
         }
         if(type == 'tokenHistoryGrouped'){
             ethplorerWidget.addGoogleLoader = true;
+        }
+        if(type == 'tokenPriceHistoryGrouped'){
+            ethplorerWidget.addGoogleAPI = true;
         }
         var el = $(selector);
         if(!el.length){
@@ -74,6 +79,16 @@ ethplorerWidget = {
                 for(var i=0; i<ethplorerWidget.chartWidgets.length; i++)
                         ethplorerWidget.chartWidgets[i].load();
         }
+    },
+    loadGoogleControlCharts: function(){
+        if(google){
+            google.load('visualization', '1', {'packages': ['controls'], callback : ethplorerWidget.drawGoogleControlCharts});
+        }
+    },
+    drawGoogleControlCharts: function(){
+        if(ethplorerWidget.chartControlWidgets && ethplorerWidget.chartControlWidgets.length)
+            for(var i=0; i<ethplorerWidget.chartControlWidgets.length; i++)
+                    ethplorerWidget.chartControlWidgets[i].load();
     },
     appendEthplorerLink: function(obj){
         var host = ethplorerWidget.url.split('//')[1];
@@ -811,6 +826,312 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
 };
 
 /**
+ * Token history with prices grouped Widget.
+ *
+ * @param {type} element
+ * @param {type} options
+ * @param {type} templates
+ * @returns {undefined}
+ */
+ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, templates){
+    this.el = element;
+    this.widgetData = null;
+    this.widgetPriceData = null;
+    this.resizeTimer = null;
+
+    this.options = {
+        period: 30,
+        type: 'area',
+        theme: 'light',
+        options: {}
+    };
+
+    if(options){
+        for(var key in options){
+            this.options[key] = options[key];
+        }
+    }
+
+    this.api = ethplorerWidget.api + '/getTokenHistoryGrouped';
+    this.apiPrice = ethplorerWidget.api + '/getChainyTokenHistoryGrouped';
+    if(options && options.address){
+        this.api += ('/' + options.address.toString().toLowerCase());
+        this.apiPrice += ('/' + options.address.toString().toLowerCase());
+    }
+    
+    this.templates = {
+        loader: '<div class="txs-loading">Loading...</div>',
+    };
+
+    this.load = function(){
+        // load price data first
+        $.getJSON(this.apiPrice, this.getRequestParams(), this.loadTokenHistory);
+    };
+
+    this.loadTokenHistory = function(obj){
+        return function(data){
+            $.getJSON(obj.api, obj.getRequestParams(), obj.refreshWidget);
+            console.log(data);
+            if(data && !data.error){
+            }
+        };
+    }(this);
+
+    this.drawChart = function(aTxData){
+        var aData = [];
+        aData.push(['Day', 'Token operations', 'Low', 'Open', 'High', 'Close']);
+
+        var stDate = new Date(),
+            fnDate = new Date(),
+            controlFnDate = new Date();
+        var date = stDate.getDate();
+        stDate.setDate(date - 1);
+        fnDate.setDate(date - this.options.period - 1);
+        controlFnDate.setDate(date - 1);
+
+        // prepare data
+        //var dataTable = new google.visualization.DataTable();
+        /*dataTable.addColumn('date', 'Day');
+        dataTable.addColumn('number', 'Token operations');
+        dataTable.addColumn('number', 'XYZ');*/
+
+        var aCountData = {};
+        for(var i = 0; i < aTxData.length; i++){
+            var aDayData = aTxData[i];
+            aCountData[aDayData._id.year + '-' + aDayData._id.month + '-' + aDayData._id.day] = aDayData.cnt;
+        }
+
+        var getRandom = function getRandomInt(min, max){
+            min = 190;
+            max = 200;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        var curDate = true;
+        while(stDate > fnDate){
+            var key = stDate.getFullYear() + '-' + (stDate.getMonth() + 1) + '-' + stDate.getDate();
+            var cnt = ('undefined' !== typeof(aCountData[key])) ? aCountData[key] : 0;
+            if(curDate && cnt == 0){
+                curDate = false;
+                continue;
+            }
+            var price = getRandom();
+            aData.push([new Date(stDate.getFullYear(), stDate.getMonth(), stDate.getDate()), cnt, price - 10, price - 5, price + 5, price + 10]);
+            //dataTable.addRow([new Date(stDate.getFullYear(), stDate.getMonth(), stDate.getDate()), cnt, cnt]);
+            //dataTable.addRow([new Date(stDate.getFullYear(), stDate.getMonth(), stDate.getDate()), cnt, cnt - 5, cnt + 5, cnt - 10, cnt + 10]);
+            var newDate = stDate.setDate(stDate.getDate() - 1);
+            stDate = new Date(newDate);
+        }
+
+        var data = google.visualization.arrayToDataTable(aData);
+
+        // create div's
+        this.el.append($('<div>', {id: 'chart'}));
+        this.el.append($('<div>', {id: 'control'}));
+
+        // create dashboard and control wrapper
+        var dashboard = new google.visualization.Dashboard(this.el);
+        var controlOptions = {
+            controlType: 'ChartRangeFilter',
+            containerId: 'control',
+            options: {
+                filterColumnIndex: 0,
+                ui: {
+                    chartType: 'ComboChart',
+                    chartOptions: {
+                        hAxis: {
+                            format: 'MMM d',
+                            gridlines: {
+                                count: 10,
+                                color: "none"
+                            }
+                        },
+                        series: {
+                            0: {
+                                type: 'line'
+                            },
+                            1: {
+                                type: 'candlesticks'
+                            }
+                        }
+                    },
+                    minRangeSize: 86400000
+                }
+            },
+            state: {
+                range: {
+                    start: fnDate,
+                    end: controlFnDate
+                }
+            }
+        };
+        var control = new google.visualization.ControlWrapper(controlOptions);
+
+        // create combo chart
+        var def = {
+            chartType: 'ComboChart',
+            containerId: 'chart',
+            options: {
+                title: '',
+                legend: { position: 'none' },
+                tooltip: {
+                    format: 'MMM d',
+                },
+                hAxis : {
+                    title: '',
+                    titleTextStyle: {
+                        italic: false
+                    },
+                    textPosition: 'out',
+                    slantedText: false,
+                    maxAlternation: 1,
+                    maxTextLines: 1,
+                    format: 'MMM d',
+                    gridlines: {
+                        count: 10,
+                        color: "none"
+                    }
+                },
+                vAxis: {
+                    0 : {
+                        title: '',
+                        titleTextStyle: {
+                            italic: false
+                        },
+                        minValue: 0,
+                        viewWindow: {
+                            min: 0
+                        },
+                        gridlines: {
+                            color: "none"
+                        },
+                        maxValue: 3,
+                        format: '#,###',
+                    },
+                    1 : {
+                        title: '',
+                        titleTextStyle: {
+                            italic: false
+                        },
+                        minValue: 0,
+                        viewWindow: {
+                            min: 0
+                        },
+                        gridlines: {
+                            color: "none"
+                        },
+                        maxValue: 3,
+                        format: '#,###',
+                    }
+                },
+                pointSize: 5,
+                series: {
+                    0: {
+                        type: 'line',
+                        targetAxisIndex: 0
+                    },
+                    1: {
+                        type: 'candlesticks',
+                        targetAxisIndex: 1
+                    }
+                }
+            }
+        };
+        if(this.options['theme'] == 'dark'){
+            def.options.colors = ['#47C2FF'];
+            def.options.titleTextStyle = {color: '#DEDEDE'};
+            def.options.backgroundColor = {fill: 'transparent'};
+
+            def.options.hAxis.textStyle = {color: '#DEDEDE'};
+            def.options.hAxis.titleTextStyle.color = '#DEDEDE';
+            def.options.hAxis.baselineColor = '#DEDEDE';
+
+            def.options.vAxis.textStyle = {color: '#DEDEDE'};
+            def.options.vAxis.titleTextStyle.color = '#DEDEDE';
+            def.options.vAxis.baselineColor = 'none';
+        }
+        var options = $.extend(true, def, this.options['options']);
+        var tooltipFormatter = new google.visualization.DateFormat({ 
+            pattern: "MMM dd, yyyy '+UTC'"
+        });
+        tooltipFormatter.format(data, 0);
+        var chart = new google.visualization.ChartWrapper(options);
+
+        // draw chart
+        dashboard.bind(control, chart);
+        //dashboard.draw(dataTable);
+        dashboard.draw(data);
+    };
+
+    this.init = function(){
+        this.el.addClass('ethplorer-widget');
+        this.el.addClass('widget-tokenHistoryGrouped');
+        this.el.addClass('theme-' + (this.options.theme ? this.options.theme : 'ethplorer'));
+        this.el.html(this.templates.loader);
+    };
+
+    this.getRequestParams = function(additionalParams){
+        var requestOptions = ['period', 'address', 'type', 'theme'];
+        var params = {
+            apiKey: 'freekey'
+        };
+        if('undefined' === typeof(this.pathReported)){
+            params['domain'] = document.location.href;
+            this.pathReported = true;
+        }
+        for(var key in this.options){
+            if(requestOptions.indexOf(key) >= 0){
+                params[key] = this.options[key];
+            }
+        }
+        if('object' === typeof(additionalParams)){
+            for(var key in additionalParams){
+                if(requestOptions.indexOf(key) >= 0){
+                    params[key] = additionalParams[key];
+                }
+            }
+        }
+        return params;
+    };
+
+    this.refreshWidget = function(obj){
+        return function(data){
+            if(data && !data.error && data.countTxs){
+                obj.widgetData = data.countTxs;
+                //google.setOnLoadCallback(
+                  //  function(){
+                        obj.el.find('.txs-loading').remove();
+                        obj.drawChart(data.countTxs);
+                        ethplorerWidget.appendEthplorerLink(obj);
+                        if('function' === typeof(obj.options.onLoad)){
+                            obj.options.onLoad();
+                        }
+                        setTimeout(ethplorerWidget.fixTilda, 300);
+                    //}
+                //);
+            }else{
+                obj.el.find('.txs-loading').remove();
+            }
+        };
+    }(this);
+
+    $(window).resize(this, function(){
+        var obj = arguments[0].data;
+        if(obj.resizeTimer) clearTimeout(obj.resizeTimer);
+        obj.resizeTimer = setTimeout(function(){
+            if(obj.widgetData){
+                obj.el.empty();
+                obj.drawChart(obj.widgetData);
+                ethplorerWidget.appendEthplorerLink(obj);
+            }
+        }, 500);
+    });
+
+    this.init();
+    ethplorerWidget.chartControlWidgets.push(this);
+};
+
+/**
  * Document on ready widgets initialization.
  * Initializes all widgets added using eWgs array.
  */
@@ -825,6 +1146,10 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
         if(ethplorerWidget.addGoogleLoader){
             ethplorerWidget.addGoogleLoader = false;
             ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
+        }
+        if(ethplorerWidget.addGoogleAPI){
+            ethplorerWidget.addGoogleAPI = false;
+            ethplorerWidget.loadScript("https://www.google.com/jsapi", ethplorerWidget.loadGoogleControlCharts);
         }
     }
     // add widget css
