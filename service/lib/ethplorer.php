@@ -1421,7 +1421,7 @@ class Ethplorer {
                 if($result){
                     $aPriceHistory = array();
                     if($period){
-                        $tsStart = time() - $period * 24 * 60 * 60;
+                        $tsStart = mktime(0, 0, 0, date('m'), date('d') - $period, date('Y'));
                         for($i = 0; $i < count($result); $i++){
                             if($result[$i]['ts'] < $tsStart){
                                 continue;
