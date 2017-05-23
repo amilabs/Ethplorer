@@ -1038,6 +1038,7 @@ class Ethplorer {
         set_time_limit(0);
         $cache = 'top_tokens-by-period-volume-' . $limit . '-' . $period;
         $result = $this->oCache->get($cache, false, true, 24 * 3600);
+        $today = date("Y-m-d");
         if(FALSE === $result){
             $aTokens = $this->getTokens();
             $result = array();
@@ -1065,35 +1066,25 @@ class Ethplorer {
                                         "day"  => array( '$dayOfMonth' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
                                     ),
                                     'ts' =>  array('$first' => '$timestamp'),
-                                    'sum' => array('$sum' => 1/*'$intValue'*/)
+                                    'sum' => array('$sum' => '$intValue')
                                 )
                             ),
                             array('$sort' => array('ts' => -1)),
                         )
                     );
 
+                    $aToken['volume'] = 0;
                     if($dbData && $dbData['result']){
-                        var_dump($dbData);
-                        die();
-                    }
-                    /*
-                    $aOperations = $this->dbs['operations']->find(array(
-                        "contract" => $aToken['address'],
-                        'type' => array('$in' => array('transfer', 'issuance', 'burn', 'mint')),
-                        "timestamp" => array('$gt' => time() - $period * 24 * 3600),
-                    ), array('timestamp', 'intValue'));
-
-                    if($aOperations){
-                        foreach($aOperations as $aOperation){
-                            if(!isset($aToken['volume'])){
-                                $aToken['volume'] = 0;
+                        $aData = $dbData['result'];
+                        foreach($aData as $aItem){
+                            $date = $aItem['_id']['year'] . '-' . str_pad($aItem['_id']['month'], 2, '0', STR_PAD_LEFT) . '-' . str_pad($aItem['_id']['day'], 2, '0', STR_PAD_LEFT);
+                            if($date === $today){
+                                continue;
                             }
-                            $rate = $this->_getRateByTimestamp($aToken['address'], $aOperation['timestamp']);
-                            $aToken['volume'] += ($aOperation['intValue'] / pow(10, $aToken['decimals'])) * $rate;
+                            $rate = $this-> _getAverageRateByDate($aToken['address'], $date);
+                            $aToken['volume'] += ($aItem['sum'] / pow(10, $aToken['decimals'])) * $rate;
                         }
                     }
-                     */
-
                     $result[] = $aToken;
                 }
                 usort($result, array($this, '_sortByVolume'));
@@ -1438,6 +1429,23 @@ class Ethplorer {
         }
         if(is_array($rates) && isset($rates[$address])){
             $result = $rates[$address];
+        }
+        return $result;
+    }
+
+    protected function _getAverageRateByDate($address, $date){
+        $aHistory = $this->getTokenPriceHistory($address);
+        $result = 0;
+        $datePos = array_search($date, array_column($aHistory, 'date'));
+        if(FALSE !== $datePos){
+            $max = max($datePos + 24, count($aHistory));
+            $i = 0;
+            $sum = 0;
+            for($index = $datePos; $index < $max; $index++){
+                $i++;
+                $sum += ($aHistory[$index]['open'] + $aHistory[$index]['close']) / 2;
+            }
+            $result = round($sum / $i, 2);
         }
         return $result;
     }
