@@ -1397,9 +1397,9 @@ class Ethplorer {
         return $result;
     }
 
-    public function getTokenPriceHistory($address, $period = 0, $updateCache = FALSE){
+    public function getTokenPriceHistory($address, $period = 0, $type = 'hourly', $updateCache = FALSE){
         $result = false;
-        $cache = 'rates-history-' . ($period > 0 ? ('period-' . $period . '-') : '' ) . $address;
+        $cache = 'rates-history-' . ($period > 0 ? ('period-' . $period . '-') : '' ) . ($type != 'hourly' ? $type . '-' : '') . $address;
         $rates = $this->oCache->get($cache, false, true);
         if($updateCache || (((FALSE === $rates) || (is_array($rates) && !isset($rates[$address]))) && isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates'])))){
             if(!is_array($rates)){
@@ -1412,7 +1412,7 @@ class Ethplorer {
                 if($result){
                     $aPriceHistory = array();
                     if($period){
-                        $tsStart = time() - $period * 24 * 60 * 60;
+                        $tsStart = gmmktime(0, 0, 0, date('n'), date('j') - $period, date('Y'));
                         for($i = 0; $i < count($result); $i++){
                             if($result[$i]['ts'] < $tsStart){
                                 continue;
@@ -1422,7 +1422,39 @@ class Ethplorer {
                     }else{
                         $aPriceHistory = $result;
                     }
-                    $rates[$address] = $aPriceHistory;
+                    if($type == 'daily'){
+                        $aPriceHistoryDaily = array();
+                        $aDailyRecord = array();
+                        $curDate = '';
+                        for($i = 0; $i < count($aPriceHistory); $i++){
+                            $firstRecord = false;
+                            $lastRecord = false;
+                            if(!$curDate || ($curDate != $aPriceHistory[$i]['date'])){
+                                $aDailyRecord = $aPriceHistory[$i];
+                                $firstRecord = true;
+                            }else{
+                                if(($i == (count($aPriceHistory) - 1)) || ($aPriceHistory[$i]['date'] != $aPriceHistory[$i + 1]['date'])){
+                                    $lastRecord = true;
+                                }
+                                if($lastRecord){
+                                    $aDailyRecord['close'] = $aPriceHistory[$i]['close'];
+                                }
+                            }
+                            if(!$firstRecord){
+                                if($aPriceHistory[$i]['high'] > $aDailyRecord['high']){
+                                    $aDailyRecord['high'] = $aPriceHistory[$i]['high'];
+                                }
+                                if($aPriceHistory[$i]['low'] < $aDailyRecord['low']){
+                                    $aDailyRecord['low'] = $aPriceHistory[$i]['low'];
+                                }
+                            }
+                            if($lastRecord){
+                                $aPriceHistoryDaily[] = $aDailyRecord;
+                            }
+                            $curDate = $aPriceHistory[$i]['date'];
+                        }
+                    }
+                    $rates[$address] = ($type == 'daily' ? $aPriceHistoryDaily : $aPriceHistory);
                     $this->oCache->save($cache, $rates);
                 }
             }
