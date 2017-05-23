@@ -155,10 +155,10 @@ ethplorerWidget = {
     },
     // Use local path for develop instances
     fixPath: function(){
-        if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') >= 0)){
-            ethplorerWidget.api = '//' + document.location.host + '/api';
+        //if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') >= 0)){
+            //ethplorerWidget.api = '//' + document.location.host + '/api';
             ethplorerWidget.url = '//' + document.location.host
-        }
+        //}
     },
     Utils: {
         link: function(data, text, title, hash, addClass){
@@ -892,13 +892,13 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
     this.loadTokenHistory = function(obj){
         return function(data){
             $.getJSON(obj.api, obj.getRequestParams(), obj.refreshWidget);
-            console.log(data);
             if(data && !data.error){
+                obj.widgetPriceData = data.countTxs;
             }
         };
     }(this);
 
-    this.drawChart = function(aTxData){
+    this.drawChart = function(aTxData, widgetPriceData){
         var aData = [];
         aData.push(['Day', 'Token operations', 'Low', 'Open', 'High', 'Close']);
 
@@ -909,7 +909,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         stDate.setDate(date - 1);
         fnDate.setDate(date - this.options.period - 1);
         controlFnDate.setDate(date - 1);
-
+console.log(widgetPriceData);
         // prepare data
         //var dataTable = new google.visualization.DataTable();
         /*dataTable.addColumn('date', 'Day');
@@ -969,11 +969,11 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                         },
                         series: {
                             0: {
-                                type: 'line'
+                                type: 'area'
                             },
-                            1: {
+                            /*1: {
                                 type: 'candlesticks'
-                            }
+                            }*/
                         }
                     },
                     minRangeSize: 86400000
@@ -1119,7 +1119,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             if(data && !data.error && data.countTxs){
                 obj.widgetData = data.countTxs;
                 obj.el.find('.txs-loading').remove();
-                obj.drawChart(data.countTxs);
+                obj.drawChart(data.countTxs, obj.widgetPriceData);
                 ethplorerWidget.appendEthplorerLink(obj);
                 if('function' === typeof(obj.options.onLoad)){
                     obj.options.onLoad();
@@ -1137,7 +1137,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         obj.resizeTimer = setTimeout(function(){
             if(obj.widgetData){
                 obj.el.empty();
-                obj.drawChart(obj.widgetData);
+                obj.drawChart(obj.widgetData, obj.widgetPriceData);
                 ethplorerWidget.appendEthplorerLink(obj);
             }
         }, 500);
