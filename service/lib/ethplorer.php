@@ -1374,7 +1374,7 @@ class Ethplorer {
         $result = false;
         $eth = $this->getTokenPrice('0x0000000000000000000000000000000000000000');
         if(false !== $eth){
-            $result = $eth['rate'];
+            $result = $eth;
         }
         return $result;
     }

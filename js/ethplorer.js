@@ -17,9 +17,9 @@
 Ethplorer = {
     data: {},
     pageSize: 10,
-    service: "https://ethplorer.io/service/service.php", // "/service/service.php",
+    service: /*"https://ethplorer.io/service/service.php",*/ "/service/service.php",
     filter: '',
-    ethPrice: 0,
+    ethPrice: {rate: 0, diff: 0},
     searchCache: {},
     saveData: function(){},
     init: function(){
@@ -1465,9 +1465,12 @@ Ethplorer = {
             case 'ether-full':
                 var res = Ethplorer.Utils.formatNum(value, true, 18, true) + ' ETHER';
                 if(value){
-                    var price = Ethplorer.Utils.formatNum(Ethplorer.ethPrice * value, true, 2, true);
+                    var price = Ethplorer.Utils.formatNum(Ethplorer.ethPrice.rate * value, true, 2, true);
                     if('0.00' != price){
-                        res = res + ' ($ ' + price + ')';
+                        var change = Ethplorer.ethPrice.diff;
+                        var cls = change > 0 ? 'diff-up' : 'diff-down';
+                        var diff = change ? (' <span class="' + cls + '">(' + Ethplorer.Utils.round(change, 2) + '%)</span>') : '';
+                        res = res + '<br /><span class="transfer-usd">$ ' + price + diff + '</span>';
                     }
                 }
                 value = res;
