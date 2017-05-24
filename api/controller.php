@@ -384,7 +384,7 @@ class ethplorerController {
      * @return array
      */
     public function getTokenPriceHistoryGrouped(){
-        $period = min(abs((int)$this->getRequest('period', 30)), 90);
+        $period = min(abs((int)$this->getRequest('period', 365)), 365);
         $address = $this->getParam(0, FALSE);
         if($address){
             $address = strtolower($address);
@@ -392,7 +392,7 @@ class ethplorerController {
                 $this->sendError(104, 'Invalid token address format');
             }
         }
-        $result = array('countTxs' => $this->db->getTokenPriceHistory($address, $period, 'daily'));
+        $result = array('history' => $this->db->getTokenPriceHistoryGrouped($address, $period));
         $this->sendResult($result);
     }
 

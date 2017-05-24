@@ -1159,7 +1159,8 @@ class Ethplorer {
                 return $this->getChainyTokenHistoryGrouped($period);
             }
 
-            $aMatch = array("timestamp" => array('$gt' => time() - $period * 24 * 3600));
+            $tsStart = gmmktime(0, 0, 0, date('n'), date('j') - $period, date('Y'));
+            $aMatch = array("timestamp" => array('$gt' => $tsStart));
             if($address) $aMatch["contract"] = $address;
             $result = array();
             $dbData = $this->dbs['operations']->aggregate(
@@ -1464,6 +1465,20 @@ class Ethplorer {
             $result = $rates[$address];
         }
         return $result;
+    }
+
+    public function getTokenPriceHistoryGrouped($address, $period = 365, $type = 'daily', $updateCache = FALSE){
+        $aResult = array();
+
+        $aHistoryCount = $this->getTokenHistoryGrouped($period, $address);
+        $aResult['countTxs'] = $aHistoryCount;
+        unset($aHistoryCount);
+
+        $aHistoryPrices = $this->getTokenPriceHistory($address, $period, $type);
+        $aResult['prices'] = $aHistoryPrices;
+        unset($aHistory);
+
+        return $aResult;
     }
 
     protected function _getAverageRateByDate($address, $date){
