@@ -864,7 +864,8 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         period: 30,
         type: 'area',
         theme: 'light',
-        options: {}
+        options: {},
+        controlOptions: {}
     };
 
     if(options){
@@ -900,33 +901,31 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
 
     this.drawChart = function(aTxData, widgetPriceData){
         var aData = [];
-        aData.push(['Day', 'Token operations', 'Low', 'Open', 'High', 'Close']);
+        aData.push(['Day', 'Token operations', 'Low', 'Open', 'Close', 'High']);
 
         var stDate = new Date(),
             fnDate = new Date(),
-            controlFnDate = new Date();
+            rangeStart = new Date(),
+            rangeEnd = new Date();
         var date = stDate.getDate();
         stDate.setDate(date - 1);
         fnDate.setDate(date - this.options.period - 1);
-        controlFnDate.setDate(date - 1);
-console.log(widgetPriceData);
-        // prepare data
-        //var dataTable = new google.visualization.DataTable();
-        /*dataTable.addColumn('date', 'Day');
-        dataTable.addColumn('number', 'Token operations');
-        dataTable.addColumn('number', 'XYZ');*/
+        rangeStart.setDate(date - (this.options.period > 60 ? 60 : this.options.period) - 1);
+        rangeEnd.setDate(date - 1);
 
+        // prepare data
         var aCountData = {};
+        var aPriceData = {};
         for(var i = 0; i < aTxData.length; i++){
             var aDayData = aTxData[i];
             aCountData[aDayData._id.year + '-' + aDayData._id.month + '-' + aDayData._id.day] = aDayData.cnt;
+            if(i < widgetPriceData.length){
+                var aDayPriceData = widgetPriceData[i];
+                aPriceData[aDayPriceData.date] = aDayPriceData;
+            }
         }
-
-        var getRandom = function getRandomInt(min, max){
-            min = 190;
-            max = 200;
-            return Math.floor(Math.random() * (max - min + 1)) + min;
-        }
+        console.log(aCountData);
+        console.log(aPriceData);
 
         var curDate = true;
         while(stDate > fnDate){
@@ -936,10 +935,19 @@ console.log(widgetPriceData);
                 curDate = false;
                 continue;
             }
-            var price = getRandom();
-            aData.push([new Date(stDate.getFullYear(), stDate.getMonth(), stDate.getDate()), cnt, price - 10, price - 5, price + 5, price + 10]);
-            //dataTable.addRow([new Date(stDate.getFullYear(), stDate.getMonth(), stDate.getDate()), cnt, cnt]);
-            //dataTable.addRow([new Date(stDate.getFullYear(), stDate.getMonth(), stDate.getDate()), cnt, cnt - 5, cnt + 5, cnt - 10, cnt + 10]);
+
+            // get price data
+            var keyPrice = stDate.getFullYear() + '-' + (stDate.getMonth() < 9 ? '0' : '') + (stDate.getMonth() + 1) + '-' + (stDate.getDate() < 10 ? '0' : '') + stDate.getDate();
+            // 'Low', 'Open', 'Close', 'High'
+            var low = 0, open = 0, high = 0, close = 0;
+            if('undefined' !== typeof(aPriceData[keyPrice])){
+                low = aPriceData[keyPrice]['low'];
+                open = aPriceData[keyPrice]['open'];
+                close = aPriceData[keyPrice]['close'];
+                high = aPriceData[keyPrice]['high'];
+            }
+
+            aData.push([new Date(stDate.getFullYear(), stDate.getMonth(), stDate.getDate()), cnt, low, open, close, high]);
             var newDate = stDate.setDate(stDate.getDate() - 1);
             stDate = new Date(newDate);
         }
@@ -952,40 +960,59 @@ console.log(widgetPriceData);
 
         // create dashboard and control wrapper
         var dashboard = new google.visualization.Dashboard(this.el);
-        var controlOptions = {
+        var defControlOptions = {
             controlType: 'ChartRangeFilter',
             containerId: 'control',
+            state: {
+                range: {
+                    start: rangeStart,
+                    end: rangeEnd
+                }
+            },
             options: {
                 filterColumnIndex: 0,
                 ui: {
                     chartType: 'ComboChart',
                     chartOptions: {
-                        hAxis: {
+                        chartArea: {
+                            height: '20%',
+                        },
+                        colors: ['#65A5DF'],
+                        lineWidth: 0,
+                        minRangeSize: 86400000,
+                        hAxis : {
+                            title: '',
+                            titleTextStyle: {
+                                italic: false
+                            },
+                            slantedText: false,
+                            maxAlternation: 1,
+                            maxTextLines: 1,
                             format: 'MMM d',
                             gridlines: {
-                                count: 10,
                                 color: "none"
-                            }
+                            },
                         },
                         series: {
                             0: {
-                                type: 'area'
+                                targetAxisIndex: 0,
+                                type: 'area',
+                                lineWidth: 1
                             },
-                            /*1: {
-                                type: 'candlesticks'
-                            }*/
                         }
-                    },
-                    minRangeSize: 86400000
-                }
-            },
-            state: {
-                range: {
-                    start: fnDate,
-                    end: controlFnDate
+                    }
                 }
             }
         };
+        if(this.options['theme'] == 'dark'){
+            defControlOptions.options.ui.chartOptions.colors = ['#47C2FF'];
+            defControlOptions.options.ui.chartOptions.backgroundColor = {fill: 'transparent'};
+
+            defControlOptions.options.ui.chartOptions.hAxis.textStyle = {color: '#DEDEDE'};
+            defControlOptions.options.ui.chartOptions.hAxis.titleTextStyle.color = '#DEDEDE';
+            defControlOptions.options.ui.chartOptions.hAxis.baselineColor = '#DEDEDE';
+        }
+        var controlOptions = $.extend(true, defControlOptions, this.options['controlOptions']);
         var control = new google.visualization.ControlWrapper(controlOptions);
 
         // create combo chart
@@ -993,10 +1020,22 @@ console.log(widgetPriceData);
             chartType: 'ComboChart',
             containerId: 'chart',
             options: {
+                //theme: 'maximized',
                 title: '',
                 legend: { position: 'none' },
                 tooltip: {
                     format: 'MMM d',
+                },
+                colors: ['#65A5DF', 'black'],
+                series: {
+                    0: {
+                        type: 'line',
+                        targetAxisIndex: 0
+                    },
+                    1: {
+                        type: 'candlesticks',
+                        targetAxisIndex: 1
+                    }
                 },
                 hAxis : {
                     title: '',
@@ -1011,56 +1050,54 @@ console.log(widgetPriceData);
                     gridlines: {
                         count: 10,
                         color: "none"
-                    }
+                    },
                 },
                 vAxis: {
+                    viewWindowMode: 'maximized',
+                    title: '',
+                    titleTextStyle: {
+                        italic: false
+                    },
+                    gridlines: {
+                        color: "none"
+                    },
+                    format: '#,###',
+                    /*minValue: 0,
+                    maxValue: 3,
+                    viewWindow: {
+                        min: 0
+                    },*/
+                },
+                vAxes: {
                     0 : {
-                        title: '',
-                        titleTextStyle: {
-                            italic: false
-                        },
-                        minValue: 0,
-                        viewWindow: {
-                            min: 0
-                        },
-                        gridlines: {
-                            color: "none"
-                        },
-                        maxValue: 3,
-                        format: '#,###',
+                        title: 'Token operations',
+                        format: '#,###'
                     },
                     1 : {
-                        title: '',
-                        titleTextStyle: {
-                            italic: false
-                        },
-                        minValue: 0,
-                        viewWindow: {
-                            min: 0
-                        },
-                        gridlines: {
-                            color: "none"
-                        },
-                        maxValue: 3,
-                        format: '#,###',
+                        title: 'Price',
                     }
                 },
                 pointSize: 5,
-                series: {
-                    0: {
-                        type: 'line',
-                        targetAxisIndex: 0
+                bar: {
+                    groupWidth: '90%'
+                },
+                candlestick: {
+                    fallingColor: {
+                        strokeWidth: 1,
+                        fill: '#a52714',
+                        stroke: 'darkRed'
                     },
-                    1: {
-                        type: 'candlesticks',
-                        targetAxisIndex: 1
+                    risingColor: {
+                        strokeWidth: 1,
+                        fill: '#339349',
+                        stroke: 'darkGreen'
                     }
                 }
             }
         };
         if(this.options['theme'] == 'dark'){
-            def.options.colors = ['#47C2FF'];
-            def.options.titleTextStyle = {color: '#DEDEDE'};
+            def.options.colors = ['#47C2FF', 'white'];
+            def.options.titleTextStyle = {color: 'red'};
             def.options.backgroundColor = {fill: 'transparent'};
 
             def.options.hAxis.textStyle = {color: '#DEDEDE'};
