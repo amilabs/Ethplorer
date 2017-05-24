@@ -30,7 +30,11 @@ tr.paginationFooter td ul.pagination {
 .nav-tabs.unclickable {
     pointer-events: none;
 }
-
+.ethplorer-adv {
+    color: white;
+    text-align: center;
+    display:none;
+}
 
 .table.unclickable {
     opacity: 0.5;

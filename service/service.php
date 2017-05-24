@@ -23,6 +23,7 @@ $data = isset($_GET["data"]) ? $_GET["data"] : false;
 $page = isset($_GET["page"]) ? $_GET["page"] : false;
 $refresh = isset($_GET["refresh"]) ? $_GET["refresh"] : false;
 $search = isset($_GET["search"]) ? $_GET["search"] : false;
+$adv = isset($_GET["adv"]) ? $_GET["adv"] : false;
 
 // Allow cross-domain ajax requests
 header('Access-Control-Allow-Origin: *');
@@ -72,8 +73,14 @@ if(strlen($search)){
             'pageSize' => $pageSize
         );
     }
+    $result['ethPrice'] = $es->getETHPrice();
 }
 
-$result['ethPrice'] = $es->getETHPrice();
+if($adv){
+    $all = $es->getActiveAdverts();
+    if(count($all)){
+        $result = $all[rand(0, count($all) - 1)];
+    }
+}
 
 echo json_encode($result);

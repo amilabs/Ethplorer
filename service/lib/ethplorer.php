@@ -1097,6 +1097,7 @@ class Ethplorer {
                 }
                 $result = $res;
             }
+            $this->oCache->save($cache, $result);
         }
         return $result;
     }

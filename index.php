@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "148";
+$codeVersion = "149";
 
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $es = Ethplorer::db(array());
@@ -79,6 +79,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
     <script src="/js/bignumber.js"></script>
     <script src="/js/ethplorer.js?v=<?=$codeVersion?>"></script>
     <script src="/js/ethplorer-search.js?v=<?=$codeVersion?>"></script>
+    <script src="/js/ethplorer-adv.js?v=<?=$codeVersion?>"></script>
     <script src="/js/config.js"></script>
     <script src="/js/md5.min.js"></script>
 </head>
@@ -124,6 +125,12 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                 <div id="error" class="content-page text-center">
                     <h1 class="text-danger"></h1>
                     <h3 id="error-reason" class="text-danger"></h3>
+                </div>
+
+                <div class="ethplorer-adv">
+                    <div class="col-xs-12">
+                        Sponsored Link: <span id="ethplorer-adv"></span>
+                    </div>
                 </div>
 
                 <div>

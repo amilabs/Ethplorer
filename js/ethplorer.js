@@ -153,7 +153,18 @@ Ethplorer = {
             $('.tx-details-link').removeClass('closed');
             $('#tx-details-block').hide();
         }
-        EthplorerSearch.init($('#search-form'), $('#search'), Ethplorer.search);
+
+        // @see ethplorer-search.js
+        if('undefined' !== typeof(EthplorerSearch)){
+            EthplorerSearch.init($('#search-form'), $('#search'), Ethplorer.search);
+        }
+
+        // @see ethplorer-adv.js
+        if('undefined' !== typeof(EthplorerAdv)){
+            EthplorerAdv.init($('#ethplorer-adv'), function(){
+                $('.ethplorer-adv').show();
+            });
+        }
 
         // implement save to file function
         /*Ethplorer.saveData = function(data, name, mimetype){
