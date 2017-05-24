@@ -559,6 +559,12 @@ class Ethplorer {
                 $aResult[$address] = $aToken;
                 $aResult[$address] += $this->getTokenTotalInOut($address);
                 $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
+                if(isset($this->aSettings['client']) && isset($this->aSettings['client']['tokens'])){
+                    $aClientTokens = $this->aSettings['client']['tokens'];
+                    if(isset($aClientTokens[$address])){
+                        $aResult[$address] = array_merge($aResult[$address], $aClientTokens[$address]);
+                    }
+                }
             }
             $this->oCache->save('tokens', $aResult);
         }
