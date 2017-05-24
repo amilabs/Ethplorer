@@ -47,7 +47,7 @@ EthplorerNote = {
                     }
                 }(data));
                 if(data.hasNext){
-                    setTimeout(EthplorerNote.loadNext, 30000);
+                    setTimeout(EthplorerNote.loadNext, 15000);
                 }
                 EthplorerNote.container.show();
             }
