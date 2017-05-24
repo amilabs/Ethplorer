@@ -1471,7 +1471,7 @@ class Ethplorer {
         $aResult = array();
 
         $aHistoryCount = $this->getTokenHistoryGrouped($period, $address);
-        $aResult['countTx'] = $aHistoryCount;
+        $aResult['countTxs'] = $aHistoryCount;
         unset($aHistoryCount);
 
         $aHistoryPrices = $this->getTokenPriceHistory($address, $period, $type);
