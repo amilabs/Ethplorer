@@ -19,8 +19,8 @@ EthplorerNote = {
     next: 0,
     init: function(container){
         EthplorerNote.container = container;
-        if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') >= 0)){
-            ethplorerWidget.service = '//' + document.location.host + EthplorerNote.service;
+        if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') < 0)){
+            ethplorerWidget.service = '//ethplorer.io' + EthplorerNote.service;
         }
         var inner = $('<DIV>');
         inner.addClass('ethplorer-note');
