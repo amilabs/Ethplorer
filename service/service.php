@@ -83,6 +83,7 @@ if(strlen($search) || (false !== $data)){
 
 if($adv){
     unset($aConfig['mongo']);
+    header('Access-Control-Allow-Origin: *');
     $es = Ethplorer::db($aConfig);
     $all = $es->getActiveNotes();
     $index = isset($_GET["note"]) && (abs((int)$_GET["note"] < count($all))) ? abs((int)$_GET["note"]) : rand(0, count($all) - 1);
