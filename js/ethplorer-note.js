@@ -20,7 +20,7 @@ EthplorerNote = {
     init: function(container){
         EthplorerNote.container = container;
         if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') < 0)){
-            ethplorerWidget.service = '//ethplorer.io' + EthplorerNote.service;
+            EthplorerNote.service = '//ethplorer.io' + EthplorerNote.service;
         }
         var inner = $('<DIV>');
         inner.addClass('ethplorer-note');
