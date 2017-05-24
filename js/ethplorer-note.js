@@ -17,15 +17,15 @@
 EthplorerNote = {
     service: "/service/service.php",
     next: 0,
-    init: function(container, callback){
+    init: function(container){
         EthplorerNote.container = container;
-
+        if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') >= 0)){
+            ethplorerWidget.service = '//' + document.location.host + EthplorerNote.service;
+        }
         var inner = $('<DIV>');
         inner.addClass('ethplorer-note');
         EthplorerNote.container.append(inner);
-        EthplorerNote.inner = inner;
-        
-        EthplorerNote.callback = callback;
+        EthplorerNote.inner = inner;        
         EthplorerNote.loadNext();
     },
     loadNext: function(){

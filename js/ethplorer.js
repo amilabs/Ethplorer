@@ -161,9 +161,7 @@ Ethplorer = {
 
         // @see ethplorer-adv.js
         if('undefined' !== typeof(EthplorerNote)){
-            EthplorerNote.init($('#ethplorer-note'), function(){
-                $('#ethplorer-note').show();
-            });
+            EthplorerNote.init($('#ethplorer-note'));
         }
 
         // implement save to file function
