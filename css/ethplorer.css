@@ -50,11 +50,13 @@ tr.paginationFooter td ul.pagination {
 #ethplorer-note .ethplorer-note {
     color: white;
     text-align: center;
- }
+    font-weight: 300;
+}
 
- #ethplorer-note img,
 #ethplorer-note .ethplorer-note img {
     height: 35px;
+    margin-top: -10px;
+    margin-bottom: -10px;
 }
 
 #ethplorer-note .ethplorer-note a {
