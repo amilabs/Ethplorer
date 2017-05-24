@@ -1617,16 +1617,18 @@ class Ethplorer {
         return ($a['txsCount'] < $b['txsCount']) ? 1 : -1;
     }
 
-    public function getActiveAdverts(){
+    public function getActiveNotes(){
         $result = array();
         if(isset($this->aSettings['adv'])){
             $all = $this->aSettings['adv'];
             foreach($all as $one){
-                if(isset($one['activeTo'])){
-                    if($one['activeTo'] <= time()){
+                if(isset($one['activeTill'])){
+                    if($one['activeTill'] <= time()){
                         continue;
                     }
                 }
+                $one['link'] = urlencode($one['link']);
+                $one['hasNext'] = (count($all) > 1);
                 $result[] = $one;
             }
         }

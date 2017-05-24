@@ -30,10 +30,37 @@ tr.paginationFooter td ul.pagination {
 .nav-tabs.unclickable {
     pointer-events: none;
 }
-.ethplorer-adv {
+
+.navbar.navbar-inverse {
+    padding-bottom:0px;
+    padding-top:0px;
+    border: 0px;
+    border-radius: 0px;
+}
+
+#ethplorer-note {
+    display:none;
+    width: 100%;
+    background-color: rgba(19,150,226,1);
+    padding: 10px;
+    margin-bottom: 20px;
+    margin-top: -20px;
+}
+
+#ethplorer-note .ethplorer-note {
     color: white;
     text-align: center;
-    display:none;
+ }
+
+ #ethplorer-note img,
+#ethplorer-note .ethplorer-note img {
+    height: 35px;
+}
+
+#ethplorer-note .ethplorer-note a {
+    color: white;
+    text-decoration: none;
+    border-bottom: 2px solid white;
 }
 
 .table.unclickable {
@@ -979,6 +1006,10 @@ li.ui-menu-item.have-more {
 }
 
 @media screen and (max-width: 399px) {
+    #ethplorer-note {
+        margin-top: 0px;
+    }
+    
     .total-records {
         display: none;
     }
