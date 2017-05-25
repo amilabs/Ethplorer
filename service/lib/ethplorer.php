@@ -559,6 +559,12 @@ class Ethplorer {
                 $aResult[$address] = $aToken;
                 $aResult[$address] += $this->getTokenTotalInOut($address);
                 $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
+                if(isset($this->aSettings['client']) && isset($this->aSettings['client']['tokens'])){
+                    $aClientTokens = $this->aSettings['client']['tokens'];
+                    if(isset($aClientTokens[$address])){
+                        $aResult[$address] = array_merge($aResult[$address], $aClientTokens[$address]);
+                    }
+                }
             }
             $this->oCache->save('tokens', $aResult);
         }
@@ -1640,16 +1646,18 @@ class Ethplorer {
         return ($a['txsCount'] < $b['txsCount']) ? 1 : -1;
     }
 
-    public function getActiveAdverts(){
+    public function getActiveNotes(){
         $result = array();
         if(isset($this->aSettings['adv'])){
             $all = $this->aSettings['adv'];
             foreach($all as $one){
-                if(isset($one['activeTo'])){
-                    if($one['activeTo'] <= time()){
+                if(isset($one['activeTill'])){
+                    if($one['activeTill'] <= time()){
                         continue;
                     }
                 }
+                $one['link'] = urlencode($one['link']);
+                $one['hasNext'] = (count($all) > 1);
                 $result[] = $one;
             }
         }
