@@ -901,23 +901,40 @@ Ethplorer = {
     },
 
     showAddressWidget: function(data){
+        console.log('testWidget = ' + testWidget);
         var oToken = Ethplorer.prepareToken(data.token);
         var address = Ethplorer.currentAddress;
         if(('undefined' !== typeof(ethplorerWidget)) && (true || !Ethplorer.isProd)){
             if(data.isContract || data.token){
-                $('#token-history-grouped-widget').show();
                 var widgetTitle = (oToken && oToken.name) ? (oToken.name + ' token pulse') : '';
-                ethplorerWidget.init(
-                    '#token-history-grouped-widget',
-                    'tokenHistoryGrouped',
-                    {
-                        theme: 'dark',
-                        getCode: true,
-                        address: address,
-                        options: {title: widgetTitle, vAxis: {title: 'Token operations'}, hAxis: {title: '30 days token operations chart'}}
-                    }
-                );
-                ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
+
+                if(testWidget){
+                    $('#token-price-history-grouped-widget').show();
+                    ethplorerWidget.init(
+                        '#token-price-history-grouped-widget',
+                        'tokenPriceHistoryGrouped',
+                        {
+                            theme: 'dark',
+                            getCode: true,
+                            address: address,
+                            options: {title: widgetTitle, vAxis: {title: 'Token operations'}}
+                        }
+                    );
+                    ethplorerWidget.loadScript("https://www.google.com/jsapi", ethplorerWidget.loadGoogleControlCharts);
+                }else{
+                    $('#token-history-grouped-widget').show();
+                    ethplorerWidget.init(
+                        '#token-history-grouped-widget',
+                        'tokenHistoryGrouped',
+                        {
+                            theme: 'dark',
+                            getCode: true,
+                            address: address,
+                            options: {title: widgetTitle, vAxis: {title: 'Token operations'}, hAxis: {title: '30 days token operations chart'}}
+                        }
+                    );
+                    ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
+                }
             }
         }else{
             // Wait 3 seconds and retry
