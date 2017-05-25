@@ -31,7 +31,7 @@ EthplorerNote = {
     loadNext: function(){
         $.getJSON(EthplorerNote.service, {notes: 1, note: EthplorerNote.next}, function(data, status, xhr){
             if('undefined' !== typeof(data.link)){
-                EthplorerNote.inner.fadeOut(300, function(_data){
+                EthplorerNote.inner.fadeOut(500, function(_data){
                     return function(){
                         var link = "/go.php?link=" + _data.link;
                         EthplorerNote.inner.html(_data.html.replace('%link%', link));
@@ -43,7 +43,7 @@ EthplorerNote = {
                             img.attr('src', _data.image);
                             EthplorerNote.inner.prepend(img);
                         }
-                        EthplorerNote.inner.fadeIn(500);
+                        EthplorerNote.inner.fadeIn(800);
                     }
                 }(data));
                 if(data.hasNext){
