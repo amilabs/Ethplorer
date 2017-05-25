@@ -1407,12 +1407,10 @@ class Ethplorer {
 
     public function getTokenPriceHistory($address, $period = 0, $type = 'hourly', $updateCache = FALSE){
         $result = false;
+        $rates = array();
         $cache = 'rates-history-' . /*($period > 0 ? ('period-' . $period . '-') : '' ) . ($type != 'hourly' ? $type . '-' : '') .*/ $address;
-        $rates = $this->oCache->get($cache, false, true);
-        if($updateCache || (((FALSE === $rates) || (is_array($rates) && !isset($rates[$address]))) && isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates'])))){
-            if(!is_array($rates)){
-                $rates = array();
-            }
+        $result = $this->oCache->get($cache, false, true);
+        if($updateCache || ((FALSE === $result) && isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates'])))){
             if(isset($this->aSettings['currency'])){
                 $method = 'getCurrencyHistory';
                 $params = array($address, 'USD');
