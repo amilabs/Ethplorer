@@ -892,7 +892,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
 
     this.drawChart = function(aTxData, widgetPriceData){
         var aData = [];
-        aData.push(['Day', 'Token operations', 'Low', 'Open', 'Close', 'High']);
+        aData.push(['Day', 'Low', 'Open', 'Close', 'High', 'Token operations', { role: 'style' }, 'Volume', { role: 'style' }]);
 
         if(aTxData.length){
             var firstDate = aTxData[0]._id.year + '-' + aTxData[0]._id.month + '-' + aTxData[0]._id.day;
@@ -948,7 +948,9 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 close = aPriceData[keyPrice]['close'];
                 high = aPriceData[keyPrice]['high'];
             }
-            aData.push([new Date(d.getUTCFullYear() + '-' + (1 + d.getUTCMonth()) + '-' + d.getUTCDate()), cnt, low, open, close, high]);
+            var volume = aPriceData[keyPrice]['volume'];
+                volumeConverted = aPriceData[keyPrice]['volumeConverted'];
+            aData.push([new Date(d.getUTCFullYear() + '-' + (1 + d.getUTCMonth()) + '-' + d.getUTCDate()), low, open, close, high, cnt, 'opacity: 0.5', volume, this.options['theme'] == 'dark' ? 'opacity: 0.1' : 'opacity: 0.5']);
         }
         console.log(aData);
         var data = google.visualization.arrayToDataTable(aData);
@@ -990,24 +992,28 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                             slantedText: false,
                             maxAlternation: 1,
                             maxTextLines: 1,
-                            format: 'MMM d',
+                            format: 'MM/dd',
                             gridlines: {
                                 color: "none"
                             },
                         },
                         series: {
                             0: {
-                                targetAxisIndex: 0,
+                                type: 'area',
+                                lineWidth: 0
+                            },
+                            1: {
+                                targetAxisIndex: 1,
                                 type: 'area',
                                 lineWidth: 1
-                            },
+                            }
                         }
                     }
                 }
             }
         };
         if(this.options['theme'] == 'dark'){
-            defControlOptions.options.ui.chartOptions.colors = ['#47C2FF'];
+            defControlOptions.options.ui.chartOptions.colors = ['#DEDEDE'];
             defControlOptions.options.ui.chartOptions.backgroundColor = {fill: 'transparent'};
 
             defControlOptions.options.ui.chartOptions.hAxis.textStyle = {color: '#DEDEDE'};
@@ -1031,13 +1037,17 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 colors: ['#65A5DF', 'black'],
                 series: {
                     0: {
+                        type: 'candlesticks',
+                        targetAxisIndex: 1
+                    },
+                    1: {
                         type: 'line',
                         targetAxisIndex: 0
                     },
-                    1: {
-                        type: 'candlesticks',
-                        targetAxisIndex: 1
-                    }
+                    2: {
+                        type: 'bars',
+                        targetAxisIndex: 2,
+                    },
                 },
                 hAxis : {
                     title: '',
@@ -1048,7 +1058,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                     slantedText: false,
                     maxAlternation: 1,
                     maxTextLines: 1,
-                    format: 'MMM d',
+                    format: 'MM/dd',
                     gridlines: {
                         count: 10,
                         color: "none"
@@ -1071,18 +1081,22 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                     },*/
                 },
                 vAxes: {
-                    0 : {
+                    0: {
                         title: 'Token operations',
                         format: '#,###'
                     },
-                    1 : {
+                    1: {
                         title: 'Price',
+                    },
+                    2: {
+                        textStyle: {
+                            color: 'none'
+                        }
                     }
                 },
-                pointSize: 5,
-                bar: {
-                    groupWidth: '90%'
-                },
+                pointSize: 0,
+                lineWidth: 1,
+                bar: { groupWidth: '70%' },
                 candlestick: {
                     fallingColor: {
                         strokeWidth: 1,
@@ -1098,8 +1112,8 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             }
         };
         if(this.options['theme'] == 'dark'){
-            def.options.colors = ['#47C2FF', 'white'];
-            def.options.titleTextStyle = {color: 'red'};
+            def.options.colors = ['#47C2FF', 'white', '#DEDEDE'];
+            def.options.titleTextStyle = {color: '#DEDEDE'};
             def.options.backgroundColor = {fill: 'transparent'};
 
             def.options.hAxis.textStyle = {color: '#DEDEDE'};
