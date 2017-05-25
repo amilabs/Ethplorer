@@ -873,6 +873,9 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             this.options[key] = options[key];
         }
     }
+    if(this.options.period <= 0){
+        this.options.period = 365;
+    }
 
     this.api = ethplorerWidget.api + '/getTokenPriceHistoryGrouped';
     if(options && options.address){
@@ -891,15 +894,20 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         var aData = [];
         aData.push(['Day', 'Token operations', 'Low', 'Open', 'Close', 'High']);
 
-        var stDate = new Date(),
-            fnDate = new Date(),
-            rangeStart = new Date(),
-            rangeEnd = new Date();
+        if(aTxData.length){
+            var firstDate = aTxData[0]._id.year + '-' + aTxData[0]._id.month + '-' + aTxData[0]._id.day;
+        }else{
+            return;
+        }
+
+        var stDate = new Date(firstDate);
+            fnDate = new Date(firstDate),
+            rangeStart = new Date(firstDate),
+            rangeEnd = new Date(firstDate);
         var date = stDate.getDate();
-        stDate.setDate(date - 1);
-        fnDate.setDate(date - this.options.period - 1);
-        rangeStart.setDate(date - (this.options.period > 60 ? 60 : this.options.period) - 1);
-        rangeEnd.setDate(date - 1);
+        fnDate.setDate(date - this.options.period + 1);
+        rangeStart.setDate(date - (this.options.period > 60 ? 60 : this.options.period) + 1);
+        rangeEnd.setDate(date);
 
         // prepare data
         var aCountData = {};
@@ -921,21 +929,17 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         if(this.options.period > 60){
             fnDate = startPriceDate;
         }
-        //console.log(aCountData);
-        //console.log(aPriceData);
+        console.log(aCountData);
+        console.log(aPriceData);
 
         var curDate = true;
-        while(stDate > fnDate){
+        for(var d = stDate; d >= fnDate; d.setDate(d.getDate() - 1)){
             // get tx count
-            var key = stDate.getFullYear() + '-' + (stDate.getMonth() + 1) + '-' + stDate.getDate();
+            var key = d.getUTCFullYear() + '-' + (d.getUTCMonth() + 1) + '-' + d.getUTCDate();
             var cnt = ('undefined' !== typeof(aCountData[key])) ? aCountData[key] : 0;
-            if(curDate && cnt == 0){
-                curDate = false;
-                continue;
-            }
 
             // get price data
-            var keyPrice = stDate.getFullYear() + '-' + (stDate.getMonth() < 9 ? '0' : '') + (stDate.getMonth() + 1) + '-' + (stDate.getDate() < 10 ? '0' : '') + stDate.getDate();
+            var keyPrice = d.getUTCFullYear() + '-' + (d.getUTCMonth() < 9 ? '0' : '') + (d.getUTCMonth() + 1) + '-' + (d.getUTCDate() < 10 ? '0' : '') + d.getUTCDate();
             // 'Low', 'Open', 'Close', 'High'
             var low = 0, open = 0, high = 0, close = 0;
             if('undefined' !== typeof(aPriceData[keyPrice])){
@@ -944,17 +948,17 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 close = aPriceData[keyPrice]['close'];
                 high = aPriceData[keyPrice]['high'];
             }
-
-            aData.push([new Date(stDate.getFullYear(), stDate.getMonth(), stDate.getDate()), cnt, low, open, close, high]);
-            var newDate = stDate.setDate(stDate.getDate() - 1);
-            stDate = new Date(newDate);
+            aData.push([new Date(d.getUTCFullYear() + '-' + (1 + d.getUTCMonth()) + '-' + d.getUTCDate()), cnt, low, open, close, high]);
         }
-
+        console.log(aData);
         var data = google.visualization.arrayToDataTable(aData);
 
         // create div's
         this.el.append($('<div>', {id: 'chart'}));
         this.el.append($('<div>', {id: 'control'}));
+        if(this.options.period < 2){
+            $('#control').hide();
+        }
 
         // create dashboard and control wrapper
         var dashboard = new google.visualization.Dashboard(this.el);
