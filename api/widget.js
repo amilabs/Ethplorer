@@ -890,9 +890,13 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
     };
 
+    this.getTooltip = function(date, low, open, close, high, operations, volume, convertedVolume){
+        return 'Hi!';
+    }
+
     this.drawChart = function(aTxData, widgetPriceData){
         var aData = [];
-        aData.push(['Day', 'Low', 'Open', 'Close', 'High', 'Token operations', { role: 'style' }, 'Volume', { role: 'style' }]);
+        aData.push(['Day', /*{type: 'string', role: 'tooltip', 'p': {'html': true}},*/ 'Low', 'Open', 'Close', 'High', 'Token operations', {role: 'style'}, 'Volume', {role: 'style'}]);
 
         if(aTxData.length){
             var firstDate = aTxData[0]._id.year + '-' + aTxData[0]._id.month + '-' + aTxData[0]._id.day;
@@ -1033,6 +1037,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 legend: { position: 'none' },
                 tooltip: {
                     format: 'MMM d',
+                    //isHtml: true
                 },
                 colors: ['#65A5DF', 'black'],
                 series: {
@@ -1100,19 +1105,19 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 candlestick: {
                     fallingColor: {
                         strokeWidth: 1,
-                        fill: '#a52714',
-                        stroke: 'darkRed'
+                        fill: '#710000',
+                        stroke: '#580000'
                     },
                     risingColor: {
                         strokeWidth: 1,
-                        fill: '#339349',
-                        stroke: 'darkGreen'
+                        fill: '#003f00',
+                        stroke: '#002d00'
                     }
                 }
             }
         };
         if(this.options['theme'] == 'dark'){
-            def.options.colors = ['#47C2FF', 'white', '#DEDEDE'];
+            def.options.colors = ['#708090', 'white', '#DEDEDE'];
             def.options.titleTextStyle = {color: '#DEDEDE'};
             def.options.backgroundColor = {fill: 'transparent'};
 
