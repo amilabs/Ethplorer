@@ -952,8 +952,8 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 close = aPriceData[keyPrice]['close'];
                 high = aPriceData[keyPrice]['high'];
             }
-            var volume = aPriceData[keyPrice]['volume'];
-                volumeConverted = aPriceData[keyPrice]['volumeConverted'];
+            var volume = ('undefined' !== typeof(aPriceData[keyPrice]['volume'])) ? aPriceData[keyPrice]['volume'] : 0;
+                volumeConverted = ('undefined' !== typeof(aPriceData[keyPrice]['volumeConverted'])) ? aPriceData[keyPrice]['volumeConverted'] : 0;
             aData.push([new Date(d.getUTCFullYear() + '-' + (1 + d.getUTCMonth()) + '-' + d.getUTCDate()), low, open, close, high, cnt, 'opacity: 0.5', volume, this.options['theme'] == 'dark' ? 'opacity: 0.1' : 'opacity: 0.5']);
         }
         console.log(aData);
