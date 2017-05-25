@@ -1417,7 +1417,7 @@ class Ethplorer {
                 $method = 'getCurrencyHistory';
                 $params = array($address, 'USD');
                 $result = $this->_jsonrpcall($this->aSettings['currency'], $method, $params);
-                $this->oCache->save($cache, $rates);
+                $this->oCache->save($cache, $result);
             }
         }
         if($result){
