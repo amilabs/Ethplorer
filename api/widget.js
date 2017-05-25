@@ -861,7 +861,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
     this.resizeTimer = null;
 
     this.options = {
-        period: 30,
+        period: 365,
         type: 'area',
         theme: 'light',
         options: {},
@@ -874,30 +874,18 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         }
     }
 
-    this.api = ethplorerWidget.api + '/getTokenHistoryGrouped';
-    this.apiPrice = ethplorerWidget.api + '/getTokenPriceHistoryGrouped';
+    this.api = ethplorerWidget.api + '/getTokenPriceHistoryGrouped';
     if(options && options.address){
         this.api += ('/' + options.address.toString().toLowerCase());
-        this.apiPrice += ('/' + options.address.toString().toLowerCase());
     }
-    
+
     this.templates = {
         loader: '<div class="txs-loading">Loading...</div>',
     };
 
     this.load = function(){
-        // load price data first
-        $.getJSON(this.apiPrice, this.getRequestParams(), this.loadTokenHistory);
+        $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
     };
-
-    this.loadTokenHistory = function(obj){
-        return function(data){
-            $.getJSON(obj.api, obj.getRequestParams(), obj.refreshWidget);
-            if(data && !data.error){
-                obj.widgetPriceData = data.countTxs;
-            }
-        };
-    }(this);
 
     this.drawChart = function(aTxData, widgetPriceData){
         var aData = [];
@@ -919,16 +907,26 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         for(var i = 0; i < aTxData.length; i++){
             var aDayData = aTxData[i];
             aCountData[aDayData._id.year + '-' + aDayData._id.month + '-' + aDayData._id.day] = aDayData.cnt;
-            if(i < widgetPriceData.length){
-                var aDayPriceData = widgetPriceData[i];
+        }
+        var startPriceDate = new Date();
+        for(var i = widgetPriceData.length - 1; i >= 0; i--){
+            var aDayPriceData = widgetPriceData[i];
+            if(aDayPriceData.low == 0 && aDayPriceData.open == 0 && aDayPriceData.close == 0 && aDayPriceData.high == 0){
+                break;
+            }else{
                 aPriceData[aDayPriceData.date] = aDayPriceData;
             }
+            startPriceDate = new Date(aDayPriceData.date.substring(0, 4), aDayPriceData.date.substring(5, 7) - 1, aDayPriceData.date.substring(8));
         }
-        console.log(aCountData);
-        console.log(aPriceData);
+        if(this.options.period > 60){
+            fnDate = startPriceDate;
+        }
+        //console.log(aCountData);
+        //console.log(aPriceData);
 
         var curDate = true;
         while(stDate > fnDate){
+            // get tx count
             var key = stDate.getFullYear() + '-' + (stDate.getMonth() + 1) + '-' + stDate.getDate();
             var cnt = ('undefined' !== typeof(aCountData[key])) ? aCountData[key] : 0;
             if(curDate && cnt == 0){
@@ -1153,10 +1151,12 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
 
     this.refreshWidget = function(obj){
         return function(data){
-            if(data && !data.error && data.countTxs){
-                obj.widgetData = data.countTxs;
+            if(data && !data.error && data.history){
+                console.log(data);
+                obj.widgetData = data.history.countTxs;
+                obj.widgetPriceData = data.history.prices;
                 obj.el.find('.txs-loading').remove();
-                obj.drawChart(data.countTxs, obj.widgetPriceData);
+                obj.drawChart(data.history.countTxs, data.history.prices);
                 ethplorerWidget.appendEthplorerLink(obj);
                 if('function' === typeof(obj.options.onLoad)){
                     obj.options.onLoad();
