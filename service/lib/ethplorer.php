@@ -1474,7 +1474,7 @@ class Ethplorer {
     }
 
     protected function getTokenPriceCurrent($address){
-        //$this->_getRateByDate($address, )
+        $this->_getRateByDate($address, date("Y-m-d"));
     }
 
     public function getTokenPriceHistoryGrouped($address, $period = 365, $type = 'daily', $updateCache = FALSE){
@@ -1488,9 +1488,9 @@ class Ethplorer {
         $aResult['prices'] = $aHistoryPrices;
         unset($aHistory);
 
-        /*$aCurrentData = $this->getTokenPriceCurrent($address);
-        $aResult['current'] = $aCurrentData;
-        unset($aCurrentData);*/
+        //$aCurrentData = $this->getTokenPriceCurrent($address);
+        $aResult['current'] = $this->_getRateByDate($address, date("Y-m-d"));
+        //unset($aCurrentData);
 
         return $aResult;
     }
