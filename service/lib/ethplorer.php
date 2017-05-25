@@ -1407,7 +1407,7 @@ class Ethplorer {
 
     public function getTokenPriceHistory($address, $period = 0, $type = 'hourly', $updateCache = FALSE){
         $result = false;
-        $cache = 'rates-history-' . ($period > 0 ? ('period-' . $period . '-') : '' ) . ($type != 'hourly' ? $type . '-' : '') . $address;
+        $cache = 'rates-history-' . /*($period > 0 ? ('period-' . $period . '-') : '' ) . ($type != 'hourly' ? $type . '-' : '') .*/ $address;
         $rates = $this->oCache->get($cache, false, true);
         if($updateCache || (((FALSE === $rates) || (is_array($rates) && !isset($rates[$address]))) && isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates'])))){
             if(!is_array($rates)){
@@ -1417,55 +1417,55 @@ class Ethplorer {
                 $method = 'getCurrencyHistory';
                 $params = array($address, 'USD');
                 $result = $this->_jsonrpcall($this->aSettings['currency'], $method, $params);
-                if($result){
-                    $aPriceHistory = array();
-                    if($period){
-                        $tsStart = gmmktime(0, 0, 0, date('n'), date('j') - $period, date('Y'));
-                        for($i = 0; $i < count($result); $i++){
-                            if($result[$i]['ts'] < $tsStart){
-                                continue;
-                            }
-                            $aPriceHistory[] = $result[$i];
-                        }
+                $this->oCache->save($cache, $rates);
+            }
+        }
+        if($result){
+            $aPriceHistory = array();
+            if($period){
+                $tsStart = gmmktime(0, 0, 0, date('n'), date('j') - $period, date('Y'));
+                for($i = 0; $i < count($result); $i++){
+                    if($result[$i]['ts'] < $tsStart){
+                        continue;
+                    }
+                    $aPriceHistory[] = $result[$i];
+                }
+            }else{
+                $aPriceHistory = $result;
+            }
+            if($type == 'daily'){
+                $aPriceHistoryDaily = array();
+                $aDailyRecord = array();
+                $curDate = '';
+                for($i = 0; $i < count($aPriceHistory); $i++){
+                    $firstRecord = false;
+                    $lastRecord = false;
+                    if(!$curDate || ($curDate != $aPriceHistory[$i]['date'])){
+                        $aDailyRecord = $aPriceHistory[$i];
+                        $firstRecord = true;
                     }else{
-                        $aPriceHistory = $result;
-                    }
-                    if($type == 'daily'){
-                        $aPriceHistoryDaily = array();
-                        $aDailyRecord = array();
-                        $curDate = '';
-                        for($i = 0; $i < count($aPriceHistory); $i++){
-                            $firstRecord = false;
-                            $lastRecord = false;
-                            if(!$curDate || ($curDate != $aPriceHistory[$i]['date'])){
-                                $aDailyRecord = $aPriceHistory[$i];
-                                $firstRecord = true;
-                            }else{
-                                if(($i == (count($aPriceHistory) - 1)) || ($aPriceHistory[$i]['date'] != $aPriceHistory[$i + 1]['date'])){
-                                    $lastRecord = true;
-                                }
-                                if($lastRecord){
-                                    $aDailyRecord['close'] = $aPriceHistory[$i]['close'];
-                                }
-                            }
-                            if(!$firstRecord){
-                                if($aPriceHistory[$i]['high'] > $aDailyRecord['high']){
-                                    $aDailyRecord['high'] = $aPriceHistory[$i]['high'];
-                                }
-                                if($aPriceHistory[$i]['low'] < $aDailyRecord['low']){
-                                    $aDailyRecord['low'] = $aPriceHistory[$i]['low'];
-                                }
-                            }
-                            if($lastRecord){
-                                $aPriceHistoryDaily[] = $aDailyRecord;
-                            }
-                            $curDate = $aPriceHistory[$i]['date'];
+                        if(($i == (count($aPriceHistory) - 1)) || ($aPriceHistory[$i]['date'] != $aPriceHistory[$i + 1]['date'])){
+                            $lastRecord = true;
+                        }
+                        if($lastRecord){
+                            $aDailyRecord['close'] = $aPriceHistory[$i]['close'];
                         }
                     }
-                    $rates[$address] = ($type == 'daily' ? $aPriceHistoryDaily : $aPriceHistory);
-                    $this->oCache->save($cache, $rates);
+                    if(!$firstRecord){
+                        if($aPriceHistory[$i]['high'] > $aDailyRecord['high']){
+                            $aDailyRecord['high'] = $aPriceHistory[$i]['high'];
+                        }
+                        if($aPriceHistory[$i]['low'] < $aDailyRecord['low']){
+                            $aDailyRecord['low'] = $aPriceHistory[$i]['low'];
+                        }
+                    }
+                    if($lastRecord){
+                        $aPriceHistoryDaily[] = $aDailyRecord;
+                    }
+                    $curDate = $aPriceHistory[$i]['date'];
                 }
             }
+            $rates[$address] = ($type == 'daily' ? $aPriceHistoryDaily : $aPriceHistory);
         }
         if(is_array($rates) && isset($rates[$address])){
             $result = $rates[$address];
