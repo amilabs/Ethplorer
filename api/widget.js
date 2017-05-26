@@ -135,6 +135,10 @@ ethplorerWidget = {
         }
         widgetCode += ');});' + cr + '</script>';
 
+        if('undefined' !== typeof(widget.type) && widget.type === 'tokenPriceHistoryGrouped'){
+            widgetCode = '<b>Coming soon!</b>';
+        }
+
         $("#" + popupId).text(widgetCode);
         var popupContent = $("#" + popupId).html();
         $("#" + popupId).html(popupContent.replace(/(\n)/gm, "<br/>"));
@@ -855,6 +859,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
  * @returns {undefined}
  */
 ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, templates){
+    this.type = 'tokenPriceHistoryGrouped';
     this.el = element;
     this.widgetData = null;
     this.widgetPriceData = null;
@@ -965,7 +970,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             var chartDay = d.getDate();
             if(chartDay < 10) chartDay = '0' + chartDay;
             var strChartDate = d.getFullYear() + '-' + chartMonth + '-' + chartDay + 'T00:00:00Z';
-            aData.push([new Date(strChartDate), low, open, close, high, cnt, 'opacity: 0.6', volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5']);            
+            aData.push([new Date(strChartDate), low, open, close, high, cnt, 'opacity: 0.5', volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5']);            
 
         }
         //console.log(aData);
@@ -1055,11 +1060,11 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 series: {
                     0: {
                         type: 'candlesticks',
-                        targetAxisIndex: 1
+                        targetAxisIndex: 0
                     },
                     1: {
                         type: 'line',
-                        targetAxisIndex: 0
+                        targetAxisIndex: 1
                     },
                     2: {
                         type: 'bars',
@@ -1099,11 +1104,11 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 },
                 vAxes: {
                     0: {
-                        title: 'Token operations',
+                        title: 'Price, USD',
                         format: '#,###'
                     },
                     1: {
-                        title: 'Price, USD',
+                        title: 'Token operations',
                         format: '##,##'
                     },
                     2: {
@@ -1132,7 +1137,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             }
         };
         if(this.options['theme'] == 'dark'){
-            def.options.colors = ['#C0C0C0', 'white', '#DEDEDE'];
+            def.options.colors = ['#999999', '#FCEC0F', '#DEDEDE'];
             def.options.titleTextStyle = {color: '#DEDEDE'};
             def.options.backgroundColor = {fill: 'transparent'};
 
