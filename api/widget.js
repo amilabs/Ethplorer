@@ -82,7 +82,7 @@ ethplorerWidget = {
     },
     loadGoogleControlCharts: function(){
         if(google){
-            google.load('visualization', '1', {'packages': ['controls'], callback : ethplorerWidget.drawGoogleControlCharts});
+            google.load('visualization', '1', {'packages': ['controls'], 'language': 'en', callback : ethplorerWidget.drawGoogleControlCharts});
         }
     },
     drawGoogleControlCharts: function(){
@@ -1097,7 +1097,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                     gridlines: {
                         color: "none"
                     },
-                    //format: '#,###',
+                    format: '#,###',
                     /*minValue: 0,
                     maxValue: 3,
                     viewWindow: {
@@ -1107,11 +1107,11 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 vAxes: {
                     0: {
                         title: 'Price, USD',
-                        format: '#,###'
+                        format: 'currency'
                     },
                     1: {
                         title: 'Token operations',
-                        format: '##,##'
+                        format: 'decimal',
                     },
                     2: {
                         textStyle: {
