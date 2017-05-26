@@ -976,7 +976,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             var chartDay = d.getDate();
             if(chartDay < 10) chartDay = '0' + chartDay;
             var strChartDate = d.getFullYear() + '-' + chartMonth + '-' + chartDay + 'T00:00:00Z';
-            aData.push([new Date(strChartDate), low, open, close, high, cnt, 'opacity: 0.8', volume, this.options['theme'] == 'dark' ? 'opacity: 0.3' : 'opacity: 0.5']);
+            aData.push([new Date(strChartDate), low, open, close, high, cnt, 'opacity: 0.8', volume, this.options['theme'] == 'dark' ? 'opacity: 0.2' : 'opacity: 0.5']);
         }
         console.log(aData);
         var data = google.visualization.arrayToDataTable(aData);
@@ -1100,7 +1100,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                     gridlines: {
                         color: "none"
                     },
-                    format: '#,###',
+                    //format: '#,###',
                     /*minValue: 0,
                     maxValue: 3,
                     viewWindow: {
@@ -1114,6 +1114,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                     },
                     1: {
                         title: 'Price, USD',
+                        format: '##,##'
                     },
                     2: {
                         textStyle: {
@@ -1141,7 +1142,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             }
         };
         if(this.options['theme'] == 'dark'){
-            def.options.colors = ['#708090', 'white', '#DEDEDE'];
+            def.options.colors = ['#C0C0C0', 'white', '#DEDEDE'];
             def.options.titleTextStyle = {color: '#DEDEDE'};
             def.options.backgroundColor = {fill: 'transparent'};
 
