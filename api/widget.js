@@ -136,12 +136,14 @@ ethplorerWidget = {
         widgetCode += ');});' + cr + '</script>';
 
         if('undefined' !== typeof(widget.type) && widget.type === 'tokenPriceHistoryGrouped'){
-            widgetCode = '<b>Coming soon!</b>';
+            widgetCode = '<center><br/><br/><b>Coming soon!</b></center>';
+            $("#" + popupId).html(widgetCode);
+        }else{
+            $("#" + popupId).text(widgetCode);
+            var popupContent = $("#" + popupId).html();
+            $("#" + popupId).html(popupContent.replace(/(\n)/gm, "<br/>"));
         }
 
-        $("#" + popupId).text(widgetCode);
-        var popupContent = $("#" + popupId).html();
-        $("#" + popupId).html(popupContent.replace(/(\n)/gm, "<br/>"));
         $("#" + popupId).dialog('open');
     },
     parseTemplate: function(template, data){
