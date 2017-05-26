@@ -985,6 +985,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         // create div's
         this.el.append($('<div>', {id: 'chart'}));
         this.el.append($('<div>', {id: 'control'}));
+        $('#control').attr('style', 'height: 50px;');
         if(this.options.period < 2){
             $('#control').hide();
         }
@@ -1025,9 +1026,9 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 ui: {
                     chartType: 'ComboChart',
                     chartOptions: {
-                        chartArea: {
-                            height: '20%',
-                        },
+                        /*chartArea: {
+                            height: '30%',
+                        },*/
                         colors: ['#65A5DF'],
                         lineWidth: 0,
                         minRangeSize: 86400000,
