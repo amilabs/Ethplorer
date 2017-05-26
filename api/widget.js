@@ -930,17 +930,28 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             aCountData[aDayData._id.year + '-' + aDayData._id.month + '-' + aDayData._id.day] = aDayData.cnt;
         }
         var noPrice = true,
-            startPriceDate = new Date();
-        if(widgetPriceData){
+            startPriceDate = new Date(),
+            priceNotFound = true;
+        if(widgetPriceData && widgetPriceData.length){
             noPrice = false;
-            for(var i = widgetPriceData.length - 1; i >= 0; i--){
-                var aDayPriceData = widgetPriceData[i];
-                if(aDayPriceData.low == 0 && aDayPriceData.open == 0 && aDayPriceData.close == 0 && aDayPriceData.high == 0){
-                    break;
+            for(var i = 0; i < widgetPriceData.length; i++){
+                var aDayPriceData = widgetPriceData[i],
+                    numZeroes = 0;
+                if(aDayPriceData.low == 0) numZeroes++;
+                if(aDayPriceData.open == 0) numZeroes++;
+                if(aDayPriceData.close == 0) numZeroes++;
+                if(aDayPriceData.high == 0) numZeroes++;
+
+                if((numZeroes >= 3) && priceNotFound){
+                    continue;
                 }else{
                     aPriceData[aDayPriceData.date] = aDayPriceData;
+                    if(priceNotFound){
+                        var strPriceDate = aDayPriceData.date.substring(0, 4) + '-' + aDayPriceData.date.substring(5, 7) + '-' + aDayPriceData.date.substring(8) + 'T00:00:00Z';
+                        startPriceDate = new Date(strPriceDate);
+                    }
+                    priceNotFound = false;
                 }
-                startPriceDate = new Date(aDayPriceData.date.substring(0, 4), aDayPriceData.date.substring(5, 7) - 1, aDayPriceData.date.substring(8));
             }
             if(this.options.period > 60){
                 fnDate = startPriceDate;
@@ -951,7 +962,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
 
         var curDate = true;
         for(var d = new Date(strFirstDate); d >= fnDate; d.setDate(d.getDate() - 1)){
-            console.log(d);
+            //console.log(d);
             // get tx count
             var key = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
             var cnt = ('undefined' !== typeof(aCountData[key])) ? aCountData[key] : 0;
