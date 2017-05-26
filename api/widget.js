@@ -929,25 +929,29 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             var aDayData = aTxData[i];
             aCountData[aDayData._id.year + '-' + aDayData._id.month + '-' + aDayData._id.day] = aDayData.cnt;
         }
-        var startPriceDate = new Date();
-        for(var i = widgetPriceData.length - 1; i >= 0; i--){
-            var aDayPriceData = widgetPriceData[i];
-            if(aDayPriceData.low == 0 && aDayPriceData.open == 0 && aDayPriceData.close == 0 && aDayPriceData.high == 0){
-                break;
-            }else{
-                aPriceData[aDayPriceData.date] = aDayPriceData;
+        var noPrice = true,
+            startPriceDate = new Date();
+        if(widgetPriceData){
+            noPrice = false;
+            for(var i = widgetPriceData.length - 1; i >= 0; i--){
+                var aDayPriceData = widgetPriceData[i];
+                if(aDayPriceData.low == 0 && aDayPriceData.open == 0 && aDayPriceData.close == 0 && aDayPriceData.high == 0){
+                    break;
+                }else{
+                    aPriceData[aDayPriceData.date] = aDayPriceData;
+                }
+                startPriceDate = new Date(aDayPriceData.date.substring(0, 4), aDayPriceData.date.substring(5, 7) - 1, aDayPriceData.date.substring(8));
             }
-            startPriceDate = new Date(aDayPriceData.date.substring(0, 4), aDayPriceData.date.substring(5, 7) - 1, aDayPriceData.date.substring(8));
-        }
-        if(this.options.period > 60){
-            fnDate = startPriceDate;
+            if(this.options.period > 60){
+                fnDate = startPriceDate;
+            }
         }
         //console.log(aCountData);
         //console.log(aPriceData);
 
         var curDate = true;
         for(var d = new Date(strFirstDate); d >= fnDate; d.setDate(d.getDate() - 1)){
-            //console.log(d);
+            console.log(d);
             // get tx count
             var key = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
             var cnt = ('undefined' !== typeof(aCountData[key])) ? aCountData[key] : 0;
@@ -957,25 +961,25 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
 
             //console.log(keyPrice);
             // 'Low', 'Open', 'Close', 'High'
-            var low = 0, open = 0, high = 0, close = 0;
+            var low = 0, open = 0, high = 0, close = 0, volume = 0, volumeConverted = 0;
             if('undefined' !== typeof(aPriceData[keyPrice])){
                 low = aPriceData[keyPrice]['low'];
                 open = aPriceData[keyPrice]['open'];
                 close = aPriceData[keyPrice]['close'];
                 high = aPriceData[keyPrice]['high'];
-            }
-            var volume = ('undefined' !== typeof(aPriceData[keyPrice]['volume'])) ? aPriceData[keyPrice]['volume'] : 0;
+                volume = ('undefined' !== typeof(aPriceData[keyPrice]['volume'])) ? aPriceData[keyPrice]['volume'] : 0;
                 volumeConverted = ('undefined' !== typeof(aPriceData[keyPrice]['volumeConverted'])) ? aPriceData[keyPrice]['volumeConverted'] : 0;
+            }
 
             var chartMonth = d.getMonth() + 1;
             if(chartMonth < 10) chartMonth = '0' + chartMonth;
             var chartDay = d.getDate();
             if(chartDay < 10) chartDay = '0' + chartDay;
             var strChartDate = d.getFullYear() + '-' + chartMonth + '-' + chartDay + 'T00:00:00Z';
+
             aData.push([new Date(strChartDate), low, open, close, high, cnt, 'opacity: 0.5', volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5']);            
 
         }
-        //console.log(aData);
         var data = google.visualization.arrayToDataTable(aData);
 
         // create div's
@@ -987,6 +991,26 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
 
         // create dashboard and control wrapper
         var dashboard = new google.visualization.Dashboard(this.el);
+        var controlSeries = {
+            0: {
+                type: 'area',
+                lineWidth: 0
+            },
+            1: {
+                targetAxisIndex: 1,
+                type: 'area',
+                lineWidth: 1
+            }
+        };
+        if(noPrice){
+            controlSeries = {
+                0: {
+                    targetAxisIndex: 0,
+                    type: 'area',
+                    lineWidth: 1
+                }
+            };
+        }
         var defControlOptions = {
             controlType: 'ChartRangeFilter',
             containerId: 'control',
@@ -1020,17 +1044,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                                 color: "none"
                             },
                         },
-                        series: {
-                            0: {
-                                type: 'area',
-                                lineWidth: 0
-                            },
-                            1: {
-                                targetAxisIndex: 1,
-                                type: 'area',
-                                lineWidth: 1
-                            }
-                        }
+                        series: controlSeries
                     }
                 }
             }
@@ -1047,6 +1061,49 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         var control = new google.visualization.ControlWrapper(controlOptions);
 
         // create combo chart
+        var series = {
+            0: {
+                type: 'candlesticks',
+                targetAxisIndex: 0
+            },
+            1: {
+                type: 'line',
+                targetAxisIndex: 1
+            },
+            2: {
+                type: 'bars',
+                targetAxisIndex: 2,
+            },
+        };
+        var vAxes = {
+            0: {
+                title: 'Price',
+                format: 'currency'
+            },
+            1: {
+                title: 'Token operations',
+                format: 'decimal',
+            },
+            2: {
+                textStyle: {
+                    color: 'none'
+                }
+            }
+        };
+        if(noPrice){
+            series = {
+                0: {
+                    type: 'line',
+                    targetAxisIndex: 0
+                },
+            };
+            vAxes = {
+                0: {
+                    title: 'Token operations',
+                    format: 'decimal',
+                }
+            };
+        }
         var def = {
             chartType: 'ComboChart',
             containerId: 'chart',
@@ -1059,20 +1116,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                     //isHtml: true
                 },
                 colors: ['#65A5DF', 'black'],
-                series: {
-                    0: {
-                        type: 'candlesticks',
-                        targetAxisIndex: 0
-                    },
-                    1: {
-                        type: 'line',
-                        targetAxisIndex: 1
-                    },
-                    2: {
-                        type: 'bars',
-                        targetAxisIndex: 2,
-                    },
-                },
+                series: series,
                 hAxis : {
                     title: '',
                     titleTextStyle: {
@@ -1104,21 +1148,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                         min: 0
                     },*/
                 },
-                vAxes: {
-                    0: {
-                        title: 'Price, USD',
-                        format: 'currency'
-                    },
-                    1: {
-                        title: 'Token operations',
-                        format: 'decimal',
-                    },
-                    2: {
-                        textStyle: {
-                            color: 'none'
-                        }
-                    }
-                },
+                vAxes: vAxes,
                 pointSize: 0,
                 lineWidth: 1,
                 bar: { groupWidth: '70%' },
