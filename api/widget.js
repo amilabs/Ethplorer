@@ -899,11 +899,8 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         aData.push(['Day', /*{type: 'string', role: 'tooltip', 'p': {'html': true}},*/ 'Low', 'Open', 'Close', 'High', 'Token operations', {role: 'style'}, 'Volume', {role: 'style'}]);
 
         if(aTxData.length){
-            var firstDate = aTxData[0]._id.year + '-' + aTxData[0]._id.month + '-' + aTxData[0]._id.day,
-                firstYear = aTxData[0]._id.year,
-                firstMonth = aTxData[0]._id.month,
+            var firstMonth = aTxData[0]._id.month,
                 firstDay = aTxData[0]._id.day;
-
             if(firstMonth < 10) firstMonth = '0' + firstMonth;
             if(firstDay < 10) firstDay = '0' + firstDay;
             var strFirstDate = aTxData[0]._id.year + '-' + firstMonth + '-' + firstDay + 'T00:00:00Z';
@@ -913,12 +910,10 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
 
         var stDate = new Date(strFirstDate);
             fnDate = new Date(strFirstDate),
-            rangeStart = new Date(strFirstDate),
-            rangeEnd = new Date(strFirstDate);
+            rangeStart = new Date(strFirstDate);
         var date = stDate.getDate();
         fnDate.setDate(date - this.options.period + 1);
         rangeStart.setDate(date - (this.options.period > 60 ? 60 : this.options.period) + 1);
-        //rangeEnd.setDate(date);
 
         // prepare data
         var aCountData = {};
@@ -940,16 +935,10 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         if(this.options.period > 60){
             fnDate = startPriceDate;
         }
-        console.log(aCountData);
-        console.log(aPriceData);
+        //console.log(aCountData);
+        //console.log(aPriceData);
 
         var curDate = true;
-        /*firstMonth = firstMonth + 1;
-        if(firstMonth < 10) firstMonth = '0' + firstMonth;
-        if(firstDay < 10) firstDay = '0' + firstDay;*/
-        //2013-08-31T17:00:00Z
-        var dstr = firstYear + '-' + firstMonth + '-' + firstDay + 'T00:00:00Z';
-        //for(var d = new Date(firstYear, firstMonth, firstDay); d >= fnDate; d.setDate(d.getDate() - 1)){
         for(var d = new Date(strFirstDate); d >= fnDate; d.setDate(d.getDate() - 1)){
             //console.log(d);
             // get tx count
@@ -976,9 +965,10 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             var chartDay = d.getDate();
             if(chartDay < 10) chartDay = '0' + chartDay;
             var strChartDate = d.getFullYear() + '-' + chartMonth + '-' + chartDay + 'T00:00:00Z';
-            aData.push([new Date(strChartDate), low, open, close, high, cnt, 'opacity: 0.8', volume, this.options['theme'] == 'dark' ? 'opacity: 0.2' : 'opacity: 0.5']);
+            aData.push([new Date(strChartDate), low, open, close, high, cnt, 'opacity: 0.6', volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5']);            
+
         }
-        console.log(aData);
+        //console.log(aData);
         var data = google.visualization.arrayToDataTable(aData);
 
         // create div's
@@ -1129,14 +1119,14 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                     fallingColor: {
                         // red
                         strokeWidth: 1,
-                        fill: '#710000',
-                        stroke: '#580000'
+                        fill: '#951717',
+                        stroke: '#8b0000'
                     },
                     risingColor: {
                         // green
                         strokeWidth: 1,
-                        fill: '#005100',
-                        stroke: '#003f00'
+                        fill: '#177217',
+                        stroke: '#006400'
                     }
                 }
             }
