@@ -133,11 +133,17 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                 </div>
 
                 <div>
+                <?php if($testWidget){ ?>
+                    <div class="col-xs-12 col-sm-12">
+                        <h1 id="ethplorer-path"><?=$header?></h1>
+                    </div>
+                <?php }else{ ?>
                     <div class="hidden-xs col-sm-2"></div>
                     <div class="col-xs-12 col-sm-8">
                         <h1 id="ethplorer-path"><?=$header?></h1>
                     </div>
                     <div class="hidden-xs col-sm-2"></div>
+                <?php } ?>
                 </div>
 
                 <div class="clearfix"></div>
@@ -147,11 +153,9 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                         var testWidget = true;
                     </script>
                     <div>
-                        <div class="hidden-xs hidden-sm"></div>
                         <div class="col-xs-12 col-sm-12 token-price-history-grouped-widget">
                             <div id="token-price-history-grouped-widget"></div>
                         </div>
-                        <div class="hidden-xs hidden-sm"></div>
                     </div>
                 <?php }else{ ?>
                     <script type="text/javascript">
