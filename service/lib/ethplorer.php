@@ -535,7 +535,7 @@ class Ethplorer {
                 $aResult[$address] = $aToken;
                 if(!isset($aPrevTokens[$address]) || ($aPrevTokens[$address]['transfersCount'] < $aToken['transfersCount'])){
                     if(defined('ETHPLORER_SHOW_OUTPUT')){
-                        echo ($index + 1) . '. ' . $address . ' was recently updated\n';
+                        echo $address . " was recently updated (transfers count = " . $aToken['transfersCount'] . ")\n";
                     }
                     $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
                 }
