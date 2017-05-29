@@ -82,7 +82,7 @@ ethplorerWidget = {
     },
     loadGoogleControlCharts: function(){
         if(google){
-            google.load('visualization', '1', {'packages': ['controls'], callback : ethplorerWidget.drawGoogleControlCharts});
+            google.load('visualization', '1', {'packages': ['controls'], 'language': 'en', callback : ethplorerWidget.drawGoogleControlCharts});
         }
     },
     drawGoogleControlCharts: function(){
@@ -135,9 +135,15 @@ ethplorerWidget = {
         }
         widgetCode += ');});' + cr + '</script>';
 
-        $("#" + popupId).text(widgetCode);
-        var popupContent = $("#" + popupId).html();
-        $("#" + popupId).html(popupContent.replace(/(\n)/gm, "<br/>"));
+        if('undefined' !== typeof(widget.type) && widget.type === 'tokenPriceHistoryGrouped'){
+            widgetCode = '<center><br/><br/><b>Coming soon!</b></center>';
+            $("#" + popupId).html(widgetCode);
+        }else{
+            $("#" + popupId).text(widgetCode);
+            var popupContent = $("#" + popupId).html();
+            $("#" + popupId).html(popupContent.replace(/(\n)/gm, "<br/>"));
+        }
+
         $("#" + popupId).dialog('open');
     },
     parseTemplate: function(template, data){
@@ -855,6 +861,7 @@ ethplorerWidget.Type['tokenHistoryGrouped'] = function(element, options, templat
  * @returns {undefined}
  */
 ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, templates){
+    this.type = 'tokenPriceHistoryGrouped';
     this.el = element;
     this.widgetData = null;
     this.widgetPriceData = null;
@@ -873,6 +880,9 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             this.options[key] = options[key];
         }
     }
+    if(this.options.period <= 0){
+        this.options.period = 365;
+    }
 
     this.api = ethplorerWidget.api + '/getTokenPriceHistoryGrouped';
     if(options && options.address){
@@ -887,19 +897,30 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
     };
 
+    this.getTooltip = function(date, low, open, close, high, operations, volume, convertedVolume){
+        return 'Hi!';
+    }
+
     this.drawChart = function(aTxData, widgetPriceData){
         var aData = [];
-        aData.push(['Day', 'Token operations', 'Low', 'Open', 'Close', 'High']);
+        //aData.push(['Day', /*{type: 'string', role: 'tooltip', 'p': {'html': true}},*/ 'Low', 'Open', 'Close', 'High', 'Token operations', {role: 'style'}, 'Volume', {role: 'style'}]);
 
-        var stDate = new Date(),
-            fnDate = new Date(),
-            rangeStart = new Date(),
-            rangeEnd = new Date();
+        if(aTxData.length){
+            var firstMonth = aTxData[0]._id.month,
+                firstDay = aTxData[0]._id.day;
+            if(firstMonth < 10) firstMonth = '0' + firstMonth;
+            if(firstDay < 10) firstDay = '0' + firstDay;
+            var strFirstDate = aTxData[0]._id.year + '-' + firstMonth + '-' + firstDay + 'T00:00:00Z';
+        }else{
+            return;
+        }
+
+        var stDate = new Date(strFirstDate);
+            fnDate = new Date(strFirstDate),
+            rangeStart = new Date(strFirstDate);
         var date = stDate.getDate();
-        stDate.setDate(date - 1);
-        fnDate.setDate(date - this.options.period - 1);
-        rangeStart.setDate(date - (this.options.period > 60 ? 60 : this.options.period) - 1);
-        rangeEnd.setDate(date - 1);
+        fnDate.setDate(date - this.options.period + 1);
+        rangeStart.setDate(date - (this.options.period > 60 ? 60 : this.options.period) + 1);
 
         // prepare data
         var aCountData = {};
@@ -908,63 +929,115 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             var aDayData = aTxData[i];
             aCountData[aDayData._id.year + '-' + aDayData._id.month + '-' + aDayData._id.day] = aDayData.cnt;
         }
-        var startPriceDate = new Date();
-        for(var i = widgetPriceData.length - 1; i >= 0; i--){
-            var aDayPriceData = widgetPriceData[i];
-            if(aDayPriceData.low == 0 && aDayPriceData.open == 0 && aDayPriceData.close == 0 && aDayPriceData.high == 0){
-                break;
-            }else{
-                aPriceData[aDayPriceData.date] = aDayPriceData;
+        var noPrice = true,
+            startPriceDate = new Date(),
+            priceNotFound = true;
+        if(widgetPriceData && widgetPriceData.length){
+            noPrice = false;
+            aData.push(['Day', /*{type: 'string', role: 'tooltip', 'p': {'html': true}},*/ 'Low', 'Open', 'Close', 'High', 'Token operations', {role: 'style'}, 'Volume', {role: 'style'}]);
+            for(var i = 0; i < widgetPriceData.length; i++){
+                var aDayPriceData = widgetPriceData[i],
+                    numZeroes = 0;
+                if(aDayPriceData.low == 0) numZeroes++;
+                if(aDayPriceData.open == 0) numZeroes++;
+                if(aDayPriceData.close == 0) numZeroes++;
+                if(aDayPriceData.high == 0) numZeroes++;
+
+                if((numZeroes >= 3) && priceNotFound){
+                    continue;
+                }else{
+                    aPriceData[aDayPriceData.date] = aDayPriceData;
+                    if(priceNotFound){
+                        var strPriceDate = aDayPriceData.date.substring(0, 4) + '-' + aDayPriceData.date.substring(5, 7) + '-' + aDayPriceData.date.substring(8) + 'T00:00:00Z';
+                        startPriceDate = new Date(strPriceDate);
+                    }
+                    priceNotFound = false;
+                }
             }
-            startPriceDate = new Date(aDayPriceData.date.substring(0, 4), aDayPriceData.date.substring(5, 7) - 1, aDayPriceData.date.substring(8));
+            if(this.options.period > 60){
+                fnDate = startPriceDate;
+            }
+        }else{
+            aData.push(['Day', /*{type: 'string', role: 'tooltip', 'p': {'html': true}},*/ 'Token operations', {role: 'style'}]);
         }
-        if(this.options.period > 60){
-            fnDate = startPriceDate;
-        }
-        //console.log(aCountData);
-        //console.log(aPriceData);
+        console.log(aCountData);
+        console.log(aPriceData);
+        console.log('noPrice = ' + noPrice);
 
         var curDate = true;
-        while(stDate > fnDate){
+        for(var d = new Date(strFirstDate); d >= fnDate; d.setDate(d.getDate() - 1)){
+            //console.log(d);
             // get tx count
-            var key = stDate.getFullYear() + '-' + (stDate.getMonth() + 1) + '-' + stDate.getDate();
+            var key = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
             var cnt = ('undefined' !== typeof(aCountData[key])) ? aCountData[key] : 0;
-            if(curDate && cnt == 0){
-                curDate = false;
-                continue;
-            }
 
             // get price data
-            var keyPrice = stDate.getFullYear() + '-' + (stDate.getMonth() < 9 ? '0' : '') + (stDate.getMonth() + 1) + '-' + (stDate.getDate() < 10 ? '0' : '') + stDate.getDate();
+            var keyPrice = d.getFullYear() + '-' + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + '-' + (d.getDate() < 10 ? '0' : '') + d.getDate();
+            //console.log(keyPrice);
+
             // 'Low', 'Open', 'Close', 'High'
-            var low = 0, open = 0, high = 0, close = 0;
+            var low = 0, open = 0, high = 0, close = 0, volume = 0, volumeConverted = 0;
             if('undefined' !== typeof(aPriceData[keyPrice])){
                 low = aPriceData[keyPrice]['low'];
                 open = aPriceData[keyPrice]['open'];
                 close = aPriceData[keyPrice]['close'];
                 high = aPriceData[keyPrice]['high'];
+                volume = ('undefined' !== typeof(aPriceData[keyPrice]['volume'])) ? aPriceData[keyPrice]['volume'] : 0;
+                volumeConverted = ('undefined' !== typeof(aPriceData[keyPrice]['volumeConverted'])) ? aPriceData[keyPrice]['volumeConverted'] : 0;
             }
 
-            aData.push([new Date(stDate.getFullYear(), stDate.getMonth(), stDate.getDate()), cnt, low, open, close, high]);
-            var newDate = stDate.setDate(stDate.getDate() - 1);
-            stDate = new Date(newDate);
-        }
+            var chartMonth = d.getMonth() + 1;
+            if(chartMonth < 10) chartMonth = '0' + chartMonth;
+            var chartDay = d.getDate();
+            if(chartDay < 10) chartDay = '0' + chartDay;
+            var strChartDate = d.getFullYear() + '-' + chartMonth + '-' + chartDay + 'T00:00:00Z';
 
+            if(noPrice){
+                aData.push([new Date(strChartDate), cnt, 'opacity: 0.5']);
+            }else{
+                aData.push([new Date(strChartDate), low, open, close, high, cnt, 'opacity: 0.5', volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5']);
+            }
+        }
+        console.log(aData);
         var data = google.visualization.arrayToDataTable(aData);
 
         // create div's
         this.el.append($('<div>', {id: 'chart'}));
         this.el.append($('<div>', {id: 'control'}));
+        $('#control').attr('style', 'height: 50px;');
+        if(this.options.period < 2){
+            $('#control').hide();
+        }
 
         // create dashboard and control wrapper
         var dashboard = new google.visualization.Dashboard(this.el);
+        var controlSeries = {
+            0: {
+                type: 'area',
+                lineWidth: 0
+            },
+            1: {
+                targetAxisIndex: 1,
+                type: 'area',
+                lineWidth: 1
+            }
+        };
+        if(noPrice){
+            controlSeries = {
+                0: {
+                    type: 'area',
+                    targetAxisIndex: 0,
+                    lineWidth: 1
+                }
+            };
+        }
         var defControlOptions = {
             controlType: 'ChartRangeFilter',
             containerId: 'control',
             state: {
                 range: {
                     start: rangeStart,
-                    end: rangeEnd
+                    end: new Date(strFirstDate)
                 }
             },
             options: {
@@ -972,9 +1045,9 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 ui: {
                     chartType: 'ComboChart',
                     chartOptions: {
-                        chartArea: {
-                            height: '20%',
-                        },
+                        /*chartArea: {
+                            height: '30%',
+                        },*/
                         colors: ['#65A5DF'],
                         lineWidth: 0,
                         minRangeSize: 86400000,
@@ -986,24 +1059,18 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                             slantedText: false,
                             maxAlternation: 1,
                             maxTextLines: 1,
-                            format: 'MMM d',
+                            format: 'MM/dd',
                             gridlines: {
                                 color: "none"
                             },
                         },
-                        series: {
-                            0: {
-                                targetAxisIndex: 0,
-                                type: 'area',
-                                lineWidth: 1
-                            },
-                        }
+                        series: controlSeries
                     }
                 }
             }
         };
         if(this.options['theme'] == 'dark'){
-            defControlOptions.options.ui.chartOptions.colors = ['#47C2FF'];
+            defControlOptions.options.ui.chartOptions.colors = ['#DEDEDE'];
             defControlOptions.options.ui.chartOptions.backgroundColor = {fill: 'transparent'};
 
             defControlOptions.options.ui.chartOptions.hAxis.textStyle = {color: '#DEDEDE'};
@@ -1014,6 +1081,49 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         var control = new google.visualization.ControlWrapper(controlOptions);
 
         // create combo chart
+        var series = {
+            0: {
+                type: 'candlesticks',
+                targetAxisIndex: 0
+            },
+            1: {
+                type: 'line',
+                targetAxisIndex: 1
+            },
+            2: {
+                type: 'bars',
+                targetAxisIndex: 2,
+            },
+        };
+        var vAxes = {
+            0: {
+                title: 'Price',
+                format: 'currency'
+            },
+            1: {
+                title: 'Token operations',
+                format: 'decimal',
+            },
+            2: {
+                textStyle: {
+                    color: 'none'
+                }
+            }
+        };
+        if(noPrice){
+            series = {
+                0: {
+                    type: 'line',
+                    targetAxisIndex: 0
+                },
+            };
+            vAxes = {
+                0: {
+                    title: 'Token operations',
+                    format: 'decimal',
+                }
+            };
+        }
         var def = {
             chartType: 'ComboChart',
             containerId: 'chart',
@@ -1023,18 +1133,10 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 legend: { position: 'none' },
                 tooltip: {
                     format: 'MMM d',
+                    //isHtml: true
                 },
                 colors: ['#65A5DF', 'black'],
-                series: {
-                    0: {
-                        type: 'line',
-                        targetAxisIndex: 0
-                    },
-                    1: {
-                        type: 'candlesticks',
-                        targetAxisIndex: 1
-                    }
-                },
+                series: series,
                 hAxis : {
                     title: '',
                     titleTextStyle: {
@@ -1044,7 +1146,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                     slantedText: false,
                     maxAlternation: 1,
                     maxTextLines: 1,
-                    format: 'MMM d',
+                    format: 'MM/dd',
                     gridlines: {
                         count: 10,
                         color: "none"
@@ -1066,36 +1168,29 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                         min: 0
                     },*/
                 },
-                vAxes: {
-                    0 : {
-                        title: 'Token operations',
-                        format: '#,###'
-                    },
-                    1 : {
-                        title: 'Price',
-                    }
-                },
-                pointSize: 5,
-                bar: {
-                    groupWidth: '90%'
-                },
+                vAxes: vAxes,
+                pointSize: 0,
+                lineWidth: 1,
+                bar: { groupWidth: '70%' },
                 candlestick: {
                     fallingColor: {
+                        // red
                         strokeWidth: 1,
-                        fill: '#a52714',
-                        stroke: 'darkRed'
+                        fill: '#951717',
+                        stroke: '#8b0000'
                     },
                     risingColor: {
+                        // green
                         strokeWidth: 1,
-                        fill: '#339349',
-                        stroke: 'darkGreen'
+                        fill: '#177217',
+                        stroke: '#006400'
                     }
                 }
             }
         };
         if(this.options['theme'] == 'dark'){
-            def.options.colors = ['#47C2FF', 'white'];
-            def.options.titleTextStyle = {color: 'red'};
+            def.options.colors = noPrice ? ['#FCEC0F']: ['#999999', '#FCEC0F', '#DEDEDE'];
+            def.options.titleTextStyle = {color: '#DEDEDE'};
             def.options.backgroundColor = {fill: 'transparent'};
 
             def.options.hAxis.textStyle = {color: '#DEDEDE'};

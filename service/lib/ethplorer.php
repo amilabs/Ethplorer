@@ -1406,6 +1406,8 @@ class Ethplorer {
                         if($aPriceHistory[$i]['low'] < $aDailyRecord['low']){
                             $aDailyRecord['low'] = $aPriceHistory[$i]['low'];
                         }
+                        $aDailyRecord['volume'] += $aPriceHistory[$i]['volume'];
+                        $aDailyRecord['volumeConverted'] += $aPriceHistory[$i]['volumeConverted'];
                     }
                     if($lastRecord){
                         $aPriceHistoryDaily[] = $aDailyRecord;
