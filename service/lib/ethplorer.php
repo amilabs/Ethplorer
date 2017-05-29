@@ -1028,9 +1028,9 @@ class Ethplorer {
                             array(
                                 '$group' => array(
                                     "_id" => array(
-                                        "year"  => array('$year' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
-                                        "month"  => array('$month' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
-                                        "day"  => array( '$dayOfMonth' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                        "year"  => array('$year' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                        "month"  => array('$month' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                        "day"  => array( '$dayOfMonth' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
                                     ),
                                     'ts' =>  array('$first' => '$timestamp'),
                                     'sum' => array('$sum' => '$intValue')
@@ -1137,9 +1137,9 @@ class Ethplorer {
                     array(
                         '$group' => array(
                             "_id" => array(
-                                "year"  => array('$year' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
-                                "month"  => array('$month' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
-                                "day"  => array( '$dayOfMonth' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                "year"  => array('$year' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                "month"  => array('$month' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                                "day"  => array( '$dayOfMonth' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
                             ),
                             'ts' =>  array('$first' => '$timestamp'),
                             'cnt' => array('$sum' => 1)
@@ -1280,9 +1280,9 @@ class Ethplorer {
                 array(
                     '$group' => array(
                         "_id" => array(
-                            "year"  => array('$year' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
-                            "month"  => array('$month' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
-                            "day"  => array( '$dayOfMonth' => array('$add' => array(new MongoDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                            "year"  => array('$year' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                            "month"  => array('$month' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                            "day"  => array( '$dayOfMonth' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
                         ),
                         'ts' =>  array('$first' => '$timestamp'),
                         'cnt' => array('$sum' => 1)

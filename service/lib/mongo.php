@@ -117,6 +117,31 @@ class evxMongo {
     }
 
     /**
+     * Converts timestamp to Mongo driver object.
+     *
+     * @param int $timestamp
+     * @return \MongoDate|\MongoDB\BSON\UTCDateTime
+     */
+    public function toDate($timestamp = 0){
+        $result = false;
+        switch($this->driver){
+            case 'fake':
+                $result = $timestamp;
+                break;
+
+            case 'mongo':
+                return new MongoDate($timestamp);
+                break;
+
+            case 'mongodb':
+                return new MongoDB\BSON\UTCDateTime($timestamp);
+                break;
+        }
+        return $result;
+    }
+
+
+    /**
      * MongoDB "find" method implementation.
      *
      * @param string $collection
