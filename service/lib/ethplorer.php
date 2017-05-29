@@ -533,7 +533,7 @@ class Ethplorer {
                 $address = $aToken["address"];
                 unset($aToken["_id"]);
                 $aResult[$address] = $aToken;
-                if(!isset($aPrevTokens[$address]) || ($aPrevTokens[$address]['txsCount'] < $aToken['txsCount'])){
+                if(!isset($aPrevTokens[$address]) || ($aPrevTokens[$address]['transfersCount'] < $aToken['transfersCount'])){
                     $aResult[$address] = array_merge($aResult[$address], $this->getTokenTotalInOut($address));
                     $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
                 }elseif(isset($aPrevTokens[$address])){
