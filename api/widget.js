@@ -905,7 +905,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             tooltipDateFormatter.formatValue(date) + '<br/>' +
             'O: ' + open + ' H: ' + high + ' L: ' + low + ' C: ' + close + '<br/>' +
             'Token operations: ' + operations + '<br/>' +
-            'Volume: ' + volume.toFixed(2) + ' (' + convertedVolume.toFixed(2) + ' USD)' +
+            '<nobr>Volume: ' + volume.toFixed(2) + ' (' + convertedVolume.toFixed(2) + ' USD)</nobr>' +
             '</div>';
     }
 
