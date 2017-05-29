@@ -302,7 +302,7 @@ class Ethplorer {
         $t1 = microtime(true);
         $result = array('totalIn' => 0, 'totalOut' => 0);
         if($this->isValidAddress($address)){
-            $this->oMongo->aggregate('balances', array(
+            $aResult = $this->oMongo->aggregate('balances', array(
                 array('$match' => array("contract" => $address)),
                 array(
                     '$group' => array(
@@ -312,17 +312,9 @@ class Ethplorer {
                     )
                 ),
             ));
-            if($cursor){
-                foreach($cursor as $record){
-                    if(isset($record[0])){
-                        if(isset($record[0]['totalIn'])){
-                            $result['totalIn'] += floatval($record[0]['totalIn']);
-                        }
-                        if(isset($record[0]['totalOut'])){
-                            $result['totalOut'] += floatval($record[0]['totalOut']);
-                        }
-                    }
-                }
+            if(is_array($aResult) && isset($aResult['result'])){
+                $result['totalIn'] = $aResult['result']['totalIn'];
+                $result['totalOut'] = $aResult['result']['totalOut'];
             }
         }
         return $result;
@@ -332,7 +324,7 @@ class Ethplorer {
     public function getEtherTotalOut($address){
         $result = 0;
         if($this->isValidAddress($address)){
-            $cursor = $this->oMongo->aggregate('transactions', array(
+            $aResult = $this->oMongo->aggregate('transactions', array(
                 array('$match' => array("from" => $address)),
                 array(
                     '$group' => array(
@@ -341,13 +333,9 @@ class Ethplorer {
                     )
                 ),
             ));
-            if($cursor){
-                foreach($cursor as $record){
-                    if(isset($record[0])){
-                        if(isset($record[0]['out'])){
-                            $result += floatval($record[0]['out']);
-                        }
-                    }
+            if(is_array($aResult) && isset($aResult['result'])){
+                foreach($aResult['result'] as $record){
+                    $result += floatval($record['out']);
                 }
             }
         }
