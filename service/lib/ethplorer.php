@@ -16,6 +16,7 @@
  */
 
 require_once __DIR__ . '/cache.php';
+require_once __DIR__ . '/mongo.php';
 require_once __DIR__ . '/profiler.php';
 require_once __DIR__ . '/../../vendor/autoload.php';
 
@@ -36,11 +37,11 @@ class Ethplorer {
     protected $aSettings = array();
 
     /**
-     * MongoDB collections.
+     * MongoDB.
      *
-     * @var array
+     * @var evxMongo
      */
-    protected $dbs;
+    protected $oMongo;
 
     /**
      * Singleton instance.
@@ -89,23 +90,10 @@ class Ethplorer {
 
         $this->oCache = new evxCache($this->aSettings['cacheDir']);
         if(isset($this->aSettings['mongo']) && is_array($this->aSettings['mongo'])){
-            if(class_exists("MongoClient")){
-                $oMongo = new MongoClient($this->aSettings['mongo']['server']);
-                $oDB = $oMongo->{$this->aSettings['mongo']['dbName']};
-                $this->dbs = array(
-                    'transactions' => $oDB->{"everex.eth.transactions"},
-                    'blocks'       => $oDB->{"everex.eth.blocks"},
-                    'contracts'    => $oDB->{"everex.eth.contracts"},
-                    'tokens'       => $oDB->{"everex.erc20.contracts"},
-                    'operations'   => $oDB->{"everex.erc20.operations"},
-                    'balances'     => $oDB->{"everex.erc20.balances"}
-                );
-                // Get last block
-                $lastblock = $this->getLastBlock();
-                $this->oCache->store('lastBlock', $lastblock);
-            }else{
-                throw new Exception("MongoClient class not found, php_mongo extension required");
-            }
+            evxMongo::init($this->aSettings['mongo']);
+            $this->oMongo = evxMongo::getInstance();
+            $lastblock = $this->getLastBlock();
+            $this->oCache->store('lastBlock', $lastblock);
         }
     }
 
@@ -314,18 +302,16 @@ class Ethplorer {
         $t1 = microtime(true);
         $result = array('totalIn' => 0, 'totalOut' => 0);
         if($this->isValidAddress($address)){
-            $cursor = $this->dbs['balances']->aggregate(
+            $this->oMongo->aggregate('balances', array(
+                array('$match' => array("contract" => $address)),
                 array(
-                    array('$match' => array("contract" => $address)),
-                    array(
-                        '$group' => array(
-                            "_id" => '$contract',
-                            'totalIn' => array('$sum' => '$totalIn'),
-                            'totalOut' => array('$sum' => '$totalOut')
-                        )
-                    ),
-                )
-            );
+                    '$group' => array(
+                        "_id" => '$contract',
+                        'totalIn' => array('$sum' => '$totalIn'),
+                        'totalOut' => array('$sum' => '$totalOut')
+                    )
+                ),
+            ));
             if($cursor){
                 foreach($cursor as $record){
                     if(isset($record[0])){
@@ -346,17 +332,15 @@ class Ethplorer {
     public function getEtherTotalOut($address){
         $result = 0;
         if($this->isValidAddress($address)){
-            $cursor = $this->dbs['transactions']->aggregate(
+            $cursor = $this->oMongo->aggregate('transactions', array(
+                array('$match' => array("from" => $address)),
                 array(
-                    array('$match' => array("from" => $address)),
-                    array(
-                        '$group' => array(
-                            "_id" => '$from',
-                            'out' => array('$sum' => '$value')
-                        )
-                    ),
-                )
-            );
+                    '$group' => array(
+                        "_id" => '$from',
+                        'out' => array('$sum' => '$value')
+                    )
+                ),
+            ));
             if($cursor){
                 foreach($cursor as $record){
                     if(isset($record[0])){
@@ -383,7 +367,7 @@ class Ethplorer {
         if(!$showZero){
             $search = array('$and' => array($search, array('value' => array('$gt' => 0))));
         }
-        $cursor = $this->dbs['transactions']->find($search)->sort(array("timestamp" => -1))->limit($limit);
+        $cursor = $this->oMongo->find('transactions', $search, array("timestamp" => -1), $limit);
         foreach($cursor as $tx){
             unset($tx["_id"]);
             $result[] = array(
@@ -483,8 +467,8 @@ class Ethplorer {
      */
     public function getTransaction($tx){
         // evxProfiler::checkpoint('getTransaction START [hash=' . $tx . ']');
-        $cursor = $this->dbs['transactions']->find(array("hash" => $tx));
-        $result = $cursor->hasNext() ? $cursor->getNext() : false;
+        $cursor = $this->oMongo->find('transactions', array("hash" => $tx));
+        $result = count($cursor) ? current($cursor) : false;
         if($result){
             $receipt = isset($result['receipt']) ? $result['receipt'] : false;
             unset($result["_id"]);
@@ -510,10 +494,9 @@ class Ethplorer {
         if($type){
             $search['type'] = $type;
         }
-        $cursor = $this->dbs['operations']->find($search)->sort(array('priority' => 1));
+        $cursor = $this->oMongo->find('operations', $search, array('priority' => 1));
         $result = array();
-        while($cursor->hasNext()){
-            $res = $cursor->getNext();
+        foreach($cursor as $res){
             unset($res["_id"]);
             $res["success"] = true;
             $result[] = $res;
@@ -551,7 +534,7 @@ class Ethplorer {
     public function getTokens($updateCache = false){
         $aResult = $updateCache ? false : $this->oCache->get('tokens', false, true);
         if(false === $aResult){
-            $cursor = $this->dbs['tokens']->find()->sort(array("transfersCount" => -1));
+            $cursor = $this->oMongo->find('tokens', array(), array("transfersCount" => -1));
             $aResult = array();
             foreach($cursor as $aToken){
                 $address = $aToken["address"];
@@ -582,7 +565,7 @@ class Ethplorer {
                 )
             );
         }
-        return $this->dbs['balances']->count($search);
+        return $this->oMongo->count('balances', $search);
     }
 
     /**
@@ -605,13 +588,7 @@ class Ethplorer {
                     )
                 );
             }
-            $cursor = $this->dbs['balances']->find($search)->sort(array('balance' => -1));
-            if((FALSE !== $offset) && $offset){
-                $cursor = $cursor->skip($offset);
-            }
-            if((FALSE !== $limit) && $limit){
-                $cursor = $cursor->limit($limit);
-            }
+            $cursor = $this->oMongo->find('balances', $search, array('balance' => -1), $limit, $offset);
             if($cursor){
                 $total = 0;
                 foreach($cursor as $balance){
@@ -697,11 +674,11 @@ class Ethplorer {
      */
     public function getContract($address){
         // evxProfiler::checkpoint('getContract START [address=' . $address . ']');
-        $cursor = $this->dbs['contracts']->find(array("address" => $address));
-        $result = $cursor->hasNext() ? $cursor->getNext() : false;
+        $cursor = $this->oMongo->find('contracts', array("address" => $address));
+        $result = count($cursor) ? current($cursor) : false;
         if($result){
             unset($result["_id"]);
-            $result['txsCount'] = $this->dbs['transactions']->count(array("to" => $address)) + 1;
+            $result['txsCount'] = $this->oMongo->count('transactions', array("to" => $address)) + 1;
             if($this->isChainyAddress($address)){
                 $result['isChainy'] = true;
             }
@@ -746,7 +723,7 @@ class Ethplorer {
                 )
             );
         }
-        $result = $this->dbs['operations']->count($search);
+        $result = $this->oMongo->count('operations', $search);
         return $result;
     }
 
@@ -758,10 +735,8 @@ class Ethplorer {
      * @return int
      */
     public function countTransactions($address){
-        $result = 0;
-        $result = $this
-            ->dbs['transactions']
-            ->count(array('$or' => array(array('from' => $address), array('to' => $address))));
+        $search = array('$or' => array(array('from' => $address), array('to' => $address)));
+        $result = $this->oMongo->count('transactions', $search);
         if($this->getContract($address)){
             $result++; // One for contract creation
         }
@@ -796,10 +771,8 @@ class Ethplorer {
      * @return int
      */
     public function getLastBlock(){
-        // evxProfiler::checkpoint('getLastBlock START');
-        $cursor = $this->dbs['blocks']->find(array(), array('number' => true))->sort(array('number' => -1))->limit(1);
-        $block = $cursor->getNext();
-        // evxProfiler::checkpoint('getLastBlock FINISH');
+        $cursor = $this->oMongo->find('blocks', array(), array('number' => -1), 1); // fields = array('number')
+        $block = ($cursor && count($cursor)) ? current($cursor) : false;
         return $block && isset($block['number']) ? $block['number'] : false;
     }
 
@@ -816,7 +789,7 @@ class Ethplorer {
             $search['balance'] = array('$gt' => 0);
         }
         $search['totalIn'] = array('$gt' => 0);
-        $cursor = $this->dbs['balances']->find($search, array('contract', 'balance', 'totalIn', 'totalOut'));
+        $cursor = $this->oMongo->find('balances', $search); // fields = array('contract', 'balance', 'totalIn', 'totalOut')
         $result = array();
         foreach($cursor as $balance){
             unset($balance["_id"]);
@@ -857,13 +830,8 @@ class Ethplorer {
         if(isset($options['timestamp']) && ($options['timestamp'] > 0)){
             $search['timestamp'] = array('$gt' => $options['timestamp']);
         }
-        $cursor = $this->dbs['operations']
-            ->find($search)
-            ->sort($sort);
-
-        if(isset($options['limit'])){
-            $cursor = $cursor->limit((int)$options['limit']);
-        }
+        $limit = isset($options['limit']) ? (int)$options['limit'] : false;
+        $cursor = $this->oMongo->find('operations', $search, $sort, $limit);
 
         $result = array();
         foreach($cursor as $transfer){
@@ -881,7 +849,7 @@ class Ethplorer {
      * @param int $limit       Maximum number of records
      * @return array
      */
-    public function getAddressOperations($address, $limit = 10, $offset = FALSE, array $aTypes = array('transfer', 'issuance', 'burn', 'mint')){
+    public function getAddressOperations($address, $limit = 10, $offset = false, array $aTypes = array('transfer', 'issuance', 'burn', 'mint')){
         $search = array(
             '$or' => array(
                 array("from"    => $address),
@@ -905,14 +873,8 @@ class Ethplorer {
             );
         }
         $search['type'] = array('$in' => $aTypes);
+        $cursor = $this->oMongo->find('operations', $search, array("timestamp" => -1), $limit, $offset);
 
-        $cursor = $this->dbs['operations']->find($search)->sort(array("timestamp" => -1));
-        if($offset){
-            $cursor = $cursor->skip($offset);
-        }
-        if($limit){
-            $cursor = $cursor->limit($limit);
-        }
         $result = array();
         foreach($cursor as $transfer){
             unset($transfer["_id"]);
@@ -1007,7 +969,8 @@ class Ethplorer {
         $result = $this->oCache->get($cache, false, true, 24 * 3600);
         if(FALSE === $result){
             $result = array();
-            $dbData = $this->dbs['operations']->aggregate(
+            $dbData = $this->oMongo->aggregate(
+                'operations',
                 array(
                     array('$match' => array("timestamp" => array('$gt' => time() - $period * 24 * 3600))),
                     array(
@@ -1061,7 +1024,8 @@ class Ethplorer {
                         'type' => array('$in' => array('transfer', 'issuance', 'burn', 'mint')),
                         "timestamp" => array('$gt' => time() - $period * 24 * 3600),
                     );
-                    $dbData = $this->dbs['operations']->aggregate(
+                    $dbData = $this->oMongo->aggregate(
+                        'operations',
                         array(
                             array('$match' => $aMatch),
                             array(
@@ -1169,7 +1133,8 @@ class Ethplorer {
             $aMatch = array("timestamp" => array('$gt' => $tsStart));
             if($address) $aMatch["contract"] = $address;
             $result = array();
-            $dbData = $this->dbs['operations']->aggregate(
+            $dbData = $this->oMongo->aggregate(
+                'operations',
                 array(
                     array('$match' => $aMatch),
                     array(
@@ -1230,10 +1195,7 @@ class Ethplorer {
                 array('transactionHash'     => array('$regex' => $this->filter))
             );
         }
-        $cursor = $this->dbs['operations']
-            ->find($search)
-            ->sort(array("timestamp" => -1));
-        return $cursor ? $cursor->count() : 0;
+        return $this->oMongo->count('operations', $search);
     }
 
     /**
@@ -1254,15 +1216,8 @@ class Ethplorer {
                 array('transactionHash'     => array('$regex' => $this->filter))
             );
         }
-        $cursor = $this->dbs['operations']
-            ->find($search)
-            ->sort(array("timestamp" => -1));
-        if($offset){
-            $cursor = $cursor->skip($offset);
-        }
-        if($limit){
-            $cursor = $cursor->limit($limit);
-        }
+        $cursor = $this->oMongo->find('operations', $search, array("timestamp" => -1), $limit, $offset);
+
         $result = array();
         $fetches = 0;
         foreach($cursor as $transfer){
@@ -1290,13 +1245,7 @@ class Ethplorer {
                 )
             );
         }
-        $cursor = $this->dbs['transactions']->find($search)->sort(array("timestamp" => -1));
-        if($offset){
-            $cursor = $cursor->skip($offset);
-        }
-        if($limit){
-            $cursor = $cursor->limit($limit);
-        }
+        $cursor = $this->oMongo->find('transactions', $search, array("timestamp" => -1), $limit, $offset);
         foreach($cursor as $tx){
             if(!empty($tx['receipt']['logs'])){
                 $link = substr($tx['receipt']['logs'][0]['data'], 194);
@@ -1327,7 +1276,8 @@ class Ethplorer {
             "timestamp" => array('$gt' => time() - $period * 24 * 3600),
             "to" => self::ADDRESS_CHAINY
         );
-        $dbData = $this->dbs['transactions']->aggregate(
+        $dbData = $this->oMongo->aggregate(
+            'transactions',
             array(
                 array('$match' => $aMatch),
                 array(
@@ -1365,7 +1315,7 @@ class Ethplorer {
                 )
             );
         }
-        $result = $this->dbs['transactions']->count($search);
+        $result = $this->oMongo->count('transactions', $search);
         return $result;
     }
 

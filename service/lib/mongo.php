@@ -1,0 +1,254 @@
+<?php
+/*!
+ * Copyright 2016 Everex https://everex.io
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Mongo class.
+ */
+class evxMongo {
+
+    /**
+     * Instance object.
+     *
+     * @var evxMongo
+     */
+    protected static $oInstance;
+
+    /**
+     * Mongo driver.
+     *
+     * @var string
+     */
+    protected $driver;
+
+    /**
+     * MongoDB connection object.
+     *
+     * @var mixed
+     */
+    protected $oMongo;
+
+    /**
+     * Database name.
+     *
+     * @var string
+     */
+    protected $dbName;
+
+    /**
+     * Database collections set.
+     *
+     * @var array
+     */
+    protected $aDBs = array();
+
+    /**
+     * Initialization.
+     *
+     * @param array $aSettings
+     */
+    public static function init(array $aSettings = array()){
+        self::$oInstance = new evxMongo($aSettings);
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param array $aSettings
+     * @throws \Exception
+     */
+    protected function __construct(array $aSettings){
+        // Default config
+        $aSettings += array(
+            'driver' => 'mongodb',
+            'server' => 'mongodb://127.0.0.1:27017',
+            'dbName' => 'ethplorer',
+            'prefix' => 'everex.'
+        );
+        $db = $this->dbName = $aSettings['dbName'];
+        $prefix = $aSettings['prefix'];
+        switch($aSettings['driver']){
+            // Fake mongo driver to run without real mongo instance
+            case 'fake':
+                // @todo: implement
+                break;
+            // php version <= 5.5
+            case 'mongo':
+                $this->oMongo = new MongoClient($aSettings['server']);
+                $oDB = $this->oMongo->{$db};
+                $this->aDBs = array(
+                    'transactions' => $oDB->{$prefix . "eth.transactions"},
+                    'blocks'       => $oDB->{$prefix . "eth.blocks"},
+                    'contracts'    => $oDB->{$prefix . "eth.contracts"},
+                    'tokens'       => $oDB->{$prefix . "erc20.contracts"},
+                    'operations'   => $oDB->{$prefix . "erc20.operations"},
+                    'balances'     => $oDB->{$prefix . "erc20.balances"}
+                );
+                break;
+            // php version 5.6, 7.x use mongodb extension
+            case 'mongodb':
+                $this->oMongo = new MongoDB\Driver\Manager($aSettings['server']);
+                $this->aDBs = array(
+                    'transactions' => $prefix . "eth.transactions",
+                    'blocks'       => $prefix . "eth.blocks",
+                    'contracts'    => $prefix . "eth.contracts",
+                    'tokens'       => $prefix . "erc20.contracts",
+                    'operations'   => $prefix . "erc20.operations",
+                    'balances'     => $prefix . "erc20.balances"
+                );
+                break;
+            default:
+                throw new \Exception('Unknown mongodb driver ' . $dbDriver);
+        }
+        $this->driver = $aSettings['driver'];
+    }
+
+    /**
+     * MongoDB "find" method implementation.
+     *
+     * @param string $collection
+     * @param array $aSearch
+     * @param array $sort
+     * @param int $limit
+     * @param int $skip
+     * @return array
+     */
+    public function find($collection, array $aSearch = array(), $sort = false, $limit = false, $skip = false){
+        $aResult = false;
+        switch($this->driver){
+            case 'fake':
+                $aResult = array();
+                break;
+
+            case 'mongo':
+                $cursor = $this->aDBs[$collection]->find($aSearch);
+                if(is_array($sort)){
+                    $cursor = $cursor->sort($sort);
+                }
+                if(false !== $skip){
+                    $cursor = $cursor->skip($skip);
+                }
+                if(false !== $limit){
+                    $cursor = $cursor->limit($limit);
+                }
+                $aResult = $cursor;
+                break;
+
+            case 'mongodb':
+                $aOptions = array();
+                if(is_array($sort)){
+                    $aOptions['sort'] = $sort;
+                }
+                if(false !== $skip){
+                    $aOptions['skip'] = $skip;
+                }
+                if(false !== $limit){
+                    $aOptions['limit'] = $limit;
+                }
+                $query = new MongoDB\Driver\Query($aSearch, $aOptions);
+                $cursor = $this->oMongo->executeQuery($this->dbName . '.' . $this->aDBs[$collection], $query);
+                $cursor = MongoDB\BSON\fromPHP($cursor->toArray());
+                $cursor = json_decode(MongoDB\BSON\toJSON($cursor), true);
+                $aResult = $cursor;
+                break;
+        }
+        return $aResult;
+    }
+
+    /**
+     * MongoDB "count" method implementation.
+     *
+     * @param string $collection
+     * @param array $aSearch
+     * @return int
+     */
+    public function count($collection, array $aSearch = array()){
+        $result = false;
+        switch($this->driver){
+            case 'fake':
+                $result = 0;
+                break;
+            case 'mongo':
+                $result = $this->aDBs[$collection]->count($aSearch);
+                break;
+
+            case 'mongodb':
+                $command = new MongoDB\Driver\Command(array("count" => $this->aDBs[$collection], "query" => $aSearch));
+                $count = $this->oMongo->executeCommand($this->dbName, $command);
+                $res = current($count->toArray());
+                $result = $res->n;
+                /*
+                $aOptions = array();
+                $query = new MongoDB\Driver\Query($aSearch, $aOptions);
+                $cursor = $this->oMongo->executeQuery($this->aDBs[$collection], $query);
+                $result = iterator_count($cursor);
+                 */
+                break;
+        }
+        return $result;
+    }
+
+    /**
+     * MongoDB "aggregate" method implementation.
+     *
+     * @param string $collection
+     * @param array $aSearch
+     * @param array $sort
+     * @param int $limit
+     * @param int $skip
+     * @return array
+     */
+    public function aggregate($collection, array $aSearch = array()){
+        $aResult = false;
+        switch($this->driver){
+            case 'fake':
+                $aResult = array();
+                break;
+
+            case 'mongo':
+                $aResult = $this->aDBs[$collection]->aggregate($aSearch);
+                break;
+
+            case 'mongodb':
+                $aResult = array();
+                $command = new MongoDB\Driver\Command(array(
+                    'aggregate' => $this->aDBs[$collection],
+                    'pipeline' => $aSearch,
+                    'cursor' => new stdClass,
+                ));
+                $cursor = $this->oMongo->executeCommand($this->dbName, $command);
+                if(iterator_count($cursor) > 0){
+                    $aResult['result'] = (array)$cursor;
+                }
+                break;
+        }
+        return $aResult;
+    }
+
+    /**
+     * Singleton implementation.
+     *
+     * @param array $aSettings
+     * @return type
+     * @throws \Exception
+     */
+    public static function getInstance(array $aSettings = array()){
+        if(is_null(self::$oInstance)){
+            throw new \Exception('Mongo class was not initialized.');
+        }
+        return self::$oInstance;
+    }
+}
