@@ -299,7 +299,6 @@ class Ethplorer {
     }
 
     public function getTokenTotalInOut($address){
-        $t1 = microtime(true);
         $result = array('totalIn' => 0, 'totalOut' => 0);
         if($this->isValidAddress($address)){
             $aResult = $this->oMongo->aggregate('balances', array(
@@ -522,14 +521,22 @@ class Ethplorer {
     public function getTokens($updateCache = false){
         $aResult = $updateCache ? false : $this->oCache->get('tokens', false, true);
         if(false === $aResult){
+            if($updateCache){
+                $aPrevTokens = $this->oCache->get('tokens', false, true);
+                if(!is_array($aPrevTokens)){
+                    $aPrevTokens = array();
+                }
+            }
             $cursor = $this->oMongo->find('tokens', array(), array("transfersCount" => -1));
             $aResult = array();
             foreach($cursor as $aToken){
                 $address = $aToken["address"];
                 unset($aToken["_id"]);
                 $aResult[$address] = $aToken;
-                $aResult[$address] += $this->getTokenTotalInOut($address);
-                $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
+                if(!isset($aPrevTokens[$address]) || ($aPrevTokens[$address]['txsCount'] < $aToken['txsCount'])){
+                    $aResult[$address] = array_merge($aResult[$address], $this->getTokenTotalInOut($address));
+                    $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
+                }
                 if(isset($this->aSettings['client']) && isset($this->aSettings['client']['tokens'])){
                     $aClientTokens = $this->aSettings['client']['tokens'];
                     if(isset($aClientTokens[$address])){

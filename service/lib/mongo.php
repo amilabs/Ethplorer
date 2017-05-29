@@ -234,7 +234,9 @@ class evxMongo {
                     $aResult['result'] = array();
                     $cursor = new IteratorIterator($cursor);
                     foreach($cursor as $record){
-                        $aResult['result'][] = (array)$record;
+                        $aRecord = (array)$record;
+                        unset($aRecord['_id']);
+                        $aResult['result'][] = $aRecord;
                     }
                 }
                 break;
