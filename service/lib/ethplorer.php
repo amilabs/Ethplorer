@@ -536,7 +536,7 @@ class Ethplorer {
                 $aToken['transfersCount'] = $this->getContractOperationCount('transfer', $address); // @todo: fix in scanner
                 if(!isset($aPrevTokens[$address]) || ($aPrevTokens[$address]['transfersCount'] < $aToken['transfersCount'])){
                     if(defined('ETHPLORER_SHOW_OUTPUT')){
-                        echo ($index + 1) . '. ' . $address . ' updated\n';
+                        echo ($index + 1) . ". " . $address . " updated\n";
                     }
                     $aResult[$address] = array_merge($aResult[$address], $this->getTokenTotalInOut($address));
                     $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
