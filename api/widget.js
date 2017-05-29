@@ -903,7 +903,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
 
     this.drawChart = function(aTxData, widgetPriceData){
         var aData = [];
-        aData.push(['Day', /*{type: 'string', role: 'tooltip', 'p': {'html': true}},*/ 'Low', 'Open', 'Close', 'High', 'Token operations', {role: 'style'}, 'Volume', {role: 'style'}]);
+        //aData.push(['Day', /*{type: 'string', role: 'tooltip', 'p': {'html': true}},*/ 'Low', 'Open', 'Close', 'High', 'Token operations', {role: 'style'}, 'Volume', {role: 'style'}]);
 
         if(aTxData.length){
             var firstMonth = aTxData[0]._id.month,
@@ -934,6 +934,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             priceNotFound = true;
         if(widgetPriceData && widgetPriceData.length){
             noPrice = false;
+            aData.push(['Day', /*{type: 'string', role: 'tooltip', 'p': {'html': true}},*/ 'Low', 'Open', 'Close', 'High', 'Token operations', {role: 'style'}, 'Volume', {role: 'style'}]);
             for(var i = 0; i < widgetPriceData.length; i++){
                 var aDayPriceData = widgetPriceData[i],
                     numZeroes = 0;
@@ -956,9 +957,12 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             if(this.options.period > 60){
                 fnDate = startPriceDate;
             }
+        }else{
+            aData.push(['Day', /*{type: 'string', role: 'tooltip', 'p': {'html': true}},*/ 'Token operations', {role: 'style'}]);
         }
-        //console.log(aCountData);
-        //console.log(aPriceData);
+        console.log(aCountData);
+        console.log(aPriceData);
+        console.log('noPrice = ' + noPrice);
 
         var curDate = true;
         for(var d = new Date(strFirstDate); d >= fnDate; d.setDate(d.getDate() - 1)){
@@ -969,8 +973,8 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
 
             // get price data
             var keyPrice = d.getFullYear() + '-' + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + '-' + (d.getDate() < 10 ? '0' : '') + d.getDate();
-
             //console.log(keyPrice);
+
             // 'Low', 'Open', 'Close', 'High'
             var low = 0, open = 0, high = 0, close = 0, volume = 0, volumeConverted = 0;
             if('undefined' !== typeof(aPriceData[keyPrice])){
@@ -988,9 +992,13 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             if(chartDay < 10) chartDay = '0' + chartDay;
             var strChartDate = d.getFullYear() + '-' + chartMonth + '-' + chartDay + 'T00:00:00Z';
 
-            aData.push([new Date(strChartDate), low, open, close, high, cnt, 'opacity: 0.5', volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5']);            
-
+            if(noPrice){
+                aData.push([new Date(strChartDate), cnt, 'opacity: 0.5']);
+            }else{
+                aData.push([new Date(strChartDate), low, open, close, high, cnt, 'opacity: 0.5', volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5']);
+            }
         }
+        console.log(aData);
         var data = google.visualization.arrayToDataTable(aData);
 
         // create div's
@@ -1017,8 +1025,8 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         if(noPrice){
             controlSeries = {
                 0: {
-                    targetAxisIndex: 0,
                     type: 'area',
+                    targetAxisIndex: 0,
                     lineWidth: 1
                 }
             };
@@ -1181,7 +1189,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             }
         };
         if(this.options['theme'] == 'dark'){
-            def.options.colors = ['#999999', '#FCEC0F', '#DEDEDE'];
+            def.options.colors = noPrice ? ['#FCEC0F']: ['#999999', '#FCEC0F', '#DEDEDE'];
             def.options.titleTextStyle = {color: '#DEDEDE'};
             def.options.backgroundColor = {fill: 'transparent'};
 
