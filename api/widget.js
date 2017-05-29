@@ -1113,7 +1113,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         if(noPrice){
             series = {
                 0: {
-                    type: 'line',
+                    type: noPrice ? 'area' : 'line',
                     targetAxisIndex: 0
                 },
             };
@@ -1169,7 +1169,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                     },*/
                 },
                 vAxes: vAxes,
-                pointSize: 0,
+                pointSize: noPrice ? 2 : 0,
                 lineWidth: 1,
                 bar: { groupWidth: '70%' },
                 candlestick: {
