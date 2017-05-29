@@ -533,15 +533,11 @@ class Ethplorer {
                 $address = $aToken["address"];
                 unset($aToken["_id"]);
                 $aResult[$address] = $aToken;
-                $aToken['transfersCount'] = $this->getContractOperationCount('transfer', $address); // @todo: fix in scanner
                 if(!isset($aPrevTokens[$address]) || ($aPrevTokens[$address]['transfersCount'] < $aToken['transfersCount'])){
                     if(defined('ETHPLORER_SHOW_OUTPUT')){
-                        echo ($index + 1) . ". " . $address . " updated\n";
+                        echo ($index + 1) . '. ' . $address . ' was recently updated\n';
                     }
-                    $aResult[$address] = array_merge($aResult[$address], $this->getTokenTotalInOut($address));
                     $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
-                }elseif(isset($aPrevTokens[$address])){
-                    $aResult[$address] += $aPrevTokens[$address];
                 }
                 if(isset($this->aSettings['client']) && isset($this->aSettings['client']['tokens'])){
                     $aClientTokens = $this->aSettings['client']['tokens'];
