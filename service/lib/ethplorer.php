@@ -312,9 +312,9 @@ class Ethplorer {
                     )
                 ),
             ));
-            if(is_array($aResult) && isset($aResult['result'])){
-                $result['totalIn'] = $aResult['result']['totalIn'];
-                $result['totalOut'] = $aResult['result']['totalOut'];
+            if(is_array($aResult) && isset($aResult['result']) && count($aResult['result'])){
+                $result['totalIn'] = $aResult['result'][0]['totalIn'];
+                $result['totalOut'] = $aResult['result'][0]['totalOut'];
             }
         }
         return $result;
