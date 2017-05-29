@@ -529,11 +529,15 @@ class Ethplorer {
             }
             $cursor = $this->oMongo->find('tokens', array(), array("transfersCount" => -1));
             $aResult = array();
-            foreach($cursor as $aToken){
+            foreach($cursor as $index => $aToken){
                 $address = $aToken["address"];
                 unset($aToken["_id"]);
                 $aResult[$address] = $aToken;
+                $aToken['transfersCount'] = $this->getContractOperationCount('transfer', $address); // @todo: fix in scanner
                 if(!isset($aPrevTokens[$address]) || ($aPrevTokens[$address]['transfersCount'] < $aToken['transfersCount'])){
+                    if(defined('ETHPLORER_SHOW_OUTPUT')){
+                        echo ($index + 1) . '. ' . $address . ' updated\n';
+                    }
                     $aResult[$address] = array_merge($aResult[$address], $this->getTokenTotalInOut($address));
                     $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
                 }elseif(isset($aPrevTokens[$address])){
