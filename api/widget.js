@@ -910,9 +910,9 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             tooltip += '<span class="tooltipRow"><b>Token operations:</b> ' + operations + '</span><br/>';
         }else{
             var avg = (open + close) / 2;
-            tooltip += '<span class="tooltipRow"><b>Average:</b> ' + avg.toFixed(2) + '</span><br/>' +
-                '<span class="tooltipRow"><b>Open:</b> ' + open + ' <b>Close:</b> ' + close + '</span><br/>' +
-                '<span class="tooltipRow"><b>High:</b> ' + high + ' <b>Low:</b> ' + low + '</span><br/>' +
+            tooltip += '<span class="tooltipRow"><b>Average:</b> ' + avg.toFixed(2) + ' USD</span><br/>' +
+                '<span class="tooltipRow"><b>Open:</b> ' + open.toFixed(2) + ' <b>Close:</b> ' + close.toFixed(2) + '</span><br/>' +
+                '<span class="tooltipRow"><b>High:</b> ' + high.toFixed(2) + ' <b>Low:</b> ' + low.toFixed(2) + '</span><br/>' +
                 '<span class="tooltipRow"><b>Token operations:</b> ' + numFormatter.formatValue(operations) + '</span><br/>' +
                 '<span class="tooltipRow"><b>Volume:</b> ' + numFormatter.formatValue(volume.toFixed(0)) + ' (' + numFormatter.formatValue(convertedVolume.toFixed(2)) + ' USD)</span>';
         }
