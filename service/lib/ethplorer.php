@@ -92,8 +92,11 @@ class Ethplorer {
         if(isset($this->aSettings['mongo']) && is_array($this->aSettings['mongo'])){
             evxMongo::init($this->aSettings['mongo']);
             $this->oMongo = evxMongo::getInstance();
-            $lastblock = $this->getLastBlock();
-            $this->oCache->store('lastBlock', $lastblock);
+            $lastblock = $this->oCache->get('lastBlock', false, true, 30);
+            if(false === $lastblock){
+                $lastblock = $this->getLastBlock();
+                $this->oCache->save('lastBlock', $lastblock);
+            }
         }
     }
 
@@ -423,7 +426,11 @@ class Ethplorer {
             }
         }
         if(is_array($result) && is_array($result['tx'])){
-            $result['tx']['confirmations'] = $this->oCache->get('lastBlock') - $result['tx']['blockNumber'] + 1;
+            $confirmations = $this->oCache->get('lastBlock') - $result['tx']['blockNumber'] + 1;
+            if($confirmations < 1){
+                $confirmations = 1;
+            }
+            $result['tx']['confirmations'] = $confirmations;
         }
         if(is_array($result) && is_array($result['token'])){
             $result['token'] = $this->getToken($result['token']['address']);
@@ -438,10 +445,22 @@ class Ethplorer {
      * @return double
      */
     public function getBalance($address){
-        // @todo: cache
-        $balance = $this->_callRPC('eth_getBalance', array($address, 'latest'));
-        if(false !== $balance){
-            $balance = hexdec(str_replace('0x', '', $balance)) / pow(10, 18);
+        $time = microtime(true);
+        $cacheId = 'ethBalance-' . $address;
+        $balance = $this->oCache->get($cacheId, false, true, 30);
+        if(false === $balance){
+            $balance = $this->_callRPC('eth_getBalance', array($address, 'latest'));
+            if(false !== $balance){
+                $balance = hexdec(str_replace('0x', '', $balance)) / pow(10, 18);
+                $this->oCache->save($cacheId, $balance);
+            }else{
+                file_put_contents(__DIR__ . '/../log/parity.log', '[' . date('Y-m-d H:i:s') . '] - get balance for ' . $address . " failed\n", FILE_APPEND);
+                $this->oCache->save($cacheId, 0);
+            }
+        }
+        $qTime = microtime(true) - $time;
+        if($qTime > 0.1){
+            file_put_contents(__DIR__ . '/../log/parity.log', '[' . date('Y-m-d H:i:s') . '] - (' . $qTime . 's) get ETH balance of ' . $address . "\n", FILE_APPEND);
         }
         return $balance;
     }
@@ -768,7 +787,7 @@ class Ethplorer {
      * @return int
      */
     public function getLastBlock(){
-        $cursor = $this->oMongo->find('blocks', array(), array('number' => -1), 1); // fields = array('number')
+        $cursor = $this->oMongo->find('blocks', array(), array('number' => -1), 1, false, array('number'));
         $block = ($cursor && count($cursor)) ? current($cursor) : false;
         return $block && isset($block['number']) ? $block['number'] : false;
     }
@@ -786,7 +805,7 @@ class Ethplorer {
             $search['balance'] = array('$gt' => 0);
         }
         $search['totalIn'] = array('$gt' => 0);
-        $cursor = $this->oMongo->find('balances', $search); // fields = array('contract', 'balance', 'totalIn', 'totalOut')
+        $cursor = $this->oMongo->find('balances', $search, array(), false, false, array('contract', 'balance', 'totalIn', 'totalOut'));
         $result = array();
         foreach($cursor as $balance){
             unset($balance["_id"]);
