@@ -901,14 +901,20 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         var tooltipDateFormatter = new google.visualization.DateFormat({ 
             pattern: "MMM dd, yyyy '+UTC'"
         });
-        var tooltip = '<div style="display: block !important; text-align: left; opacity: 1 !important; color: #000000 !important;">';
+        var numFormatter = new google.visualization.NumberFormat({ 
+            pattern: "#,###"
+        });
+        var tooltip = '<div style="display: block !important; text-align: left; opacity: 1 !important; color: #000000 !important; padding: 5px;">';
         tooltip += tooltipDateFormatter.formatValue(date) + '<br/>';
         if(noPrice){
-            tooltip += '<span style="white-space: nowrap">Token operations: ' + operations + '</span><br/>';
+            tooltip += '<span class="tooltipRow"><b>Token operations:</b> ' + operations + '</span><br/>';
         }else{
-            tooltip += '<span style="white-space: nowrap">O: ' + open + ' H: ' + high + ' L: ' + low + ' C: ' + close + '</span><br/>' +
-                '<span style="white-space: nowrap">Token operations: ' + operations + '</span><br/>' +
-                '<span style="white-space: nowrap">Volume: ' + volume.toFixed(0) + ' (' + convertedVolume.toFixed(2) + ' USD)</span>';
+            var avg = (open + close) / 2;
+            tooltip += '<span class="tooltipRow"><b>Average:</b> ' + avg.toFixed(2) + '</span><br/>' +
+                '<span class="tooltipRow"><b>Open:</b> ' + open + ' <b>Close:</b> ' + close + '</span><br/>' +
+                '<span class="tooltipRow"><b>High:</b> ' + high + ' <b>Low:</b> ' + low + '</span><br/>' +
+                '<span class="tooltipRow"><b>Token operations:</b> ' + numFormatter.formatValue(operations) + '</span><br/>' +
+                '<span class="tooltipRow"><b>Volume:</b> ' + numFormatter.formatValue(volume.toFixed(0)) + ' (' + numFormatter.formatValue(convertedVolume.toFixed(2)) + ' USD)</span>';
         }
         tooltip += '</div>';
         return tooltip;
