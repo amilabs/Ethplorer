@@ -137,7 +137,7 @@ class evxCache {
         $result = $default;
         $file = ('file' === $this->driver);
         if(FALSE !== $cacheLifetime){
-            $this->aLifetime[$entryName] = $lifetime;
+            $this->aLifetime[$entryName] = $cacheLifetime;
         }
         if($this->exists($entryName)){
             $result = $this->aData[$entryName];
