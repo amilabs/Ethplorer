@@ -77,7 +77,7 @@ class evxCache {
                 }
                 $this->oDriver = $mc;
             }else{
-                error_log('Memcached calss not found, use filecache instead');
+                die('Memcached calss not found, use filecache instead');
                 $this->driver = 'file';
             }
         }
@@ -101,12 +101,16 @@ class evxCache {
      */
     public function save($entryName, $data){
         $this->store($entryName, $data);
+        $day30 = 60 * 60 * 24 * 30;
         if('memcached' === $this->driver){
             $lifetime = isset($this->aLifetime[$entryName]) ? (int)$this->aLifetime[$entryName] : 0;
-            if($lifetime > 60*60*24*30){
+            if($lifetime > $day30){
                 $lifetime = time() + $cacheLifetime;
             }
-            $this->oDriver->set($entryName, $data, $lifetime);
+            if(!$lifetime){
+                $lifetime = time() + 12 * $day30;
+            }
+            $saveRes = $this->oDriver->set($entryName, $data, $lifetime);
         }
         if('file' === $this->driver){
             $filename = $this->path . '/' . $entryName . ".tmp";
@@ -142,11 +146,8 @@ class evxCache {
         if($this->exists($entryName)){
             $result = $this->aData[$entryName];
         }elseif($loadIfNeeded){
-            if('memached' === $this->driver){
+            if('memcached' === $this->driver){
                 $result = $this->oDriver->get($entryName);
-                if(FALSE === $result){
-                    $file = TRUE;
-                }
             }
             if($file){
                 $filename = $this->path . '/' . $entryName . ".tmp";
