@@ -56,6 +56,13 @@ class evxMongo {
     protected $aDBs = array();
 
     /**
+     * Logfile path.
+     *
+     * @var string
+     */
+    protected $logFile = __DIR__ . '/../log/mongo-profile.log';
+
+    /**
      * Initialization.
      *
      * @param array $aSettings
@@ -80,6 +87,7 @@ class evxMongo {
         );
         $db = $this->dbName = $aSettings['dbName'];
         $prefix = $aSettings['prefix'];
+        $start = microtime(true);
         switch($aSettings['driver']){
             // Fake mongo driver to run without real mongo instance
             case 'fake':
@@ -112,6 +120,11 @@ class evxMongo {
                 break;
             default:
                 throw new \Exception('Unknown mongodb driver ' . $dbDriver);
+        }
+        $finish = microtime(true);
+        $qTime = $finish - $start;
+        if($qTime > 0.1){
+            $this->log('(' . ($qTime) . 's) Connection to ' . $aSettings['server']);
         }
         $this->driver = $aSettings['driver'];
     }
@@ -151,15 +164,16 @@ class evxMongo {
      * @param int $skip
      * @return array
      */
-    public function find($collection, array $aSearch = array(), $sort = false, $limit = false, $skip = false){
+    public function find($collection, array $aSearch = array(), $sort = false, $limit = false, $skip = false, $fields = false){
         $aResult = false;
+        $start = microtime(true);
         switch($this->driver){
             case 'fake':
                 $aResult = array();
                 break;
 
             case 'mongo':
-                $cursor = $this->aDBs[$collection]->find($aSearch);
+                $cursor = is_array($fields) ? $this->aDBs[$collection]->find($aSearch, $fields) : $this->aDBs[$collection]->find($aSearch);
                 if(is_array($sort)){
                     $cursor = $cursor->sort($sort);
                 }
@@ -183,12 +197,23 @@ class evxMongo {
                 if(false !== $limit){
                     $aOptions['limit'] = $limit;
                 }
+                if((false !== $fields) && is_array($fields)){
+                    $aOptions['projection'] = array();
+                    foreach($fields as $field){
+                        $aOptions['projection'][$field] = 1;
+                    }
+                }
                 $query = new MongoDB\Driver\Query($aSearch, $aOptions);
                 $cursor = $this->oMongo->executeQuery($this->dbName . '.' . $this->aDBs[$collection], $query);
                 $cursor = MongoDB\BSON\fromPHP($cursor->toArray());
                 $cursor = json_decode(MongoDB\BSON\toJSON($cursor), true);
                 $aResult = $cursor;
                 break;
+        }
+        $finish = microtime(true);
+        $qTime = $finish - $start;
+        if($qTime > 0.1){
+            $this->log('(' . ($qTime) . 's) Find ' . $this->dbName . '.' . $this->aDBs[$collection] . ' > ' . json_encode($aSearch));
         }
         return $aResult;
     }
@@ -202,6 +227,7 @@ class evxMongo {
      */
     public function count($collection, array $aSearch = array()){
         $result = false;
+        $start = microtime(true);
         switch($this->driver){
             case 'fake':
                 $result = 0;
@@ -223,6 +249,11 @@ class evxMongo {
                  */
                 break;
         }
+        $finish = microtime(true);
+        $qTime = $finish - $start;
+        if($qTime > 0.1){
+            $this->log('(' . ($qTime) . 's) Count ' . $this->dbName . '.' . $this->aDBs[$collection] . ' > ' . json_encode($aSearch));
+        }
         return $result;
     }
 
@@ -238,6 +269,7 @@ class evxMongo {
      */
     public function aggregate($collection, array $aSearch = array()){
         $aResult = false;
+        $start = microtime(true);
         switch($this->driver){
             case 'fake':
                 $aResult = array();
@@ -264,6 +296,11 @@ class evxMongo {
                 }
                 break;
         }
+        $finish = microtime(true);
+        $qTime = $finish - $start;
+        if($qTime > 0.1){
+            $this->log('(' . ($qTime) . 's) Aggregate ' . $this->dbName . '.' . $this->aDBs[$collection] . ' > ' . json_encode($aSearch));
+        }
         return $aResult;
     }
 
@@ -279,5 +316,10 @@ class evxMongo {
             throw new \Exception('Mongo class was not initialized.');
         }
         return self::$oInstance;
+    }
+
+    protected function log($message){
+        $logString = '[' . date('Y-m-d H:i:s') . '] - ' . $message . "\n";
+        file_put_contents($this->logFile, $logString, FILE_APPEND);
     }
 }

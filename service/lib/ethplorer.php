@@ -768,7 +768,7 @@ class Ethplorer {
      * @return int
      */
     public function getLastBlock(){
-        $cursor = $this->oMongo->find('blocks', array(), array('number' => -1), 1); // fields = array('number')
+        $cursor = $this->oMongo->find('blocks', array(), array('number' => -1), 1, false, array('number'));
         $block = ($cursor && count($cursor)) ? current($cursor) : false;
         return $block && isset($block['number']) ? $block['number'] : false;
     }
@@ -786,7 +786,7 @@ class Ethplorer {
             $search['balance'] = array('$gt' => 0);
         }
         $search['totalIn'] = array('$gt' => 0);
-        $cursor = $this->oMongo->find('balances', $search); // fields = array('contract', 'balance', 'totalIn', 'totalOut')
+        $cursor = $this->oMongo->find('balances', $search, array(), false, false, array('contract', 'balance', 'totalIn', 'totalOut'));
         $result = array();
         foreach($cursor as $balance){
             unset($balance["_id"]);
