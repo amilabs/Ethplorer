@@ -904,11 +904,11 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         var tooltip = '<div style="display: block !important; text-align: left; opacity: 1 !important; color: #000000 !important;">';
         tooltip += tooltipDateFormatter.formatValue(date) + '<br/>';
         if(noPrice){
-            tooltip += 'Token operations: ' + operations + '<br/>';
+            tooltip += '<span style="white-space: nowrap">Token operations: ' + operations + '</span><br/>';
         }else{
-            tooltip += 'O: ' + open + ' H: ' + high + ' L: ' + low + ' C: ' + close + '<br/>' +
-                'Token operations: ' + operations + '<br/>' +
-                '<nobr>Volume: ' + volume.toFixed(0) + ' (' + convertedVolume.toFixed(2) + ' USD)</nobr>';
+            tooltip += '<span style="white-space: nowrap">O: ' + open + ' H: ' + high + ' L: ' + low + ' C: ' + close + '</span><br/>' +
+                '<span style="white-space: nowrap">Token operations: ' + operations + '</span><br/>' +
+                '<span style="white-space: nowrap">Volume: ' + volume.toFixed(0) + ' (' + convertedVolume.toFixed(2) + ' USD)</span>';
         }
         tooltip += '</div>';
         return tooltip;
