@@ -236,3 +236,9 @@
 .ethplorer-widget.theme-dark {
     color: #DEDEDE;
 }
+
+.tooltipRow {
+	display: inline-block;
+	white-space: nowrap;
+	margin-top: 5px;
+}

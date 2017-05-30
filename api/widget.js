@@ -897,13 +897,25 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
     };
 
-    this.getTooltip = function(date, low, open, close, high, operations, volume, convertedVolume){
-        return 'Hi!';
+    this.getTooltip = function(noPrice, date, low, open, close, high, operations, volume, convertedVolume){
+        var tooltipDateFormatter = new google.visualization.DateFormat({ 
+            pattern: "MMM dd, yyyy '+UTC'"
+        });
+        var tooltip = '<div style="display: block !important; text-align: left; opacity: 1 !important; color: #000000 !important;">';
+        tooltip += tooltipDateFormatter.formatValue(date) + '<br/>';
+        if(noPrice){
+            tooltip += '<span style="white-space: nowrap">Token operations: ' + operations + '</span><br/>';
+        }else{
+            tooltip += '<span style="white-space: nowrap">O: ' + open + ' H: ' + high + ' L: ' + low + ' C: ' + close + '</span><br/>' +
+                '<span style="white-space: nowrap">Token operations: ' + operations + '</span><br/>' +
+                '<span style="white-space: nowrap">Volume: ' + volume.toFixed(0) + ' (' + convertedVolume.toFixed(2) + ' USD)</span>';
+        }
+        tooltip += '</div>';
+        return tooltip;
     }
 
     this.drawChart = function(aTxData, widgetPriceData){
         var aData = [];
-        //aData.push(['Day', /*{type: 'string', role: 'tooltip', 'p': {'html': true}},*/ 'Low', 'Open', 'Close', 'High', 'Token operations', {role: 'style'}, 'Volume', {role: 'style'}]);
 
         if(aTxData.length){
             var firstMonth = aTxData[0]._id.month,
@@ -934,7 +946,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             priceNotFound = true;
         if(widgetPriceData && widgetPriceData.length){
             noPrice = false;
-            aData.push(['Day', /*{type: 'string', role: 'tooltip', 'p': {'html': true}},*/ 'Low', 'Open', 'Close', 'High', 'Token operations', {role: 'style'}, 'Volume', {role: 'style'}]);
+            aData.push(['Day', 'Low', 'Open', 'Close', 'High', {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Token operations', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Volume', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
             for(var i = 0; i < widgetPriceData.length; i++){
                 var aDayPriceData = widgetPriceData[i],
                     numZeroes = 0;
@@ -958,11 +970,10 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 fnDate = startPriceDate;
             }
         }else{
-            aData.push(['Day', /*{type: 'string', role: 'tooltip', 'p': {'html': true}},*/ 'Token operations', {role: 'style'}]);
+            aData.push(['Day', 'Token operations', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
         }
-        console.log(aCountData);
-        console.log(aPriceData);
-        console.log('noPrice = ' + noPrice);
+        //console.log(aCountData);
+        //console.log(aPriceData);
 
         var curDate = true;
         for(var d = new Date(strFirstDate); d >= fnDate; d.setDate(d.getDate() - 1)){
@@ -992,13 +1003,14 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             if(chartDay < 10) chartDay = '0' + chartDay;
             var strChartDate = d.getFullYear() + '-' + chartMonth + '-' + chartDay + 'T00:00:00Z';
 
+            var tooltip = this.getTooltip(noPrice, new Date(strChartDate), low, open, close, high, cnt, volume, volumeConverted);
             if(noPrice){
-                aData.push([new Date(strChartDate), cnt, 'opacity: 0.5']);
+                aData.push([new Date(strChartDate), cnt, 'opacity: 0.5', tooltip]);
             }else{
-                aData.push([new Date(strChartDate), low, open, close, high, cnt, 'opacity: 0.5', volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5']);
+                aData.push([new Date(strChartDate), low, open, close, high, tooltip, cnt, 'opacity: 0.5', tooltip, volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5', tooltip]);
             }
         }
-        console.log(aData);
+        //console.log(aData);
         var data = google.visualization.arrayToDataTable(aData);
 
         // create div's
@@ -1113,7 +1125,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         if(noPrice){
             series = {
                 0: {
-                    type: 'line',
+                    type: noPrice ? 'area' : 'line',
                     targetAxisIndex: 0
                 },
             };
@@ -1132,8 +1144,8 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 title: '',
                 legend: { position: 'none' },
                 tooltip: {
-                    format: 'MMM d',
-                    //isHtml: true
+                    //format: 'MMM d',
+                    isHtml: true
                 },
                 colors: ['#65A5DF', 'black'],
                 series: series,
@@ -1169,7 +1181,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                     },*/
                 },
                 vAxes: vAxes,
-                pointSize: 0,
+                pointSize: noPrice ? 2 : 0,
                 lineWidth: 1,
                 bar: { groupWidth: '70%' },
                 candlestick: {
@@ -1202,10 +1214,6 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             def.options.vAxis.baselineColor = 'none';
         }
         var options = $.extend(true, def, this.options['options']);
-        var tooltipFormatter = new google.visualization.DateFormat({ 
-            pattern: "MMM dd, yyyy '+UTC'"
-        });
-        tooltipFormatter.format(data, 0);
         var chart = new google.visualization.ChartWrapper(options);
 
         // draw chart
@@ -1247,7 +1255,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
     this.refreshWidget = function(obj){
         return function(data){
             if(data && !data.error && data.history){
-                console.log(data);
+                //console.log(data);
                 obj.widgetData = data.history.countTxs;
                 obj.widgetPriceData = data.history.prices;
                 obj.el.find('.txs-loading').remove();
