@@ -457,7 +457,9 @@ class Ethplorer {
             }
         }
         $qTime = microtime(true) - $time;
-        file_put_contents(__DIR__ . '/../log/parity.log', '[' . date('Y-m-d H:i:s') . '] - (' . $qTime . 's) get ETH balance of ' . $address . "\n", FILE_APPEND);
+        if($qTime > 0.1){
+            file_put_contents(__DIR__ . '/../log/parity.log', '[' . date('Y-m-d H:i:s') . '] - (' . $qTime . 's) get ETH balance of ' . $address . "\n", FILE_APPEND);
+        }
         return $balance;
     }
 
