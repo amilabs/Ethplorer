@@ -1362,6 +1362,17 @@ class Ethplorer {
                 $method = 'getCurrencyHistory';
                 $params = array($address, 'USD');
                 $result = $this->_jsonrpcall($this->aSettings['currency'], $method, $params);
+                if($result){
+                    $aToken = $this->getToken($address);
+                    if($aToken && isset($aToken['createdAt'])){
+                        for($i = 0; $i < count($result); $i++){
+                            $zero = array('high' => 0, 'low' => 0, 'open' => 0, 'close' => 0, 'volume' => 0, 'volumeConverted' => 0);
+                            if($result[$i]['ts'] < $aToken['createdAt']){
+                                $result[$i] = array_merge($result[$i], $zero);
+                            }
+                        }
+                    }
+                }
                 $this->oCache->save($cache, $result);
             }
         }
