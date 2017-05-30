@@ -1230,8 +1230,8 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             def.options.vAxis.titleTextStyle.color = '#DEDEDE';
             def.options.vAxis.baselineColor = 'none';
         }
-        var options = $.extend(true, def, this.options['options']);
-        var chart = new google.visualization.ChartWrapper(options);
+        def.options = $.extend(true, def.options, this.options['options']);
+        var chart = new google.visualization.ChartWrapper(def);
 
         // draw chart
         dashboard.bind(control, chart);
