@@ -751,7 +751,7 @@ Ethplorer = {
 
             var fields = [
                 'token', 'token.name', 'token.price', 'token.description', 'token.owner', 'token.totalSupply', 'token.totalIn', 'token.totalOut', 'token.decimals', 'token.symbol',
-                'token.txsCount', 'token.transfersCount', 'token.issuancesCount', 'token.holdersCount'
+                'token.txsCount', 'token.transfersCount', 'token.issuancesCount', 'token.holdersCount', 'token.createdAt', 'token.createdTx'
             ];
             
             $('#tab-issuances').show();
@@ -901,40 +901,23 @@ Ethplorer = {
     },
 
     showAddressWidget: function(data){
-        console.log('testWidget = ' + testWidget);
         var oToken = Ethplorer.prepareToken(data.token);
         var address = Ethplorer.currentAddress;
         if(('undefined' !== typeof(ethplorerWidget)) && (true || !Ethplorer.isProd)){
             if(data.isContract || data.token){
+                $('#token-history-grouped-widget').show();
                 var widgetTitle = (oToken && oToken.name) ? (oToken.name + ' token pulse') : '';
-
-                if(testWidget){
-                    $('#token-price-history-grouped-widget').show();
-                    ethplorerWidget.init(
-                        '#token-price-history-grouped-widget',
-                        'tokenPriceHistoryGrouped',
-                        {
-                            theme: 'dark',
-                            getCode: true,
-                            address: address,
-                            options: {title: widgetTitle, vAxis: {title: 'Token operations'}}
-                        }
-                    );
-                    ethplorerWidget.loadScript("https://www.google.com/jsapi", ethplorerWidget.loadGoogleControlCharts);
-                }else{
-                    $('#token-history-grouped-widget').show();
-                    ethplorerWidget.init(
-                        '#token-history-grouped-widget',
-                        'tokenHistoryGrouped',
-                        {
-                            theme: 'dark',
-                            getCode: true,
-                            address: address,
-                            options: {title: widgetTitle, vAxis: {title: 'Token operations'}, hAxis: {title: '30 days token operations chart'}}
-                        }
-                    );
-                    ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
-                }
+                ethplorerWidget.init(
+                    '#token-history-grouped-widget',
+                    'tokenHistoryGrouped',
+                    {
+                        theme: 'dark',
+                        getCode: true,
+                        address: address,
+                        options: {title: widgetTitle, vAxis: {title: 'Token operations'}, hAxis: {title: '30 days token operations chart'}}
+                    }
+                );
+                ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
             }
         }else{
             // Wait 3 seconds and retry
@@ -1356,6 +1339,12 @@ Ethplorer = {
         if('undefined' === typeof(oToken.totalSupply)){
             oToken.totalSupply = 0;
         }
+        if('undefined' === typeof(oToken.createdAt)){
+            oToken.createdAt = false;
+        }
+        if('undefined' === typeof(oToken.createdTx)){
+            oToken.createdTx = false;
+        }
         if(!oToken.name){
             oToken.name = 'N/A';
         }
@@ -1502,13 +1491,21 @@ Ethplorer = {
                 value = res;
                 break;
             case 'ethplorer':
-                value = Ethplorer.Utils.getEthplorerLink(value, value, (options.indexOf('no-contract') < 0) ? Ethplorer.knownContracts.indexOf(value) >= 0 : false);
+                if(false !== value){
+                    value = Ethplorer.Utils.getEthplorerLink(value, value, (options.indexOf('no-contract') < 0) ? Ethplorer.knownContracts.indexOf(value) >= 0 : false);
+                }else{
+                    value = "";
+                }
                 break;                
             case 'etherscan':
                 value = Ethplorer.Utils.getEtherscanLink(value, value, (options.indexOf('no-contract') < 0) ? Ethplorer.knownContracts.indexOf(value) >= 0 : false);
                 break;
             case 'localdate':
-                value = Ethplorer.Utils.ts2date(value, true);
+                if(false !== value){
+                    value = Ethplorer.Utils.ts2date(value, true);
+                }else{
+                    value = "";
+                }
                 break;
         }
         $('#' + id).html(value);

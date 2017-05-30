@@ -56,10 +56,6 @@ if($error){
         die();
     }
 }
-$testWidget = false;
-if(isset($_GET['test'])){
-    $testWidget = true;
-}
 $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"></i> Export...</span><span class="export-csv"><a class="download" rel="nofollow" target="_blank" href="/service/csv.php?data=' . $rParts[2] . '">Export as CSV</a></span>';
 ?><!DOCTYPE html>
 <html>
@@ -133,34 +129,15 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                 </div>
 
                 <div>
-                <?php if($testWidget){ ?>
-                    <div class="col-xs-12 col-sm-12">
-                        <h1 id="ethplorer-path"><?=$header?></h1>
-                    </div>
-                <?php }else{ ?>
                     <div class="hidden-xs col-sm-2"></div>
                     <div class="col-xs-12 col-sm-8">
                         <h1 id="ethplorer-path"><?=$header?></h1>
                     </div>
                     <div class="hidden-xs col-sm-2"></div>
-                <?php } ?>
                 </div>
 
                 <div class="clearfix"></div>
 
-                <?php if($testWidget){ ?>
-                    <script type="text/javascript">
-                        var testWidget = true;
-                    </script>
-                    <div>
-                        <div class="col-xs-12 col-sm-12 token-price-history-grouped-widget">
-                            <div id="token-price-history-grouped-widget"></div>
-                        </div>
-                    </div>
-                <?php }else{ ?>
-                    <script type="text/javascript">
-                        var testWidget = false;
-                    </script>
                 <style>
                     #token-history-grouped-widget {
                         margin-top: 0 !important;
@@ -178,7 +155,6 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                     </div>
                     <div class="hidden-xs col-sm-1"></div>
                 </div>
-                <?php } ?>
                 <script type="text/javascript">
                     if(typeof(eWgs) === 'undefined'){ document.write('<scr' + 'ipt src="/api/widget.js?' + new Date().getTime().toString().substr(0,7) + '" async></scr' + 'ipt>'); var eWgs = []; }
                 </script>
@@ -395,8 +371,16 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                                 <td id="address-address" data-type="etherscan" data-options="no-contract" class="list-field"></td>
                             </tr>
                             <tr>
+                                <td>Created At</td>
+                                <td id="address-token-createdAt" data-type="localdate" data-options="no-contract" class="list-field"></td>
+                            </tr>
+                            <tr>
                                 <td>Creator</td>
                                 <td id="address-contract-creator" data-type="ethplorer" data-options="no-contract" class="list-field"></td>
+                            </tr>
+                            <tr>
+                                <td>Create Tx</td>
+                                <td id="address-token-createdTx" data-type="ethplorer" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Balance</td>
