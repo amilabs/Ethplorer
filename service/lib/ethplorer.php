@@ -87,8 +87,8 @@ class Ethplorer {
             "cacheDir" => dirname(__FILE__) . "/../cache/",
             "logsDir" => dirname(__FILE__) . "/../logs/",
         );
-
-        $this->oCache = new evxCache($this->aSettings['cacheDir']);
+        $cacheDriver = isset($this->aSettings['cacheDriver']) ? $this->aSettings['cacheDriver'] : 'file';
+        $this->oCache = new evxCache($this->aSettings['cacheDir'], $cacheDriver);
         if(isset($this->aSettings['mongo']) && is_array($this->aSettings['mongo'])){
             evxMongo::init($this->aSettings['mongo']);
             $this->oMongo = evxMongo::getInstance();

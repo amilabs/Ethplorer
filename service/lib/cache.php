@@ -34,14 +34,52 @@ class evxCache {
     protected $path;
 
     /**
+     * Cache driver name [file, memcached]
+     *
+     * @var string
+     */
+    protected $driver = 'file';
+
+    /**
+     * Cache driver object
+     *
+     * @var object
+     */
+    protected $oDriver = null;
+
+    /**
+     * Cache lifetime array
+     *
+     * @var array
+     */
+    protected $aLifetime = array();
+
+    /**
      * Constructor.
      *
      * @param string  $path  Cache files path
      */
-    public function __construct($path = __DIR__){
+    public function __construct($path = __DIR__, $driver = FALSE){
         $path = realpath($path);
         if(file_exists($path) && is_dir($path)){
             $this->path = $path;
+        }
+        if(FALSE !== $driver){
+            $this->driver = $driver;
+        }
+
+        if('memcached' === $this->driver){
+            if(class_exists('Memcached')){
+                $mc = new Memcached('ethplorer');
+                $mc->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
+                if (!count($mc->getServerList())) {
+                    $mc->addServers(array(array('127.0.0.1', 11211)));
+                }
+                $this->oDriver = $mc;
+            }else{
+                error_log('Memcached calss not found, use filecache instead');
+                $this->driver = 'file';
+            }
         }
     }
 
@@ -63,9 +101,18 @@ class evxCache {
      */
     public function save($entryName, $data){
         $this->store($entryName, $data);
-        $filename = $this->path . '/' . $entryName . ".tmp";
-        $json = json_encode($data, JSON_PRETTY_PRINT);
-        file_put_contents($filename, $json);
+        if('memcached' === $this->driver){
+            $lifetime = isset($this->aLifetime[$entryName]) ? (int)$this->aLifetime[$entryName] : 0;
+            if($lifetime > 60*60*24*30){
+                $lifetime = time() + $cacheLifetime;
+            }
+            $this->oDriver->set($entryName, $data, $lifetime);
+        }
+        if('file' === $this->driver){
+            $filename = $this->path . '/' . $entryName . ".tmp";
+            $json = json_encode($data, JSON_PRETTY_PRINT);
+            file_put_contents($filename, $json);
+        }
     }
 
     /**
@@ -88,21 +135,33 @@ class evxCache {
      */
     public function get($entryName, $default = NULL, $loadIfNeeded = FALSE, $cacheLifetime = FALSE){
         $result = $default;
+        $file = ('file' === $this->driver);
+        if(FALSE !== $cacheLifetime){
+            $this->aLifetime[$entryName] = $lifetime;
+        }
         if($this->exists($entryName)){
             $result = $this->aData[$entryName];
         }elseif($loadIfNeeded){
-            $filename = $this->path . '/' . $entryName . ".tmp";
-            if(file_exists($filename)){
-                if(FALSE !== $cacheLifetime){
-                    $fileTime = filemtime($filename);
-                    $gmtZero = gmmktime(0, 0, 0);
-                    if((($gmtZero > $fileTime) && ($cacheLifetime > 3600)) || ((time() - $fileTime) > $cacheLifetime)){
-                        @unlink($filename);
-                        return $result;
-                    }
+            if('memached' === $this->driver){
+                $result = $this->oDriver->get($entryName);
+                if(FALSE === $result){
+                    $file = TRUE;
                 }
-                $contents = @file_get_contents($filename);
-                $result = json_decode($contents, TRUE);
+            }
+            if($file){
+                $filename = $this->path . '/' . $entryName . ".tmp";
+                if(file_exists($filename)){
+                    if(FALSE !== $cacheLifetime){
+                        $fileTime = filemtime($filename);
+                        $gmtZero = gmmktime(0, 0, 0);
+                        if((($gmtZero > $fileTime) && ($cacheLifetime > 3600)) || ((time() - $fileTime) > $cacheLifetime)){
+                            @unlink($filename);
+                            return $result;
+                        }
+                    }
+                    $contents = @file_get_contents($filename);
+                    $result = json_decode($contents, TRUE);
+                }
             }
         }
         return $result;
