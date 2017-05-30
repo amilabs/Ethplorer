@@ -904,15 +904,18 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         var numFormatter = new google.visualization.NumberFormat({ 
             pattern: "#,###"
         });
+        var currencyFormatter = new google.visualization.NumberFormat({ 
+            pattern: '#,##0.00###'
+        });
         var tooltip = '<div style="display: block !important; text-align: left; opacity: 1 !important; color: #000000 !important; padding: 5px;">';
         tooltip += tooltipDateFormatter.formatValue(date) + '<br/>';
         if(noPrice){
             tooltip += '<span class="tooltipRow"><b>Token operations:</b> ' + operations + '</span><br/>';
         }else{
             var avg = (open + close) / 2;
-            tooltip += '<span class="tooltipRow"><b>Average:</b> ' + avg.toFixed(2) + ' USD</span><br/>' +
-                '<span class="tooltipRow"><b>Open:</b> ' + open.toFixed(2) + ' <b>Close:</b> ' + close.toFixed(2) + '</span><br/>' +
-                '<span class="tooltipRow"><b>High:</b> ' + high.toFixed(2) + ' <b>Low:</b> ' + low.toFixed(2) + '</span><br/>' +
+            tooltip += '<span class="tooltipRow"><b>Average:</b> ' + currencyFormatter.formatValue(avg) + ' USD</span><br/>' +
+                '<span class="tooltipRow"><b>Open:</b> ' + currencyFormatter.formatValue(open) + ' <b>Close:</b> ' + currencyFormatter.formatValue(close) + '</span><br/>' +
+                '<span class="tooltipRow"><b>High:</b> ' + currencyFormatter.formatValue(high) + ' <b>Low:</b> ' + currencyFormatter.formatValue(low) + '</span><br/>' +
                 '<span class="tooltipRow"><b>Token operations:</b> ' + numFormatter.formatValue(operations) + '</span><br/>' +
                 '<span class="tooltipRow"><b>Volume:</b> ' + numFormatter.formatValue(volume.toFixed(0)) + ' (' + numFormatter.formatValue(convertedVolume.toFixed(2)) + ' USD)</span>';
         }
@@ -1116,7 +1119,8 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         var vAxes = {
             0: {
                 title: 'Price',
-                format: 'currency'
+                format: '$ #,##0.00##'
+                //format: 'currency'
             },
             1: {
                 title: 'Token operations',
@@ -1179,7 +1183,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                     gridlines: {
                         color: "none"
                     },
-                    format: '#,###',
+                    //format: '#,###',
                     /*minValue: 0,
                     maxValue: 3,
                     viewWindow: {
