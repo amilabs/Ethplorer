@@ -17,6 +17,7 @@
 EthplorerNote = {
     service: "/service/service.php",
     next: 0,
+    notes: [],
     init: function(container){
         EthplorerNote.container = container;
         if((document.location.host !== 'ethplorer.io') && (document.location.host.indexOf('ethplorer') < 0)){
@@ -26,31 +27,41 @@ EthplorerNote = {
         inner.addClass('ethplorer-note');
         EthplorerNote.container.append(inner);
         EthplorerNote.inner = inner;        
-        EthplorerNote.loadNext();
+        EthplorerNote.loadNotes();
     },
-    loadNext: function(){
-        $.getJSON(EthplorerNote.service, {notes: 1, note: EthplorerNote.next}, function(data, status, xhr){
-            if('undefined' !== typeof(data.link)){
-                EthplorerNote.inner.fadeOut(500, function(_data){
-                    return function(){
-                        var link = "/go.php?link=" + _data.link;
-                        EthplorerNote.inner.html(_data.html.replace('%link%', link));
-                        if('undefined' !== typeof(_data.next)){
-                            EthplorerNote.next = _data.next;
-                        }
-                        if(_data.image){
-                            var img = $('<IMG>');
-                            img.attr('src', _data.image);
-                            EthplorerNote.inner.prepend(img);
-                        }
-                        EthplorerNote.inner.fadeIn(800);
-                    }
-                }(data));
-                if(data.hasNext){
-                    setTimeout(EthplorerNote.loadNext, 15000);
-                }
-                EthplorerNote.container.show();
+    loadNotes: function(){
+        $.getJSON(EthplorerNote.service, {notes: 1}, function(data, status, xhr){
+            if(('undefined' !== typeof(data)) && data.length){
+                EthplorerNote.notes = data;
+                EthplorerNote.showNext();
             }
         });
+    },
+    showNext: function(){
+        if(!EthplorerNote.notes.length){
+            return;
+        }
+        if(EthplorerNote.next >= EthplorerNote.notes.length){
+            EthplorerNote.next = 0;
+        }
+
+        EthplorerNote.container.show();
+        
+        var note = EthplorerNote.notes[EthplorerNote.next];
+        EthplorerNote.inner.fadeOut(500, function(_data){
+            return function(){
+                var link = "/go.php?link=" + _data.link;
+                EthplorerNote.inner.html(_data.html.replace('%link%', link));
+                if(_data.image){
+                    var img = $('<IMG>');
+                    img.attr('src', _data.image);
+                    EthplorerNote.inner.prepend(img);
+                }
+                EthplorerNote.inner.fadeIn(800);
+            }
+        }(note));
+        
+        EthplorerNote.next++;
+        setTimeout(EthplorerNote.showNext, 15000);
     }
 };
