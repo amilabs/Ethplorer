@@ -236,3 +236,8 @@
 .ethplorer-widget.theme-dark {
     color: #DEDEDE;
 }
+
+.tooltipRow {
+	white-space: nowrap;
+	margin-top: 5px;
+}
