@@ -918,7 +918,7 @@ Ethplorer = {
                             theme: 'dark',
                             getCode: true,
                             address: address,
-                            options: {title: widgetTitle, vAxis: {title: 'Token operations'}}
+                            options: {title: widgetTitle}
                         }
                     );
                     ethplorerWidget.loadScript("https://www.google.com/jsapi", ethplorerWidget.loadGoogleControlCharts);
