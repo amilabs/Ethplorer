@@ -445,7 +445,6 @@ class Ethplorer {
      * @return double
      */
     public function getBalance($address){
-        // @todo: cache
         $time = microtime(true);
         $cacheId = 'ethBalance-' . $address;
         $balance = $this->oCache->get($cacheId, false, true, 30);
@@ -454,6 +453,9 @@ class Ethplorer {
             if(false !== $balance){
                 $balance = hexdec(str_replace('0x', '', $balance)) / pow(10, 18);
                 $this->oCache->save($cacheId, $balance);
+            }else{
+                file_put_contents(__DIR__ . '/../log/parity.log', '[' . date('Y-m-d H:i:s') . '] - get balance for ' . $address . " failed\n", FILE_APPEND);
+                $this->oCache->save($cacheId, 0);
             }
         }
         $qTime = microtime(true) - $time;
