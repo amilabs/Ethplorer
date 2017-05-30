@@ -446,10 +446,18 @@ class Ethplorer {
      */
     public function getBalance($address){
         // @todo: cache
-        $balance = $this->_callRPC('eth_getBalance', array($address, 'latest'));
-        if(false !== $balance){
-            $balance = hexdec(str_replace('0x', '', $balance)) / pow(10, 18);
+        $time = microtime(true);
+        $cacheId = 'ethBalance-' . $address;
+        $balance = $this->oCache->get($cacheId, false, true, 30);
+        if(false === $balance){
+            $balance = $this->_callRPC('eth_getBalance', array($address, 'latest'));
+            if(false !== $balance){
+                $balance = hexdec(str_replace('0x', '', $balance)) / pow(10, 18);
+                $this->oCache->save($cacheId, $balance);
+            }
         }
+        $qTime = microtime(true) - $time;
+        file_put_contents(__DIR__ . '/../log/parity.log', '[' . date('Y-m-d H:i:s') . '] - (' . $qTime . 's) get ETH balance of ' . $address . "\n", FILE_APPEND);
         return $balance;
     }
 
