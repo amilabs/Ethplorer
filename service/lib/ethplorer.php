@@ -92,8 +92,11 @@ class Ethplorer {
         if(isset($this->aSettings['mongo']) && is_array($this->aSettings['mongo'])){
             evxMongo::init($this->aSettings['mongo']);
             $this->oMongo = evxMongo::getInstance();
-            $lastblock = $this->getLastBlock();
-            $this->oCache->store('lastBlock', $lastblock);
+            $lastblock = $this->oCache->get('lastBlock', false, true, 30);
+            if(false === $lastblock){
+                $lastblock = $this->getLastBlock();
+                $this->oCache->save('lastBlock', $lastblock);
+            }
         }
     }
 
@@ -423,7 +426,11 @@ class Ethplorer {
             }
         }
         if(is_array($result) && is_array($result['tx'])){
-            $result['tx']['confirmations'] = $this->oCache->get('lastBlock') - $result['tx']['blockNumber'] + 1;
+            $confirmations = $this->oCache->get('lastBlock') - $result['tx']['blockNumber'] + 1;
+            if($confirmations < 1){
+                $confirmations = 1;
+            }
+            $result['tx']['confirmations'] = $confirmations;
         }
         if(is_array($result) && is_array($result['token'])){
             $result['token'] = $this->getToken($result['token']['address']);
