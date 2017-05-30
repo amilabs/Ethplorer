@@ -979,6 +979,10 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 fnDate = startPriceDate;
             }
         }else{
+            var strMonth = aTxData[aTxData.length - 1]._id.month < 10 ? ('0' + aTxData[aTxData.length - 1]._id.month) : aTxData[aTxData.length - 1]._id.month,
+                strDay = aTxData[aTxData.length - 1]._id.day < 10 ? ('0' + aTxData[aTxData.length - 1]._id.day) : aTxData[aTxData.length - 1]._id.day;
+            var strDate = aTxData[aTxData.length - 1]._id.year + '-' + strMonth + '-' + strDay + 'T00:00:00Z';
+            fnDate = new Date(strDate);
             aData.push(['Day', 'Token operations', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
         }
         //console.log(aCountData);
