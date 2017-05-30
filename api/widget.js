@@ -882,6 +882,8 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
     }
     if(this.options.period <= 0){
         this.options.period = 365;
+    }else if(this.options.period < 7){
+        this.options.period = 7;
     }
 
     this.api = ethplorerWidget.api + '/getTokenPriceHistoryGrouped';
@@ -1069,13 +1071,13 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 filterColumnIndex: 0,
                 ui: {
                     chartType: 'ComboChart',
+                    minRangeSize: (this.options.period <= 7) ? 86400000 * 2 : 86400000 * 7,
                     chartOptions: {
                         /*chartArea: {
                             height: '30%',
                         },*/
                         colors: ['#65A5DF'],
                         lineWidth: 0,
-                        minRangeSize: 86400000,
                         hAxis : {
                             title: '',
                             titleTextStyle: {
