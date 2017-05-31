@@ -136,7 +136,7 @@ ethplorerWidget = {
         widgetCode += ');});' + cr + '</script>';
 
         if('undefined' !== typeof(widget.type) && widget.type === 'tokenPriceHistoryGrouped'){
-            widgetCode = '<center><br/><b>Coming soon!</b><br\>Follow <a href="https://twitter.com/Ethplorer" target="_blank">ethplorer\'s twitter</a> to know first.</center>';
+            widgetCode = '<center><br/><b>Coming soon!</b><br\>Follow <a href="https://twitter.com/ethplorer" target="_blank">Ethplorer\'s twitter</a> to know first.</center>';
             $("#" + popupId).html(widgetCode);
         }else{
             $("#" + popupId).text(widgetCode);
