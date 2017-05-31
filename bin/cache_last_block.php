@@ -1,4 +1,3 @@
-
 <?php
 /*!
  * Copyright 2016 Everex https://everex.io
