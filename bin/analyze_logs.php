@@ -66,3 +66,4 @@ while(!feof($f)){
 }
 fclose($f);
 
+var_export($aDates);
