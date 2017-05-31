@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-require dirname(__FILE__) . '/lib/ethplorer.php';
+require dirname(__FILE__) . '/../service/lib/ethplorer.php';
+$aConfig = require_once dirname(__FILE__) . '/../service/config.php';
 
-$aConfig = require_once dirname(__FILE__) . '/config.php';
 Ethplorer::db($aConfig)->getTokens(true);
 Ethplorer::db($aConfig)->getTopTokens(10, 90);
 Ethplorer::db($aConfig)->getTopTokens(50, 90);

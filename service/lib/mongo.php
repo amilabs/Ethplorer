@@ -123,7 +123,7 @@ class evxMongo {
         }
         $finish = microtime(true);
         $qTime = $finish - $start;
-        if($qTime > 0.1){
+        if($qTime > 1){
             $this->log('(' . ($qTime) . 's) Connection to ' . $aSettings['server']);
         }
         $this->driver = $aSettings['driver'];

@@ -1,3 +1,4 @@
+
 <?php
 /*!
  * Copyright 2016 Everex https://everex.io
@@ -15,10 +16,7 @@
  * limitations under the License.
  */
 
-require dirname(__FILE__) . '/lib/ethplorer.php';
+require dirname(__FILE__) . '/../service/lib/ethplorer.php';
+$aConfig = require_once dirname(__FILE__) . '/../service/config.php';
 
-$aConfig = require_once dirname(__FILE__) . '/config.php';
-foreach($aConfig['updateRates'] as $address){
-    Ethplorer::db($aConfig)->getTokenPrice($address, TRUE);
-    Ethplorer::db($aConfig)->getTokenPriceHistory($address, 0, 'hourly', TRUE);
-}
+Ethplorer::db($aConfig)->getLastBlock(true);

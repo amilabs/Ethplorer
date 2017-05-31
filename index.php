@@ -60,6 +60,12 @@ $testWidget = false;
 if(isset($_GET['test'])){
     $testWidget = true;
 }
+$debugEnabled = false;
+if(isset($_GET['debug']) && $_GET['debug']){
+    $debugId = $_GET['debug'];
+    $debugEnabled = true;
+}
+
 $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"></i> Export...</span><span class="export-csv"><a class="download" rel="nofollow" target="_blank" href="/service/csv.php?data=' . $rParts[2] . '">Export as CSV</a></span>';
 ?><!DOCTYPE html>
 <html>
@@ -654,6 +660,10 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
 <script>
 $(document).ready(function(){
     $.fn.bootstrapBtn = $.fn.button.noConflict();
+    <?php if($debugEnabled): ?>
+    Ethplorer.debug = true;
+    Ethplorer.debugId = "<?=htmlspecialchars($debugId)?>";
+    <?php endif; ?>
     Ethplorer.init();
 });
 if(Ethplorer.Config.ga){

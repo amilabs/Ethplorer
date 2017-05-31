@@ -15,6 +15,8 @@
  */
 
 Ethplorer = {
+    debug: false,
+    debugId: "",
     data: {},
     pageSize: 10,
     service: /*"https://ethplorer.io/service/service.php",*/ "/service/service.php",
@@ -273,8 +275,12 @@ Ethplorer = {
         if(!/^0x[0-9a-f]{64}$/i.test(txHash)){
             Ethplorer.error('Invalid transaction hash');
             return;
-        }    
-        $.getJSON(Ethplorer.service, {data: txHash}, function(_txHash){
+        }
+        var requestData = {data: txHash};
+        if(Ethplorer.debug){
+            requestData.debugId = Ethplorer.debugId;
+        }
+        $.getJSON(Ethplorer.service, requestData, function(_txHash){
             return function(data){
                 if(data.ethPrice){
                     Ethplorer.ethPrice = data.ethPrice;
@@ -672,6 +678,9 @@ Ethplorer = {
         var page = Ethplorer.Nav.getString();
         if(page){
             data.page = page;
+        }
+        if(Ethplorer.debug){
+            data.debugId = Ethplorer.debugId;
         }
         $.getJSON(Ethplorer.service, data, function(_address){
             return function(data){
@@ -1436,7 +1445,11 @@ Ethplorer = {
                 document.location.href = '/tx/' + value;
                 return;
             }else if((value.length < 20) && fromInput){
-                $.getJSON(Ethplorer.service, {search: value}, function(data){
+                var data = {search: value};
+                if(Ethplorer.debug){
+                    data.debugId = Ethplorer.debugId;
+                }
+                $.getJSON(Ethplorer.service, data, function(data){
                     var empty = !(data && data.results && data.total);
                     if(!empty){
                         document.location.href = '/address/' + data.results[0][2];

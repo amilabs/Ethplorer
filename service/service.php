@@ -22,6 +22,7 @@ $page = isset($_GET["page"]) ? $_GET["page"] : false;
 $refresh = isset($_GET["refresh"]) ? $_GET["refresh"] : false;
 $search = isset($_GET["search"]) ? $_GET["search"] : false;
 $adv = isset($_GET["notes"]) ? $_GET["notes"] : false;
+$debugId = isset($_GET["debugId"]) ? $_GET["debugId"] : false;
 
 // Allow cross-domain ajax requests
 header('Access-Control-Allow-Origin: *');
@@ -31,6 +32,10 @@ $pageSize = 10;
 $result = array();
 
 $aConfig = require_once dirname(__FILE__) . '/config.php';
+
+if($debugId){
+    $aConfig['debugId'] = $debugId;
+}
 
 if(strlen($search) || (false !== $data)){
 

@@ -81,22 +81,24 @@ class Ethplorer {
      * @throws Exception
      */
     protected function __construct(array $aConfig){
-        evxProfiler::checkpoint('START');
+        evxProfiler::checkpoint('Ethplorer', 'START');
         $this->aSettings = $aConfig;
         $this->aSettings += array(
             "cacheDir" => dirname(__FILE__) . "/../cache/",
-            "logsDir" => dirname(__FILE__) . "/../logs/",
+            "logsDir" => dirname(__FILE__) . "/../log/",
         );
         $cacheDriver = isset($this->aSettings['cacheDriver']) ? $this->aSettings['cacheDriver'] : 'file';
         $this->oCache = new evxCache($this->aSettings['cacheDir'], $cacheDriver);
         if(isset($this->aSettings['mongo']) && is_array($this->aSettings['mongo'])){
             evxMongo::init($this->aSettings['mongo']);
             $this->oMongo = evxMongo::getInstance();
-            $lastblock = $this->oCache->get('lastBlock', false, true, 30);
-            if(false === $lastblock){
-                $lastblock = $this->getLastBlock();
-                $this->oCache->save('lastBlock', $lastblock);
-            }
+        }
+    }
+
+    public function __destruct(){
+        evxProfiler::checkpoint('Ethplorer', 'FINISH');
+        if($this->aSettings['debugId']){
+            evxProfiler::log($this->aSettings['logsDir'] . 'profiler-' . /* time() . '-' . */ md5($this->aSettings['debugId']) . '.log');
         }
     }
 
@@ -207,6 +209,7 @@ class Ethplorer {
      * @return array
      */
     public function getAddressDetails($address, $limit = 50){
+        evxProfiler::checkpoint('getAddressDetails', 'START', 'address=' . $address . ', limit=' . $limit);
         $result = array(
             "isContract"    => FALSE,
             "transfers"     => array()
@@ -298,10 +301,12 @@ class Ethplorer {
                 'total' => $this->countOperations($address, FALSE),
             );
         }
+        evxProfiler::checkpoint('getAddressDetails', 'FINISH');
         return $result;
     }
 
     public function getTokenTotalInOut($address){
+        evxProfiler::checkpoint('getTokenTotalInOut', 'START', 'address=' . $address);
         $result = array('totalIn' => 0, 'totalOut' => 0);
         if($this->isValidAddress($address)){
             $aResult = $this->oMongo->aggregate('balances', array(
@@ -319,11 +324,13 @@ class Ethplorer {
                 $result['totalOut'] = $aResult['result'][0]['totalOut'];
             }
         }
+        evxProfiler::checkpoint('getTokenTotalInOut', 'FINISH');
         return $result;
     }
 
 
     public function getEtherTotalOut($address){
+        evxProfiler::checkpoint('getEtherTotalOut', 'START', 'address=' . $address);
         $result = 0;
         if($this->isValidAddress($address)){
             $aResult = $this->oMongo->aggregate('transactions', array(
@@ -341,6 +348,7 @@ class Ethplorer {
                 }
             }
         }
+        evxProfiler::checkpoint('getEtherTotalOut', 'FINISH');
         return $result;
     }
 
@@ -379,6 +387,7 @@ class Ethplorer {
      * @return array
      */
     public function getTransactionDetails($hash){
+        evxProfiler::checkpoint('getTransactionDetails', 'START', 'hash=' . $hash);
         $cache = 'tx-' . $hash;
         $result = $this->oCache->get($cache, false, true);
         if(false === $result){
@@ -426,15 +435,21 @@ class Ethplorer {
             }
         }
         if(is_array($result) && is_array($result['tx'])){
-            $confirmations = $this->oCache->get('lastBlock') - $result['tx']['blockNumber'] + 1;
-            if($confirmations < 1){
-                $confirmations = 1;
+
+            $confirmations = 1;
+            $lastblock = $this->getLastBlock();
+            if($lastblock){
+                $confirmations = $lastblock - $result['tx']['blockNumber'] + 1;
+                if($confirmations < 1){
+                    $confirmations = 1;
+                }
             }
             $result['tx']['confirmations'] = $confirmations;
         }
         if(is_array($result) && is_array($result['token'])){
             $result['token'] = $this->getToken($result['token']['address']);
         }
+        evxProfiler::checkpoint('getTransactionDetails', 'FINISH');
         return $result;
     }
 
@@ -445,6 +460,7 @@ class Ethplorer {
      * @return double
      */
     public function getBalance($address){
+        evxProfiler::checkpoint('getBalance', 'START', 'address=' . $address);
         $time = microtime(true);
         $cacheId = 'ethBalance-' . $address;
         $balance = $this->oCache->get($cacheId, false, true, 30);
@@ -460,8 +476,9 @@ class Ethplorer {
         }
         $qTime = microtime(true) - $time;
         if($qTime > 0.1){
-            file_put_contents(__DIR__ . '/../log/parity.log', '[' . date('Y-m-d H:i:s') . '] - (' . $qTime . 's) get ETH balance of ' . $address . "\n", FILE_APPEND);
+            // file_put_contents(__DIR__ . '/../log/parity.log', '[' . date('Y-m-d H:i:s') . '] - (' . $qTime . 's) get ETH balance of ' . $address . "\n", FILE_APPEND);
         }
+        evxProfiler::checkpoint('getBalance', 'FINISH');
         return $balance;
     }
 
@@ -472,7 +489,7 @@ class Ethplorer {
      * @return array
      */
     public function getTransaction($tx){
-        // evxProfiler::checkpoint('getTransaction START [hash=' . $tx . ']');
+        evxProfiler::checkpoint('getTransaction', 'START', 'hash=' . $tx);
         $cursor = $this->oMongo->find('transactions', array("hash" => $tx));
         $result = count($cursor) ? current($cursor) : false;
         if($result){
@@ -483,7 +500,7 @@ class Ethplorer {
             $result['gasUsed'] = $receipt ? $receipt['gasUsed'] : 0;
             $result['success'] = (($result['gasUsed'] < $result['gasLimit']) || ($receipt && !empty($receipt['logs'])));
         }
-        // evxProfiler::checkpoint('getTransaction FINISH [hash=' . $tx . ']');
+        evxProfiler::checkpoint('getTransaction', 'FINISH');
         return $result;
     }
 
@@ -495,7 +512,7 @@ class Ethplorer {
      * @return array
      */
     public function getOperations($tx, $type = FALSE){
-        // evxProfiler::checkpoint('getOperations START [hash=' . $tx . ']');
+        evxProfiler::checkpoint('getOperations', 'START', 'hash=' . $tx);
         $search = array("transactionHash" => $tx);
         if($type){
             $search['type'] = $type;
@@ -507,7 +524,7 @@ class Ethplorer {
             $res["success"] = true;
             $result[] = $res;
         }
-        // evxProfiler::checkpoint('getOperations FINISH [hash=' . $tx . ']');
+        evxProfiler::checkpoint('getOperations', 'FINISH');
         return $result;
     }
 
@@ -538,6 +555,7 @@ class Ethplorer {
      * @return array
      */
     public function getTokens($updateCache = false){
+        evxProfiler::checkpoint('getTokens', 'START');
         $aResult = $updateCache ? false : $this->oCache->get('tokens', false, true);
         if(false === $aResult){
             if($updateCache){
@@ -567,11 +585,13 @@ class Ethplorer {
             }
             $this->oCache->save('tokens', $aResult);
         }
+        evxProfiler::checkpoint('getTokens', 'FINISH');
         return $aResult;
     }
 
 
     public function getTokenHoldersCount($address, $useFilter = TRUE){
+        evxProfiler::checkpoint('getTokenHoldersCount', 'START', 'address=' . $address);
         $search = array('contract' => $address, 'balance' => array('$gt' => 0));
         if($useFilter && $this->filter){
             $search = array(
@@ -581,7 +601,9 @@ class Ethplorer {
                 )
             );
         }
-        return $this->oMongo->count('balances', $search);
+        $result = $this->oMongo->count('balances', $search);
+        evxProfiler::checkpoint('getTokenHoldersCount', 'START', 'address=' . $address);
+        return $result;
     }
 
     /**
@@ -592,6 +614,7 @@ class Ethplorer {
      * @return array
      */
     public function getTokenHolders($address, $limit = FALSE, $offset = FALSE){
+        evxProfiler::checkpoint('getTokenHoldersCount', 'START', 'address=' . $address . ', limit=' . $limit . ', offset=' . $offset);
         $result = array();
         $token = $this->getToken($address);
         if($token){
@@ -624,6 +647,7 @@ class Ethplorer {
                 }
             }
         }
+        evxProfiler::checkpoint('getTokenHoldersCount', 'FINISH');
         return $result;
     }
 
@@ -689,7 +713,7 @@ class Ethplorer {
      * @return array
      */
     public function getContract($address){
-        // evxProfiler::checkpoint('getContract START [address=' . $address . ']');
+        evxProfiler::checkpoint('getContract', 'START', 'address=' . $address);
         $cursor = $this->oMongo->find('contracts', array("address" => $address));
         $result = count($cursor) ? current($cursor) : false;
         if($result){
@@ -699,7 +723,7 @@ class Ethplorer {
                 $result['isChainy'] = true;
             }
         }
-        // evxProfiler::checkpoint('getContract FINISH [address=' . $address . ']');
+        evxProfiler::checkpoint('getContract', 'FINISH');
         return $result;
     }
 
@@ -710,6 +734,7 @@ class Ethplorer {
      * @return int
      */
     public function countOperations($address, $useFilter = TRUE){
+        evxProfiler::checkpoint('countOperations', 'START', 'address=' . $address);
         $result = 0;
         $token = $this->getToken($address);
         if($token){
@@ -740,6 +765,7 @@ class Ethplorer {
             );
         }
         $result = $this->oMongo->count('operations', $search);
+        evxProfiler::checkpoint('countOperations', 'FINISH');
         return $result;
     }
 
@@ -751,11 +777,13 @@ class Ethplorer {
      * @return int
      */
     public function countTransactions($address){
+        evxProfiler::checkpoint('countTransactions', 'START', 'address=' . $address);
         $search = array('$or' => array(array('from' => $address), array('to' => $address)));
         $result = $this->oMongo->count('transactions', $search);
         if($this->getContract($address)){
             $result++; // One for contract creation
         }
+        evxProfiler::checkpoint('countTransactions', 'FINISH');
         return $result;
     }
 
@@ -786,10 +814,17 @@ class Ethplorer {
      *
      * @return int
      */
-    public function getLastBlock(){
-        $cursor = $this->oMongo->find('blocks', array(), array('number' => -1), 1, false, array('number'));
-        $block = ($cursor && count($cursor)) ? current($cursor) : false;
-        return $block && isset($block['number']) ? $block['number'] : false;
+    public function getLastBlock($updateCache = FALSE){
+        evxProfiler::checkpoint('getLastBlock', 'START');
+        $lastblock = $this->oCache->get('lastBlock', false, true, 300);
+        if($updateCache || (false === $lastblock)){
+            $cursor = $this->oMongo->find('blocks', array(), array('number' => -1), 1, false, array('number'));
+            $block = ($cursor && count($cursor)) ? current($cursor) : false;
+            $lastBlock = $block && isset($block['number']) ? $block['number'] : false;
+            $this->oCache->save('lastBlock', $lastblock);
+        }
+        evxProfiler::checkpoint('getLastBlock', 'FINISH');
+        return $lastBlock;
     }
 
     /**
@@ -800,6 +835,7 @@ class Ethplorer {
      * @return array
      */
     public function getAddressBalances($address, $withZero = true){
+        evxProfiler::checkpoint('getAddressBalances', 'START', 'address=' . $address);
         $search = array("address" => $address);
         if(!$withZero){
             $search['balance'] = array('$gt' => 0);
@@ -811,6 +847,7 @@ class Ethplorer {
             unset($balance["_id"]);
             $result[] = $balance;
         }
+        evxProfiler::checkpoint('getAddressBalances', 'FINISH');
         return $result;
     }
 
@@ -1336,11 +1373,13 @@ class Ethplorer {
     }
 
     public function getETHPrice(){
+        evxProfiler::checkpoint('getETHPrice', 'START');
         $result = false;
         $eth = $this->getTokenPrice('0x0000000000000000000000000000000000000000');
         if(false !== $eth){
             $result = $eth;
         }
+        evxProfiler::checkpoint('getETHPrice', 'FINISH');
         return $result;
     }
 
