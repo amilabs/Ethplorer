@@ -911,14 +911,14 @@ Ethplorer = {
     },
 
     showAddressWidget: function(data){
-        console.log('testWidget = ' + testWidget);
+        //console.log('testWidget = ' + testWidget);
         var oToken = Ethplorer.prepareToken(data.token);
         var address = Ethplorer.currentAddress;
         if(('undefined' !== typeof(ethplorerWidget)) && (true || !Ethplorer.isProd)){
             if(data.isContract || data.token){
                 var widgetTitle = (oToken && oToken.name) ? (oToken.name + ' token pulse') : '';
 
-                if(testWidget){
+                if(true){
                     $('#token-price-history-grouped-widget').show();
                     ethplorerWidget.init(
                         '#token-price-history-grouped-widget',

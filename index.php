@@ -155,7 +155,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
 
                 <div class="clearfix"></div>
 
-                <?php if($testWidget){ ?>
+                <?php if(true){ ?>
                     <script type="text/javascript">
                         var testWidget = true;
                     </script>
