@@ -555,9 +555,9 @@ class Ethplorer {
      * @return array
      */
     public function getTokens($updateCache = false){
-        evxProfiler::checkpoint('getTokens', 'START');
         $aResult = $this->oCache->get('tokens', false, true);
         if($updateCache || (false === $aResult)){
+            evxProfiler::checkpoint('getTokens', 'START');
             if($updateCache){
                 $aPrevTokens = $this->oCache->get('tokens', false, true);
                 if(!is_array($aPrevTokens)){
@@ -588,8 +588,8 @@ class Ethplorer {
                 }
             }
             $this->oCache->save('tokens', $aResult);
+            evxProfiler::checkpoint('getTokens', 'FINISH');
         }
-        evxProfiler::checkpoint('getTokens', 'FINISH');
         return $aResult;
     }
 

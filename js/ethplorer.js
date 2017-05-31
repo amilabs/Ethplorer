@@ -831,7 +831,7 @@ Ethplorer = {
                     continue;
                 }
                 var value = Ethplorer.Utils.formatNum(qty, true, oToken.decimals, true, true) + ' ' + oToken.symbol;
-                if(balances[k].price && balances[k].balanceUSD){
+                if(balances[k].price){
                     var rate = oToken.price;
                     var price = balances[k].balanceUSD;
                     value += ('<br><div class="balances-price" title="$' + price + '">$ ' + Ethplorer.Utils.formatNum(price, true, 2, true) + ' ');
@@ -873,7 +873,6 @@ Ethplorer = {
                         totalDiff = '+' + totalDiff;
                     }
                     value = value + ' <span class="' + cls + '">(' + Ethplorer.Utils.round(totalDiff, 2) + '%)</span>';
-                    console.log(value);
                 }
                 $('#address-balances-total').html('<span id="address-balances-total-inner" title="$' + totalPrice + '">' + value + '</span>');
             }else{
