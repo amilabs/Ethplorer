@@ -903,6 +903,7 @@ class Ethplorer {
      * @return array
      */
     public function getAddressOperations($address, $limit = 10, $offset = false, array $aTypes = array('transfer', 'issuance', 'burn', 'mint')){
+        evxProfiler::checkpoint('getAddressOperations', 'START', 'address=' . $address . ', limit=' . $limit . ', offset=' . (int)$offset);
         $search = array(
             '$or' => array(
                 array("from"    => $address),
@@ -925,14 +926,17 @@ class Ethplorer {
                 )
             );
         }
-        $search['type'] = array('$in' => $aTypes);
+        // $search['type'] = array('$in' => $aTypes);
         $cursor = $this->oMongo->find('operations', $search, array("timestamp" => -1), $limit, $offset);
 
         $result = array();
         foreach($cursor as $transfer){
-            unset($transfer["_id"]);
-            $result[] = $transfer;
+            if(in_array($transfer['type'], $aTypes)){
+                unset($transfer["_id"]);
+                $result[] = $transfer;
+            }
         }
+        evxProfiler::checkpoint('getAddressOperations', 'FINISH');
         return $result;
     }
 
