@@ -556,8 +556,8 @@ class Ethplorer {
      */
     public function getTokens($updateCache = false){
         evxProfiler::checkpoint('getTokens', 'START');
-        $aResult = $updateCache ? false : $this->oCache->get('tokens', false, true);
-        if(false === $aResult){
+        $aResult = $this->oCache->get('tokens', false, true);
+        if($updateCache || (false === $aResult)){
             if($updateCache){
                 $aPrevTokens = $this->oCache->get('tokens', false, true);
                 if(!is_array($aPrevTokens)){
@@ -574,7 +574,11 @@ class Ethplorer {
                     if(defined('ETHPLORER_SHOW_OUTPUT')){
                         echo $address . " was recently updated (transfers count = " . $aToken['transfersCount'] . ")\n";
                     }
+                    $aResult[$address]['issuancesCount'] = $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address, FALSE);
                     $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
+                }
+                if(!isset($aPrevTokens[$address]) || !isset($aPrevTokens[$address]['issuancesCount'])){
+                    $aResult[$address]['issuancesCount'] = $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address, FALSE);
                 }
                 if(isset($this->aSettings['client']) && isset($this->aSettings['client']['tokens'])){
                     $aClientTokens = $this->aSettings['client']['tokens'];
@@ -678,11 +682,7 @@ class Ethplorer {
                 if(isset($result['txsCount'])){
                     $result['txsCount'] = (int)$result['txsCount'] + 1;
                 }
-                $result += array(
-                    'transfersCount' => $this->getContractOperationCount('transfer', $address, FALSE),
-                    'issuancesCount' => $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address, FALSE),
-                    'holdersCount' => ''
-                );
+                $result += array('transfersCount' => 0, 'issuancesCount' => 0, 'holdersCount' => 0);
                 if(isset($this->aSettings['client']) && isset($this->aSettings['client']['tokens'])){
                     $aClientTokens = $this->aSettings['client']['tokens'];
                     if(isset($aClientTokens[$address])){
