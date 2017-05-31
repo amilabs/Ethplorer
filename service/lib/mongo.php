@@ -123,7 +123,7 @@ class evxMongo {
         }
         $finish = microtime(true);
         $qTime = $finish - $start;
-        if($qTime > 1){
+        if($qTime > 0.1){
             $this->log('(' . ($qTime) . 's) Connection to ' . $aSettings['server']);
         }
         $this->driver = $aSettings['driver'];
@@ -212,7 +212,7 @@ class evxMongo {
         }
         $finish = microtime(true);
         $qTime = $finish - $start;
-        if($qTime > 0.1){
+        if($qTime > 1){
             $this->log('(' . ($qTime) . 's) Find ' . $this->dbName . '.' . $this->aDBs[$collection] . ' > ' . json_encode($aSearch));
         }
         return $aResult;
@@ -251,7 +251,7 @@ class evxMongo {
         }
         $finish = microtime(true);
         $qTime = $finish - $start;
-        if($qTime > 0.1){
+        if($qTime > 1){
             $this->log('(' . ($qTime) . 's) Count ' . $this->dbName . '.' . $this->aDBs[$collection] . ' > ' . json_encode($aSearch));
         }
         return $result;
@@ -298,7 +298,7 @@ class evxMongo {
         }
         $finish = microtime(true);
         $qTime = $finish - $start;
-        if($qTime > 0.1){
+        if($qTime > 1){
             $this->log('(' . ($qTime) . 's) Aggregate ' . $this->dbName . '.' . $this->aDBs[$collection] . ' > ' . json_encode($aSearch));
         }
         return $aResult;
