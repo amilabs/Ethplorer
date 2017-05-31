@@ -97,7 +97,7 @@ class Ethplorer {
 
     public function __destruct(){
         evxProfiler::checkpoint('Ethplorer', 'FINISH');
-        if($this->aSettings['debugId']){
+        if(isset($this->aSettings['debugId']) && $this->aSettings['debugId']){
             evxProfiler::log($this->aSettings['logsDir'] . 'profiler-' . /* time() . '-' . */ md5($this->aSettings['debugId']) . '.log');
         }
     }
