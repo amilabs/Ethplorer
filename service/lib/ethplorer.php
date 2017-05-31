@@ -367,7 +367,9 @@ class Ethplorer {
         }
         $cursor = $this->oMongo->find('transactions', $search, array("timestamp" => -1), $limit);
         foreach($cursor as $tx){
-            unset($tx["_id"]);
+            $receipt = isset($tx['receipt']) ? $tx['receipt'] : false;
+            $tx['gasLimit'] = $tx['gas'];
+            $tx['gasUsed'] = $receipt ? $receipt['gasUsed'] : 0;
             $result[] = array(
                 'timestamp' => $tx['timestamp'],
                 'from' => $tx['from'],
@@ -375,6 +377,7 @@ class Ethplorer {
                 'hash' => $tx['hash'],
                 'value' => $tx['value'],
                 'input' => $tx['input'],
+                'success' => (($tx['gasUsed'] < $tx['gasLimit']) || ($receipt && !empty($receipt['logs'])))
             );
         }
         return $result;
