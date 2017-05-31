@@ -408,10 +408,10 @@ class ethplorerController {
         if($address){
             $address = strtolower($address);
             if(!$this->db->isValidAddress($address)){
-                $this->sendError(104, 'Invalid token address format');
+                $this->sendError(104, 'Invalid address format');
             }
         }
-        $result = array('history' => $this->db->getTokenPriceHistoryGrouped($address));
+        $result = array('history' => $this->db->getAddressPriceHistoryGrouped($address));
         $this->sendResult($result);
     }
 
