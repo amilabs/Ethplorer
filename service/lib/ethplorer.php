@@ -1063,53 +1063,20 @@ class Ethplorer {
     public function getTopTokensByPeriodVolume($limit = 10, $period = 30){
         set_time_limit(0);
         $cache = 'top_tokens-by-period-volume-' . $limit . '-' . $period;
-        $result = $this->oCache->get($cache, false, true, 24 * 3600);
+        $result = $this->oCache->get($cache, false, true, 3600);
         $today = date("Y-m-d");
         if(FALSE === $result){
             $aTokens = $this->getTokens();
             $result = array();
             foreach($aTokens as $aToken){
-                $aPrice = $this->getTokenPrice($aToken['address']);
+                $address = $aToken['address'];
+                $aPrice = $this->getTokenPrice($address);
                 if($aPrice && $aToken['totalSupply']){
-                    $aCorrectedToken = $this->getToken($aToken['address']);
-                    if(isset($aCorrectedToken['name'])){
-                        $aToken['name'] = $aCorrectedToken['name'];
-                    }
-
-                    $aMatch = array(
-                        "contract" => $aToken['address'],
-                        'type' => array('$in' => array('transfer', 'issuance', 'burn', 'mint')),
-                        "timestamp" => array('$gt' => time() - $period * 24 * 3600),
-                    );
-                    $dbData = $this->oMongo->aggregate(
-                        'operations',
-                        array(
-                            array('$match' => $aMatch),
-                            array(
-                                '$group' => array(
-                                    "_id" => array(
-                                        "year"  => array('$year' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
-                                        "month"  => array('$month' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
-                                        "day"  => array( '$dayOfMonth' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
-                                    ),
-                                    'ts' =>  array('$first' => '$timestamp'),
-                                    'sum' => array('$sum' => '$intValue')
-                                )
-                            ),
-                            array('$sort' => array('ts' => -1)),
-                        )
-                    );
-
                     $aToken['volume'] = 0;
-                    if($dbData && $dbData['result']){
-                        $aData = $dbData['result'];
-                        foreach($aData as $aItem){
-                            $date = $aItem['_id']['year'] . '-' . str_pad($aItem['_id']['month'], 2, '0', STR_PAD_LEFT) . '-' . str_pad($aItem['_id']['day'], 2, '0', STR_PAD_LEFT);
-                            if($date === $today){
-                                continue;
-                            }
-                            $rate = $this-> _getAverageRateByDate($aToken['address'], $date);
-                            $aToken['volume'] += ($aItem['sum'] / pow(10, $aToken['decimals'])) * $rate;
+                    $aHistory = $this->getTokenPriceHistory($address, 0, 'daily');
+                    if(is_array($aHistory)){
+                        foreach($aHistory as $aRecord){
+                            $aToken['volume'] += $aRecord['volumeConverted'];
                         }
                     }
                     $result[] = $aToken;
@@ -1145,10 +1112,7 @@ class Ethplorer {
             foreach($aTokens as $aToken){
                 $aPrice = $this->getTokenPrice($aToken['address']);
                 if($aPrice && $aToken['totalSupply']){
-                    $aCorrectedToken = $this->getToken($aToken['address']);
-                    if(isset($aCorrectedToken['name'])){
-                        $aToken['name'] = $aCorrectedToken['name'];
-                    }
+                    // @todo: volume != totalSuply, volume is circulated supply (@see coinmarketcap)
                     $aToken['volume'] = $aPrice['rate'] * $aToken['totalSupply'] / pow(10, $aToken['decimals']);
                     $result[] = $aToken;
                 }
@@ -1478,6 +1442,7 @@ class Ethplorer {
                         }
                         $aDailyRecord['volume'] += $aPriceHistory[$i]['volume'];
                         $aDailyRecord['volumeConverted'] += $aPriceHistory[$i]['volumeConverted'];
+                        $aDailyRecord['average'] = $aDailyRecord['volume'] ? ($aDailyRecord['volumeConverted'] / $aDailyRecord['volume']) : 0;
                     }
                     if($lastRecord){
                         $aPriceHistoryDaily[] = $aDailyRecord;
@@ -1515,32 +1480,15 @@ class Ethplorer {
         return $aResult;
     }
 
-    protected function _getAverageRateByDate($address, $date){
-        $aHistory = $this->getTokenPriceHistory($address);
-        $result = 0;
-        $datePos = array_search($date, array_column($aHistory, 'date'));
-        if(FALSE !== $datePos){
-            $max = max($datePos + 24, count($aHistory));
-            $i = 0;
-            $sum = 0;
-            for($index = $datePos; $index < $max; $index++){
-                $i++;
-                $sum += ($aHistory[$index]['open'] + $aHistory[$index]['close']) / 2;
-            }
-            $result = round($sum / $i, 2);
-        }
-        return $result;
-    }
-
     protected function _getRateByTimestamp($address, $timestamp){
         $result = 0;
         $aHistory = $this->getTokenPriceHistory($address);
         if(is_array($aHistory)){
             foreach($aHistory as $aRecord){
-                if(isset($aRecord['open'])){
+                if(isset($aRecord['volume']) && $aRecord['volume']){
                     $ts = $aRecord['ts'];
                     if($ts <= $timestamp){
-                        $result = $aRecord['open'];
+                        $result = $aRecord['volumeConverted'] / $aRecord['volume'];
                     }else{
                         break;
                     }
@@ -1684,46 +1632,4 @@ class Ethplorer {
         return $result;
     }
 
-}
-
-/**
-* Provides functionality for array_column() to projects using PHP earlier than
-* version 5.5.
-* @copyright (c) 2015 WinterSilence (http://github.com/WinterSilence)
-* @license MIT
-*/
-if (!function_exists('array_column')) {
-    /**
-     * Returns an array of values representing a single column from the input
-     * array.
-     * @param array $array A multi-dimensional array from which to pull a
-     *     column of values.
-     * @param mixed $columnKey The column of values to return. This value may
-     *     be the integer key of the column you wish to retrieve, or it may be
-     *     the string key name for an associative array. It may also be NULL to
-     *     return complete arrays (useful together with index_key to reindex
-     *     the array).
-     * @param mixed $indexKey The column to use as the index/keys for the
-     *     returned array. This value may be the integer key of the column, or
-     *     it may be the string key name.
-     * @return array
-     */
-    function array_column(array $array, $columnKey, $indexKey = null)
-    {
-        $result = array();
-        foreach ($array as $subArray) {
-            if (!is_array($subArray)) {
-                continue;
-            } elseif (is_null($indexKey) && array_key_exists($columnKey, $subArray)) {
-                $result[] = $subArray[$columnKey];
-            } elseif (array_key_exists($indexKey, $subArray)) {
-                if (is_null($columnKey)) {
-                    $result[$subArray[$indexKey]] = $subArray;
-                } elseif (array_key_exists($columnKey, $subArray)) {
-                    $result[$subArray[$indexKey]] = $subArray[$columnKey];
-                }
-            }
-        }
-        return $result;
-    }
 }
