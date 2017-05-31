@@ -820,11 +820,11 @@ class Ethplorer {
         if($updateCache || (false === $lastblock)){
             $cursor = $this->oMongo->find('blocks', array(), array('number' => -1), 1, false, array('number'));
             $block = ($cursor && count($cursor)) ? current($cursor) : false;
-            $lastBlock = $block && isset($block['number']) ? $block['number'] : false;
+            $lastblock = $block && isset($block['number']) ? $block['number'] : false;
             $this->oCache->save('lastBlock', $lastblock);
         }
         evxProfiler::checkpoint('getLastBlock', 'FINISH');
-        return $lastBlock;
+        return $lastblock;
     }
 
     /**
