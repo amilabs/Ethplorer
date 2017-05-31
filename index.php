@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "149";
+$codeVersion = "150";
 
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $es = Ethplorer::db(array());
@@ -92,6 +92,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
     <script src="/js/ethplorer-note.js?v=<?=$codeVersion?>"></script>
     <script src="/js/config.js"></script>
     <script src="/js/md5.min.js"></script>
+    <script src="/api/widget.js?v=<?=$codeVersion?>"></script>
 </head>
 <body>
 <div style="position: relative; min-height: 100vh;">
@@ -186,7 +187,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                 </div>
                 <?php } ?>
                 <script type="text/javascript">
-                    if(typeof(eWgs) === 'undefined'){ document.write('<scr' + 'ipt src="/api/widget.js?' + new Date().getTime().toString().substr(0,7) + '" async></scr' + 'ipt>'); var eWgs = []; }
+                    if(typeof(eWgs) === 'undefined'){ var eWgs = []; }
                 </script>
 
                 <div id="txDetails" class="content-page">

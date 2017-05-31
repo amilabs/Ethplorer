@@ -927,7 +927,7 @@ Ethplorer = {
                             theme: 'dark',
                             getCode: true,
                             address: address,
-                            options: {title: widgetTitle, vAxis: {title: 'Token operations'}}
+                            options: {title: widgetTitle}
                         }
                     );
                     ethplorerWidget.loadScript("https://www.google.com/jsapi", ethplorerWidget.loadGoogleControlCharts);
@@ -948,11 +948,11 @@ Ethplorer = {
             }
         }else{
             // Wait 3 seconds and retry
-            setTimeout(function(_data){
+            /*setTimeout(function(_data){
                 return function(){
                     Ethplorer.showAddressWidget(_data);
                 }
-            }(data), 3000);
+            }(data), 3000);*/
         }
     },
 
