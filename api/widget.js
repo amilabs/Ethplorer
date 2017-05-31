@@ -910,13 +910,17 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         var currencyFormatter = new google.visualization.NumberFormat({ 
             pattern: '#,##0.00###'
         });
+        var avgFormatter = new google.visualization.NumberFormat({ 
+            pattern: '#,##0.00'
+        });
         var tooltip = '<div style="display: block !important; text-align: left; opacity: 1 !important; color: #000000 !important; padding: 5px;">';
         tooltip += tooltipDateFormatter.formatValue(date) + '<br/>';
         if(noPrice){
             tooltip += '<span class="tooltipRow"><b>Token operations:</b> ' + operations + '</span><br/>';
         }else{
-            var avg = (open + close) / 2;
-            tooltip += '<span class="tooltipRow"><b>Average:</b> ' + currencyFormatter.formatValue(avg) + ' USD</span><br/>' +
+            if(volume > 0) var avg = convertedVolume / volume;
+            else var avg = (open + close) / 2;
+            tooltip += '<span class="tooltipRow"><b>Average:</b> ' + avgFormatter.formatValue(avg) + ' USD</span><br/>' +
                 '<span class="tooltipRow"><b>Open:</b> ' + currencyFormatter.formatValue(open) + ' <b>Close:</b> ' + currencyFormatter.formatValue(close) + '</span><br/>' +
                 '<span class="tooltipRow"><b>High:</b> ' + currencyFormatter.formatValue(high) + ' <b>Low:</b> ' + currencyFormatter.formatValue(low) + '</span><br/>' +
                 '<span class="tooltipRow"><b>Token operations:</b> ' + numFormatter.formatValue(operations) + '</span><br/>' +

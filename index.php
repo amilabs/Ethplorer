@@ -140,7 +140,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                 </div>
 
                 <div>
-                <?php if($testWidget){ ?>
+                <?php if(true){ ?>
                     <div class="col-xs-12 col-sm-12">
                         <h1 id="ethplorer-path"><?=$header?></h1>
                     </div>
@@ -155,7 +155,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
 
                 <div class="clearfix"></div>
 
-                <?php if($testWidget){ ?>
+                <?php if(true){ ?>
                     <script type="text/javascript">
                         var testWidget = true;
                     </script>
