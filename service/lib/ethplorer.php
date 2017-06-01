@@ -1022,14 +1022,15 @@ class Ethplorer {
      * Returns top tokens list.
      *
      * @todo: count number of transactions with "transfer" operation
-     * @param int $limit   Maximum records number
-     * @param int $period  Days from now
+     * @param int $limit         Maximum records number
+     * @param int $period        Days from now
+     * @param bool $updateCache  Force unexpired cache update
      * @return array
      */
-    public function getTopTokens($limit = 10, $period = 30){
+    public function getTopTokens($limit = 10, $period = 30, $updateCache = false){
         $cache = 'top_tokens-' . $period . '-' . $limit;
         $result = $this->oCache->get($cache, false, true, 24 * 3600);
-        if(FALSE === $result){
+        if($updateCache || (FALSE === $result)){
             $result = array();
             $dbData = $this->oMongo->aggregate(
                 'operations',
@@ -1061,17 +1062,18 @@ class Ethplorer {
     /**
      * Returns top tokens list by current volume.
      *
-     * @todo: count number of transactions with "transfer" operation
      * @param int $limit   Maximum records number
+     * @param int $period        Days from now
+     * @param bool $updateCache  Force unexpired cache update
      * @return array
      */
-    public function getTopTokensByPeriodVolume($limit = 10, $period = 30){
+    public function getTopTokensByPeriodVolume($limit = 10, $period = 30, $updateCache = false){
         set_time_limit(0);
         $cache = 'top_tokens-by-period-volume-' . $limit . '-' . $period;
         $result = $this->oCache->get($cache, false, true, 3600);
         $today = date("Y-m-d");
         $firstDay = date("Y-m-d", time() - $period * 24 * 3600);
-        if(FALSE === $result){
+        if($updateCache || (FALSE === $result)){
             $aTokens = $this->getTokens();
             $result = array();
             $total = 0;
