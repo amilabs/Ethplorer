@@ -1483,6 +1483,38 @@ class Ethplorer {
         return $aResult;
     }
 
+    public function getAddressPriceHistoryGrouped($address, $updateCache = FALSE){
+        $cache = 'address_operations_history-' . $address;
+        $result = $this->oCache->get($cache, false, true);
+        if(FALSE === $result){
+            $aTypes = array('transfer', 'issuance', 'burn', 'mint');
+            $aResult = array();
+
+            $search = array(
+                '$or' => array(
+                    array("from"    => $address),
+                    array("to"      => $address),
+                    array('address' => $address)
+                )
+            );
+            $cursor = $this->oMongo->find('operations', $search, array("timestamp" => -1));
+
+            $result = array();
+            foreach($cursor as $transfer){
+                if(in_array($transfer['type'], $aTypes)){
+                    unset($transfer["_id"]);
+                    $result[] = $transfer;
+                }
+            }
+
+            if(!empty($result)){
+                $this->oCache->save($cache, $result);
+            }
+        }
+
+        return $result;
+    }
+
     protected function _getRateByTimestamp($address, $timestamp){
         $result = 0;
         $aHistory = $this->getTokenPriceHistory($address);
