@@ -20,6 +20,16 @@
  */
 class evxCache {
     /**
+     * Seconds in 1 hour
+     */
+    const HOUR = 3600;
+
+    /**
+     * Seconds in 30 days
+     */
+    const MONTH = 30 * 24 * 3600;
+
+    /**
      * Cache storage.
      *
      * @var array
@@ -58,6 +68,7 @@ class evxCache {
      * Constructor.
      *
      * @param string  $path  Cache files path
+     * @todo params to config
      */
     public function __construct($path = __DIR__, $driver = FALSE){
         $path = realpath($path);
@@ -73,6 +84,7 @@ class evxCache {
                 $mc = new Memcached('ethplorer');
                 $mc->setOption(Memcached::OPT_LIBKETAMA_COMPATIBLE, true);
                 if (!count($mc->getServerList())) {
+                    // @todo: servers to config
                     $mc->addServers(array(array('127.0.0.1', 11211)));
                 }
                 $this->oDriver = $mc;
@@ -101,21 +113,25 @@ class evxCache {
      */
     public function save($entryName, $data){
         $this->store($entryName, $data);
-        $day30 = 60 * 60 * 24 * 30;
-        if('memcached' === $this->driver){
-            $lifetime = isset($this->aLifetime[$entryName]) ? (int)$this->aLifetime[$entryName] : 0;
-            if($lifetime > $day30){
-                $lifetime = time() + $cacheLifetime;
-            }
-            if(!$lifetime){
-                $lifetime = time() + 12 * $day30;
-            }
-            $saveRes = $this->oDriver->set($entryName, $data, $lifetime);
-        }
-        if('file' === $this->driver){
-            $filename = $this->path . '/' . $entryName . ".tmp";
-            $json = json_encode($data, JSON_PRETTY_PRINT);
-            file_put_contents($filename, $json);
+        switch($this->driver){
+            case 'memcached':
+                $lifetime = isset($this->aLifetime[$entryName]) ? (int)$this->aLifetime[$entryName] : 0;
+                if($lifetime > evxCache::MONTH){
+                    $lifetime = time() + $cacheLifetime;
+                }
+                if(!$lifetime){
+                    // 365 days if cache lifetime is not set
+                    $lifetime = time() + 12 * evxCache::MONTH + 5;
+                }
+                $saveRes = $this->oDriver->set($entryName, $data, $lifetime);
+                if(!in_array($entryName, array('tokens', 'rates'))){
+                    break;
+                }
+            case 'file':
+                $filename = $this->path . '/' . $entryName . ".tmp";
+                $json = json_encode($data, JSON_PRETTY_PRINT);
+                file_put_contents($filename, $json);
+                break;
         }
     }
 
@@ -148,6 +164,10 @@ class evxCache {
         }elseif($loadIfNeeded){
             if('memcached' === $this->driver){
                 $result = $this->oDriver->get($entryName);
+                // @todo: move hardcode to controller
+                if(!$result && in_array($entryName, array('tokens', 'rates'))){
+                    $file = TRUE;
+                }
             }
             if($file){
                 $filename = $this->path . '/' . $entryName . ".tmp";
@@ -155,7 +175,7 @@ class evxCache {
                     if(FALSE !== $cacheLifetime){
                         $fileTime = filemtime($filename);
                         $gmtZero = gmmktime(0, 0, 0);
-                        if((($gmtZero > $fileTime) && ($cacheLifetime > 3600)) || ((time() - $fileTime) > $cacheLifetime)){
+                        if((($gmtZero > $fileTime) && ($cacheLifetime > evxCache::HOUR)) || ((time() - $fileTime) > $cacheLifetime)){
                             @unlink($filename);
                             return $result;
                         }
