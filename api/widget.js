@@ -241,7 +241,7 @@ ethplorerWidget = {
             }
             cutZeroes = !!cutZeroes;
             withDecimals = !!withDecimals;
-            decimals = decimals || 2;
+//            decimals = decimals || (cutZeroes ? 0 : 2);
             
             if((num.toString().indexOf("e+") > 0)){
                 return num.toString();
@@ -261,7 +261,7 @@ ethplorerWidget = {
             }
             var parts = num.toString().split('.');
             var res = parts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-            var zeroCount = cutZeroes ? 2 : decimals;
+            var zeroCount = cutZeroes ? 0 : decimals;
             if(withDecimals && decimals){
                 if(parts.length > 1){
                     res += '.';
@@ -287,6 +287,19 @@ ethplorerWidget = {
                 range.selectNode(document.getElementById(containerid));
                 window.getSelection().addRange(range);
             }
+        },
+        pdiff: function(a, b){
+            var res = 100;
+            if(a !== b){
+                if(a && b){
+                    res = (a / b) * 100 - 100;
+                }else{
+                    res *= ((a - b) < 0) ? -1 : 1;
+                }
+            }else{
+                res = 0;
+            }
+            return res;
         }
     }
 };
@@ -554,7 +567,7 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
             periodVolume: {
                 header: '<div class="txs-header">Top %limit% tokens for %period% days</div>' + 
                         '<div style="text-align:center"><a data-criteria="periodVolume">By volume</a> | <a data-criteria="opCount">By operations count</a></div>',
-                row: '<tr><td class="tx-field">%position%</td><td class="tx-field">%name_symbol%</td><td class="tx-field" title="">%volume%</td>'
+                row: '<tr><td class="tx-field">%position%</td><td class="tx-field">%name_symbol%</td><td class="tx-field" title="">%volume%</td><td class="ewDiff">%vdiff%</td></tr>'
             },
             opCount: {
                 header: '<div class="txs-header">Top %limit% tokens for %period% days</div>' + 
@@ -658,13 +671,22 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
     this.prepareData = function(data){
         var name = data.name ? data.name : data.address;
         var symbol = data.symbol ? data.symbol : '';
+
+        // diff
+        var ivdiff = ethplorerWidget.Utils.pdiff(data.volume, data.previousPeriodVolume);
+        var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, true);
+        vdiff = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
+        
+
+
         return {
             address: ethplorerWidget.Utils.link(data.address, data.address, data.address),
             name: ethplorerWidget.Utils.link(data.address, name, name, false, data.name ? "" : "tx-unknown"),
             name_symbol: ethplorerWidget.Utils.link(data.address, name + (symbol ? ' (' + symbol + ')' : ''), name + (symbol ? ' (' + symbol + ')' : ''), false, data.name ? "" : "tx-unknown"),
             opCount: data.opCount,
             price: (data.price && data.price.rate) ? ('$ ' + ethplorerWidget.Utils.formatNum(data.price.rate, true, 2, true)) : '',
-            volume: data.volume ? ('$ ' + ethplorerWidget.Utils.formatNum(data.volume, true, 2, true)) : ''
+            volume: data.volume ? ('$ ' + ethplorerWidget.Utils.formatNum(data.volume, true, data.volume >= 1000 ? 0 : 2, true)) : '',
+            vdiff: vdiff
         };
     };
 

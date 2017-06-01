@@ -1068,20 +1068,24 @@ class Ethplorer {
         $cache = 'top_tokens-by-period-volume-' . $limit . '-' . $period;
         $result = $this->oCache->get($cache, false, true, 3600);
         $today = date("Y-m-d");
+        $firstDay = date("Y-m-d", time() - $period * 24 * 3600);
         if(FALSE === $result){
             $aTokens = $this->getTokens();
             $result = array();
+            $total = 0;
             foreach($aTokens as $aToken){
                 $address = $aToken['address'];
                 $aPrice = $this->getTokenPrice($address);
                 if($aPrice && $aToken['totalSupply']){
                     $aToken['volume'] = 0;
-                    $aHistory = $this->getTokenPriceHistory($address, 0, 'daily');
+                    $aToken['previousPeriodVolume'] = 0;
+                    $aHistory = $this->getTokenPriceHistory($address, $period * 2, 'daily');
                     if(is_array($aHistory)){
                         foreach($aHistory as $aRecord){
-                            $aToken['volume'] += $aRecord['volumeConverted'];
+                            $aToken[($aRecord['date'] >= $firstDay) ? 'volume' : 'previousPeriodVolume'] += $aRecord['volumeConverted'];
                         }
                     }
+                    $total += $aToken['volume'];
                     $result[] = $aToken;
                 }
                 usort($result, array($this, '_sortByVolume'));
@@ -1089,6 +1093,7 @@ class Ethplorer {
                 $res = [];
                 foreach($result as $i => $item){
                     if($i < $limit){
+                        $item['percentage'] = round(($item['volume'] / $total) * 100);
                         $res[] = $item;
                     }
                 }

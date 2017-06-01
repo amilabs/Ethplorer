@@ -196,6 +196,20 @@
     text-decoration: none;
 }
 
+.ethplorer-widget.widget-topTokens .ewDiff {
+    max-width: 90px;
+    width: 90px;
+    text-align: right;
+}
+
+.ethplorer-widget.widget-topTokens .ewDiff .ewDiffUp {
+    color: green;
+}
+
+.ethplorer-widget.widget-topTokens .ewDiff .ewDiffDown {
+    color: red;
+}
+
 @media screen and (min-width: 999px) {
     .ethplorer-widget .tx-token {
         max-width: 160px;
