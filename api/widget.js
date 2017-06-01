@@ -543,13 +543,13 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
     this.api = ethplorerWidget.api + '/getTopTokens';
 
     this.templates = {
-        loader: '',
+        loader: '<div class="txs-loading">Loading...</div>',
         criteria: {
             price: {
                 row: '<tr><td class="tx-field">%position%</td><td class="tx-field">%name%</td><td class="tx-field" title="">%price%</td></tr>'
             },
             currentVolume: {
-                header: '<div class="txs-header">Top %limit% tokens</div>'
+                header: '<div class="txs-header">Top %limit% tokens by current volume</div>'
             },
             periodVolume: {
                 header: '<div class="txs-header">Top %limit% tokens for %period% days</div>' + 
