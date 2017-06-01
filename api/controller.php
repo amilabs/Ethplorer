@@ -330,13 +330,13 @@ class ethplorerController {
         $criteria = $this->getRequest('criteria', 'byOperationsCount');
         $result = false;
         switch($criteria){
-            case 'byCurrentVolume':
+            case 'currentVolume':
                 $result = $this->_getTopByCurrentVolume($limit);
                 break;
-            case 'byPeriodVolume':
+            case 'periodVolume':
                 $result = $this->_getTopByPeriodVolume($limit, $period);
                 break;
-            case 'byOperationsCount':
+            case 'opCount':
             default:
                 $result = $this->_getTopByOperationsCount($limit, $period);
         }
