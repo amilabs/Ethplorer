@@ -567,10 +567,12 @@ class Ethplorer {
                     $aPrevTokens = array();
                 }
             }
+            $this->_cliDebug("prevTokens count = " . count($aPrevTokens));
             $cursor = $this->oMongo->find('tokens', array(), array("transfersCount" => -1));
             $aResult = array();
             foreach($cursor as $index => $aToken){
                 $address = $aToken["address"];
+                $this->_cliDebug("Token #" . $index . " / " . $address);
                 unset($aToken["_id"]);
                 $aResult[$address] = $aToken;
                 if(!isset($aPrevTokens[$address]) || ($aPrevTokens[$address]['transfersCount'] < $aToken['transfersCount'])){
@@ -1672,4 +1674,9 @@ class Ethplorer {
         return $result;
     }
 
+    protected function _cliDebug($message){
+        if(isset($this->aSettings['cliDebug']) && $this->aSettings['cliDebug'] && (php_sapi_name() === 'cli')){
+            echo '[' . date("Y-m-d H:i:s") . '] ' . $message . "\n";
+        }
+    }
 }
