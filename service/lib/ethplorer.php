@@ -581,9 +581,11 @@ class Ethplorer {
                     }
                     $aResult[$address]['issuancesCount'] = $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address, FALSE);
                     $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
-                }
-                if(!isset($aPrevTokens[$address]) || !isset($aPrevTokens[$address]['issuancesCount'])){
+                }else if(!isset($aPrevTokens[$address]) || !isset($aPrevTokens[$address]['issuancesCount'])){
                     $aResult[$address]['issuancesCount'] = $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address, FALSE);
+                }else{
+                    $aResult[$address]['issuancesCount'] = isset($aPrevTokens[$address]['issuancesCount']) ? $aPrevTokens[$address]['issuancesCount'] : 0;
+                    $aResult[$address]['holdersCount'] = isset($aPrevTokens[$address]['holdersCount']) ? $aPrevTokens[$address]['holdersCount'] : 0;
                 }
                 if(isset($this->aSettings['client']) && isset($this->aSettings['client']['tokens'])){
                     $aClientTokens = $this->aSettings['client']['tokens'];
@@ -1032,6 +1034,20 @@ class Ethplorer {
         $result = $this->oCache->get($cache, false, true, 24 * 3600);
         if($updateCache || (FALSE === $result)){
             $result = array();
+            $prevData = $this->oMongo->aggregate(
+                'operations',
+                array(
+                    array('$match' => array("timestamp" => array('$gt' => time() - $period * 2 * 24 * 3600, '$lte' => time() - $period * 24 * 3600))),
+                    array(
+                        '$group' => array(
+                            "_id" => '$contract',
+                            'cnt' => array('$sum' => 1)
+                        )
+                    ),
+                    array('$sort' => array('cnt' => -1)),
+                    array('$limit' => $limit)
+                )
+            );
             $dbData = $this->oMongo->aggregate(
                 'operations',
                 array(

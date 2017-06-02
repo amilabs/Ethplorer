@@ -137,7 +137,7 @@ class ethplorerController {
         if($result && is_array($result)){
             unset($result['checked']);
             unset($result['txsCount']);
-            unset($result['transfersCount']);
+            // unset($result['transfersCount']);
             $result['countOps'] = $this->db->countOperations($address);
         }else{
             $this->sendError(150, 'Address is not a token contract');
