@@ -19,7 +19,7 @@ class ethplorerController {
     protected $db;
     protected $command;
     protected $params = array();
-    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressTransactions', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getTokenHistoryGrouped', 'getTokenPriceHistoryGrouped', 'getAddressPriceHistoryGrouped');
+    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressTransactions', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getTop', 'getTokenHistoryGrouped', 'getTokenPriceHistoryGrouped', 'getAddressPriceHistoryGrouped');
     protected $defaults;
     protected $startTime;
 
@@ -317,6 +317,20 @@ class ethplorerController {
     }
 
     /**
+     * /getTop method implementation.
+     *
+     * @undocumented
+     * @return array
+     */
+    public function getTop(){
+        $maxLimit = is_array($this->defaults) && isset($this->defaults['maxLimit']) ? $this->defaults['maxLimit'] : 50;
+        $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
+        $criteria = $this->getRequest('criteria', 'byOperationsCount');
+        $result = array('tokens' => $this->db->getTokensTop($limit, $criteria));
+        $this->sendResult($result);
+    }
+
+    /**
      * /getTopTokens method implementation.
      *
      * @undocumented
@@ -327,7 +341,7 @@ class ethplorerController {
         $maxPeriod = is_array($this->defaults) && isset($this->defaults['maxPeriod']) ? $this->defaults['maxPeriod'] : 90;
         $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
         $period = min(abs((int)$this->getRequest('period', 10)), $maxPeriod);
-        $criteria = $this->getRequest('criteria', 'byOperationsCount');
+        $criteria = $this->getRequest('criteria', 'opCount');
         $result = false;
         switch($criteria){
             case 'currentVolume':

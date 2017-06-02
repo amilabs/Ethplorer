@@ -553,7 +553,7 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
 
     this.options.criteria = options.criteria || 'periodVolume';
 
-    this.api = ethplorerWidget.api + '/getTopTokens';
+    this.api = ethplorerWidget.api + '/getTop';
 
     this.templates = {
         loader: '<div class="txs-loading">Loading...</div>',
@@ -674,7 +674,199 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
 
         // diff
         var ivdiff = ethplorerWidget.Utils.pdiff(data.volume, data.previousPeriodVolume);
-        var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, true);
+        var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
+        vdiff = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
+
+        return {
+            address: ethplorerWidget.Utils.link(data.address, data.address, data.address),
+            name: ethplorerWidget.Utils.link(data.address, name, name, false, data.name ? "" : "tx-unknown"),
+            name_symbol: ethplorerWidget.Utils.link(data.address, name + (symbol ? ' (' + symbol + ')' : ''), name + (symbol ? ' (' + symbol + ')' : ''), false, data.name ? "" : "tx-unknown"),
+            opCount: data.opCount,
+            price: (data.price && data.price.rate) ? ('$ ' + ethplorerWidget.Utils.formatNum(data.price.rate, true, 2, true)) : '',
+            volume: data.volume ? ('$ ' + ethplorerWidget.Utils.formatNum(data.volume, true, data.volume >= 1000 ? 0 : 2, true)) : '',
+            vdiff: vdiff
+        };
+    };
+
+    this.init();
+}
+
+
+/**
+ * Top list Widget.
+ *
+ * @param {type} element
+ * @param {type} options
+ * @param {type} templates
+ * @returns {undefined}
+ */
+ethplorerWidget.Type['top'] = function(element, options, templates){
+    this.el = element;
+
+    this.options = {
+        limit: 10,
+        periods: [1, 7, 30]
+    };
+
+    if(options){
+        for(var key in options){
+            this.options[key] = options[key];
+        }
+    }
+
+    this.options.criteria = options.criteria || 'trade';
+
+    this.api = ethplorerWidget.api + '/getTop';
+
+    this.templates = {
+        header: '<div class="txs-header">Top tokens</div>',
+        loader: '<div class="txs-loading">Loading...</div>',
+        criteria: {
+            cap: {
+                rowHeader: '<tr>' +
+                        '<th class="tx-field">#</th>' +
+                        '<th class="tx-field">Token</th>' +
+                        '<th class="tx-field">Cap</th>' +
+                        '<th class="tx-field">Price</th>' +
+                        '<th class="tx-field">Trend(24h)</th>' +
+                        '<th class="tx-field">Trend(7d)</th>' +
+                        '<th class="tx-field">Trend(30d)</th>' +
+                   '</tr>',
+                row: '<tr>' +
+                        '<td class="tx-field">%position%</td>' +
+                        '<td class="tx-field">%name_symbol%</td>' +
+                        '<td class="tx-field">%cap%</td>' +
+                        '<td class="tx-field">%price%</td>' +
+                        '<td class="tx-field">%trend_1d%</td>' +
+                        '<td class="tx-field">%trend_7d%</td>' +
+                        '<td class="tx-field">%trend_30d%</td>' +
+                   '</tr>'
+            },
+            trade: {
+                rowHeader: '<tr>' +
+                        '<th class="tx-field">#</th>' +
+                        '<th class="tx-field">Token</th>' +
+                        '<th class="tx-field">Volume (24h)</th>' +
+                        '<th class="tx-field">Price</th>' +
+                        '<th class="tx-field">Trend(24h)</th>' +
+                        '<th class="tx-field">Trend(7d)</th>' +
+                        '<th class="tx-field">Trend(30d)</th>' +
+                   '</tr>',
+                row: '<tr>' +
+                        '<td class="tx-field">%position%</td>' +
+                        '<td class="tx-field">%name_symbol%</td>' +
+                        '<td class="tx-field">%volume%</td>' +
+                        '<td class="tx-field">%price%</td>' +
+                        '<td class="tx-field">%trend_1d%</td>' +
+                        '<td class="tx-field">%trend_7d%</td>' +
+                        '<td class="tx-field">%trend_30d%</td>' +
+                   '</tr>'
+           }
+        }
+    };
+
+    // Override default templates with custom
+    if('object' === typeof(templates)){
+        for(var key in templates){
+            this.templates[key] = templates[key];
+        }
+    }
+
+    this.load = function(){
+        if('undefined' !== typeof(this.templates.criteria[this.options.criteria])){
+            var criteriaTpl = this.templates.criteria[this.options.criteria];
+            if(criteriaTpl.header){
+                this.templates.header = criteriaTpl.header;
+            }
+            if(criteriaTpl.row){
+                this.templates.row = criteriaTpl.row;
+            }
+            if(criteriaTpl.rowHeader){
+                this.templates.rowHeader = criteriaTpl.rowHeader;
+            }
+        }
+        this.el.html(ethplorerWidget.parseTemplate(this.templates.header, this.options) + this.templates.loader);
+        $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
+    };
+
+    this.init = function(){
+        this.el.addClass('ethplorer-widget');
+        this.el.addClass('widget-topTokens');
+        this.el.addClass('theme-' + (this.options.theme ? this.options.theme : 'ethplorer'));
+        this.load();
+    };
+
+    this.getRequestParams = function(additionalParams){
+        var requestOptions = ['limit', 'period', 'criteria'];
+        var params = {
+            apiKey: 'freekey'
+        };
+        if('undefined' === typeof(this.pathReported)){
+            params['domain'] = document.location.href;
+            this.pathReported = true;
+        }
+        for(var key in this.options){
+            if(requestOptions.indexOf(key) >= 0){
+                params[key] = this.options[key];
+            }
+        }
+        if('object' === typeof(additionalParams)){
+            for(var key in additionalParams){
+                if(requestOptions.indexOf(key) >= 0){
+                    params[key] = additionalParams[key];
+                }
+            }
+        }
+        return params;
+    };
+
+    this.refreshWidget = function(obj){
+        return function(data){
+            if(data && !data.error && data.tokens && data.tokens.length){               
+                obj.el.find('.txs-loading, .txs').remove();
+                var txTable = '<table class="txs">';
+                txTable += obj.templates.rowHeader;
+                for(var i=0; i<data.tokens.length; i++){
+                    var rowData = obj.prepareData(data.tokens[i]);
+                    rowData['position'] = i+1;
+                    txTable += ethplorerWidget.parseTemplate(obj.templates.row, rowData);
+                }
+                txTable += '</table>';
+                obj.el.append(txTable);
+
+                ethplorerWidget.appendEthplorerLink(obj);
+                obj.el.find('[data-criteria]').click(function(_obj){
+                    return function(){
+                        if(!$(this).hasClass('ewSelected')){
+                            // _obj.el.find('.ewSelected').removeClass('ewSelected');
+                            $(this).addClass('ewSelected');                            
+                            _obj.options.criteria = $(this).attr('data-criteria');
+                            _obj.load();
+                        }
+                    };
+                }(obj))
+
+                obj.el.find('[data-criteria="' + obj.options.criteria + '"]').addClass('ewSelected');
+
+                if('undefined' === typeof(obj.onLoadFired)){
+                    if('function' === typeof(obj.options.onLoad)){
+                        obj.options.onLoad();
+                    }
+                    obj.onLoadFired = true;
+                }
+
+                setTimeout(ethplorerWidget.fixTilda, 300);
+            }
+        };
+    }(this);
+
+    this.prepareData = function(data){
+        var name = data.name ? data.name : data.address;
+        var symbol = data.symbol ? data.symbol : '';
+
+        // diff
+        var ivdiff = ethplorerWidget.Utils.pdiff(data.volume, data.previousPeriodVolume);
+        var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
         vdiff = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
         
 

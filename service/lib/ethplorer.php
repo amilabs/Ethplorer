@@ -1076,6 +1076,78 @@ class Ethplorer {
     }
 
     /**
+     * Returns top tokens list (new).
+     *
+     * @param int $limit         Maximum records number
+     * @param bool $updateCache  Force unexpired cache update
+     * @return array
+     */
+    public function getTokensTop($limit = 10, $updateCache = false){
+        $cache = 'top_tokens';
+        $result = $this->oCache->get($cache, false, true, 3600);
+        if(1 || $updateCache || (FALSE === $result)){
+            $aTokens = $this->getTokens();
+            $result = array();
+            $total = 0;
+            $aPeriods = array(
+                array('period' => 1),
+                array('period' => 7),
+                array('period' => 30)
+            );
+            foreach($aPeriods as $idx => $aPeriod){
+                $period = $aPeriod['period'];
+                $aPeriods[$idx]['currentPeriodStart'] = $f1a = date("Y-m-d", time() - $period * 24 * 3600);
+                $aPeriods[$idx]['previousPeriodStart'] = $f1a = date("Y-m-d", time() - $period * 48 * 3600);
+            }
+            foreach($aTokens as $aToken){
+                $address = $aToken['address'];
+                $aPrice = $this->getTokenPrice($address);
+                $curHour = (int)date('H');
+                if($aPrice && $aToken['totalSupply']){
+                    $aToken['volume'] = 0;
+                    $aToken['price'] = $aPrice;
+                    foreach($aPeriods as $aPeriod){
+                        $period = $aPeriod['period'];
+                        $aToken['volume-' . $period . 'd-current'] = 0;
+                        $aToken['volume-' . $period . 'd-previous'] = 0;
+                    }
+                    $aHistory = $this->getTokenPriceHistory($address, 60 * 24, 'hourly');
+                    if(is_array($aHistory)){
+                        foreach($aHistory as $aRecord){
+                            foreach($aPeriods as $aPeriod){
+                                $period = $aPeriod['period'];
+                                $inCurrentPeriod = ($aRecord['date'] > $aPeriod['currentPeriodStart']) || (($aRecord['date'] == $aPeriod['currentPeriodStart']) && ($aRecord['hour'] >= $curHour ));
+                                $inPreviousPeriod = !$inCurrentPeriod && (($aRecord['date'] > $aPeriod['previousPeriodStart']) || (($aRecord['date'] == $aPeriod['previousPeriodStart']) && ($aRecord['hour'] >= $curHour )));
+                                if($inCurrentPeriod){
+                                    $aToken['volume-' . $period . 'd-current'] += $aRecord['volumeConverted'];
+                                    if(1 == $period){
+                                        $aToken['volume'] += $aRecord['volumeConverted'];;
+                                    }
+                                }else if($inPreviousPeriod){
+                                    $aToken['volume-' . $period . 'd-previous'] += $aRecord['volumeConverted'];
+                                }
+                            }
+                        }
+                    }
+                    $result[] = $aToken;
+                }
+                usort($result, array($this, '_sortByVolume'));
+
+                $res = [];
+                foreach($result as $i => $item){
+                    if($i < $limit){
+                        // $item['percentage'] = round(($item['volume'] / $total) * 100);
+                        $res[] = $item;
+                    }
+                }
+                $result = $res;
+            }
+            $this->oCache->save($cache, $result);
+        }
+        return $result;
+    }
+
+    /**
      * Returns top tokens list by current volume.
      *
      * @param int $limit   Maximum records number
