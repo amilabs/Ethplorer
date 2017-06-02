@@ -567,10 +567,12 @@ class Ethplorer {
                     $aPrevTokens = array();
                 }
             }
+            $this->_cliDebug("prevTokens count = " . count($aPrevTokens));
             $cursor = $this->oMongo->find('tokens', array(), array("transfersCount" => -1));
             $aResult = array();
             foreach($cursor as $index => $aToken){
                 $address = $aToken["address"];
+                $this->_cliDebug("Token #" . $index . " / " . $address);
                 unset($aToken["_id"]);
                 $aResult[$address] = $aToken;
                 if(!isset($aPrevTokens[$address]) || ($aPrevTokens[$address]['transfersCount'] < $aToken['transfersCount'])){
@@ -579,9 +581,11 @@ class Ethplorer {
                     }
                     $aResult[$address]['issuancesCount'] = $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address, FALSE);
                     $aResult[$address]['holdersCount'] = $this->getTokenHoldersCount($address);
-                }
-                if(!isset($aPrevTokens[$address]) || !isset($aPrevTokens[$address]['issuancesCount'])){
+                }else if(!isset($aPrevTokens[$address]) || !isset($aPrevTokens[$address]['issuancesCount'])){
                     $aResult[$address]['issuancesCount'] = $this->getContractOperationCount(array('$in' => array('issuance', 'burn', 'mint')), $address, FALSE);
+                }else{
+                    $aResult[$address]['issuancesCount'] = isset($aPrevTokens[$address]['issuancesCount']) ? $aPrevTokens[$address]['issuancesCount'] : 0;
+                    $aResult[$address]['holdersCount'] = isset($aPrevTokens[$address]['holdersCount']) ? $aPrevTokens[$address]['holdersCount'] : 0;
                 }
                 if(isset($this->aSettings['client']) && isset($this->aSettings['client']['tokens'])){
                     $aClientTokens = $this->aSettings['client']['tokens'];
@@ -1020,15 +1024,30 @@ class Ethplorer {
      * Returns top tokens list.
      *
      * @todo: count number of transactions with "transfer" operation
-     * @param int $limit   Maximum records number
-     * @param int $period  Days from now
+     * @param int $limit         Maximum records number
+     * @param int $period        Days from now
+     * @param bool $updateCache  Force unexpired cache update
      * @return array
      */
-    public function getTopTokens($limit = 10, $period = 30){
+    public function getTopTokens($limit = 10, $period = 30, $updateCache = false){
         $cache = 'top_tokens-' . $period . '-' . $limit;
         $result = $this->oCache->get($cache, false, true, 24 * 3600);
-        if(FALSE === $result){
+        if($updateCache || (FALSE === $result)){
             $result = array();
+            $prevData = $this->oMongo->aggregate(
+                'operations',
+                array(
+                    array('$match' => array("timestamp" => array('$gt' => time() - $period * 2 * 24 * 3600, '$lte' => time() - $period * 24 * 3600))),
+                    array(
+                        '$group' => array(
+                            "_id" => '$contract',
+                            'cnt' => array('$sum' => 1)
+                        )
+                    ),
+                    array('$sort' => array('cnt' => -1)),
+                    array('$limit' => $limit)
+                )
+            );
             $dbData = $this->oMongo->aggregate(
                 'operations',
                 array(
@@ -1057,29 +1076,57 @@ class Ethplorer {
     }
 
     /**
-     * Returns top tokens list by current volume.
+     * Returns top tokens list (new).
      *
-     * @todo: count number of transactions with "transfer" operation
-     * @param int $limit   Maximum records number
+     * @param int $limit         Maximum records number
+     * @param bool $updateCache  Force unexpired cache update
      * @return array
      */
-    public function getTopTokensByPeriodVolume($limit = 10, $period = 30){
-        set_time_limit(0);
-        $cache = 'top_tokens-by-period-volume-' . $limit . '-' . $period;
+    public function getTokensTop($limit = 10, $updateCache = false){
+        $cache = 'top_tokens';
         $result = $this->oCache->get($cache, false, true, 3600);
-        $today = date("Y-m-d");
-        if(FALSE === $result){
+        if(1 || $updateCache || (FALSE === $result)){
             $aTokens = $this->getTokens();
             $result = array();
+            $total = 0;
+            $aPeriods = array(
+                array('period' => 1),
+                array('period' => 7),
+                array('period' => 30)
+            );
+            foreach($aPeriods as $idx => $aPeriod){
+                $period = $aPeriod['period'];
+                $aPeriods[$idx]['currentPeriodStart'] = $f1a = date("Y-m-d", time() - $period * 24 * 3600);
+                $aPeriods[$idx]['previousPeriodStart'] = $f1a = date("Y-m-d", time() - $period * 48 * 3600);
+            }
             foreach($aTokens as $aToken){
                 $address = $aToken['address'];
                 $aPrice = $this->getTokenPrice($address);
+                $curHour = (int)date('H');
                 if($aPrice && $aToken['totalSupply']){
                     $aToken['volume'] = 0;
-                    $aHistory = $this->getTokenPriceHistory($address, 0, 'daily');
+                    $aToken['price'] = $aPrice;
+                    foreach($aPeriods as $aPeriod){
+                        $period = $aPeriod['period'];
+                        $aToken['volume-' . $period . 'd-current'] = 0;
+                        $aToken['volume-' . $period . 'd-previous'] = 0;
+                    }
+                    $aHistory = $this->getTokenPriceHistory($address, 60 * 24, 'hourly');
                     if(is_array($aHistory)){
                         foreach($aHistory as $aRecord){
-                            $aToken['volume'] += $aRecord['volumeConverted'];
+                            foreach($aPeriods as $aPeriod){
+                                $period = $aPeriod['period'];
+                                $inCurrentPeriod = ($aRecord['date'] > $aPeriod['currentPeriodStart']) || (($aRecord['date'] == $aPeriod['currentPeriodStart']) && ($aRecord['hour'] >= $curHour ));
+                                $inPreviousPeriod = !$inCurrentPeriod && (($aRecord['date'] > $aPeriod['previousPeriodStart']) || (($aRecord['date'] == $aPeriod['previousPeriodStart']) && ($aRecord['hour'] >= $curHour )));
+                                if($inCurrentPeriod){
+                                    $aToken['volume-' . $period . 'd-current'] += $aRecord['volumeConverted'];
+                                    if(1 == $period){
+                                        $aToken['volume'] += $aRecord['volumeConverted'];;
+                                    }
+                                }else if($inPreviousPeriod){
+                                    $aToken['volume-' . $period . 'd-previous'] += $aRecord['volumeConverted'];
+                                }
+                            }
                         }
                     }
                     $result[] = $aToken;
@@ -1089,6 +1136,56 @@ class Ethplorer {
                 $res = [];
                 foreach($result as $i => $item){
                     if($i < $limit){
+                        // $item['percentage'] = round(($item['volume'] / $total) * 100);
+                        $res[] = $item;
+                    }
+                }
+                $result = $res;
+            }
+            $this->oCache->save($cache, $result);
+        }
+        return $result;
+    }
+
+    /**
+     * Returns top tokens list by current volume.
+     *
+     * @param int $limit   Maximum records number
+     * @param int $period        Days from now
+     * @param bool $updateCache  Force unexpired cache update
+     * @return array
+     */
+    public function getTopTokensByPeriodVolume($limit = 10, $period = 30, $updateCache = false){
+        set_time_limit(0);
+        $cache = 'top_tokens-by-period-volume-' . $limit . '-' . $period;
+        $result = $this->oCache->get($cache, false, true, 3600);
+        $today = date("Y-m-d");
+        $firstDay = date("Y-m-d", time() - $period * 24 * 3600);
+        if($updateCache || (FALSE === $result)){
+            $aTokens = $this->getTokens();
+            $result = array();
+            $total = 0;
+            foreach($aTokens as $aToken){
+                $address = $aToken['address'];
+                $aPrice = $this->getTokenPrice($address);
+                if($aPrice && $aToken['totalSupply']){
+                    $aToken['volume'] = 0;
+                    $aToken['previousPeriodVolume'] = 0;
+                    $aHistory = $this->getTokenPriceHistory($address, $period * 2, 'daily');
+                    if(is_array($aHistory)){
+                        foreach($aHistory as $aRecord){
+                            $aToken[($aRecord['date'] >= $firstDay) ? 'volume' : 'previousPeriodVolume'] += $aRecord['volumeConverted'];
+                        }
+                    }
+                    $total += $aToken['volume'];
+                    $result[] = $aToken;
+                }
+                usort($result, array($this, '_sortByVolume'));
+
+                $res = [];
+                foreach($result as $i => $item){
+                    if($i < $limit){
+                        $item['percentage'] = round(($item['volume'] / $total) * 100);
                         $res[] = $item;
                     }
                 }
@@ -1669,4 +1766,9 @@ class Ethplorer {
         return $result;
     }
 
+    protected function _cliDebug($message){
+        if(isset($this->aSettings['cliDebug']) && $this->aSettings['cliDebug'] && (php_sapi_name() === 'cli')){
+            echo '[' . date("Y-m-d H:i:s") . '] ' . $message . "\n";
+        }
+    }
 }
