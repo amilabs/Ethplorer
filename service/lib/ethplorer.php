@@ -1484,6 +1484,8 @@ class Ethplorer {
     }
 
     public function getAddressPriceHistoryGrouped($address, $updateCache = FALSE){
+        if($this->getToken($address)) return array();
+
         $cache = 'address_operations_history-' . $address;
         $result = $this->oCache->get($cache, false, true);
         if(FALSE === $result){
