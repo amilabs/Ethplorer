@@ -551,31 +551,35 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
         }
     }
 
-    this.options.criteria = options.criteria || 'periodVolume';
+    var row = '<tr>' + 
+        '<td class="tx-field">%position%</td>';
 
-    this.api = ethplorerWidget.api + '/getTop';
+    var criteria = options.criteria ? options.criteria : false;
+
+    this.api = ethplorerWidget.api + '/getTopTokens';
 
     this.templates = {
+        header: '<div class="txs-header">Top %limit% tokens for %period% days</div>',
         loader: '<div class="txs-loading">Loading...</div>',
-        criteria: {
-            price: {
-                row: '<tr><td class="tx-field">%position%</td><td class="tx-field">%name%</td><td class="tx-field" title="">%price%</td></tr>'
-            },
-            currentVolume: {
-                header: '<div class="txs-header">Top %limit% tokens by current volume</div>'
-            },
-            periodVolume: {
-                header: '<div class="txs-header">Top %limit% tokens for %period% days</div>' + 
-                        '<div style="text-align:center"><a data-criteria="periodVolume">By volume</a> | <a data-criteria="opCount">By operations count</a></div>',
-                row: '<tr><td class="tx-field">%position%</td><td class="tx-field">%name_symbol%</td><td class="tx-field" title="">%volume%</td><td class="ewDiff">%vdiff%</td></tr>'
-            },
-            opCount: {
-                header: '<div class="txs-header">Top %limit% tokens for %period% days</div>' + 
-                        '<div style="text-align:center"><a data-criteria="periodVolume">By volume</a> | <a data-criteria="opCount">By operations count</a></div>',
-                row: '<tr><td class="tx-field">%position%</td><td class="tx-field">%name%</td><td class="tx-field" title="%opCount% operations">%opCount%</td></tr>'
-            }
-        }
     };
+
+    switch(criteria){
+        case 'byPrice':
+            row += '<td class="tx-field">%name%</td>';
+            row = row +'<td class="tx-field" title="">%price%</td>';
+            break;
+        case 'byCurrentVolume':
+            this.templates.header = '<div class="txs-header">Top %limit% tokens</div>';
+        case 'byPeriodVolume':
+            row += '<td class="tx-field">%name_symbol%</td>';
+            row += '<td class="tx-field" title="">%volume%</td>';
+            break;
+        default:
+            row += '<td class="tx-field">%name%</td>';
+            row = row + '<td class="tx-field" title="%opCount% operations">%opCount%</td>' + '</tr>';
+    }
+    
+    this.templates.row = row;
 
     // Override default templates with custom
     if('object' === typeof(templates)){
@@ -585,15 +589,6 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
     }
 
     this.load = function(){
-        if('undefined' !== typeof(this.templates.criteria[this.options.criteria])){
-            var criteriaTpl = this.templates.criteria[this.options.criteria];
-            if(criteriaTpl.header){
-                this.templates.header = criteriaTpl.header;
-            }
-            if(criteriaTpl.row){
-                this.templates.row = criteriaTpl.row;
-            }
-        }
         this.el.html(ethplorerWidget.parseTemplate(this.templates.header, this.options) + this.templates.loader);
         $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
     };
@@ -631,8 +626,8 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
 
     this.refreshWidget = function(obj){
         return function(data){
-            if(data && !data.error && data.tokens && data.tokens.length){               
-                obj.el.find('.txs-loading, .txs').remove();
+            if(data && !data.error && data.tokens && data.tokens.length){
+                obj.el.find('.txs-loading').remove();
                 var txTable = '<table class="txs">';
                 for(var i=0; i<data.tokens.length; i++){
                     var rowData = obj.prepareData(data.tokens[i]);
@@ -643,26 +638,10 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
                 obj.el.append(txTable);
 
                 ethplorerWidget.appendEthplorerLink(obj);
-                obj.el.find('[data-criteria]').click(function(_obj){
-                    return function(){
-                        if(!$(this).hasClass('ewSelected')){
-                            // _obj.el.find('.ewSelected').removeClass('ewSelected');
-                            $(this).addClass('ewSelected');                            
-                            _obj.options.criteria = $(this).attr('data-criteria');
-                            _obj.load();
-                        }
-                    };
-                }(obj))
 
-                obj.el.find('[data-criteria="' + obj.options.criteria + '"]').addClass('ewSelected');
-
-                if('undefined' === typeof(obj.onLoadFired)){
-                    if('function' === typeof(obj.options.onLoad)){
-                        obj.options.onLoad();
-                    }
-                    obj.onLoadFired = true;
+                if('function' === typeof(obj.options.onLoad)){
+                    obj.options.onLoad();
                 }
-
                 setTimeout(ethplorerWidget.fixTilda, 300);
             }
         };
@@ -671,20 +650,13 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
     this.prepareData = function(data){
         var name = data.name ? data.name : data.address;
         var symbol = data.symbol ? data.symbol : '';
-
-        // diff
-        var ivdiff = ethplorerWidget.Utils.pdiff(data.volume, data.previousPeriodVolume);
-        var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
-        vdiff = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
-
         return {
             address: ethplorerWidget.Utils.link(data.address, data.address, data.address),
             name: ethplorerWidget.Utils.link(data.address, name, name, false, data.name ? "" : "tx-unknown"),
             name_symbol: ethplorerWidget.Utils.link(data.address, name + (symbol ? ' (' + symbol + ')' : ''), name + (symbol ? ' (' + symbol + ')' : ''), false, data.name ? "" : "tx-unknown"),
             opCount: data.opCount,
             price: (data.price && data.price.rate) ? ('$ ' + ethplorerWidget.Utils.formatNum(data.price.rate, true, 2, true)) : '',
-            volume: data.volume ? ('$ ' + ethplorerWidget.Utils.formatNum(data.volume, true, data.volume >= 1000 ? 0 : 2, true)) : '',
-            vdiff: vdiff
+            volume: data.volume ? ('$ ' + ethplorerWidget.Utils.formatNum(data.volume, true, 2, true)) : ''
         };
     };
 
