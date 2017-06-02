@@ -719,7 +719,8 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
     this.api = ethplorerWidget.api + '/getTop';
 
     this.templates = {
-        header: '<div class="txs-header">Top tokens</div>',
+        header: '<div class="txs-header">Top tokens</div>' +
+                '<div style="text-align:center"><a data-criteria="periodVolume" class="ewSelected">Trade</a> | <a data-criteria="opCount">Cap</a> | <a data-criteria="opCount">Tx Count</a></div>',
         loader: '<div class="txs-loading">Loading...</div>',
         criteria: {
             cap: {
@@ -883,7 +884,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             name: ethplorerWidget.Utils.link(data.address, name, name, false, data.name ? "" : "tx-unknown"),
             name_symbol: ethplorerWidget.Utils.link(data.address, name + (symbol ? ' (' + symbol + ')' : ''), name + (symbol ? ' (' + symbol + ')' : ''), false, data.name ? "" : "tx-unknown"),
             opCount: data.opCount,
-            price: (data.price && data.price.rate) ? ('$ ' + ethplorerWidget.Utils.formatNum(data.price.rate, true, 2, true)) : '',
+            price: (data.price && data.price.rate) ? ('$ ' + ethplorerWidget.Utils.formatNum(data.price.rate, true, 2, false)) : '',
             volume: data.volume ? ('$ ' + ethplorerWidget.Utils.formatNum(data.volume, true, data.volume >= 1000 ? 0 : 2, true)) : '',
             // vdiff: vdiff
             trend_1d: trend_1d,

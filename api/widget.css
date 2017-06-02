@@ -203,11 +203,11 @@
 }
 
 .ethplorer-widget.widget-topTokens .ewDiff .ewDiffUp {
-    color: green;
+    color: #1e8c1e;
 }
 
 .ethplorer-widget.widget-topTokens .ewDiff .ewDiffDown {
-    color: red;
+    color: #ae2525;
 }
 
 @media screen and (min-width: 999px) {
