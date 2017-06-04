@@ -637,7 +637,7 @@ class Ethplorer {
      * @return array
      */
     public function getTokenHolders($address, $limit = FALSE, $offset = FALSE){
-        evxProfiler::checkpoint('getTokenHoldersCount', 'START', 'address=' . $address . ', limit=' . $limit . ', offset=' . $offset);
+        evxProfiler::checkpoint('getTokenHolders', 'START', 'address=' . $address . ', limit=' . $limit . ', offset=' . $offset);
         $result = array();
         $token = $this->getToken($address);
         if($token){
@@ -670,7 +670,7 @@ class Ethplorer {
                 }
             }
         }
-        evxProfiler::checkpoint('getTokenHoldersCount', 'FINISH');
+        evxProfiler::checkpoint('getTokenHolders', 'FINISH');
         return $result;
     }
 
