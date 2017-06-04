@@ -295,10 +295,12 @@ class Ethplorer {
                 }
             }
             $result["transfers"] = $this->getAddressOperations($address, $limit, $this->getOffset('transfers'));
+            $countOperations = $this->countOperations($address);
+            $totalOperations = $this->filter ? $this->countOperations($address, FALSE) : $countOperations;
             $result['pager']['transfers'] = array(
                 'page' => $this->getPager('transfers'),
-                'records' => $this->countOperations($address),
-                'total' => $this->countOperations($address, FALSE),
+                'records' => $countOperations,
+                'total' => $totalOperations,
             );
         }
         evxProfiler::checkpoint('getAddressDetails', 'FINISH');
