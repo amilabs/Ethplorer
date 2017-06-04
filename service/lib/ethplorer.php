@@ -329,25 +329,30 @@ class Ethplorer {
     }
 
 
-    public function getEtherTotalOut($address){
+    public function getEtherTotalOut($address, $updateCache = FALSE){
         evxProfiler::checkpoint('getEtherTotalOut', 'START', 'address=' . $address);
-        $result = 0;
-        if($this->isValidAddress($address)){
-            $aResult = $this->oMongo->aggregate('transactions', array(
-                array('$match' => array("from" => $address)),
-                array(
-                    '$group' => array(
-                        "_id" => '$from',
-                        'out' => array('$sum' => '$value')
-                    )
-                ),
-            ));
-            if(is_array($aResult) && isset($aResult['result'])){
-                foreach($aResult['result'] as $record){
-                    $result += floatval($record['out']);
+        $cache = 'ethOut-' . $address;
+        $result = $this->oCache->get($cache, FALSE, TRUE, 3600);
+        if($updateCache || (FALSE === $result)){
+            if($this->isValidAddress($address)){
+                $aResult = $this->oMongo->aggregate('transactions', array(
+                    array('$match' => array("from" => $address)),
+                    array(
+                        '$group' => array(
+                            "_id" => '$from',
+                            'out' => array('$sum' => '$value')
+                        )
+                    ),
+                ));
+                if(is_array($aResult) && isset($aResult['result'])){
+                    foreach($aResult['result'] as $record){
+                        $result += floatval($record['out']);
+                    }
                 }
+                $this->oCache->save($cache, $result);
             }
         }
+        $result = (float)$result;
         evxProfiler::checkpoint('getEtherTotalOut', 'FINISH');
         return $result;
     }
