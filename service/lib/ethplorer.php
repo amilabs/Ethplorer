@@ -1369,7 +1369,7 @@ class Ethplorer {
             )
         );
         if(is_array($dbHolders) && !empty($dbHolders['result'])){
-            $result = $dbData['result'];
+            $result = $dbHolders['result'];
         }
         return $result;
     }
