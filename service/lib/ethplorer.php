@@ -756,7 +756,7 @@ class Ethplorer {
      * @return int
      */
     public function countOperations($address, $useFilter = TRUE){
-        evxProfiler::checkpoint('countOperations', 'START', 'address=' . $address);
+        evxProfiler::checkpoint('countOperations', 'START', 'address=' . $address . ', useFilet = ' . (string)$useFilter);
         $result = 0;
         $token = $this->getToken($address);
         $aSearchFields = ($token) ? array('contract') : array('from', 'to', 'address');
