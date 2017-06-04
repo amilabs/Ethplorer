@@ -762,7 +762,7 @@ class Ethplorer {
         $aSearchFields = ($token) ? array('contract') : array('from', 'to', 'address');
         foreach($aSearchFields as $searchField){
             $search = array($searchField => $address);
-            $search['type'] = array('$in' => array('transfer', 'issuance', 'burn', 'mint'));
+            $search['type'] = array('$ne' => array('approve'));
             if($useFilter && $this->filter){
                 $search = array(
                     '$and' => array(
