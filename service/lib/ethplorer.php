@@ -606,6 +606,9 @@ class Ethplorer {
                     }
                 }
             }
+            if(isset($aResult['0x0000000000000000000000000000000000000000'])){
+                unset($aResult['0x0000000000000000000000000000000000000000']);
+            }
             $this->oCache->save('tokens', $aResult);
             evxProfiler::checkpoint('getTokens', 'FINISH');
         }
