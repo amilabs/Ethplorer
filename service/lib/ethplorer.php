@@ -1359,6 +1359,22 @@ class Ethplorer {
         return $result;
     }
 
+    public function getAllHolders(){
+        $result = array();
+        $dbHolders = $this->oMongo->aggregate(
+            'balances',
+            array(
+                array('$group' => array("_id" => '$address')),
+                array('$sort' => array('ts' => -1))
+            )
+        );
+        if(is_array($dbHolders) && !empty($dbHolders['result'])){
+            $result = $dbData['result'];
+        }
+        return $result;
+    }
+
+
     /**
      * Returns last Chainy transactions.
      *
