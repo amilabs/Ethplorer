@@ -1607,36 +1607,78 @@ class Ethplorer {
     }
 
     public function getAddressPriceHistoryGrouped($address, $updateCache = FALSE){
-        if($this->getToken($address)) return array();
+        evxProfiler::checkpoint('getAddressPriceHistoryGrouped', 'START', 'address=' . $address);
 
         $cache = 'address_operations_history-' . $address;
-        $result = $this->oCache->get($cache, false, true);
+        $result = false;//$this->oCache->get($cache, false, true);
         if(FALSE === $result){
-            $aTypes = array('transfer', 'issuance', 'burn', 'mint');
+            $aTypes = array('transfer');//, 'issuance', 'burn', 'mint');
             $aResult = array();
 
             $search = array(
                 '$or' => array(
                     array("from"    => $address),
                     array("to"      => $address),
-                    array('address' => $address)
+                    //array('address' => $address)
                 )
             );
-            $cursor = $this->oMongo->find('operations', $search, array("timestamp" => -1));
+            $cursor = $this->oMongo->find('operations', $search, array("timestamp" => 1));
 
+            $ten = Decimal::create(10);
+            $dec = false;
             $result = array();
-            foreach($cursor as $transfer){
-                if(in_array($transfer['type'], $aTypes)){
-                    unset($transfer["_id"]);
-                    $result[] = $transfer;
+            $aTokenInfo = array();
+            $aPrices = array();
+            foreach($cursor as $record){
+                if(in_array($record['type'], $aTypes) && isset($record['contract'])){
+                    $contract = $record['contract'];
+                    $date = gmdate("Y-m-d", $record['timestamp']);
+
+                    $token = isset($aTokenInfo[$contract]) ? $aTokenInfo[$contract] : $this->getToken($contract);
+                    if($token){
+                        if(!isset($aTokenInfo[$contract])) $aTokenInfo[$contract] = $token;
+                        if(!isset($aPrices[$contract])){
+                            $aPrices[$contract] = $this->getTokenPriceHistory($contract, 365, 'daily');
+                        }
+                        if(isset($token['decimals'])) $dec = Decimal::create($token['decimals']);
+
+                        $balance = Decimal::create(0);
+                        if(isset($aTokenInfo[$contract]['balance'])){
+                            $balance = Decimal::create($aTokenInfo[$contract]['balance']);
+                        }
+
+                        //file_put_contents(__DIR__ . '/../log/addr-widget.log', print_r($record, true) . "\n", FILE_APPEND);
+
+                        if($dec){
+                            $value = Decimal::create($record['value']);
+                            $value = $value->div($ten->pow($dec), 4);
+
+                            if($record['from'] == $address){
+                                $newValue = $balance->sub($value, 4);
+                            }else{
+                                $newValue = $balance->add($value, 4);
+                            }
+
+                            $aTokenInfo[$contract]['balance'] = '' . $newValue;
+                            //$result[$date][$token['address']] = array();
+                            $result['volumes'][$date][$token['address']] = '' . $newValue;
+                            /*if(isset()){
+                                $result[$date][$token['address']]['price'] = 
+                            }*/
+                        }
+                    }
                 }
             }
 
+            $result['tokens'] = $aTokenInfo;
+            $result['prices'] = $aPrices;
+
             if(!empty($result)){
-                $this->oCache->save($cache, $result);
+            //    $this->oCache->save($cache, $result);
             }
         }
 
+        evxProfiler::checkpoint('getAddressPriceHistoryGrouped', 'FINISH');
         return $result;
     }
 
