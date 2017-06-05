@@ -47,7 +47,7 @@ ethplorerWidget = {
         if('undefined' === ethplorerWidget.eventsAdded){
             $(window).resize(ethplorerWidget.fixTilda);
             ethplorerWidget.eventsAdded = true;
-        }
+        }   
         if('undefined' !== typeof(ethplorerWidget.Type[type])){
             return new ethplorerWidget.Type[type](el, options, templates);
         }else{
@@ -839,15 +839,15 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
 
         // diff
         // var ivdiff = ethplorerWidget.Utils.pdiff(data.volume, data.previousPeriodVolume);
-        var ivdiff = (Math.random() * 100) * ((Math.random() > 0.5) ? 1 : -1);
+        var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-1d-current'], data['volume-1d-previous']);
         var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
         var trend_1d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
 
-        var ivdiff = (Math.random() * 100) * ((Math.random() > 0.5) ? 1 : -1);
+        var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-7d-current'], data['volume-7d-previous']);
         var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
         var trend_7d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
 
-        var ivdiff = (Math.random() * 100) * ((Math.random() > 0.5) ? 1 : -1);
+        var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-30d-current'], data['volume-30d-previous']);
         var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
         var trend_30d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
 
