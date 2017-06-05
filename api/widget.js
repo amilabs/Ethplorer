@@ -288,8 +288,11 @@ ethplorerWidget = {
                 window.getSelection().addRange(range);
             }
         },
-        pdiff: function(a, b){
+        pdiff: function(a, b, x){
             var res = 100;
+            if(x && !b){
+                return (a > 0) ? 'x' : 0;
+            }
             if(a !== b){
                 if(a && b){
                     res = (a / b) * 100 - 100;
@@ -839,17 +842,29 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
 
         // diff
         // var ivdiff = ethplorerWidget.Utils.pdiff(data.volume, data.previousPeriodVolume);
-        var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-1d-current'], data['volume-1d-previous']);
-        var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
-        var trend_1d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
+        var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-1d-current'], data['volume-1d-previous'], true);
+        if('x' === ivdiff){
+            var trend_1d = '--';
+        }else{
+            var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
+            var trend_1d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
+        }
 
-        var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-7d-current'], data['volume-7d-previous']);
-        var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
-        var trend_7d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
+        var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-7d-current'], data['volume-7d-previous'], true);
+        if('x' === ivdiff){
+            var trend_7d = '--';
+        }else{
+            var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
+            var trend_7d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
+        }
 
-        var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-30d-current'], data['volume-30d-previous']);
-        var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
-        var trend_30d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
+        var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-30d-current'], data['volume-30d-previous'], true);
+        if('x' === ivdiff){
+            var trend_30d = '--';
+        }else{
+            var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
+            var trend_30d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
+        }
 
         return {
             address: ethplorerWidget.Utils.link(data.address, data.address, data.address),
@@ -858,10 +873,9 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             opCount: data.opCount,
             price: (data.price && data.price.rate) ? ('$ ' + ethplorerWidget.Utils.formatNum(data.price.rate, true, 2, false)) : '',
             volume: data.volume ? ('$ ' + ethplorerWidget.Utils.formatNum(data.volume, true, data.volume >= 1000 ? 0 : 2, true)) : '',
-            // vdiff: vdiff
             trend_1d: trend_1d,
             trend_7d: trend_7d,
-            trend_30d: trend_30d,
+            trend_30d: trend_30d
         };
     };
 
