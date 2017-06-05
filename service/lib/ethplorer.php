@@ -1647,11 +1647,16 @@ class Ethplorer {
                             $balance = Decimal::create($aTokenInfo[$contract]['balance']);
                         }
 
-                        //file_put_contents(__DIR__ . '/../log/addr-widget.log', print_r($record, true) . "\n", FILE_APPEND);
-
                         if($dec){
                             $value = Decimal::create($record['value']);
                             $value = $value->div($ten->pow($dec), 4);
+
+                            $curDateVolume = Decimal::create(0);
+                            if(isset($result['volume'][$date][$token['address']])){
+                                $curDateVolume = Decimal::create($result['volume'][$date][$token['address']]);
+                            }
+                            $curDateVolume = $curDateVolume->add($value, 4);
+                            $result['volume'][$date][$token['address']] = '' . $curDateVolume;
 
                             if($record['from'] == $address){
                                 $newValue = $balance->sub($value, 4);
@@ -1660,11 +1665,7 @@ class Ethplorer {
                             }
 
                             $aTokenInfo[$contract]['balance'] = '' . $newValue;
-                            //$result[$date][$token['address']] = array();
-                            $result['volumes'][$date][$token['address']] = '' . $newValue;
-                            /*if(isset()){
-                                $result[$date][$token['address']]['price'] = 
-                            }*/
+                            $result['balances'][$date][$token['address']] = '' . $newValue;
                         }
                     }
                 }
@@ -1672,6 +1673,8 @@ class Ethplorer {
 
             $result['tokens'] = $aTokenInfo;
             $result['prices'] = $aPrices;
+
+            //file_put_contents(__DIR__ . '/../log/addr-widget.log', print_r($result, true) . "\n", FILE_APPEND);
 
             if(!empty($result)){
             //    $this->oCache->save($cache, $result);
