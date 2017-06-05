@@ -944,6 +944,19 @@ Ethplorer = {
                     );
                     ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
                 }
+            }else if(testWidget){
+                    $('#token-price-history-grouped-widget').show();
+                    ethplorerWidget.init(
+                        '#token-price-history-grouped-widget',
+                        'addressPriceHistoryGrouped',
+                        {
+                            theme: 'dark',
+                            getCode: true,
+                            address: address,
+                            //options: {title: widgetTitle}
+                        }
+                    );
+                    ethplorerWidget.loadScript("https://www.google.com/jsapi", ethplorerWidget.loadGoogleControlCharts);
             }
         }else{
             // Wait 3 seconds and retry

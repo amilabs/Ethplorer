@@ -155,19 +155,23 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
 
                 <div class="clearfix"></div>
 
-                <?php if(true){ ?>
+                <?php if($testWidget){ ?>
                     <script type="text/javascript">
                         var testWidget = true;
                     </script>
+                <?php }else{ ?>
+                    <script type="text/javascript">
+                        var testWidget = false;
+                    </script>
+                <?php } ?>
+
+                <?php if(true){ ?>
                     <div>
                         <div class="col-xs-12 col-sm-12 token-price-history-grouped-widget">
                             <div id="token-price-history-grouped-widget"></div>
                         </div>
                     </div>
                 <?php }else{ ?>
-                    <script type="text/javascript">
-                        var testWidget = false;
-                    </script>
                 <style>
                     #token-history-grouped-widget {
                         margin-top: 0 !important;
