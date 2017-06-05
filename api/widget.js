@@ -689,13 +689,15 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
         }
     }
 
+    this.cache = {};
+
     this.options.criteria = options.criteria || 'trade';
 
     this.api = ethplorerWidget.api + '/getTop';
 
     this.templates = {
         header: '<div class="txs-header">Top tokens</div>' +
-                '<div style="text-align:center"><a data-criteria="periodVolume" class="ewSelected">Trade</a> | <a data-criteria="opCount">Cap</a> | <a data-criteria="opCount">Tx Count</a></div>',
+                '<div style="text-align:center"><a data-criteria="trade">Trade</a> | <a data-criteria="cap">Cap</a> | <a data-criteria="count">Tx Count</a></div>',
         loader: '<div class="txs-loading">Loading...</div>',
         criteria: {
             cap: {
@@ -761,8 +763,13 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 this.templates.rowHeader = criteriaTpl.rowHeader;
             }
         }
-        this.el.html(ethplorerWidget.parseTemplate(this.templates.header, this.options) + this.templates.loader);
-        $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
+        if('undefined' === typeof(this.cache[this.options.criteria])){
+            this.el.html(ethplorerWidget.parseTemplate(this.templates.header, this.options) + this.templates.loader);        
+            $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
+        }else{
+            this.el.html(ethplorerWidget.parseTemplate(this.templates.header, this.options));
+            this.refreshWidget(this.cache[this.options.criteria]);
+        }
     };
 
     this.init = function(){
@@ -798,7 +805,10 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
 
     this.refreshWidget = function(obj){
         return function(data){
-            if(data && !data.error && data.tokens && data.tokens.length){               
+            if(data && !data.error && data.tokens && data.tokens.length){
+                if('undefined' === typeof(obj.cache[obj.options.criteria])){
+                    obj.cache[obj.options.criteria] = data;
+                }
                 obj.el.find('.txs-loading, .txs').remove();
                 var txTable = '<table class="txs">';
                 txTable += obj.templates.rowHeader;
@@ -814,7 +824,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 obj.el.find('[data-criteria]').click(function(_obj){
                     return function(){
                         if(!$(this).hasClass('ewSelected')){
-                            // _obj.el.find('.ewSelected').removeClass('ewSelected');
+                            _obj.el.find('.ewSelected').removeClass('ewSelected');
                             $(this).addClass('ewSelected');                            
                             _obj.options.criteria = $(this).attr('data-criteria');
                             _obj.load();
@@ -840,8 +850,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
         var name = data.name ? data.name : data.address;
         var symbol = data.symbol ? data.symbol : '';
 
-        // diff
-        // var ivdiff = ethplorerWidget.Utils.pdiff(data.volume, data.previousPeriodVolume);
+        // @todo: remove code duplicate and "x"s
         var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-1d-current'], data['volume-1d-previous'], true);
         if('x' === ivdiff){
             var trend_1d = '--';
