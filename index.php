@@ -690,9 +690,6 @@ if(Ethplorer.Config.fb){
     fbq('init', Ethplorer.Config.fb);
     fbq('track', 'PageView');
 }
-<?php if(isset($aConfig['scriptAddon'])): ?>
-    echo $aConfig['scriptAddon'];
-<?php endif; ?>
-</script>
+<?php if(isset($aConfig['scriptAddon'])) echo $aConfig['scriptAddon']; ?></script>
 </body>
 </html>

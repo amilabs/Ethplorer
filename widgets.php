@@ -683,9 +683,7 @@ eWgs.push(function () {
                 fbq('init', Ethplorer.Config.fb);
                 fbq('track', 'PageView');
             }
-            <?php if(isset($aConfig['scriptAddon'])): ?>
-                echo $aConfig['scriptAddon'];
-            <?php endif; ?>
+            <?php if(isset($aConfig['scriptAddon'])) echo $aConfig['scriptAddon']; ?>
         </script>
     </body>
 </html>
