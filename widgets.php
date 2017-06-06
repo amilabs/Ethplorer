@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$aConfig = dirname(__FILE__) . '/service/config.php';
+$aConfig = require dirname(__FILE__) . '/service/config.php';
 ?><!DOCTYPE html>
 <html>
     <head>
