@@ -1607,43 +1607,25 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
         $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
     };
 
-    this.getTooltip = function(noPrice, date, low, open, close, high, operations, volume, convertedVolume){
+    this.getTooltip = function(date, balance, volume){
         var tooltipDateFormatter = new google.visualization.DateFormat({ 
             pattern: "MMM dd, yyyy '+UTC'"
-        });
-        var numFormatter = new google.visualization.NumberFormat({ 
-            pattern: "#,###"
         });
         var currencyFormatter = new google.visualization.NumberFormat({ 
             pattern: '#,##0.00'
         });
-        var avgFormatter = new google.visualization.NumberFormat({ 
-            pattern: '#,##0.00'
-        });
         var tooltip = '<div style="display: block !important; text-align: left; opacity: 1 !important; color: #000000 !important; padding: 5px;">';
-        tooltip += tooltipDateFormatter.formatValue(date) + '<br/>';
-        if(noPrice){
-            tooltip += '<span class="tooltipRow"><b>Token operations:</b> ' + operations + '</span><br/>';
-        }else{
-            tooltip += '<span class="tooltipRow"><b>Volume:</b> ' + numFormatter.formatValue(volume.toFixed(0)) + '</span><br/>' +
-                '<span class="tooltipRow"><b>Price:</b> ' + currencyFormatter.formatValue(operations) + ' USD</span>';
-
-            /*if(volume > 0) var avg = convertedVolume / volume;
-            else var avg = (open + close) / 2;
-            tooltip += '<span class="tooltipRow"><b>Average:</b> ' + avgFormatter.formatValue(avg) + ' USD</span><br/>' +
-                '<span class="tooltipRow"><b>Open:</b> ' + currencyFormatter.formatValue(open) + ' <b>Close:</b> ' + currencyFormatter.formatValue(close) + '</span><br/>' +
-                '<span class="tooltipRow"><b>High:</b> ' + currencyFormatter.formatValue(high) + ' <b>Low:</b> ' + currencyFormatter.formatValue(low) + '</span><br/>' +
-                '<span class="tooltipRow"><b>Token operations:</b> ' + numFormatter.formatValue(operations) + '</span><br/>' +
-                '<span class="tooltipRow"><b>Volume:</b> ' + numFormatter.formatValue(volume.toFixed(0)) + ' (' + numFormatter.formatValue(convertedVolume.toFixed(2)) + ' USD)</span>';*/
-        }
-        tooltip += '</div>';
+        tooltip += tooltipDateFormatter.formatValue(date) + '<br/>' +
+            '<span class="tooltipRow"><b>Volume:</b> ' + currencyFormatter.formatValue(volume) + ' USD</span><br/>' +
+            '<span class="tooltipRow"><b>Balance:</b> ' + currencyFormatter.formatValue(balance) + ' USD</span>' +
+            '</div>';
         return tooltip;
     }
 
     this.drawChart = function(widgetData){
         var aData = [];
 
-        if('undefined' !== typeof(widgetData['volumes'])){
+        if('undefined' !== typeof(widgetData['volume'])){
             /*var firstMonth = aTxData[0]._id.month,
                 firstDay = aTxData[0]._id.day;
             if(firstMonth < 10) firstMonth = '0' + firstMonth;
@@ -1655,62 +1637,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
 
         var noPrice = false;
 
-        //console.log(widgetData['volumes']);
-/*
-        var stDate = new Date(strFirstDate);
-            fnDate = new Date(strFirstDate),
-            rangeStart = new Date(strFirstDate);
-        var date = stDate.getDate();
-        fnDate.setDate(date - this.options.period + 1);
-        rangeStart.setDate(date - (this.options.period > 60 ? 60 : this.options.period) + 1);
-
-        // prepare data
-        var aCountData = {};
-        var aPriceData = {};
-        for(var i = 0; i < aTxData.length; i++){
-            var aDayData = aTxData[i];
-            aCountData[aDayData._id.year + '-' + aDayData._id.month + '-' + aDayData._id.day] = aDayData.cnt;
-        }
-        var noPrice = true,
-            startPriceDate = new Date(),
-            priceNotFound = true;
-        if(widgetPriceData && widgetPriceData.length){
-            noPrice = false;
-            aData.push(['Day', 'Low', 'Open', 'Close', 'High', {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Token operations', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Volume', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
-            for(var i = 0; i < widgetPriceData.length; i++){
-                var aDayPriceData = widgetPriceData[i],
-                    numZeroes = 0;
-                if(aDayPriceData.low == 0) numZeroes++;
-                if(aDayPriceData.open == 0) numZeroes++;
-                if(aDayPriceData.close == 0) numZeroes++;
-                if(aDayPriceData.high == 0) numZeroes++;
-
-                if((numZeroes >= 3) && priceNotFound){
-                    continue;
-                }else{
-                    aPriceData[aDayPriceData.date] = aDayPriceData;
-                    if(priceNotFound){
-                        var strPriceDate = aDayPriceData.date.substring(0, 4) + '-' + aDayPriceData.date.substring(5, 7) + '-' + aDayPriceData.date.substring(8) + 'T00:00:00Z';
-                        startPriceDate = new Date(strPriceDate);
-                    }
-                    priceNotFound = false;
-                }
-            }
-            if(this.options.period > 60){
-                fnDate = startPriceDate;
-            }
-        }else{
-            var strMonth = aTxData[aTxData.length - 1]._id.month < 10 ? ('0' + aTxData[aTxData.length - 1]._id.month) : aTxData[aTxData.length - 1]._id.month,
-                strDay = aTxData[aTxData.length - 1]._id.day < 10 ? ('0' + aTxData[aTxData.length - 1]._id.day) : aTxData[aTxData.length - 1]._id.day;
-            var strDate = aTxData[aTxData.length - 1]._id.year + '-' + strMonth + '-' + strDay + 'T00:00:00Z';
-            fnDate = new Date(strDate);
-            aData.push(['Day', 'Token operations', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
-        }
-        //console.log(aCountData);
-        //console.log(aPriceData);
-*/
-
-        aData.push(['Day', 'Price', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Volume', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
+        aData.push(['Day', 'Balance', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Volume', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
 
         // prepare prices
         var aPrices = {};
@@ -1724,11 +1651,62 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             }
         }
 
-        console.log(aPrices);
+        var rangeStart = null,
+            rangeEnd,
+            curDate = new Date(),
+            fnMonth = curDate.getUTCMonth() + 1,
+            fnDay = curDate.getUTCDate(),
+            fnDate = new Date(curDate.getUTCFullYear() + '-' + (fnMonth < 10 ? '0' + fnMonth : fnMonth) + '-' + (fnDay < 10 ? '0' + fnDay : fnDay) + 'T00:00:00Z'),
+            aBalances = {};
 
-        var rangeStart = null;
+        for(var volumeDate in widgetData['volume']){
+            var strFirstDate = volumeDate + 'T00:00:00Z';
+            break;
+        }
 
-        for(var volDate in widgetData['volumes']){
+        for(var d = new Date(strFirstDate); d <= fnDate; d.setDate(d.getDate() + 1)){
+            var month = 1 + d.getMonth(),
+                day = d.getDate(),
+                volumeDate = d.getFullYear() + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day),
+                strVolumeDate = volumeDate + 'T00:00:00Z';
+
+
+            // get volumes
+            var volume = 0;
+            if('undefined' !== typeof(widgetData['volume'][volumeDate])){
+                for(var token in widgetData['volume'][volumeDate]){
+                    if('undefined' !== typeof(aPrices[token]) && 'undefined' !== typeof(aPrices[token][volumeDate])){
+                        volume += parseFloat(widgetData['volume'][volumeDate][token]) * parseFloat(aPrices[token][volumeDate]);
+                    }
+                }
+
+                if(!rangeStart && volume != 0){
+                    rangeStart = strVolumeDate;
+                }
+            }
+
+            // get balances
+            if('undefined' !== typeof(widgetData['balances'][volumeDate])){
+                for(var token in widgetData['balances'][volumeDate]){
+                    aBalances[token] = parseFloat(widgetData['balances'][volumeDate][token]);
+                }
+            }
+            var balance = 0;
+            for(var token in aBalances){
+                if('undefined' !== typeof(aPrices[token]) && 'undefined' !== typeof(aPrices[token][volumeDate])){
+                    balance += parseFloat(aBalances[token]) * parseFloat(aPrices[token][volumeDate]);
+                }
+            }
+
+            rangeEnd = strVolumeDate;
+            var tooltip = this.getTooltip(new Date(strVolumeDate), balance, volume);
+            aData.push([new Date(strVolumeDate), balance, 'opacity: 0.5', tooltip, volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5', tooltip]);
+        }
+
+        console.log(rangeStart);
+        console.log(rangeEnd);
+
+        /*for(var volDate in widgetData['volumes']){
             //console.log(volDate);
             var strVolDate = volDate + 'T00:00:00Z';
             if(!rangeStart){
@@ -1751,52 +1729,8 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
 
             var tooltip = this.getTooltip(noPrice, new Date(strVolDate), 0, 0, 0, 0, price, volume);
             aData.push([new Date(strVolDate), price, 'opacity: 0.5', tooltip, volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5', tooltip]);
-        }
+        }*/
 
-        var strFirstDate = endDate;
-
-//        var rangeStart = new Date(endDate + 'T00:00:00Z');
-
-        console.log(rangeStart);
-        console.log(strFirstDate);
-
-/*
-        var curDate = true;
-        for(var d = new Date(strFirstDate); d >= fnDate; d.setDate(d.getDate() - 1)){
-            //console.log(d);
-            // get tx count
-            var key = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
-            var cnt = ('undefined' !== typeof(aCountData[key])) ? aCountData[key] : 0;
-
-            // get price data
-            var keyPrice = d.getFullYear() + '-' + (d.getMonth() < 9 ? '0' : '') + (d.getMonth() + 1) + '-' + (d.getDate() < 10 ? '0' : '') + d.getDate();
-            //console.log(keyPrice);
-
-            // 'Low', 'Open', 'Close', 'High'
-            var low = 0, open = 0, high = 0, close = 0, volume = 0, volumeConverted = 0;
-            if('undefined' !== typeof(aPriceData[keyPrice])){
-                low = aPriceData[keyPrice]['low'];
-                open = aPriceData[keyPrice]['open'];
-                close = aPriceData[keyPrice]['close'];
-                high = aPriceData[keyPrice]['high'];
-                volume = ('undefined' !== typeof(aPriceData[keyPrice]['volume'])) ? aPriceData[keyPrice]['volume'] : 0;
-                volumeConverted = ('undefined' !== typeof(aPriceData[keyPrice]['volumeConverted'])) ? aPriceData[keyPrice]['volumeConverted'] : 0;
-            }
-
-            var chartMonth = d.getMonth() + 1;
-            if(chartMonth < 10) chartMonth = '0' + chartMonth;
-            var chartDay = d.getDate();
-            if(chartDay < 10) chartDay = '0' + chartDay;
-            var strChartDate = d.getFullYear() + '-' + chartMonth + '-' + chartDay + 'T00:00:00Z';
-
-            var tooltip = this.getTooltip(noPrice, new Date(strChartDate), low, open, close, high, cnt, volume, volumeConverted);
-            if(noPrice){
-                aData.push([new Date(strChartDate), cnt, 'opacity: 0.5', tooltip]);
-            }else{
-                aData.push([new Date(strChartDate), low, open, close, high, tooltip, cnt, 'opacity: 0.5', tooltip, volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5', tooltip]);
-            }
-        }
-        */
         console.log(aData);
         var data = google.visualization.arrayToDataTable(aData);
 
@@ -1835,8 +1769,8 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             containerId: 'control',
             state: {
                 range: {
-                    start: rangeStart,
-                    end: new Date(strFirstDate)
+                    start: new Date(rangeStart),
+                    end: new Date(rangeEnd)
                 }
             },
             options: {
@@ -1845,9 +1779,6 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
                     chartType: 'ComboChart',
                     minRangeSize: (this.options.period <= 7) ? 86400000 * 2 : 86400000 * 7,
                     chartOptions: {
-                        /*chartArea: {
-                            height: '30%',
-                        },*/
                         colors: ['#65A5DF'],
                         lineWidth: 0,
                         hAxis : {
@@ -1969,7 +1900,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
                     },*/
                 },
                 vAxes: vAxes,
-                pointSize: noPrice ? 2 : 0,
+                pointSize: 2,//noPrice ? 2 : 0,
                 lineWidth: 1,
                 bar: { groupWidth: '70%' },
                 candlestick: {
