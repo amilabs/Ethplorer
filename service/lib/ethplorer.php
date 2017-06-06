@@ -1505,6 +1505,7 @@ class Ethplorer {
     }
 
     public function getTokenPriceHistory($address, $period = 0, $type = 'hourly', $updateCache = FALSE){
+        evxProfiler::checkpoint('getTokenPriceHistory', 'START', 'address=' . $address . ', period=' . $period . ', type=' . $type);
         $result = false;
         $rates = array();
         $cache = 'rates-history-' . /*($period > 0 ? ('period-' . $period . '-') : '' ) . ($type != 'hourly' ? $type . '-' : '') .*/ $address;
@@ -1581,6 +1582,7 @@ class Ethplorer {
         if(is_array($rates) && isset($rates[$address])){
             $result = $rates[$address];
         }
+        evxProfiler::checkpoint('getTokenPriceHistory', 'FINISH');
         return $result;
     }
 
