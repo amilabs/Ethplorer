@@ -1247,6 +1247,10 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         //console.log(aCountData);
         //console.log(aPriceData);
 
+        var timeDiff = Math.abs(new Date(strFirstDate).getTime() - fnDate.getTime());
+        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+        if(diffDays < 7) fnDate.setDate(fnDate.getDate() - (7 - diffDays));
+
         var curDate = true;
         for(var d = new Date(strFirstDate); d >= fnDate; d.setDate(d.getDate() - 1)){
             //console.log(d);
@@ -1328,7 +1332,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 filterColumnIndex: 0,
                 ui: {
                     chartType: 'ComboChart',
-                    minRangeSize: (this.options.period <= 7) ? 86400000 * 2 : 86400000 * 7,
+                    minRangeSize: 86400000 * 7,
                     chartOptions: {
                         /*chartArea: {
                             height: '30%',
