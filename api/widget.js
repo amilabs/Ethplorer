@@ -1623,7 +1623,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             pattern: "MMM dd, yyyy '+UTC'"
         });
         var currencyFormatter = new google.visualization.NumberFormat({ 
-            pattern: '#,##0.00'
+            pattern: '#,##0'
         });
         var tooltip = '<div style="display: block !important; text-align: left; opacity: 1 !important; color: #000000 !important; padding: 5px;">';
         tooltip += tooltipDateFormatter.formatValue(date) + '<br/>' +
@@ -1716,32 +1716,6 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
 
         console.log(rangeStart);
         console.log(rangeEnd);
-
-        /*for(var volDate in widgetData['volumes']){
-            //console.log(volDate);
-            var strVolDate = volDate + 'T00:00:00Z';
-            if(!rangeStart){
-                rangeStart = new Date(strVolDate);
-            }
-            var volume = 0;
-            var price = 0;
-
-            for(var token in widgetData['volumes'][volDate]){
-                //console.log(token);
-                //console.log(widgetData['volumes'][volDate][token]);
-                volume += parseFloat(widgetData['volumes'][volDate][token]);
-
-                if('undefined' !== typeof(aPrices[token]) && 'undefined' !== typeof(aPrices[token][volDate])){
-                    price += (volume * parseFloat(aPrices[token][volDate]));
-                }
-            }
-
-            var endDate = volDate;
-
-            var tooltip = this.getTooltip(noPrice, new Date(strVolDate), 0, 0, 0, 0, price, volume);
-            aData.push([new Date(strVolDate), price, 'opacity: 0.5', tooltip, volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5', tooltip]);
-        }*/
-
         console.log(aData);
         var data = google.visualization.arrayToDataTable(aData);
 
@@ -1839,7 +1813,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
         var vAxes = {
             0: {
                 title: 'Price',
-                format: '$ #,##0.00'
+                format: '$ #,##0'
                 //format: 'currency'
             },
             1: {
