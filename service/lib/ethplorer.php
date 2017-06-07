@@ -279,7 +279,6 @@ class Ethplorer {
                 }
             }
         }
-        $totalOperations = 0;
         if(!isset($result['token']) && !isset($result['pager'])){
             // Get balances
             $result["tokens"] = array();
@@ -303,7 +302,8 @@ class Ethplorer {
             $result['balance'] = $this->getBalance($address);
             $result['balanceOut'] = 0;
             $result['balanceIn'] = 0;
-            if($totalOperations < 10000){
+            $txCount = $this->countTransactions($adddress);
+            if($txCount < 10000){
                 $result['balanceOut'] = $this->getEtherTotalOut($address);
                 $result['balanceIn'] = $result['balanceOut'] + $result['balance'];
             }
