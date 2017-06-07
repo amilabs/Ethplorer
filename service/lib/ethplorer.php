@@ -302,7 +302,7 @@ class Ethplorer {
             $result['balance'] = $this->getBalance($address);
             $result['balanceOut'] = 0;
             $result['balanceIn'] = 0;
-            $txCount = $this->countTransactions($adddress);
+            $txCount = $this->countTransactions($address);
             if($txCount < 10000){
                 $result['balanceOut'] = $this->getEtherTotalOut($address);
                 $result['balanceIn'] = $result['balanceOut'] + $result['balance'];
