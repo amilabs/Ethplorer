@@ -1618,23 +1618,28 @@ class Ethplorer {
 
         $cache = 'address_operations_history-' . $address;
         $result = $this->oCache->get($cache, false, true);
-        if(FALSE === $result){
+        $search = array(
+            '$or' => array(
+                array("from"    => $address),
+                array("to"      => $address),
+            )
+        );
+        $updateCache = false;
+        if($result && isset($result['timestamp'])){
+            $updateCache = true;
+            $search = array('$and' => array($search, array('timestamp' => array('$gt' => $result['timestamp']))));
+        }
+
+        if(FALSE === $result || $updateCache){
             $aTypes = array('transfer');
-            $aResult = array();
-
-            $search = array(
-                '$or' => array(
-                    array("from"    => $address),
-                    array("to"      => $address),
-                )
-            );
             $cursor = $this->oMongo->find('operations', $search, array("timestamp" => 1));
-
             $ten = Decimal::create(10);
-            $dec = false;
-            $result = array();
-            $aTokenInfo = array();
-            $aPrices = array();
+
+            if(FALSE === $result) $result = array();
+
+            if(isset($result['tokens'])) $aTokenInfo = $result['tokens'];
+            else $aTokenInfo = array();
+
             foreach($cursor as $record){
                 if(in_array($record['type'], $aTypes) && isset($record['contract'])){
                     $contract = $record['contract'];
@@ -1643,9 +1648,8 @@ class Ethplorer {
                     $token = isset($aTokenInfo[$contract]) ? $aTokenInfo[$contract] : $this->getToken($contract);
                     if($token){
                         if(!isset($aTokenInfo[$contract])) $aTokenInfo[$contract] = $token;
-                        if(!isset($aPrices[$contract])){
-                            $aPrices[$contract] = $this->getTokenPriceHistory($contract, 365, 'daily');
-                        }
+
+                        $dec = false;
                         if(isset($token['decimals'])) $dec = Decimal::create($token['decimals']);
 
                         $balance = Decimal::create(0);
@@ -1665,19 +1669,25 @@ class Ethplorer {
                             $result['volume'][$date][$token['address']] = '' . $curDateVolume;
 
                             if($record['from'] == $address){
-                                $newValue = $balance->sub($value, 4);
+                                $newBalance = $balance->sub($value, 4);
                             }else{
-                                $newValue = $balance->add($value, 4);
+                                $newBalance = $balance->add($value, 4);
                             }
 
-                            $aTokenInfo[$contract]['balance'] = '' . $newValue;
-                            $result['balances'][$date][$token['address']] = '' . $newValue;
+                            $aTokenInfo[$contract]['balance'] = '' . $newBalance;
+                            $result['balances'][$date][$token['address']] = '' . $newBalance;
+                            $result['timestamp'] = $record['timestamp'];
                         }
                     }
                 }
             }
 
             $result['tokens'] = $aTokenInfo;
+            // get prices
+            $aPrices = array();
+            foreach($aTokenInfo as $token => $data){
+                $aPrices[$token] = $this->getTokenPriceHistory($token, 365, 'daily');
+            }
             $result['prices'] = $aPrices;
 
             if(!empty($result)){
