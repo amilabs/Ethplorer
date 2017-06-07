@@ -800,8 +800,12 @@ class Ethplorer {
      */
     public function countTransactions($address){
         evxProfiler::checkpoint('countTransactions', 'START', 'address=' . $address);
-        $search = array('$or' => array(array('from' => $address), array('to' => $address)));
-        $result = $this->oMongo->count('transactions', $search);
+        // $search = array('$or' => array(array('from' => $address), array('to' => $address)));
+        $result = 0;
+        foreach(array('from', 'to') as $where){
+            $search = array($where => $address);
+            $result += $this->oMongo->count('transactions', $search);
+        }
         if($this->getToken($address)/* || $this->getContract($address, FALSE) */){
             $result++; // One for contract creation
         }
