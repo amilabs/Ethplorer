@@ -279,7 +279,6 @@ class Ethplorer {
                 }
             }
         }
-        $totalOperations = 0;
         if(!isset($result['token']) && !isset($result['pager'])){
             // Get balances
             $result["tokens"] = array();
@@ -303,7 +302,8 @@ class Ethplorer {
             $result['balance'] = $this->getBalance($address);
             $result['balanceOut'] = 0;
             $result['balanceIn'] = 0;
-            if($totalOperations < 10000){
+            $txCount = $this->countTransactions($address);
+            if($txCount < 10000){
                 $result['balanceOut'] = $this->getEtherTotalOut($address);
                 $result['balanceIn'] = $result['balanceOut'] + $result['balance'];
             }
@@ -741,11 +741,11 @@ class Ethplorer {
      * @param string $address
      * @return array
      */
-    public function getContract($address){
+    public function getContract($address, $calculateTransactions = TRUE){
         evxProfiler::checkpoint('getContract', 'START', 'address=' . $address);
         $cursor = $this->oMongo->find('contracts', array("address" => $address));
         $result = count($cursor) ? current($cursor) : false;
-        if($result){
+        if($result && $calculateTransactions){
             unset($result["_id"]);
             $result['txsCount'] = $this->oMongo->count('transactions', array("to" => $address)) + 1;
             if($this->isChainyAddress($address)){
@@ -802,7 +802,7 @@ class Ethplorer {
         evxProfiler::checkpoint('countTransactions', 'START', 'address=' . $address);
         $search = array('$or' => array(array('from' => $address), array('to' => $address)));
         $result = $this->oMongo->count('transactions', $search);
-        if($this->getContract($address)){
+        if($this->getToken($address)/* || $this->getContract($address, FALSE) */){
             $result++; // One for contract creation
         }
         evxProfiler::checkpoint('countTransactions', 'FINISH');
