@@ -1606,10 +1606,6 @@ class Ethplorer {
         $aResult['prices'] = $aHistoryPrices;
         unset($aHistory);
 
-        //$aCurrentData = $this->getTokenPriceCurrent($address);
-        $aResult['current'] = $this->_getRateByDate($address, date("Y-m-d"));
-        //unset($aCurrentData);
-
         return $aResult;
     }
 
@@ -1678,6 +1674,10 @@ class Ethplorer {
                             $result['balances'][$date][$token['address']] = '' . $newBalance;
                             $result['timestamp'] = $record['timestamp'];
                         }
+                        if(!isset($result['txs'][$date])){
+                            $result['txs'][$date] = 0;
+                        }
+                        $result['txs'][$date] += 1;
                     }
                 }
             }
