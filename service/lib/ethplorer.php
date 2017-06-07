@@ -741,11 +741,11 @@ class Ethplorer {
      * @param string $address
      * @return array
      */
-    public function getContract($address){
+    public function getContract($address, $calculateTransactions = TRUE){
         evxProfiler::checkpoint('getContract', 'START', 'address=' . $address);
         $cursor = $this->oMongo->find('contracts', array("address" => $address));
         $result = count($cursor) ? current($cursor) : false;
-        if($result){
+        if($result && $calculateTransactions){
             unset($result["_id"]);
             $result['txsCount'] = $this->oMongo->count('transactions', array("to" => $address)) + 1;
             if($this->isChainyAddress($address)){
@@ -802,7 +802,7 @@ class Ethplorer {
         evxProfiler::checkpoint('countTransactions', 'START', 'address=' . $address);
         $search = array('$or' => array(array('from' => $address), array('to' => $address)));
         $result = $this->oMongo->count('transactions', $search);
-        if($this->getContract($address)){
+        if($this->getToken($address)/* || $this->getContract($address, FALSE) */){
             $result++; // One for contract creation
         }
         evxProfiler::checkpoint('countTransactions', 'FINISH');
