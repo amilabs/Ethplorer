@@ -1617,16 +1617,15 @@ class Ethplorer {
         evxProfiler::checkpoint('getAddressPriceHistoryGrouped', 'START', 'address=' . $address);
 
         $cache = 'address_operations_history-' . $address;
-        $result = false;//$this->oCache->get($cache, false, true);
+        $result = $this->oCache->get($cache, false, true);
         if(FALSE === $result){
-            $aTypes = array('transfer');//, 'issuance', 'burn', 'mint');
+            $aTypes = array('transfer');
             $aResult = array();
 
             $search = array(
                 '$or' => array(
                     array("from"    => $address),
                     array("to"      => $address),
-                    //array('address' => $address)
                 )
             );
             $cursor = $this->oMongo->find('operations', $search, array("timestamp" => 1));
@@ -1681,10 +1680,8 @@ class Ethplorer {
             $result['tokens'] = $aTokenInfo;
             $result['prices'] = $aPrices;
 
-            //file_put_contents(__DIR__ . '/../log/addr-widget.log', print_r($result, true) . "\n", FILE_APPEND);
-
             if(!empty($result)){
-            //    $this->oCache->save($cache, $result);
+                $this->oCache->save($cache, $result);
             }
         }
 
