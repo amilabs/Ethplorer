@@ -344,10 +344,10 @@ class Ethplorer {
      * @return float
      */
     public function getEtherTotalOut($address, $updateCache = FALSE){
-        evxProfiler::checkpoint('getEtherTotalOut', 'START', 'address=' . $address);
         $cache = 'ethOut-' . $address;
         $result = $this->oCache->get($cache, FALSE, TRUE, 3600);
         if($updateCache || (FALSE === $result)){
+            evxProfiler::checkpoint('getEtherTotalOut', 'START', 'address=' . $address);
             if($this->isValidAddress($address)){
                 $aResult = $this->oMongo->aggregate('transactions', array(
                     array('$match' => array("from" => $address)),
@@ -358,6 +358,7 @@ class Ethplorer {
                         )
                     ),
                 ));
+                $result = 0;
                 if(is_array($aResult) && isset($aResult['result'])){
                     foreach($aResult['result'] as $record){
                         $result += floatval($record['out']);
@@ -365,10 +366,9 @@ class Ethplorer {
                 }
                 $this->oCache->save($cache, $result);
             }
+            evxProfiler::checkpoint('getEtherTotalOut', 'FINISH');
         }
-        $result = (float)$result;
-        evxProfiler::checkpoint('getEtherTotalOut', 'FINISH');
-        return $result;
+        return (float)$result;
     }
 
     /**
