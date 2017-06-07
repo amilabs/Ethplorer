@@ -700,7 +700,12 @@ Ethplorer = {
         $('.address-type').text(data.isContract ? 'Contract' : 'Address');
         $('#ethplorer-path').show();
         data.address = address;
-        Ethplorer.fillValues('address', data, ['address', 'balance', 'balanceIn', 'balanceOut']);
+        var aValues = ['address', 'balance'];
+        if(data.balanceIn){
+            aValues.push('balanceIn');
+            aValues.push('balanceOut');
+        }
+        Ethplorer.fillValues('address', data, aValues);
         $('#address-token-balances, #address-token-details').hide();
         if(data.isContract && data.contract.isChainy){
             titleAdd = 'Chainy Information';
