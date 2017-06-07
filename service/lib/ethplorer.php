@@ -824,6 +824,7 @@ class Ethplorer {
             if($this->getToken($address)/* || $this->getContract($address, FALSE) */){
                 $result++; // One for contract creation
             }
+            $this->oCache->save($cache, $result);
             evxProfiler::checkpoint('countTransactions', 'FINISH');
         }
         return $result;
