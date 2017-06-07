@@ -1690,6 +1690,9 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             var volume = 0;
             if('undefined' !== typeof(widgetData['volume'][volumeDate])){
                 for(var token in widgetData['volume'][volumeDate]){
+                    if(volumeDate == fnDate && ('undefined' !== typeof(widgetData['tokenPrices'][token]['rate']))){
+                        aPrices[token][volumeDate] = widgetData['tokenPrices'][token]['rate'];
+                    }
                     if('undefined' !== typeof(aPrices[token]) && 'undefined' !== typeof(aPrices[token][volumeDate])){
                         volume += parseFloat(widgetData['volume'][volumeDate][token]) * parseFloat(aPrices[token][volumeDate]);
                     }
@@ -1708,6 +1711,9 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             }
             var balance = 0;
             for(var token in aBalances){
+                if(volumeDate == fnDate && ('undefined' !== typeof(widgetData['tokenPrices'][token]['rate']))){
+                    aPrices[token][volumeDate] = widgetData['tokenPrices'][token]['rate'];
+                }
                 if('undefined' !== typeof(aPrices[token]) && 'undefined' !== typeof(aPrices[token][volumeDate])){
                     balance += parseFloat(aBalances[token]) * parseFloat(aPrices[token][volumeDate]);
                 }
@@ -1878,16 +1884,10 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
                     gridlines: {
                         color: "none"
                     },
-                    //format: '#,###',
-                    /*minValue: 0,
-                    maxValue: 3,
-                    viewWindow: {
-                        min: 0
-                    },*/
                 },
                 vAxes: vAxes,
-                pointSize: 2,//noPrice ? 2 : 0,
-                lineWidth: 1,
+                pointSize: 3,
+                lineWidth: 2,
                 bar: { groupWidth: '70%' },
                 candlestick: {
                     fallingColor: {

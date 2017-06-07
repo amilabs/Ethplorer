@@ -1685,8 +1685,10 @@ class Ethplorer {
             $result['tokens'] = $aTokenInfo;
             // get prices
             $aPrices = array();
+            $result['tokenPrices'] = array();
             foreach($aTokenInfo as $token => $data){
                 $aPrices[$token] = $this->getTokenPriceHistory($token, 365, 'daily');
+                $result['tokenPrices'][$token] = $this->getTokenPrice($token);
             }
             $result['prices'] = $aPrices;
 
