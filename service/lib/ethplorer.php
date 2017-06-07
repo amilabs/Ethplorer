@@ -218,11 +218,6 @@ class Ethplorer {
             $limit = $this->pageSize;
         }
         $refresh = isset($this->aPager['refresh']) ? $this->aPager['refresh'] : FALSE;
-        if(!$refresh){
-            $result['balance'] = $this->getBalance($address);
-            $result['balanceOut'] = $this->getEtherTotalOut($address);
-            $result['balanceIn'] = $result['balanceOut'] + $result['balance'];
-        }
         $contract = $this->getContract($address);
         $token = FALSE;
         if($contract){
@@ -284,6 +279,7 @@ class Ethplorer {
                 }
             }
         }
+        $totalOperations = 0;
         if(!isset($result['token']) && !isset($result['pager'])){
             // Get balances
             $result["tokens"] = array();
@@ -302,6 +298,15 @@ class Ethplorer {
                 'records' => $countOperations,
                 'total' => $totalOperations,
             );
+        }
+        if(!$refresh){
+            $result['balance'] = $this->getBalance($address);
+            $result['balanceOut'] = 0;
+            $result['balanceIn'] = 0;
+            if($totalOperations < 10000){
+                $result['balanceOut'] = $this->getEtherTotalOut($address);
+                $result['balanceIn'] = $result['balanceOut'] + $result['balance'];
+            }
         }
         evxProfiler::checkpoint('getAddressDetails', 'FINISH');
         return $result;
