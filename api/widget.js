@@ -1618,9 +1618,12 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
         $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
     };
 
-    this.getTooltip = function(date, balance, volume){
+    this.getTooltip = function(date, balance, volume, txs){
         var tooltipDateFormatter = new google.visualization.DateFormat({ 
             pattern: "MMM dd, yyyy '+UTC'"
+        });
+        var numFormatter = new google.visualization.NumberFormat({ 
+            pattern: "#,###"
         });
         var currencyFormatter = new google.visualization.NumberFormat({ 
             pattern: '#,##0'
@@ -1628,7 +1631,8 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
         var tooltip = '<div style="display: block !important; text-align: left; opacity: 1 !important; color: #000000 !important; padding: 5px;">';
         tooltip += tooltipDateFormatter.formatValue(date) + '<br/>' +
             '<span class="tooltipRow"><b>Volume:</b> ' + currencyFormatter.formatValue(volume) + ' USD</span><br/>' +
-            '<span class="tooltipRow"><b>Balance:</b> ' + currencyFormatter.formatValue(balance) + ' USD</span>' +
+            '<span class="tooltipRow"><b>Balance:</b> ' + currencyFormatter.formatValue(balance) + ' USD</span><br/>' +
+            '<span class="tooltipRow"><b>Transfers:</b> ' + numFormatter.formatValue(txs) + '</span>' +
             '</div>';
         return tooltip;
     }
@@ -1648,7 +1652,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
 
         var noPrice = false;
 
-        aData.push(['Day', 'Balance', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Volume', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
+        aData.push(['Day', 'Balance', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Transfers', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Volume', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
 
         // prepare prices
         var aPrices = {};
@@ -1709,9 +1713,15 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
                 }
             }
 
+            // get transfers
+            var transfers = 0;
+            if('undefined' !== typeof(widgetData['txs'][volumeDate])){
+                transfers = widgetData['txs'][volumeDate];
+            }
+
             rangeEnd = strVolumeDate;
-            var tooltip = this.getTooltip(new Date(strVolumeDate), balance, volume);
-            aData.push([new Date(strVolumeDate), balance, 'opacity: 0.5', tooltip, volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5', tooltip]);
+            var tooltip = this.getTooltip(new Date(strVolumeDate), balance, volume, transfers);
+            aData.push([new Date(strVolumeDate), balance, 'opacity: 0.5', tooltip, transfers, 'opacity: 0.5', tooltip, volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5', tooltip]);
         }
 
         console.log(rangeStart);
@@ -1730,25 +1740,12 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
         // create dashboard and control wrapper
         var dashboard = new google.visualization.Dashboard(this.el);
         var controlSeries = {
-            /*0: {
-                type: 'area',
-                lineWidth: 0
-            },*/
             0: {
                 targetAxisIndex: 0,
                 type: 'area',
                 lineWidth: 1
             }
         };
-        if(noPrice){
-            controlSeries = {
-                0: {
-                    type: 'area',
-                    targetAxisIndex: 0,
-                    lineWidth: 1
-                }
-            };
-        }
         var defControlOptions = {
             controlType: 'ChartRangeFilter',
             containerId: 'control',
@@ -1802,10 +1799,14 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
                 targetAxisIndex: 0
             },*/
             0: {
-                type: 'line',
+                type: 'area',
                 targetAxisIndex: 0
             },
             1: {
+                type: 'line',
+                targetAxisIndex: 2
+            },
+            2: {
                 type: 'bars',
                 targetAxisIndex: 1,
             },
@@ -1820,11 +1821,11 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
                 title: 'Volume',//'Token operations',
                 format: 'decimal',
             },
-            /*2: {
+            2: {
                 textStyle: {
                     color: 'none'
                 }
-            }*/
+            }
         };
         if(noPrice){
             series = {
@@ -1905,7 +1906,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             }
         };
         if(this.options['theme'] == 'dark'){
-            def.options.colors = noPrice ? ['#FCEC0F']: ['#FCEC0F', '#DEDEDE'];//['#999999', '#FCEC0F', '#DEDEDE'];
+            def.options.colors = noPrice ? ['#FCEC0F']: ['#47C2FF', '#FCEC0F', '#DEDEDE'];//['#999999', '#FCEC0F', '#DEDEDE'];
             def.options.titleTextStyle = {color: '#DEDEDE'};
             def.options.backgroundColor = {fill: 'transparent'};
 
