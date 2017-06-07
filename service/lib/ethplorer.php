@@ -81,7 +81,8 @@ class Ethplorer {
      * @throws Exception
      */
     protected function __construct(array $aConfig){
-        evxProfiler::checkpoint('Ethplorer', 'START');
+        $uri = isset($_SERVER) && isset($_SERVER["REQUEST_URI"]) ? $_SERVER["REQUEST_URI"] : FALSE;
+        evxProfiler::checkpoint('Ethplorer', 'START', $uri);
         $this->aSettings = $aConfig;
         $this->aSettings += array(
             "cacheDir" => dirname(__FILE__) . "/../cache/",
