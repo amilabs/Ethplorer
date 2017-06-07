@@ -302,8 +302,7 @@ class Ethplorer {
             $result['balance'] = $this->getBalance($address);
             $result['balanceOut'] = 0;
             $result['balanceIn'] = 0;
-            $txCount = $this->countTransactions($address);
-            if($txCount < 10000){
+            if($this->isHighloadedAddress($address) < 10000){
                 $result['balanceOut'] = $this->getEtherTotalOut($address);
                 $result['balanceIn'] = $result['balanceOut'] + $result['balance'];
             }
@@ -635,7 +634,7 @@ class Ethplorer {
             );
         }
         $result = $this->oMongo->count('balances', $search);
-        evxProfiler::checkpoint('getTokenHoldersCount', 'FINISH', 'address=' . $address);
+        evxProfiler::checkpoint('getTokenHoldersCount', 'FINISH');
         return $result;
     }
 
@@ -791,6 +790,19 @@ class Ethplorer {
         return $result;
     }
 
+    public function isHighloadedAddress($address){
+        $cache = 'highloaded-address-' . $address;
+        $result = $this->oCache->get($cache, false, true);
+        if(FALSE === $result){
+            $count = $this->countTransactions($address);
+            if($count >= 10000){
+                $result = true;
+                $this->oCache->save($cache, $result);
+            }
+        }
+        return $result;
+    }
+
 
     /**
      * Returns total number of transactions for the address (incoming, outoming, contract creation).
@@ -799,17 +811,20 @@ class Ethplorer {
      * @return int
      */
     public function countTransactions($address){
-        evxProfiler::checkpoint('countTransactions', 'START', 'address=' . $address);
-        // $search = array('$or' => array(array('from' => $address), array('to' => $address)));
-        $result = 0;
-        foreach(array('from', 'to') as $where){
-            $search = array($where => $address);
-            $result += $this->oMongo->count('transactions', $search);
+        $cache = 'address-' . $address . '-txcnt';
+        $result = $this->oCache->get($cache, false, true, 3600);
+        if(FALSE === $result){
+            evxProfiler::checkpoint('countTransactions', 'START', 'address=' . $address);
+            $result = 0;
+            foreach(array('from', 'to') as $where){
+                $search = array($where => $address);
+                $result += $this->oMongo->count('transactions', $search);
+            }
+            if($this->getToken($address)/* || $this->getContract($address, FALSE) */){
+                $result++; // One for contract creation
+            }
+            evxProfiler::checkpoint('countTransactions', 'FINISH');
         }
-        if($this->getToken($address)/* || $this->getContract($address, FALSE) */){
-            $result++; // One for contract creation
-        }
-        evxProfiler::checkpoint('countTransactions', 'FINISH');
         return $result;
     }
 
