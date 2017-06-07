@@ -51,7 +51,7 @@ class evxProfiler {
         if(self::$level){
             $name = str_pad($name, strlen($name) + self::$level, ' ', STR_PAD_LEFT);
         }
-        return '[' . date('Y-m-d H:s:i') . ' | ' . number_format(self::$currentDiff, 2) . 's.] ' . $name . ' ' . $position . ( $message ? (' (' . $message . ')') : '');
+        return '[' . date('Y-m-d H:i:s') . ' | ' . number_format(self::$currentDiff, 2) . 's.] ' . $name . ' ' . $position . ( $message ? (' (' . $message . ')') : '');
     }
 
     public static function get(){
