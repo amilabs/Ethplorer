@@ -1639,6 +1639,7 @@ class Ethplorer {
             '$or' => array(
                 array("from"    => $address),
                 array("to"      => $address),
+                array("address" => $address),
             )
         );
         $updateCache = false;
@@ -1648,7 +1649,7 @@ class Ethplorer {
         }
 
         if(FALSE === $result || $updateCache){
-            $aTypes = array('transfer');
+            $aTypes = array('transfer', 'issuance', 'burn', 'mint');
             $cursor = $this->oMongo->find('operations', $search, array("timestamp" => 1));
             $ten = Decimal::create(10);
 
@@ -1685,7 +1686,7 @@ class Ethplorer {
                             $curDateVolume = $curDateVolume->add($value);
                             $result['volume'][$date][$token['address']] = '' . $curDateVolume;
 
-                            if($record['from'] == $address){
+                            if(($record['from'] == $address) || ($record['type'] == 'burn')){
                                 $newBalance = $balance->sub($value);
                             }else{
                                 $newBalance = $balance->add($value);
