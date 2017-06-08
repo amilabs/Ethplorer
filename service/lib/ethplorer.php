@@ -1699,7 +1699,7 @@ class Ethplorer {
                         if(!isset($result['txs'][$date])){
                             $result['txs'][$date] = 0;
                         }
-                        $result['txs'][$date] += 1;
+                        if($record['type'] == 'transfer') $result['txs'][$date] += 1;
                     }
                 }
             }

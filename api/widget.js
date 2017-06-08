@@ -1655,13 +1655,15 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
         aData.push(['Day', 'Balance', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Transfers', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Volume', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
 
         // prepare prices
+        var lastAverage = 0;
         var aPrices = {};
         if('undefined' !== typeof(widgetData['prices'])){
             for(var token in widgetData['prices']){
                 aPrices[token] = {};
                 for(var i = 0; i < widgetData['prices'][token].length; i++){
                     var priceData = widgetData['prices'][token][i];
-                    aPrices[token][priceData['date']] = priceData['average'];
+                    if(priceData['average'] > 0) lastAverage = priceData['average'];
+                    aPrices[token][priceData['date']] = lastAverage;
                 }
             }
         }
