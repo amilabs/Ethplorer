@@ -1676,19 +1676,19 @@ class Ethplorer {
 
                         if($dec){
                             $value = Decimal::create($record['value']);
-                            $value = $value->div($ten->pow($dec), 4);
+                            $value = $value->div($ten->pow($dec));
 
                             $curDateVolume = Decimal::create(0);
                             if(isset($result['volume'][$date][$token['address']])){
                                 $curDateVolume = Decimal::create($result['volume'][$date][$token['address']]);
                             }
-                            $curDateVolume = $curDateVolume->add($value, 4);
+                            $curDateVolume = $curDateVolume->add($value);
                             $result['volume'][$date][$token['address']] = '' . $curDateVolume;
 
                             if($record['from'] == $address){
-                                $newBalance = $balance->sub($value, 4);
+                                $newBalance = $balance->sub($value);
                             }else{
-                                $newBalance = $balance->add($value, 4);
+                                $newBalance = $balance->add($value);
                             }
 
                             $aTokenInfo[$contract]['balance'] = '' . $newBalance;
