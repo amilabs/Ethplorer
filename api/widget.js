@@ -1730,9 +1730,17 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             aData.push([new Date(strVolumeDate), balance, 'opacity: 0.5', tooltip, transfers, 'opacity: 0.5', tooltip, volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5', tooltip]);
         }
 
-        console.log(rangeStart);
-        console.log(rangeEnd);
-        console.log(aData);
+        var dteRangeStart = new Date(rangeStart),
+            dteRangeEnd = new Date(rangeEnd);
+
+        var timeDiff = Math.abs(dteRangeEnd.getTime() - dteRangeStart.getTime());
+        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+        if(diffDays < 7) dteRangeStart.setDate(dteRangeStart.getDate() - (7 - diffDays));
+        else if(diffDays > 90) dteRangeStart.setDate(dteRangeStart.getDate() + (diffDays - 90));
+
+        //console.log(dteRangeStart);
+        //console.log(dteRangeEnd);
+        //console.log(aData);
         var data = google.visualization.arrayToDataTable(aData);
 
         // create div's
@@ -1757,8 +1765,8 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             containerId: 'control',
             state: {
                 range: {
-                    start: new Date(rangeStart),
-                    end: new Date(rangeEnd)
+                    start: dteRangeStart,
+                    end: dteRangeEnd
                 }
             },
             options: {
