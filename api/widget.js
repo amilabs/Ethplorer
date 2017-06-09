@@ -1676,12 +1676,14 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             fnDate = new Date(curDate.getUTCFullYear() + '-' + (fnMonth < 10 ? '0' + fnMonth : fnMonth) + '-' + (fnDay < 10 ? '0' + fnDay : fnDay) + 'T00:00:00Z'),
             aBalances = {};
 
-        for(var volumeDate in widgetData['volume']){
+        var strFirstDate = widgetData['firstDate'] + 'T00:00:00Z';
+        /*for(var volumeDate in widgetData['volume']){
             var strFirstDate = volumeDate + 'T00:00:00Z';
             break;
-        }
+        }*/
 
         for(var d = new Date(strFirstDate); d <= fnDate; d.setDate(d.getDate() + 1)){
+        //for(var d = fnDate; d >= new Date(strFirstDate); d.setDate(d.getDate() - 1)){
             var month = 1 + d.getMonth(),
                 day = d.getDate(),
                 volumeDate = d.getFullYear() + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day),
