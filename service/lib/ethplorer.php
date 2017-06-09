@@ -1663,16 +1663,15 @@ class Ethplorer {
 
             $curDate = false;
             foreach($cursor as $record){
+                $date = gmdate("Y-m-d", $record['timestamp']);
+                $nextDate = false;
+                if($curDate && ($curDate != $date)){
+                    $nextDate = true;
+                }
+
                 if(in_array($record['type'], $aTypes) && isset($record['contract'])){
                     $contract = $record['contract'];
-                    $date = gmdate("Y-m-d", $record['timestamp']);
-
                     if(!isset($result['timestamp'])) $result['timestamp'] = $record['timestamp'];
-
-                    $nextDate = false;
-                    if($curDate && ($curDate != $date)){
-                        $nextDate = true;
-                    }
 
                     // count num transfers
                     if(!isset($result['txs'][$date])){
@@ -1696,6 +1695,7 @@ class Ethplorer {
                             foreach($aAddressBalances as $addressBalance){
                                 if($addressBalance["contract"] == $contract){
                                     $balance = Decimal::create($addressBalance["balance"]);
+                                    $balance = $balance->div($ten->pow($dec));
                                     break;
                                 }
                             }
@@ -1741,12 +1741,12 @@ class Ethplorer {
 
                         $result['firstDate'] = $date;
                     }
-
-                    $curDate = $date;
                 }
+                $curDate = $date;
             }
 
             $result['tokens'] = $aTokenInfo;
+            //$result['addressBalances'] = $aAddressBalances;
             // get prices
             $aPrices = array();
             $result['tokenPrices'] = array();
