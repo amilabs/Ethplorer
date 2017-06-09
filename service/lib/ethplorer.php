@@ -1750,10 +1750,15 @@ class Ethplorer {
             // get prices
             $aPrices = array();
             $result['tokenPrices'] = array();
+            $maxTs = 0;
             foreach($aTokenInfo as $token => $data){
                 $aPrices[$token] = $this->getTokenPriceHistory($token, 365, 'daily');
                 $result['tokenPrices'][$token] = $this->getTokenPrice($token);
+                if($result['tokenPrices'][$token]['ts'] > $maxTs){
+                    $maxTs = $result['tokenPrices'][$token]['ts'];
+                }
             }
+            if($maxTs) $result['updated'] = gmdate("Y-m-d H:i:s e", $maxTs);
             $result['prices'] = $aPrices;
 
             if(!empty($result)){
