@@ -94,6 +94,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
     <script src="/js/ethplorer-note.js?v=<?=$codeVersion?>"></script>
     <script src="/js/config.js"></script>
     <script src="/js/md5.min.js"></script>
+    <script src="/js/sha3.min.js"></script>
     <script src="/js/qrcode.min.js"></script>
     <script src="/api/widget.js?v=<?=$codeVersion?>"></script>
 </head>
