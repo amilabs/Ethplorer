@@ -716,12 +716,12 @@ Ethplorer = {
         if(data.isContract){
             Ethplorer.fillValues('address', data, ['contract', 'contract.creator']);
         }
-        var qrIcon = '<a href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a> ';
+        var qrIcon = '<a style="float:right;margin-top:-10px;margin-right:-6px;" href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a>';
         if(data.isContract && data.token){
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
             oToken.address = Ethplorer.Utils.toChecksumAddress(oToken.address);
-            $('#ethplorer-path').html('Token ' + oToken.name + '<br><small>' + qrIcon + oToken.address + '</small>');
+            $('#ethplorer-path').html(qrIcon + 'Token ' + oToken.name + '<br><small>' + oToken.address + '</small>');
             titleAdd = 'Token ' + oToken.name + (oToken.symbol ? (' [' + oToken.symbol + ']') : '' ) + ' Information';
             // Read description from tx
             if(data.contract && data.contract.code){
