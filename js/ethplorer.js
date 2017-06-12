@@ -718,9 +718,10 @@ Ethplorer = {
         }
         var qrIcon = '<a href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a> ';
         if(data.isContract && data.token){
+            oToken.address = Ethplorer.Utils.toChecksumAddress(oToken.address);
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
-            $('#ethplorer-path').html('Token ' + oToken.name + '<br><small>' + qrIcon + Ethplorer.Utils.toChecksumAddress(oToken.address) + '</small>');
+            $('#ethplorer-path').html('Token ' + oToken.name + '<br><small>' + qrIcon + oToken.address + '</small>');
             titleAdd = 'Token ' + oToken.name + (oToken.symbol ? (' [' + oToken.symbol + ']') : '' ) + ' Information';
             // Read description from tx
             if(data.contract && data.contract.code){
@@ -906,7 +907,7 @@ Ethplorer = {
         $('.local-time-offset').text(Ethplorer.Utils.getTZOffset());
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
-        if(!data.isContract) $('#ethplorer-path').html(qrIcon + "Address: " + Ethplorer.Utils.toChecksumAddress(address));
+        if(!data.isContract) $('#ethplorer-path').html(qrIcon + "Address: " + address);
         $('#disqus_thread').show();
         $('#addressDetails').show();
 
@@ -1601,7 +1602,7 @@ Ethplorer = {
     showQRCode: function(address){
         $("#qr-code").empty();
         var qrcode = new QRCode(document.getElementById("qr-code"), {
-            text: Ethplorer.Utils.toChecksumAddress(address),
+            text: address,
             width: 200,
             height: 200,
             colorDark : "#000000",
