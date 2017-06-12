@@ -1601,6 +1601,7 @@ Ethplorer = {
     },
     showQRCode: function(address){
         $("#qr-code").empty();
+        $("#qr-code-address").text(address);
         var qrcode = new QRCode(document.getElementById("qr-code"), {
             text: address,
             width: 200,
@@ -1609,7 +1610,7 @@ Ethplorer = {
             colorLight : "#ffffff",
             correctLevel : QRCode.CorrectLevel.L
         });
-        $("#address-qr-code").dialog('open');
+        $("#qr-code-popup").dialog('open');
     },
     Nav: {
         data: {},
