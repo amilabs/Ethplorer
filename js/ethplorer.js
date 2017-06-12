@@ -716,7 +716,6 @@ Ethplorer = {
             Ethplorer.fillValues('address', data, ['contract', 'contract.creator']);
         }
         var qrIcon = '<a href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a> ';
-        if(!data.isContract) $('#ethplorer-path').html(qrIcon + "Address: " . Ethplorer.Utils.toChecksumAddress(address));
         if(data.isContract && data.token){
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
@@ -906,6 +905,7 @@ Ethplorer = {
         $('.local-time-offset').text(Ethplorer.Utils.getTZOffset());
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
+        if(!data.isContract) $('#ethplorer-path').html(qrIcon + "Address: " + Ethplorer.Utils.toChecksumAddress(address));
         $('#disqus_thread').show();
         $('#addressDetails').show();
 
