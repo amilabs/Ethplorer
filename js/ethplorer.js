@@ -1595,6 +1595,18 @@ Ethplorer = {
             });
         }
     },
+    showQRCode: function(address){
+        $("#qr-code").empty();
+        var qrcode = new QRCode(document.getElementById("qr-code"), {
+            text: address,
+            width: 200,
+            height: 200,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.L
+        });
+        $("#address-qr-code").dialog('open');
+    },
     Nav: {
         data: {},
         init: function(){

@@ -42,12 +42,13 @@ if(3 === count($rParts)){
         $header = "Transaction hash: " . $rParts[2];
         $error = FALSE;
     }
+    $qrIcon = '<a href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' . $rParts[2] . '\');"><i class="fa fa-qrcode"></i></a> ';
     if(('address' === $rParts[1]) && $es->isValidAddress($rParts[2])){
-        $header = "Address: " . $rParts[2];
+        $header = $qrIcon . "Address: " . $rParts[2];
         $error = FALSE;
     }
     if(('token' === $rParts[1]) && $es->isValidAddress($rParts[2])){
-        $header = "Token address: " . $rParts[2];
+        $header = $qrIcon . "Token address: " . $rParts[2];
         $error = FALSE;
     }
 }
@@ -93,6 +94,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
     <script src="/js/ethplorer-note.js?v=<?=$codeVersion?>"></script>
     <script src="/js/config.js"></script>
     <script src="/js/md5.min.js"></script>
+    <script src="/js/qrcode.min.js"></script>
     <script src="/api/widget.js?v=<?=$codeVersion?>"></script>
 </head>
 <body>
@@ -663,6 +665,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
         </div>
     </div>
 </div>
+<div id="address-qr-code" title="Addres QR-Code"><div id="qr-code"></div></div>
 <script>
 $(document).ready(function(){
     $.fn.bootstrapBtn = $.fn.button.noConflict();
@@ -671,6 +674,15 @@ $(document).ready(function(){
     Ethplorer.debugId = "<?=htmlspecialchars($debugId)?>";
     <?php endif; ?>
     Ethplorer.init();
+    $("#address-qr-code").dialog({
+        'autoOpen': false,
+        'resizable': false,
+        'width': 'auto',
+        'height': 'auto',
+        'open': function(){
+        }
+    });
+
 });
 if(Ethplorer.Config.ga){
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
