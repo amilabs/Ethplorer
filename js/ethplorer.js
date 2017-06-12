@@ -718,9 +718,9 @@ Ethplorer = {
         }
         var qrIcon = '<a href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a> ';
         if(data.isContract && data.token){
-            oToken.address = Ethplorer.Utils.toChecksumAddress(oToken.address);
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
+            oToken.address = Ethplorer.Utils.toChecksumAddress(oToken.address);
             $('#ethplorer-path').html('Token ' + oToken.name + '<br><small>' + qrIcon + oToken.address + '</small>');
             titleAdd = 'Token ' + oToken.name + (oToken.symbol ? (' [' + oToken.symbol + ']') : '' ) + ' Information';
             // Read description from tx
