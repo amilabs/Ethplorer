@@ -693,6 +693,7 @@ Ethplorer = {
     },
 
     showAddressDetails: function(address, data){
+        address = Ethplorer.Utils.toChecksumAddress(address);
         Ethplorer.currentAddress = address;
         Ethplorer.data = data;
         var titleAdd = '';
