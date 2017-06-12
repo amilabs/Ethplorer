@@ -719,7 +719,7 @@ Ethplorer = {
         if(data.isContract && data.token){
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
-            $('#ethplorer-path').html('Token ' + oToken.name + '<br><small>' + oToken.address + '</small>');
+            $('#ethplorer-path').html('Token ' + oToken.name + '<br><small>' + qrIcon + Ethplorer.Utils.toChecksumAddress(oToken.address) + '</small>');
             titleAdd = 'Token ' + oToken.name + (oToken.symbol ? (' [' + oToken.symbol + ']') : '' ) + ' Information';
             // Read description from tx
             if(data.contract && data.contract.code){
