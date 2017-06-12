@@ -481,6 +481,16 @@ a.dashed {
     white-space: normal !important;
 }
 
+#qr-code-address {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100vw;
+    background-color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
 #ethplorer-path {
     display: none;
     padding: 16px;
@@ -950,6 +960,7 @@ li.ui-menu-item.have-more {
 
 @media screen and (max-width: 991px) {
     .tx-details-link,
+	#qr-code-address,
     #ethplorer-path {
         font-size: 18px;
     }   
@@ -1031,6 +1042,7 @@ li.ui-menu-item.have-more {
     #address-token-transfers td {
         font-size: 11px;
     }
+	#qr-code-address,
     #ethplorer-path {
         font-size: 14px;
     }
@@ -1120,6 +1132,7 @@ a.token-update {
         max-width: 100%;
     }
     
+	#qr-code-address,
     #ethplorer-path {
         font-size: 16px;
     }

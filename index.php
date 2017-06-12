@@ -665,7 +665,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
         </div>
     </div>
 </div>
-<div id="qr-code-popup" title="Address QR-Code" style="padding:5px;">Ethereum address: <span id="qr-code-address"></span><br/><br/><center><div id="qr-code"></div></center><br/></div>
+<div id="qr-code-popup" title="Address QR-Code" style="padding:5px;"><span id="qr-code-address"></span><br/><br/><center><div id="qr-code"></div></center><br/></div>
 <script>
 $(document).ready(function(){
     $.fn.bootstrapBtn = $.fn.button.noConflict();

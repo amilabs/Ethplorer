@@ -1601,7 +1601,7 @@ Ethplorer = {
     },
     showQRCode: function(address){
         $("#qr-code").empty();
-        $("#qr-code-address").text(address);
+        $("#qr-code-address").text('Ethereum address: ' + address);
         var qrcode = new QRCode(document.getElementById("qr-code"), {
             text: address,
             width: 200,
@@ -1813,8 +1813,9 @@ Ethplorer = {
             if(!/^0x/.test(data)){
                 return text;
             }
-            text = $('<span>').text(text).html();
             var isTx = Ethplorer.Utils.isTx(data);
+            if(!isTx) text = Ethplorer.Utils.toChecksumAddress(text);
+            text = $('<span>').text(text).html();
             var res = '<a href="/';
             res += (isTx ? 'tx' : 'address');
             res += ('/' + data + '"  class="local-link">' + text + '</a>');
