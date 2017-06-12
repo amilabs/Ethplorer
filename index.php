@@ -37,13 +37,13 @@ $rParts = explode('/', $uri);
 foreach($rParts as $i => $part){
     $rParts[$i] = strtolower($part);
 }
-$qrIcon = '';
+//$qrIcon = '';
 if(3 === count($rParts)){
     if(('tx' === $rParts[1]) && $es->isValidTransactionHash($rParts[2])){
         $header = "Transaction hash: " . $rParts[2];
         $error = FALSE;
     }
-    $qrIcon = '<a href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' . $rParts[2] . '\');"><i class="fa fa-qrcode"></i></a> ';
+    //$qrIcon = '<a href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' . $rParts[2] . '\');"><i class="fa fa-qrcode"></i></a> ';
     if(('address' === $rParts[1]) && $es->isValidAddress($rParts[2])){
         $header = "Address: " . $rParts[2];
         $error = FALSE;
@@ -147,7 +147,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                 <div>
                 <?php if(true){ ?>
                     <div class="col-xs-12 col-sm-12">
-                        <h1 id="ethplorer-path"><?=$qrIcon?><?=$header?></h1>
+                        <h1 id="ethplorer-path"><?=$header?></h1>
                     </div>
                 <?php }else{ ?>
                     <div class="hidden-xs col-sm-2"></div>

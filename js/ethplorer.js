@@ -715,6 +715,8 @@ Ethplorer = {
         if(data.isContract){
             Ethplorer.fillValues('address', data, ['contract', 'contract.creator']);
         }
+        var qrIcon = '<a href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a> ';
+        if(!data.isContract) $('#ethplorer-path').html(qrIcon + "Address: " . Ethplorer.Utils.toChecksumAddress(address));
         if(data.isContract && data.token){
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
@@ -1598,7 +1600,7 @@ Ethplorer = {
     showQRCode: function(address){
         $("#qr-code").empty();
         var qrcode = new QRCode(document.getElementById("qr-code"), {
-            text: Ethplorer.toChecksumAddress(address),
+            text: Ethplorer.Utils.toChecksumAddress(address),
             width: 200,
             height: 200,
             colorDark : "#000000",
@@ -1606,30 +1608,6 @@ Ethplorer = {
             correctLevel : QRCode.CorrectLevel.L
         });
         $("#address-qr-code").dialog('open');
-    },
-    isHexPrefixed: function(str){
-        return str.slice(0, 2) === '0x';
-    },
-    stripHexPrefix: function(str){
-        if(typeof str !== 'string'){
-            return str;
-        }
-        return Ethplorer.isHexPrefixed(str) ? str.slice(2) : str;
-    },
-    toChecksumAddress: function(address){
-        address = Ethplorer.stripHexPrefix(address).toLowerCase();
-        var hash = keccak_256(address).toString('hex');
-        var ret = '0x';
-
-        for(var i = 0; i < address.length; i++){
-            if(parseInt(hash[i], 16) >= 8){
-                ret += address[i].toUpperCase();
-            }else{
-                ret += address[i];
-            }
-        }
-
-        return ret;
     },
     Nav: {
         data: {},
@@ -1965,6 +1943,31 @@ Ethplorer = {
                 res = 0;
             }
             return res;
+        },
+
+        isHexPrefixed: function(str){
+            return str.slice(0, 2) === '0x';
+        },
+        stripHexPrefix: function(str){
+            if(typeof str !== 'string'){
+                return str;
+            }
+            return Ethplorer.isHexPrefixed(str) ? str.slice(2) : str;
+        },
+        toChecksumAddress: function(address){
+            address = Ethplorer.stripHexPrefix(address).toLowerCase();
+            var hash = keccak_256(address).toString('hex');
+            var ret = '0x';
+
+            for(var i = 0; i < address.length; i++){
+                if(parseInt(hash[i], 16) >= 8){
+                    ret += address[i].toUpperCase();
+                }else{
+                    ret += address[i];
+                }
+            }
+
+            return ret;
         }
     }
 };
