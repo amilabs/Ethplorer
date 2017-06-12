@@ -1952,10 +1952,10 @@ Ethplorer = {
             if(typeof str !== 'string'){
                 return str;
             }
-            return Ethplorer.isHexPrefixed(str) ? str.slice(2) : str;
+            return Ethplorer.Utils.isHexPrefixed(str) ? str.slice(2) : str;
         },
         toChecksumAddress: function(address){
-            address = Ethplorer.stripHexPrefix(address).toLowerCase();
+            address = Ethplorer.Utils.stripHexPrefix(address).toLowerCase();
             var hash = keccak_256(address).toString('hex');
             var ret = '0x';
 
