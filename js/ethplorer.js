@@ -716,8 +716,9 @@ Ethplorer = {
         if(data.isContract){
             Ethplorer.fillValues('address', data, ['contract', 'contract.creator']);
         }
-        var qrIcon = '<a style="float:right;margin-top:-10px;margin-right:-6px;" href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a>';
+        var qrIcon = '<a style="float:right;" href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a>';
         if(data.isContract && data.token){
+            qrIcon = '<a style="float:right;line-height:48px;" href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a>';
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
             oToken.address = Ethplorer.Utils.toChecksumAddress(oToken.address);
@@ -1544,6 +1545,7 @@ Ethplorer = {
                 break;
             case 'ethplorer':
                 if(false !== value){
+                    if(!(options.indexOf('no-contract') < 0)) value = Ethplorer.Utils.toChecksumAddress(value);
                     value = Ethplorer.Utils.getEthplorerLink(value, value, (options.indexOf('no-contract') < 0) ? Ethplorer.knownContracts.indexOf(value) >= 0 : false);
                 }else{
                     value = "";
@@ -1601,7 +1603,7 @@ Ethplorer = {
     },
     showQRCode: function(address){
         $("#qr-code").empty();
-        $("#qr-code-address").text('Ethereum address: ' + address);
+        $("#qr-code-address").html('<center>Ethereum address:</center><center>' + address + '</center>');
         var qrcode = new QRCode(document.getElementById("qr-code"), {
             text: address,
             width: 200,
@@ -1814,7 +1816,7 @@ Ethplorer = {
                 return text;
             }
             var isTx = Ethplorer.Utils.isTx(data);
-            if(!isTx) text = Ethplorer.Utils.toChecksumAddress(text);
+            //if(!isTx) text = Ethplorer.Utils.toChecksumAddress(text);
             text = $('<span>').text(text).html();
             var res = '<a href="/';
             res += (isTx ? 'tx' : 'address');
