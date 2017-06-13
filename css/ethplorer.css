@@ -483,12 +483,6 @@ a.dashed {
 
 #qr-code-address {
 	display:inline-block;
-    overflow: hidden;
-    max-width: 80vw;
-    background-color: white;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 }
 
 #ethplorer-path {
@@ -960,10 +954,12 @@ li.ui-menu-item.have-more {
 
 @media screen and (max-width: 991px) {
     .tx-details-link,
-	#qr-code-address,
     #ethplorer-path {
         font-size: 18px;
-    }   
+    }
+	#qr-code-address {
+        font-size: 16px;
+    }
     .address-token {
         display: none;
     }
@@ -1042,7 +1038,9 @@ li.ui-menu-item.have-more {
     #address-token-transfers td {
         font-size: 11px;
     }
-	#qr-code-address,
+    #qr-code-address {
+        font-size: 12px;
+    }
     #ethplorer-path {
         font-size: 14px;
     }
@@ -1131,8 +1129,11 @@ a.token-update {
     .ui-autocomplete {
         max-width: 100%;
     }
-    
-	#qr-code-address,
+
+	#qr-code-address {
+        font-size: 12px;
+    }
+
     #ethplorer-path {
         font-size: 16px;
     }
