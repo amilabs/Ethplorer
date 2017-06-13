@@ -1603,7 +1603,7 @@ Ethplorer = {
     },
     showQRCode: function(address){
         $("#qr-code").empty();
-        $("#qr-code-address").html('<center>Ethereum address:</center><center><span style="max-width: 80vw;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;display:inline-block;" id="qr-code-address">' + address + '</span></center>');
+        $("#qr-code-address").html('<center>Ethereum address:</center><center>' + address + '</center>');
         var qrcode = new QRCode(document.getElementById("qr-code"), {
             text: address,
             width: 200,
