@@ -482,13 +482,13 @@ a.dashed {
 }
 
 #qr-code-address {
+	display:inline-block;
     overflow: hidden;
-    text-overflow: ellipsis;
-    max-width: 100vw;
+    max-width: 80vw;
     background-color: white;
     white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis
+    text-overflow: ellipsis;
 }
 
 #ethplorer-path {

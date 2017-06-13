@@ -716,9 +716,9 @@ Ethplorer = {
         if(data.isContract){
             Ethplorer.fillValues('address', data, ['contract', 'contract.creator']);
         }
-        var qrIcon = '<a style="float:right;" href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a>';
+        var qrIcon = '<a style="float:right;position:relative;" href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a>';
         if(data.isContract && data.token){
-            qrIcon = '<a style="float:right;line-height:48px;" href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a>';
+            qrIcon = '<a style="float:right;position:relative;line-height:48px;" href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a>';
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
             oToken.address = Ethplorer.Utils.toChecksumAddress(oToken.address);
@@ -1603,7 +1603,7 @@ Ethplorer = {
     },
     showQRCode: function(address){
         $("#qr-code").empty();
-        $("#qr-code-address").html('<center>Ethereum address:</center><center>' + address + '</center>');
+        $("#qr-code-address").html('<center>Ethereum address:</center><center><span style="max-width: 80vw;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;display:inline-block;" id="qr-code-address">' + address + '</span></center>');
         var qrcode = new QRCode(document.getElementById("qr-code"), {
             text: address,
             width: 200,
