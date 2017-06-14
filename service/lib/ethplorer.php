@@ -1547,7 +1547,7 @@ class Ethplorer {
                         $patchFile = dirname(__FILE__) . '/../patches/price-' . $address . '.patch';
                         $aPatch = array();
                         if(file_exists($patchFile)){
-                            $data = file_get_contents($method);
+                            $data = file_get_contents($patchFile);
                             $aData = json_decode($data, TRUE);
                             if($aData && count($aData)){
                                 foreach($aData as $rec){
