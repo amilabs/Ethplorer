@@ -1549,6 +1549,11 @@ class Ethplorer {
                             if($result[$i]['ts'] < $aToken['createdAt']){
                                 $result[$i] = array_merge($result[$i], $zero);
                             }
+                            if(isset($this->aSettings['tokenPriceHistoryOverride']) && isset($this->aSettings['tokenPriceHistoryOverride'][$address])){
+                                if(isset($this->aSettings['tokenPriceHistoryOverride'][$address][$result[$i]['ts']])){
+                                    $result[$i] = array_merge($result[$i], $this->aSettings['tokenPriceHistoryOverride'][$address][$result[$i]['ts']]);
+                                }
+                            }
                         }
                     }
                 }
