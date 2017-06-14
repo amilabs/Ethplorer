@@ -1655,10 +1655,14 @@ class Ethplorer {
         evxProfiler::checkpoint('getAddressPriceHistoryGrouped', 'START', 'address=' . $address);
 
         $cache = 'address_operations_history-' . $address;
-        $result = false;//$this->oCache->get($cache, false, true);
+        $result = $this->oCache->get($cache, false, true);
         $updateCache = false;
         if($result && isset($result['timestamp'])){
             $updateCache = true;
+        }
+        if(!isset($result['cached'])){
+            $result = false;
+            $updateCache = false;
         }
 
         if(FALSE === $result || $updateCache){
@@ -1713,7 +1717,10 @@ class Ethplorer {
             $ten = Decimal::create(10);
 
             if(isset($result['tokens'])) $aTokenInfo = $result['tokens'];
-            else $aTokenInfo = array();
+            else{
+                $result['tokens'] = array();
+                $aTokenInfo = array();
+            }
 
             $curDate = false;
             unset($result['timestamp']);
@@ -1730,7 +1737,10 @@ class Ethplorer {
 
                     $token = isset($aTokenInfo[$contract]) ? $aTokenInfo[$contract] : $this->getToken($contract);
                     if($token){
-                        if(!isset($aTokenInfo[$contract])) $aTokenInfo[$contract] = $token;
+                        if(!isset($aTokenInfo[$contract])){
+                            $result['tokens'][$contract] = $token;
+                            $aTokenInfo[$contract] = $token;
+                        }
 
                         $dec = false;
                         if(isset($token['decimals'])) $dec = Decimal::create($token['decimals']);
@@ -1778,31 +1788,29 @@ class Ethplorer {
                     $curDate = $date;
                 }
             }
-
-            $result['tokens'] = $aTokenInfo;
-            //$result['addressBalances'] = $aAddressBalances;
             if(!empty($result)){
+                $result['cached'] = 1;
                 $this->oCache->save($cache, $result);
             }
-
-            // get prices
-            $aPrices = array();
-            $result['tokenPrices'] = array();
-            $maxTs = 0;
-            foreach($aTokenInfo as $token => $data){
-                $aPrices[$token] = $this->getTokenPriceHistory($token, 365, 'daily');
-                if(!is_array($aPrices[$token]) || !count($aPrices[$token])){
-                    unset($aPrices[$token]);
-                    continue;
-                }
-                $result['tokenPrices'][$token] = $this->getTokenPrice($token);
-                if($result['tokenPrices'][$token]['ts'] > $maxTs){
-                    $maxTs = $result['tokenPrices'][$token]['ts'];
-                }
-            }
-            if($maxTs) $result['updated'] = gmdate("Y-m-d H:i:s e", $maxTs);
-            $result['prices'] = $aPrices;
         }
+
+        // get prices
+        $aPrices = array();
+        $result['tokenPrices'] = array();
+        $maxTs = 0;
+        foreach($result['tokens'] as $token => $data){
+            $aPrices[$token] = $this->getTokenPriceHistory($token, 365, 'daily');
+            if(!is_array($aPrices[$token]) || !count($aPrices[$token])){
+                unset($aPrices[$token]);
+                continue;
+            }
+            $result['tokenPrices'][$token] = $this->getTokenPrice($token);
+            if($result['tokenPrices'][$token]['ts'] > $maxTs){
+                $maxTs = $result['tokenPrices'][$token]['ts'];
+            }
+        }
+        if($maxTs) $result['updated'] = gmdate("Y-m-d H:i:s e", $maxTs);
+        $result['prices'] = $aPrices;
 
         evxProfiler::checkpoint('getAddressPriceHistoryGrouped', 'FINISH');
         return $result;
