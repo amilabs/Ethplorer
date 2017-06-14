@@ -1665,6 +1665,7 @@ class Ethplorer {
             $aSearch = array('from', 'to', 'address');
             $aTypes = array('transfer', 'issuance', 'burn', 'mint');
             $aResult = array();
+            $minTs = false;
 
             if(FALSE === $result) $result = array();
 
@@ -1677,6 +1678,7 @@ class Ethplorer {
                 $cursor = $this->oMongo->find('operations', $search, false, false, false, array('timestamp', 'value', 'contract', 'from', 'type'));
                 foreach($cursor as $record){
                     $date = gmdate("Y-m-d", $record['timestamp']);
+                    if(!$minTs || $record['timestamp'] < $minTs) $result['firstDate'] = $date;
                     if(!isset($result['txs'][$date])){
                         $result['txs'][$date] = 0;
                     }
@@ -1760,7 +1762,7 @@ class Ethplorer {
                         $aTokenInfo[$contract]['balance'] = '' . $oldBalance;
                     }
 
-                    $result['firstDate'] = $date;
+                    //$result['firstDate'] = $date;
                 }
                 $curDate = $date;
             }

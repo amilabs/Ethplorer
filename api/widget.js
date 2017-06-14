@@ -1641,14 +1641,13 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
     this.drawChart = function(widgetData){
         var aData = [];
 
-        if('undefined' !== typeof(widgetData['volume'])){
+        if('undefined' === typeof(widgetData['volume']) && 'undefined' === typeof(widgetData['txs'])){
+            return;
             /*var firstMonth = aTxData[0]._id.month,
                 firstDay = aTxData[0]._id.day;
             if(firstMonth < 10) firstMonth = '0' + firstMonth;
             if(firstDay < 10) firstDay = '0' + firstDay;
             var strFirstDate = aTxData[0]._id.year + '-' + firstMonth + '-' + firstDay + 'T00:00:00Z';*/
-        }else{
-            //return;
         }
 
         var noPrice = true;
