@@ -169,7 +169,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                 <?php } ?>
 
                 <?php if(true){ ?>
-                    <div>
+                    <div style="display:none;">
                         <div class="col-xs-12 col-sm-12 token-price-history-grouped-widget">
                             <div id="token-price-history-grouped-widget"></div>
                         </div>
