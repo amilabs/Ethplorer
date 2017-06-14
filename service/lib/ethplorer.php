@@ -1683,7 +1683,10 @@ class Ethplorer {
                     }
                     if($record['type'] == 'transfer'){
                         $result['txs'][$date] += 1;
-                        if(!$minTs || ($record['timestamp'] < $minTs)) $result['firstDate'] = $date;
+                        if(!$minTs || ($record['timestamp'] < $minTs)){
+                            $minTs = true;
+                            $result['firstDate'] = $date;
+                        }
                     }
 
                     if((FALSE === array_search($record['contract'], $this->aSettings['updateRates'])) || !in_array($record['type'], $aTypes)){
@@ -1691,7 +1694,10 @@ class Ethplorer {
                     }
 
                     $add = 0;
-                    if(!$minTs || ($record['timestamp'] < $minTs)) $result['firstDate'] = $date;
+                    if(!$minTs || ($record['timestamp'] < $minTs)){
+                        $minTs = true;
+                        $result['firstDate'] = $date;
+                    }
                     if(($record['from'] == $address) || ($record['type'] == 'burn')){
                         $add = 1;
                     }
