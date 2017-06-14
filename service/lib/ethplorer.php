@@ -1639,11 +1639,12 @@ class Ethplorer {
         evxProfiler::checkpoint('getAddressPriceHistoryGrouped', 'START', 'address=' . $address);
 
         $cache = 'address_operations_history-' . $address;
-        $result = $this->oCache->get($cache, false, true);
+        $result = false;//$this->oCache->get($cache, false, true);
         $search = array(
             '$or' => array(
                 array("from"    => $address),
                 array("to"      => $address),
+                array("address" => $address),
             )
         );
         $updateCache = false;
@@ -1653,8 +1654,11 @@ class Ethplorer {
         }
 
         if(FALSE === $result || $updateCache){
-            $aTypes = array('transfer');
-            $cursor = $this->oMongo->find('operations', $search, array("timestamp" => 1));
+            $aAddressBalances = $this->getAddressBalances($address);
+            //file_put_contents(__DIR__ . '/../log/lexa.log', print_r($aAddressBalances, true) . "\n", FILE_APPEND);
+
+            $aTypes = array('transfer', 'issuance', 'burn', 'mint');
+            $cursor = $this->oMongo->find('operations', $search, array("timestamp" => -1));
             $ten = Decimal::create(10);
 
             if(FALSE === $result) $result = array();
@@ -1662,10 +1666,27 @@ class Ethplorer {
             if(isset($result['tokens'])) $aTokenInfo = $result['tokens'];
             else $aTokenInfo = array();
 
+            $curDate = false;
             foreach($cursor as $record){
+                $date = gmdate("Y-m-d", $record['timestamp']);
+                $nextDate = false;
+                if($curDate && ($curDate != $date)){
+                    $nextDate = true;
+                }
+
                 if(in_array($record['type'], $aTypes) && isset($record['contract'])){
                     $contract = $record['contract'];
-                    $date = gmdate("Y-m-d", $record['timestamp']);
+                    if(!isset($result['timestamp'])) $result['timestamp'] = $record['timestamp'];
+
+                    // count num transfers
+                    if(!isset($result['txs'][$date])){
+                        $result['txs'][$date] = 0;
+                    }
+                    if($record['type'] == 'transfer') $result['txs'][$date] += 1;
+
+                    if(FALSE === array_search($contract, $this->aSettings['updateRates'])){
+                        continue;
+                    }
 
                     $token = isset($aTokenInfo[$contract]) ? $aTokenInfo[$contract] : $this->getToken($contract);
                     if($token){
@@ -1675,47 +1696,74 @@ class Ethplorer {
                         if(isset($token['decimals'])) $dec = Decimal::create($token['decimals']);
 
                         $balance = Decimal::create(0);
-                        if(isset($aTokenInfo[$contract]['balance'])){
+                        if(!isset($aTokenInfo[$contract]['balance'])){
+                            foreach($aAddressBalances as $addressBalance){
+                                if($addressBalance["contract"] == $contract){
+                                    $balance = Decimal::create($addressBalance["balance"]);
+                                    $balance = $balance->div($ten->pow($dec));
+                                    break;
+                                }
+                            }
+                            $result['balances'][$date][$token['address']] = '' . $balance;
+                        }else{
+                            //$result['balances'][$date][$token['address']] = '' . $balance;
+                            if($nextDate) $result['balances'][$date][$token['address']] = $aTokenInfo[$contract]['balance'];
                             $balance = Decimal::create($aTokenInfo[$contract]['balance']);
                         }
 
-                        if($dec){
-                            $value = Decimal::create($record['value']);
-                            $value = $value->div($ten->pow($dec), 4);
+                        //if(isset($aTokenInfo[$contract]['balance'])){
+                        //    $balance = Decimal::create($aTokenInfo[$contract]['balance']);
+                        //}
 
+                        if($dec){
+                            // operation value
+                            $value = Decimal::create($record['value']);
+                            $value = $value->div($ten->pow($dec));
+
+                            // get volume
                             $curDateVolume = Decimal::create(0);
                             if(isset($result['volume'][$date][$token['address']])){
                                 $curDateVolume = Decimal::create($result['volume'][$date][$token['address']]);
                             }
-                            $curDateVolume = $curDateVolume->add($value, 4);
+                            $curDateVolume = $curDateVolume->add($value);
                             $result['volume'][$date][$token['address']] = '' . $curDateVolume;
 
-                            if($record['from'] == $address){
-                                $newBalance = $balance->sub($value, 4);
+                            // get old balance
+                            if(($record['from'] == $address) || ($record['type'] == 'burn')){
+                                $oldBalance = $balance->add($value);//$balance->sub($value);
                             }else{
-                                $newBalance = $balance->add($value, 4);
+                                $oldBalance = $balance->sub($value);//$balance->add($value);
                             }
 
-                            $aTokenInfo[$contract]['balance'] = '' . $newBalance;
-                            $result['balances'][$date][$token['address']] = '' . $newBalance;
-                            $result['timestamp'] = $record['timestamp'];
+                            $aTokenInfo[$contract]['balance'] = '' . $oldBalance;
+                            //$result['balances'][$date][$token['address']] = '' . $balance;
+
+                            //$aTokenInfo[$contract]['balance'] = '' . $newBalance;
+                            //$result['balances'][$date][$token['address']] = '' . $newBalance;
+
+                            //$result['timestamp'] = $record['timestamp'];
                         }
-                        if(!isset($result['txs'][$date])){
-                            $result['txs'][$date] = 0;
-                        }
-                        $result['txs'][$date] += 1;
+
+                        $result['firstDate'] = $date;
                     }
                 }
+                $curDate = $date;
             }
 
             $result['tokens'] = $aTokenInfo;
+            //$result['addressBalances'] = $aAddressBalances;
             // get prices
             $aPrices = array();
             $result['tokenPrices'] = array();
+            $maxTs = 0;
             foreach($aTokenInfo as $token => $data){
                 $aPrices[$token] = $this->getTokenPriceHistory($token, 365, 'daily');
                 $result['tokenPrices'][$token] = $this->getTokenPrice($token);
+                if($result['tokenPrices'][$token]['ts'] > $maxTs){
+                    $maxTs = $result['tokenPrices'][$token]['ts'];
+                }
             }
+            if($maxTs) $result['updated'] = gmdate("Y-m-d H:i:s e", $maxTs);
             $result['prices'] = $aPrices;
 
             if(!empty($result)){

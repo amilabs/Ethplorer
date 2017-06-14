@@ -1618,7 +1618,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
         $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
     };
 
-    this.getTooltip = function(date, balance, volume, txs){
+    this.getTooltip = function(noPrice, date, balance, volume, txs, dteUpdated){
         var tooltipDateFormatter = new google.visualization.DateFormat({ 
             pattern: "MMM dd, yyyy '+UTC'"
         });
@@ -1629,10 +1629,11 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             pattern: '#,##0'
         });
         var tooltip = '<div style="display: block !important; text-align: left; opacity: 1 !important; color: #000000 !important; padding: 5px;">';
-        tooltip += tooltipDateFormatter.formatValue(date) + '<br/>' +
-            '<span class="tooltipRow"><b>Volume:</b> ' + currencyFormatter.formatValue(volume) + ' USD</span><br/>' +
-            '<span class="tooltipRow"><b>Balance:</b> ' + currencyFormatter.formatValue(balance) + ' USD</span><br/>' +
+        tooltip += '<span class="tooltipRow">' + tooltipDateFormatter.formatValue(date) + '</span><br/>' +
+            (noPrice ? '' : '<span class="tooltipRow"><b>Volume:</b> ' + currencyFormatter.formatValue(volume) + ' USD</span><br/>') +
+            (noPrice ? '' : '<span class="tooltipRow"><b>Balance:</b> ' + currencyFormatter.formatValue(balance) + ' USD</span><br/>') +
             '<span class="tooltipRow"><b>Transfers:</b> ' + numFormatter.formatValue(txs) + '</span>' +
+            (dteUpdated ? ('<br/><span class="tooltipRow"><b>Updated:</b> ' + dteUpdated + '</span>') : '') +
             '</div>';
         return tooltip;
     }
@@ -1650,20 +1651,27 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             return;
         }
 
-        var noPrice = false;
-
-        aData.push(['Day', 'Balance', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Transfers', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Volume', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
+        var noPrice = true;
 
         // prepare prices
+        var lastAverage = 0;
         var aPrices = {};
         if('undefined' !== typeof(widgetData['prices'])){
             for(var token in widgetData['prices']){
                 aPrices[token] = {};
-                for(var i = 0; i < widgetData['prices'][token].length; i++){
+                if(widgetData['prices'][token].length > 0) noPrice = false;
+                for(var i = widgetData['prices'][token].length - 1; i >= 0; i--){
                     var priceData = widgetData['prices'][token][i];
-                    aPrices[token][priceData['date']] = priceData['average'];
+                    if(priceData['average'] > 0) lastAverage = priceData['average'];
+                    aPrices[token][priceData['date']] = lastAverage;
                 }
             }
+        }
+
+        if(noPrice){
+            aData.push(['Day', 'Transfers', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
+        }else{
+            aData.push(['Day', 'Balance', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Transfers', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Volume', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
         }
 
         var rangeStart = null,
@@ -1672,12 +1680,9 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             fnMonth = curDate.getUTCMonth() + 1,
             fnDay = curDate.getUTCDate(),
             fnDate = new Date(curDate.getUTCFullYear() + '-' + (fnMonth < 10 ? '0' + fnMonth : fnMonth) + '-' + (fnDay < 10 ? '0' + fnDay : fnDay) + 'T00:00:00Z'),
-            aBalances = {};
-
-        for(var volumeDate in widgetData['volume']){
-            var strFirstDate = volumeDate + 'T00:00:00Z';
-            break;
-        }
+            aBalances = {},
+            strFirstDate = widgetData['firstDate'] + 'T00:00:00Z',
+            dteUpdated;
 
         for(var d = new Date(strFirstDate); d <= fnDate; d.setDate(d.getDate() + 1)){
             var month = 1 + d.getMonth(),
@@ -1685,12 +1690,11 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
                 volumeDate = d.getFullYear() + '-' + (month < 10 ? '0' + month : month) + '-' + (day < 10 ? '0' + day : day),
                 strVolumeDate = volumeDate + 'T00:00:00Z';
 
-
             // get volumes
             var volume = 0;
             if('undefined' !== typeof(widgetData['volume'][volumeDate])){
                 for(var token in widgetData['volume'][volumeDate]){
-                    if(volumeDate == fnDate && ('undefined' !== typeof(widgetData['tokenPrices'][token]['rate']))){
+                    if(d.getTime() == fnDate.getTime() && ('undefined' !== typeof(widgetData['tokenPrices'][token]['rate']))){
                         aPrices[token][volumeDate] = widgetData['tokenPrices'][token]['rate'];
                     }
                     if('undefined' !== typeof(aPrices[token]) && 'undefined' !== typeof(aPrices[token][volumeDate])){
@@ -1711,7 +1715,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             }
             var balance = 0;
             for(var token in aBalances){
-                if(volumeDate == fnDate && ('undefined' !== typeof(widgetData['tokenPrices'][token]['rate']))){
+                if(d.getTime() == fnDate.getTime() && ('undefined' !== typeof(widgetData['tokenPrices'][token]['rate']))){
                     aPrices[token][volumeDate] = widgetData['tokenPrices'][token]['rate'];
                 }
                 if('undefined' !== typeof(aPrices[token]) && 'undefined' !== typeof(aPrices[token][volumeDate])){
@@ -1725,14 +1729,30 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
                 transfers = widgetData['txs'][volumeDate];
             }
 
+            if(d.getTime() == fnDate.getTime() && ('undefined' !== typeof(widgetData['updated']))){
+                dteUpdated = widgetData['updated'];
+            }
+
             rangeEnd = strVolumeDate;
-            var tooltip = this.getTooltip(new Date(strVolumeDate), balance, volume, transfers);
-            aData.push([new Date(strVolumeDate), balance, 'opacity: 0.5', tooltip, transfers, 'opacity: 0.5', tooltip, volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5', tooltip]);
+            var tooltip = this.getTooltip(noPrice, new Date(strVolumeDate), balance, volume, transfers, dteUpdated);
+            if(noPrice){
+                aData.push([new Date(strVolumeDate), transfers, 'opacity: 0.5', tooltip]);
+            }else{
+                aData.push([new Date(strVolumeDate), balance, 'opacity: 0.5', tooltip, transfers, 'opacity: 0.5', tooltip, volume, this.options['theme'] == 'dark' ? 'opacity: 0.15' : 'opacity: 0.5', tooltip]);
+            }
         }
 
-        console.log(rangeStart);
-        console.log(rangeEnd);
-        console.log(aData);
+        var dteRangeStart = new Date(rangeStart),
+            dteRangeEnd = new Date(rangeEnd);
+
+        var timeDiff = Math.abs(dteRangeEnd.getTime() - dteRangeStart.getTime());
+        var diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+        if(diffDays < 7) dteRangeStart.setDate(dteRangeStart.getDate() - (7 - diffDays));
+        else if(diffDays > 90) dteRangeStart.setDate(dteRangeStart.getDate() + (diffDays - 90));
+
+        //console.log(dteRangeStart);
+        //console.log(dteRangeEnd);
+        //console.log(aData);
         var data = google.visualization.arrayToDataTable(aData);
 
         // create div's
@@ -1757,8 +1777,8 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             containerId: 'control',
             state: {
                 range: {
-                    start: new Date(rangeStart),
-                    end: new Date(rangeEnd)
+                    start: dteRangeStart,
+                    end: dteRangeEnd
                 }
             },
             options: {
@@ -1800,10 +1820,6 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
 
         // create combo chart
         var series = {
-            /*0: {
-                type: 'candlesticks',
-                targetAxisIndex: 0
-            },*/
             0: {
                 type: 'area',
                 targetAxisIndex: 0
@@ -1821,10 +1837,9 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             0: {
                 title: 'Price',
                 format: '$ #,##0'
-                //format: 'currency'
             },
             1: {
-                title: 'Volume',//'Token operations',
+                title: 'Volume',
                 format: 'decimal',
             },
             2: {
@@ -1836,14 +1851,14 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
         if(noPrice){
             series = {
                 0: {
-                    type: noPrice ? 'area' : 'line',
+                    type: 'line',
                     targetAxisIndex: 0
                 },
             };
             vAxes = {
                 0: {
-                    title: 'Token operations',
-                    format: 'decimal',
+                    title: 'Transfers',
+                    format: "#,###",
                 }
             };
         }
@@ -1877,6 +1892,10 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
                 },
                 vAxis: {
                     viewWindowMode: 'maximized',
+                    minValue: 0,
+                    viewWindow: {
+                        min: 0
+                    },
                     title: '',
                     titleTextStyle: {
                         italic: false
@@ -1906,7 +1925,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             }
         };
         if(this.options['theme'] == 'dark'){
-            def.options.colors = noPrice ? ['#FCEC0F']: ['#47C2FF', '#FCEC0F', '#DEDEDE'];//['#999999', '#FCEC0F', '#DEDEDE'];
+            def.options.colors = noPrice ? ['#FCEC0F']: ['#47C2FF', '#FCEC0F', '#DEDEDE'];
             def.options.titleTextStyle = {color: '#DEDEDE'};
             def.options.backgroundColor = {fill: 'transparent'};
 

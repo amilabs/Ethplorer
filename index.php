@@ -93,6 +93,8 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
     <script src="/js/ethplorer-note.js?v=<?=$codeVersion?>"></script>
     <script src="/js/config.js"></script>
     <script src="/js/md5.min.js"></script>
+    <script src="/js/sha3.min.js"></script>
+    <script src="/js/qrcode.min.js"></script>
     <script src="/api/widget.js?v=<?=$codeVersion?>"></script>
 </head>
 <body>
@@ -663,6 +665,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
         </div>
     </div>
 </div>
+<div id="qr-code-popup" title="Address QR-Code" style="padding:5px;"><span id="qr-code-address"></span><br/><br/><center><div id="qr-code"></div></center><br/></div>
 <script>
 $(document).ready(function(){
     $.fn.bootstrapBtn = $.fn.button.noConflict();
@@ -671,6 +674,15 @@ $(document).ready(function(){
     Ethplorer.debugId = "<?=htmlspecialchars($debugId)?>";
     <?php endif; ?>
     Ethplorer.init();
+    $("#qr-code-popup").dialog({
+        'autoOpen': false,
+        'resizable': false,
+        'width': 'auto',
+        'height': 'auto',
+        'open': function(){
+        }
+    });
+
 });
 if(Ethplorer.Config.ga){
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){

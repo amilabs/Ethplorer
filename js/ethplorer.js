@@ -693,6 +693,7 @@ Ethplorer = {
     },
 
     showAddressDetails: function(address, data){
+        address = Ethplorer.Utils.toChecksumAddress(address);
         Ethplorer.currentAddress = address;
         Ethplorer.data = data;
         var titleAdd = '';
@@ -715,10 +716,13 @@ Ethplorer = {
         if(data.isContract){
             Ethplorer.fillValues('address', data, ['contract', 'contract.creator']);
         }
+        var qrIcon = '<a style="float:right;position:relative;" href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a>';
         if(data.isContract && data.token){
+            qrIcon = '<a style="float:right;position:relative;line-height:48px;" href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a>';
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
-            $('#ethplorer-path').html('Token ' + oToken.name + '<br><small>' + oToken.address + '</small>');
+            oToken.address = Ethplorer.Utils.toChecksumAddress(oToken.address);
+            $('#ethplorer-path').html(qrIcon + 'Token ' + oToken.name + '<br><small>' + oToken.address + '</small>');
             titleAdd = 'Token ' + oToken.name + (oToken.symbol ? (' [' + oToken.symbol + ']') : '' ) + ' Information';
             // Read description from tx
             if(data.contract && data.contract.code){
@@ -904,6 +908,7 @@ Ethplorer = {
         $('.local-time-offset').text(Ethplorer.Utils.getTZOffset());
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
+        if(!data.isContract) $('#ethplorer-path').html(qrIcon + "Address: " + address);
         $('#disqus_thread').show();
         $('#addressDetails').show();
 
@@ -1540,6 +1545,7 @@ Ethplorer = {
                 break;
             case 'ethplorer':
                 if(false !== value){
+                    if(!(options.indexOf('no-contract') < 0)) value = Ethplorer.Utils.toChecksumAddress(value);
                     value = Ethplorer.Utils.getEthplorerLink(value, value, (options.indexOf('no-contract') < 0) ? Ethplorer.knownContracts.indexOf(value) >= 0 : false);
                 }else{
                     value = "";
@@ -1594,6 +1600,19 @@ Ethplorer = {
                 $('.export-csv-spinner').hide();
             });
         }
+    },
+    showQRCode: function(address){
+        $("#qr-code").empty();
+        $("#qr-code-address").html('<center>Ethereum address:</center><center>' + address + '</center>');
+        var qrcode = new QRCode(document.getElementById("qr-code"), {
+            text: address,
+            width: 200,
+            height: 200,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.L
+        });
+        $("#qr-code-popup").dialog('open');
     },
     Nav: {
         data: {},
@@ -1796,8 +1815,9 @@ Ethplorer = {
             if(!/^0x/.test(data)){
                 return text;
             }
-            text = $('<span>').text(text).html();
             var isTx = Ethplorer.Utils.isTx(data);
+            //if(!isTx) text = Ethplorer.Utils.toChecksumAddress(text);
+            text = $('<span>').text(text).html();
             var res = '<a href="/';
             res += (isTx ? 'tx' : 'address');
             res += ('/' + data + '"  class="local-link">' + text + '</a>');
@@ -1929,6 +1949,31 @@ Ethplorer = {
                 res = 0;
             }
             return res;
+        },
+
+        isHexPrefixed: function(str){
+            return str.slice(0, 2) === '0x';
+        },
+        stripHexPrefix: function(str){
+            if(typeof str !== 'string'){
+                return str;
+            }
+            return Ethplorer.Utils.isHexPrefixed(str) ? str.slice(2) : str;
+        },
+        toChecksumAddress: function(address){
+            address = Ethplorer.Utils.stripHexPrefix(address).toLowerCase();
+            var hash = keccak_256(address).toString('hex');
+            var ret = '0x';
+
+            for(var i = 0; i < address.length; i++){
+                if(parseInt(hash[i], 16) >= 8){
+                    ret += address[i].toUpperCase();
+                }else{
+                    ret += address[i];
+                }
+            }
+
+            return ret;
         }
     }
 };
