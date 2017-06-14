@@ -1660,7 +1660,7 @@ class Ethplorer {
         if($result && isset($result['timestamp'])){
             $updateCache = true;
         }
-        if(!isset($result['cached'])){
+        if(!isset($result['updCache'])){
             $result = false;
             $updateCache = false;
         }
@@ -1687,7 +1687,7 @@ class Ethplorer {
                     }
                     if($record['type'] == 'transfer'){
                         $result['txs'][$date] += 1;
-                        if(!$minTs || ($record['timestamp'] < $minTs)){
+                        if(!$updateCache && (!$minTs || ($record['timestamp'] < $minTs))){
                             $minTs = $record['timestamp'];
                             $result['firstDate'] = $date;
                         }
@@ -1698,7 +1698,7 @@ class Ethplorer {
                     }
 
                     $add = 0;
-                    if(!$minTs || ($record['timestamp'] < $minTs)){
+                    if(!$updateCache && (!$minTs || ($record['timestamp'] < $minTs))){
                         $minTs = $record['timestamp'];
                         $result['firstDate'] = $date;
                     }
@@ -1782,14 +1782,13 @@ class Ethplorer {
 
                             $aTokenInfo[$contract]['balance'] = '' . $oldBalance;
                         }
-
-                        //$result['firstDate'] = $date;
                     }
                     $curDate = $date;
                 }
             }
             if(!empty($result)){
-                $result['cached'] = 1;
+                $result['updCache'] = 1;
+                if(!isset($result['timestamp'])) $result['timestamp'] = time();
                 $this->oCache->save($cache, $result);
             }
         }
