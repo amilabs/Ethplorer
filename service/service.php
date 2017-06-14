@@ -17,7 +17,7 @@
 
 require dirname(__FILE__) . '/lib/ethplorer.php';
 
-$data = isset($_GET["data"]) ? $_GET["data"] : false;
+$data = isset($_GET["data"]) ? strtolower($_GET["data"]) : false;
 $page = isset($_GET["page"]) ? $_GET["page"] : false;
 $refresh = isset($_GET["refresh"]) ? $_GET["refresh"] : false;
 $search = isset($_GET["search"]) ? $_GET["search"] : false;
