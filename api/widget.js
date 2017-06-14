@@ -1641,22 +1641,24 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
     this.drawChart = function(widgetData){
         var aData = [];
 
-        if('undefined' !== typeof(widgetData['volume'])){
+        if('undefined' === typeof(widgetData['volume']) && 'undefined' === typeof(widgetData['txs'])){
+            return;
             /*var firstMonth = aTxData[0]._id.month,
                 firstDay = aTxData[0]._id.day;
             if(firstMonth < 10) firstMonth = '0' + firstMonth;
             if(firstDay < 10) firstDay = '0' + firstDay;
             var strFirstDate = aTxData[0]._id.year + '-' + firstMonth + '-' + firstDay + 'T00:00:00Z';*/
-        }else{
-            return;
         }
+        if('undefined' === typeof(widgetData['volume'])) widgetData['volume'] = [];
+        if('undefined' === typeof(widgetData['balances'])) widgetData['balances'] = [];
+        if('undefined' === typeof(widgetData['txs'])) widgetData['txs'] = [];
 
         var noPrice = true;
 
         // prepare prices
         var lastAverage = 0;
         var aPrices = {};
-        if('undefined' !== typeof(widgetData['prices'])){
+        if('undefined' !== typeof(widgetData['prices']) && widgetData['prices'].length){
             for(var token in widgetData['prices']){
                 aPrices[token] = {};
                 if(widgetData['prices'][token].length > 0) noPrice = false;
