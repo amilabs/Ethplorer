@@ -1678,17 +1678,20 @@ class Ethplorer {
                 $cursor = $this->oMongo->find('operations', $search, false, false, false, array('timestamp', 'value', 'contract', 'from', 'type'));
                 foreach($cursor as $record){
                     $date = gmdate("Y-m-d", $record['timestamp']);
-                    if(!$minTs || $record['timestamp'] < $minTs) $result['firstDate'] = $date;
                     if(!isset($result['txs'][$date])){
                         $result['txs'][$date] = 0;
                     }
-                    if($record['type'] == 'transfer') $result['txs'][$date] += 1;
+                    if($record['type'] == 'transfer'){
+                        $result['txs'][$date] += 1;
+                        if(!$minTs || ($record['timestamp'] < $minTs)) $result['firstDate'] = $date;
+                    }
 
                     if((FALSE === array_search($record['contract'], $this->aSettings['updateRates'])) || !in_array($record['type'], $aTypes)){
                         continue;
                     }
 
                     $add = 0;
+                    if(!$minTs || ($record['timestamp'] < $minTs)) $result['firstDate'] = $date;
                     if(($record['from'] == $address) || ($record['type'] == 'burn')){
                         $add = 1;
                     }
