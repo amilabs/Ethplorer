@@ -1648,7 +1648,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             if(firstDay < 10) firstDay = '0' + firstDay;
             var strFirstDate = aTxData[0]._id.year + '-' + firstMonth + '-' + firstDay + 'T00:00:00Z';*/
         }else{
-            return;
+            //return;
         }
 
         var noPrice = true;
