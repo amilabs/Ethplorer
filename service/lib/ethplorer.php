@@ -1544,15 +1544,31 @@ class Ethplorer {
                 if($result){
                     $aToken = $this->getToken($address);
                     if($aToken && isset($aToken['createdAt'])){
+                        $patchFile = dirname(__FILE__) . '/../patches/price-' . $address . '.patch';
+                        $aPatch = array();
+                        if(file_exists($patchFile)){
+                            $data = file_get_contents($method);
+                            $aData = json_decode($data, TRUE);
+                            if($aData && count($aData)){
+                                foreach($aData as $rec){
+                                    $aPatch['ts-' . $rec['time']] = array(
+                                        'high' => $rec['high'],
+                                        'low' => $rec['low'],
+                                        'open' => $rec['open'],
+                                        'close' => $rec['close'],
+                                        'volume' => $rec['volumefrom'],
+                                        'volumeConverted' => $rec['volumeto']
+                                    );
+                                }
+                            }
+                        }
                         for($i = 0; $i < count($result); $i++){
                             $zero = array('high' => 0, 'low' => 0, 'open' => 0, 'close' => 0, 'volume' => 0, 'volumeConverted' => 0);
                             if($result[$i]['ts'] < $aToken['createdAt']){
                                 $result[$i] = array_merge($result[$i], $zero);
                             }
-                            if(isset($this->aSettings['tokenPriceHistoryOverride']) && isset($this->aSettings['tokenPriceHistoryOverride'][$address])){
-                                if(isset($this->aSettings['tokenPriceHistoryOverride'][$address][$result[$i]['ts']])){
-                                    $result[$i] = array_merge($result[$i], $this->aSettings['tokenPriceHistoryOverride'][$address][$result[$i]['ts']]);
-                                }
+                            if(isset($aPatch['ts-' . $result[$i]['ts']])){
+                                $result[$i] = array_merge($result[$i], $aPatch['ts-' . $result[$i]['ts']]);
                             }
                         }
                     }
