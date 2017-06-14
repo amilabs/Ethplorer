@@ -1788,6 +1788,7 @@ class Ethplorer {
             $maxTs = 0;
             foreach($aTokenInfo as $token => $data){
                 $aPrices[$token] = $this->getTokenPriceHistory($token, 365, 'daily');
+                if(!is_array($aPrices[$token]) || !count($aPrices[$token])) continue;
                 $result['tokenPrices'][$token] = $this->getTokenPrice($token);
                 if($result['tokenPrices'][$token]['ts'] > $maxTs){
                     $maxTs = $result['tokenPrices'][$token]['ts'];
