@@ -1694,7 +1694,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
 
             // get volumes
             var volume = 0;
-            if('undefined' !== typeof(widgetData['volume'][volumeDate])){
+            if(!noPrice && 'undefined' !== typeof(widgetData['volume'][volumeDate])){
                 for(var token in widgetData['volume'][volumeDate]){
                     if(d.getTime() == fnDate.getTime() && ('undefined' !== typeof(widgetData['tokenPrices'][token]['rate']))){
                         aPrices[token][volumeDate] = widgetData['tokenPrices'][token]['rate'];
@@ -1710,18 +1710,20 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             }
 
             // get balances
-            if('undefined' !== typeof(widgetData['balances'][volumeDate])){
-                for(var token in widgetData['balances'][volumeDate]){
-                    aBalances[token] = parseFloat(widgetData['balances'][volumeDate][token]);
-                }
-            }
             var balance = 0;
-            for(var token in aBalances){
-                if(d.getTime() == fnDate.getTime() && ('undefined' !== typeof(widgetData['tokenPrices'][token]['rate']))){
-                    aPrices[token][volumeDate] = widgetData['tokenPrices'][token]['rate'];
+            if(!noPrice){
+                if('undefined' !== typeof(widgetData['balances'][volumeDate])){
+                    for(var token in widgetData['balances'][volumeDate]){
+                        aBalances[token] = parseFloat(widgetData['balances'][volumeDate][token]);
+                    }
                 }
-                if('undefined' !== typeof(aPrices[token]) && 'undefined' !== typeof(aPrices[token][volumeDate])){
-                    balance += parseFloat(aBalances[token]) * parseFloat(aPrices[token][volumeDate]);
+                for(var token in aBalances){
+                    if(d.getTime() == fnDate.getTime() && ('undefined' !== typeof(widgetData['tokenPrices'][token]['rate']))){
+                        aPrices[token][volumeDate] = widgetData['tokenPrices'][token]['rate'];
+                    }
+                    if('undefined' !== typeof(aPrices[token]) && 'undefined' !== typeof(aPrices[token][volumeDate])){
+                        balance += parseFloat(aBalances[token]) * parseFloat(aPrices[token][volumeDate]);
+                    }
                 }
             }
 
