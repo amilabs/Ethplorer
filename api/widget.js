@@ -1656,7 +1656,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
         // prepare prices
         var lastAverage = 0;
         var aPrices = {};
-        if('undefined' !== typeof(widgetData['prices'])){
+        if('undefined' !== typeof(widgetData['prices']) && widgetData['prices'].length){
             for(var token in widgetData['prices']){
                 aPrices[token] = {};
                 if(widgetData['prices'][token].length > 0) noPrice = false;
