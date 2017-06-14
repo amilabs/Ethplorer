@@ -1649,6 +1649,9 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             if(firstDay < 10) firstDay = '0' + firstDay;
             var strFirstDate = aTxData[0]._id.year + '-' + firstMonth + '-' + firstDay + 'T00:00:00Z';*/
         }
+        if('undefined' === typeof(widgetData['volume']) widgetData['volume'] = [];
+        if('undefined' === typeof(widgetData['balances']) widgetData['balances'] = [];
+        if('undefined' === typeof(widgetData['txs']) widgetData['txs'] = [];
 
         var noPrice = true;
 
