@@ -1673,7 +1673,7 @@ class Ethplorer {
 
             if(FALSE === $result){
                 $result = array();
-                $result['cache'] = 'noCacheData';
+                //$result['cache'] = 'noCacheData';
             }else if($updateCache){
                 $result['cache'] = 'cacheUpdated';
             }
