@@ -955,7 +955,8 @@ Ethplorer = {
                     ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
                 }
             }else if(true){
-                    //$('#token-price-history-grouped-widget').show();
+                    if(testWidget) $('#token-price-history-grouped-widget').show();
+                    else  $('#token-price-history-grouped-widget').hide();
                     ethplorerWidget.init(
                         '#token-price-history-grouped-widget',
                         'addressPriceHistoryGrouped',
