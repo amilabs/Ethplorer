@@ -22,6 +22,7 @@ class ethplorerController {
     protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressTransactions', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getTop', 'getTokenHistoryGrouped', 'getTokenPriceHistoryGrouped', 'getAddressPriceHistoryGrouped');
     protected $defaults;
     protected $startTime;
+    protected $cacheState = '';
 
     public function __construct($es){
         if(!($es instanceof Ethplorer)){
@@ -56,7 +57,7 @@ class ethplorerController {
         if($source){
             file_put_contents(__DIR__ . '/../service/log/widget-request.log', "[$date] Widget: {$this->command}, source: {$source}\n", FILE_APPEND);
         }
-        file_put_contents(__DIR__ . '/../service/log/api-request.log', "[$date] Call: {$this->command}, Key: {$key} URI: {$_SERVER["REQUEST_URI"]}, IP: {$_SERVER['REMOTE_ADDR']}, {$ms} s.\n", FILE_APPEND);
+        file_put_contents(__DIR__ . '/../service/log/api-request.log', "[$date] Call: {$this->command}, Key: {$key} URI: {$_SERVER["REQUEST_URI"]}, IP: {$_SERVER['REMOTE_ADDR']}, {$ms} s." . $this->cacheState . "\n", FILE_APPEND);
     }
 
     public function getCommand(){
@@ -426,6 +427,8 @@ class ethplorerController {
             }
         }
         $result = array('history' => $this->db->getAddressPriceHistoryGrouped($address));
+        if(isset($result['history']['cache'])) $this->cacheState = $result['history']['cache'];
+        else $this->cacheState = '';
         $this->sendResult($result);
     }
 

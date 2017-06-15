@@ -1658,7 +1658,7 @@ class Ethplorer {
         $result = $this->oCache->get($cache, false, true);
         $updateCache = false;
         if($result && isset($result['timestamp'])){
-            $updateCache = true;
+            if(time() > ($result['timestamp'] + 3600)) $updateCache = true;
         }
         if(!isset($result['updCache'])){
             $result = false;
@@ -1671,7 +1671,12 @@ class Ethplorer {
             $aResult = array();
             $minTs = false;
 
-            if(FALSE === $result) $result = array();
+            if(FALSE === $result){
+                $result = array();
+                $result['cache'] = 'noCacheData';
+            }else if($updateCache){
+                $result['cache'] = 'cacheUpdated';
+            }
 
             foreach($aSearch as $cond){
                 $search = array($cond => $address);
@@ -1791,6 +1796,8 @@ class Ethplorer {
                 if(!isset($result['timestamp'])) $result['timestamp'] = time();
                 $this->oCache->save($cache, $result);
             }
+        }else{
+            $result['cache'] = 'fromCache';
         }
 
         // get prices
