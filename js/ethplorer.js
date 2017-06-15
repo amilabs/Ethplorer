@@ -928,6 +928,7 @@ Ethplorer = {
                 var widgetTitle = (oToken && oToken.name) ? (oToken.name + ' token pulse') : '';
 
                 if(true){
+                    $('#widget-block').show();
                     $('#token-price-history-grouped-widget').show();
                     ethplorerWidget.init(
                         '#token-price-history-grouped-widget',
@@ -955,8 +956,13 @@ Ethplorer = {
                     ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
                 }
             }else if(true){
-                    if(testWidget) $('#token-price-history-grouped-widget').show();
-                    else  $('#token-price-history-grouped-widget').hide();
+                    if(testWidget){
+                        $('#widget-block').show();
+                        $('#token-price-history-grouped-widget').show();
+                    }else{
+                        $('#widget-block').hide();
+                        $('#token-price-history-grouped-widget').hide();
+                    }
                     ethplorerWidget.init(
                         '#token-price-history-grouped-widget',
                         'addressPriceHistoryGrouped',
