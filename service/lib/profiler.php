@@ -28,10 +28,7 @@ class evxProfiler {
             return false;
         }
         $now = microtime(true);
-        if(!self::$startTs){
-            self::$startTs = $now;
-        }
-        self::$currentDiff = $now - self::$startTs;
+        self::$currentDiff = self::getTotalTime();
         switch($position){
             case 'START':
                 self::$aPoints[$name] = array('start' => $now);
@@ -56,6 +53,14 @@ class evxProfiler {
 
     public static function get(){
         return self::$aPoints;
+    }
+
+    public static function getTotalTime(){
+        $now = microtime(true);
+        if(!self::$startTs){
+            self::$startTs = $now;
+        }
+        return $now - self::$startTs;
     }
 
     public static function log($filename){
