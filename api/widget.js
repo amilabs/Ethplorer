@@ -1960,7 +1960,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
     this.getRequestParams = function(additionalParams){
         var requestOptions = ['period', 'address', 'type', 'theme'];
         var params = {
-            apiKey: 'freekey'
+            apiKey: 'ethplorer.widget'
         };
         if('undefined' === typeof(this.pathReported)){
             params['domain'] = document.location.href;
