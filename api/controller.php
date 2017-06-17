@@ -234,7 +234,7 @@ class ethplorerController {
         }
         $result = array(
             'hash'          => $txHash,
-            'timestamp'     => $tx['timestamp'],
+            'timestamp'     => $tx['tx']['timestamp'],
             'blockNumber'   => $tx['tx']['blockNumber'],
             'confirmations' => $this->db->getLastBlock() - $tx['tx']['blockNumber'] + 1,
             'success'       => $tx['tx']['success'],
@@ -503,7 +503,7 @@ class ethplorerController {
      * @return float
      */
     protected function _bn2float($aNumber){
-        $res = 0;
+        $res = is_array($aNumber) ? 0 : $aNumber;
         if(isset($aNumber['c']) && !empty($aNumber['c'])){
             $str = '';
             for($i=0; $i<count($aNumber['c']); $i++){
