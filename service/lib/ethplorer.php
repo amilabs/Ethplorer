@@ -288,12 +288,15 @@ class Ethplorer {
             // Get balances
             $result["tokens"] = array();
             $result["balances"] = $this->getAddressBalances($address);
+            $aBalances = array();
             foreach($result["balances"] as $balance){
                 $balanceToken = $this->getToken($balance["contract"]);
                 if($balanceToken){
                     $result["tokens"][$balance["contract"]] = $balanceToken;
+                    $aBalances[] = $balance;
                 }
             }
+            $result["balances"] = $aBalances;
             $result["transfers"] = $this->getAddressOperations($address, $limit, $this->getOffset('transfers'));
             $countOperations = $this->countOperations($address);
             $totalOperations = $this->filter ? $this->countOperations($address, FALSE) : $countOperations;
@@ -887,7 +890,7 @@ class Ethplorer {
         if(!$withZero){
             $search['balance'] = array('$gt' => 0);
         }
-        $search['totalIn'] = array('$gt' => 0);
+        // $search['totalIn'] = array('$gt' => 0);
         $cursor = $this->oMongo->find('balances', $search, array(), false, false, array('contract', 'balance', 'totalIn', 'totalOut'));
         $result = array();
         foreach($cursor as $balance){
