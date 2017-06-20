@@ -1536,10 +1536,14 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 obj.widgetData = data.history.countTxs;
                 obj.widgetPriceData = data.history.prices;
                 obj.el.find('.txs-loading').remove();
-                obj.drawChart(data.history.countTxs, data.history.prices);
-                ethplorerWidget.appendEthplorerLink(obj);
-                if('function' === typeof(obj.options.onLoad)){
-                    obj.options.onLoad();
+                if(!obj.widgetData.length){
+                    obj.el.hide();
+                }else{
+                    obj.drawChart(data.history.countTxs, data.history.prices);
+                    ethplorerWidget.appendEthplorerLink(obj);
+                    if('function' === typeof(obj.options.onLoad)){
+                        obj.options.onLoad();
+                    }
                 }
                 setTimeout(ethplorerWidget.fixTilda, 300);
             }else{
