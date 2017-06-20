@@ -1553,8 +1553,9 @@ Ethplorer = {
                 break;
             case 'ethplorer':
                 if(false !== value){
-                    if(!(options.indexOf('no-contract') < 0)) value = Ethplorer.Utils.toChecksumAddress(value);
-                    value = Ethplorer.Utils.getEthplorerLink(value, value, (options.indexOf('no-contract') < 0) ? Ethplorer.knownContracts.indexOf(value) >= 0 : false);
+                    var text = value;
+                    if(text && Ethplorer.Utils.isAddress(text)) text = Ethplorer.Utils.toChecksumAddress(value);
+                    value = Ethplorer.Utils.getEthplorerLink(value, text, (options.indexOf('no-contract') < 0) ? Ethplorer.knownContracts.indexOf(value) >= 0 : false);
                 }else{
                     value = "";
                 }
