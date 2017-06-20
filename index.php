@@ -104,7 +104,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
             <div class="navbar-header">
                 <a class="navbar-logo-small" href="/"><img title="Ethplorer" src="/favicon.ico"></a>
                 <a class="navbar-logo" href="/"><img title="Ethplorer" src="/images/ethplorer-logo-48.png"></a>
-                <a class="navbar-logo-extra" href="https://everex.io"><img title="by Everex" src="/images/byeverex.png"></a>
+                <a class="navbar-logo-extra" href="https://www.everex.io/?from=ethp-hd"><img title="by Everex" src="/images/byeverex.png"></a>
             </div>
             <div id="navbar" class="navbar" style="margin-bottom: 0px;">
                 <ul class="nav navbar-nav navbar-right" id="searchform">
