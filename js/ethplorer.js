@@ -711,7 +711,7 @@ Ethplorer = {
         $('#address-token-balances, #address-token-details').hide();
         if(data.isContract && data.contract.isChainy){
             titleAdd = 'Chainy Information';
-            Ethplorer.drawChainy(srcAddress, data);
+            Ethplorer.drawChainy(address, data);
             $('#address-chainy-info').show();
         }
         if(data.isContract){
@@ -909,7 +909,7 @@ Ethplorer = {
         $('.local-time-offset').text(Ethplorer.Utils.getTZOffset());
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
-        if(!data.isContract) $('#ethplorer-path').html(qrIcon + "Address: " + address);
+        if(!data.isContract || (data.contract && data.contract.isChainy)) $('#ethplorer-path').html(qrIcon + "Address: " + address);
         $('#disqus_thread').show();
         $('#addressDetails').show();
 
