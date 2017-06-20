@@ -711,7 +711,7 @@ Ethplorer = {
         $('#address-token-balances, #address-token-details').hide();
         if(data.isContract && data.contract.isChainy){
             titleAdd = 'Chainy Information';
-            Ethplorer.drawChainy(address, data);
+            Ethplorer.drawChainy(srcAddress, data);
             $('#address-chainy-info').show();
         }
         if(data.isContract){
@@ -722,8 +722,8 @@ Ethplorer = {
             qrIcon = '<a style="float:right;position:relative;line-height:48px;" href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a>';
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
-            oToken.address = Ethplorer.Utils.toChecksumAddress(oToken.address);
-            $('#ethplorer-path').html(qrIcon + 'Token ' + oToken.name + '<br><small>' + oToken.address + '</small>');
+            oToken.address = oToken.address;
+            $('#ethplorer-path').html(qrIcon + 'Token ' + oToken.name + '<br><small>' + Ethplorer.Utils.toChecksumAddress(oToken.address) + '</small>');
             titleAdd = 'Token ' + oToken.name + (oToken.symbol ? (' [' + oToken.symbol + ']') : '' ) + ' Information';
             // Read description from tx
             if(data.contract && data.contract.code){
