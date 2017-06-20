@@ -769,6 +769,10 @@ Ethplorer = {
                 data.token.holdersCount = data.pager.holders.total;
             }
 
+            if(data.contract && data.contract.txsCount && (data.contract.txsCount > data.token.txsCount)){
+                data.token.txsCount = data.contract.txsCount;
+            }
+
             var fields = [
                 'token', 'token.name', 'token.price', 'token.description', 'token.owner', 'token.totalSupply', 'token.totalIn', 'token.totalOut', 'token.decimals', 'token.symbol',
                 'token.txsCount', 'token.transfersCount', 'token.issuancesCount', 'token.holdersCount', 'token.createdAt', 'token.createdTx'
