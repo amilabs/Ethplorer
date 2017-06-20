@@ -1372,6 +1372,7 @@ class Ethplorer {
      * @return array
      */
     protected function getContractOperation($type, $address, $limit, $offset = FALSE){
+        evxProfiler::checkpoint('getContractOperation', 'START', 'type=' . $type . ', address=' . $address . ', limit=' . $limit . ', offset=' . (int)$offset);
         $search = array("contract" => $address, 'type' => $type);
         if($this->filter){
             $search['$or'] = array(
@@ -1390,6 +1391,7 @@ class Ethplorer {
             $result[] = $transfer;
             $fetches++;
         }
+        evxProfiler::checkpoint('getContractOperation', 'FINISH');
         return $result;
     }
 
