@@ -374,6 +374,22 @@ td.list-field {
     padding-left: 0px;
 }
 
+.navbar-logo-extra {
+    float: left;
+    height: 10px;
+    line-height: 48px;
+    width: 40px;
+    position: absolute;
+    z-index: 10000;
+    padding-left: 175px;
+    padding-top: 20px;
+}
+
+.navbar-logo-extra img {
+    width: 40px;
+}
+
+
 .navbar-logo img {
   width: 170px;
   cursor: pointer;
@@ -927,6 +943,10 @@ li.ui-menu-item.have-more {
     .footer-donation {
         font-size:12.8px;
     }
+
+    #topmenu li {
+        padding-right: 8px;
+    }
 }
 
 @media screen and (min-width: 640px) {
@@ -1090,6 +1110,9 @@ a.token-update {
         padding-right: 0px;
     }
     .navbar-logo {
+        display: none;
+    }
+    .navbar-logo-extra {
         display: none;
     }
     .navbar-logo-small {
