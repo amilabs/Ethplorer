@@ -693,6 +693,7 @@ Ethplorer = {
     },
 
     showAddressDetails: function(address, data){
+        var srcAddress = address;
         address = Ethplorer.Utils.toChecksumAddress(address);
         Ethplorer.currentAddress = address;
         Ethplorer.data = data;
@@ -752,8 +753,8 @@ Ethplorer = {
                 $('.address-token-name:eq(0)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>')
             }
 
-            Ethplorer.drawHolders(address, data);
-            Ethplorer.drawIssuances(address, data);
+            Ethplorer.drawHolders(srcAddress, data);
+            Ethplorer.drawIssuances(srcAddress, data);
 
             if(data.pager && data.pager.transfers){
                 data.token.transfersCount = data.pager.transfers.total;
@@ -898,7 +899,7 @@ Ethplorer = {
         }
 
         if(!data.contract || !data.contract.isChainy){
-            Ethplorer.drawTransfers(address, data);
+            Ethplorer.drawTransfers(srcAddress, data);
         }
 
         document.title = 'Ethplorer';
