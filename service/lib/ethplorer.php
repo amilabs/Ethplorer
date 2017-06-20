@@ -1350,16 +1350,17 @@ class Ethplorer {
      * @return array
      */
     protected function getContractOperationCount($type, $address, $useFilter = TRUE){
+        evxProfiler::checkpoint('getContractOperationCount', 'START', 'address=' . $address . ', type=' . $type . ', useFilter=' . (int)$useFilter);
         $search = array("contract" => $address, 'type' => $type);
+        $result = 0;
         if($useFilter && $this->filter){
-            $search['$or'] = array(
-                array('from'                => array('$regex' => $this->filter)),
-                array('to'                  => array('$regex' => $this->filter)),
-                array('address'             => array('$regex' => $this->filter)),
-                array('transactionHash'     => array('$regex' => $this->filter))
-            );
+            foreach(array('from', 'to', 'address', 'transactionHash') as $field){
+                $result += $this->oMongo->count('operations', array_merge($search, array($field => array('$regex' => $this->filter))));
+            }
         }
-        return $this->oMongo->count('operations', $search);
+        $result += $this->oMongo->count('operations', $search);
+        evxProfiler::checkpoint('getContractOperationCount', 'FINISH');
+        return $result;
     }
 
     /**
