@@ -44,6 +44,7 @@ if(3 === count($rParts)){
     }
     if(('address' === $rParts[1]) && $es->isValidAddress($rParts[2])){
         $header = "Address: " . $rParts[2];
+        $address = $rParts[2];
         $error = FALSE;
     }
     if(('token' === $rParts[1]) && $es->isValidAddress($rParts[2])){
@@ -479,7 +480,7 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                             </table>
                         </div>
                         <div class="block" id="address-token-details">
-                            <div class="block-header"><h3>Token <span class="address-token-name"></span> Information</h3></div>
+                            <div class="block-header"><h3><?php if($address !== "0x55d34b686aa8c04921397c5807db9ecedba00a4c"): ?>Token <?php endif;?><span class="address-token-name"></span> Information</h3></div>
                             <table class="table">
                             <tr>
                                 <td colspan="2" id="address-token-description" class="list-field"></td>
