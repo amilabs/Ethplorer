@@ -1572,9 +1572,13 @@ class Ethplorer {
                                 }
                             }
                         }
+                        $tokenStartAt = $aToken['createdAt'];
+                        if(isset($this->aSettings['customTokenHistoryStart']) && isset($this->aSettings['customTokenHistoryStart'][$address])){
+                            $tokenStartAt = $this->aSettings['customTokenHistoryStart'][$address];
+                        }
                         for($i = 0; $i < count($result); $i++){
                             $zero = array('high' => 0, 'low' => 0, 'open' => 0, 'close' => 0, 'volume' => 0, 'volumeConverted' => 0);
-                            if($result[$i]['ts'] < $aToken['createdAt']){
+                            if($result[$i]['ts'] < $tokenStartAt){
                                 $result[$i] = array_merge($result[$i], $zero);
                             }
                             if(isset($aPatch['ts-' . $result[$i]['ts']])){
