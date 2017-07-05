@@ -19,7 +19,7 @@ class ethplorerController {
     protected $db;
     protected $command;
     protected $params = array();
-    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressTransactions', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getTop', 'getTokenHistoryGrouped', 'getTokenPriceHistoryGrouped', 'getAddressPriceHistoryGrouped');
+    protected $apiCommands = array('getTxInfo', 'getTokenHistory', 'getAddressTransactions', 'getAddressInfo', 'getTokenInfo', 'getAddressHistory', 'getTopTokens', 'getTop', 'getTokenHistoryGrouped', 'getTokenPriceHistoryGrouped', 'getAddressPriceHistoryGrouped', 'getBlockTransactions', 'getLastBlock');
     protected $defaults;
     protected $startTime;
     protected $cacheState = '';
@@ -429,6 +429,18 @@ class ethplorerController {
         $result = array('history' => $this->db->getAddressPriceHistoryGrouped($address));
         if(isset($result['history']['cache'])) $this->cacheState = $result['history']['cache'];
         else $this->cacheState = '';
+        $this->sendResult($result);
+    }
+
+    public function getBlockTransactions(){
+        $block = (int)$this->getRequest('block');
+        $result = $this->db->getBlockTransactions($block);
+        $this->sendResult($result);
+    }
+
+
+    public function getLastBlock(){
+        $result = array('lastBlock' => $this->db->getLastBlock());
         $this->sendResult($result);
     }
 

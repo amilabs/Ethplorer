@@ -1513,6 +1513,34 @@ class Ethplorer {
         return $result;
     }
 
+    public function getBlockTransactions($block, $showZero = false){
+        $cache = 'block-txs-' . $block;
+        $transactions = $this->oCache->get($cache, false, true);
+        if(!$transactions){
+            $transactions = array();
+            $search = array('blockNumber' => $block);
+            if(!$showZero){
+                $search = array('$and' => array($search, array('value' => array('$gt' => 0))));
+            }
+            $cursor = $this->oMongo->find('transactions', $search, array("timestamp" => 1), $limit);
+            foreach($cursor as $tx){
+                $receipt = isset($tx['receipt']) ? $tx['receipt'] : false;
+                $tx['gasLimit'] = $tx['gas'];
+                $tx['gasUsed'] = $receipt ? $receipt['gasUsed'] : 0;
+                $transactions[] = array(
+                    'timestamp' => $tx['timestamp'],
+                    'from' => $tx['from'],
+                    'to' => $tx['to'],
+                    'hash' => $tx['hash'],
+                    'value' => $tx['value'],
+                    'success' => (($tx['gasUsed'] < $tx['gasLimit']) || ($receipt && !empty($receipt['logs'])))
+                );
+            }
+            $this->oCache->save($cache, $transactions);
+        }
+        return $transactions;
+    }
+
     public function getTokenPrice($address, $updateCache = FALSE){
         $result = false;
         $cache = 'rates';
@@ -1553,7 +1581,8 @@ class Ethplorer {
                 $result = $this->_jsonrpcall($this->aSettings['currency'], $method, $params);
                 if($result){
                     $aToken = $this->getToken($address);
-                    if($aToken && isset($aToken['createdAt'])){
+                    $tokenStartAt = false;
+                    if($aToken){
                         $patchFile = dirname(__FILE__) . '/../patches/price-' . $address . '.patch';
                         $aPatch = array();
                         if(file_exists($patchFile)){
@@ -1572,7 +1601,9 @@ class Ethplorer {
                                 }
                             }
                         }
-                        $tokenStartAt = $aToken['createdAt'];
+                        if(isset($aToken['createdAt'])){
+                            $tokenStartAt = $aToken['createdAt'];
+                        }
                         if(isset($this->aSettings['customTokenHistoryStart']) && isset($this->aSettings['customTokenHistoryStart'][$address])){
                             $tokenStartAt = $this->aSettings['customTokenHistoryStart'][$address];
                         }
