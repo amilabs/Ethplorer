@@ -310,7 +310,7 @@ class Ethplorer {
             $result['balance'] = $this->getBalance($address);
             $result['balanceOut'] = 0;
             $result['balanceIn'] = 0;
-            if($this->isHighloadedAddress($address) < 10000){
+            if(!$this->isHighloadedAddress($address)){
                 $result['balanceOut'] = $this->getEtherTotalOut($address);
                 $result['balanceIn'] = $result['balanceOut'] + $result['balance'];
             }

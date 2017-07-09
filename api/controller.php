@@ -174,6 +174,11 @@ class ethplorerController {
             ),
             'countTxs' => $this->db->countTransactions($address)
         );
+        if($result['countTxs'] < 10000){
+            $out = $this->db->getEtherTotalOut($address);
+            $result['ETH']['totalIn'] = $result['ETH']['balance'] + $out;
+            $result['ETH']['totalOut'] = $out;
+        }
         if($contract = $this->db->getContract($address)){
             $result['contractInfo'] = array(
                 'creatorAddress' => $contract['creator'],
