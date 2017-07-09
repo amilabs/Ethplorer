@@ -174,7 +174,7 @@ class ethplorerController {
             ),
             'countTxs' => $this->db->countTransactions($address)
         );
-        if($result['countTxs'] < 10000){
+        if($result['countTxs'] && ($result['countTxs'] < 10000)){
             $out = $this->db->getEtherTotalOut($address);
             $result['ETH']['totalIn'] = $result['ETH']['balance'] + $out;
             $result['ETH']['totalOut'] = $out;
