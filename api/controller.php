@@ -142,9 +142,9 @@ class ethplorerController {
 
             // @todo: check what's wrong with cache
             $result['countOps'] = $this->db->countOperations($address);
-            $result['transfersCount'] = result['countOps'];
-            if(isset($result['issuancesCount'])){
-                $result['transfersCount'] -= $result['issuancesCount'];
+            $result['transfersCount'] = (int)$result['countOps'];
+            if(isset($result['issuancesCount']) && $result['issuancesCount']){
+                $result['transfersCount'] = $result['transfersCount'] - (int)$result['issuancesCount'];
             }
             $result['holdersCount'] = $this->db->getTokenHoldersCount($address);
         }else{
