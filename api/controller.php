@@ -139,7 +139,14 @@ class ethplorerController {
             unset($result['checked']);
             unset($result['txsCount']);
             // unset($result['transfersCount']);
+
+            // @todo: check what's wrong with cache
             $result['countOps'] = $this->db->countOperations($address);
+            $result['transfersCount'] = result['countOps'];
+            if(isset($result['issuancesCount'])){
+                $result['transfersCount'] -= $result['issuancesCount'];
+            }
+            $result['holdersCount'] = $this->db->getTokenHoldersCount($address);
         }else{
             $this->sendError(150, 'Address is not a token contract');
         }
@@ -159,10 +166,7 @@ class ethplorerController {
             $this->sendError(103, 'Missing address');
         }
         $address = strtolower($address);
-        if(!$this->db->isValidAddress($address)){
-            $this->sendError(104, 'Invalid address format');
-        }
-        if($onlyToken && !$this->db->isValidAddress($onlyToken)){
+        if(!$this->db->isValidAddress($address) || ($onlyToken && !$this->db->isValidAddress($onlyToken))){
             $this->sendError(104, 'Invalid address format');
         }
         $result = array(
