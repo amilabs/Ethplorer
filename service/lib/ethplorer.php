@@ -529,7 +529,7 @@ class Ethplorer {
             $result['gasLimit'] = $result['gas'];
             unset($result["gas"]);
             $result['gasUsed'] = $receipt ? $receipt['gasUsed'] : 0;
-            $toContract = !!$this->getContract($tesult['to']);
+            $toContract = !!$this->getContract($result['to']);
             $result['success'] = (!$toContract || ($result['gasUsed'] < $result['gasLimit']) || ($receipt && !empty($receipt['logs'])));
         }
         evxProfiler::checkpoint('getTransaction', 'FINISH');
