@@ -74,7 +74,7 @@ class Ethplorer {
      * @var string
      */
     protected $filter = FALSE;
-
+    
     /**
      * Constructor.
      *
@@ -396,6 +396,7 @@ class Ethplorer {
             $receipt = isset($tx['receipt']) ? $tx['receipt'] : false;
             $tx['gasLimit'] = $tx['gas'];
             $tx['gasUsed'] = $receipt ? $receipt['gasUsed'] : 0;
+            $toContract = !!$this->getContract($tx['to']);
             $result[] = array(
                 'timestamp' => $tx['timestamp'],
                 'from' => $tx['from'],
@@ -403,7 +404,7 @@ class Ethplorer {
                 'hash' => $tx['hash'],
                 'value' => $tx['value'],
                 'input' => $tx['input'],
-                'success' => (($tx['gasUsed'] < $tx['gasLimit']) || ($receipt && !empty($receipt['logs'])))
+                'success' => (!$toContract || !in_array($tx['gasUsed'] < $tx['gasLimit']) || ($receipt && !empty($receipt['logs'])))
             );
         }
         return $result;
@@ -419,6 +420,7 @@ class Ethplorer {
         evxProfiler::checkpoint('getTransactionDetails', 'START', 'hash=' . $hash);
         $cache = 'tx-' . $hash;
         $result = $this->oCache->get($cache, false, true);
+        if(isset($_GET['update_cache']) && $_GET['update_cache']) $result = FALSE;
         if(false === $result){
             $tx = $this->getTransaction($hash);
             $result = array(
@@ -527,7 +529,8 @@ class Ethplorer {
             $result['gasLimit'] = $result['gas'];
             unset($result["gas"]);
             $result['gasUsed'] = $receipt ? $receipt['gasUsed'] : 0;
-            $result['success'] = (($result['gasUsed'] < $result['gasLimit']) || ($receipt && !empty($receipt['logs'])));
+            $toContract = !!$this->getContract($tesult['to']);
+            $result['success'] = (!$toContract || ($result['gasUsed'] < $result['gasLimit']) || ($receipt && !empty($receipt['logs'])));
         }
         evxProfiler::checkpoint('getTransaction', 'FINISH');
         return $result;
