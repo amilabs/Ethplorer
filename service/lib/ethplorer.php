@@ -1562,6 +1562,12 @@ class Ethplorer {
                     unset($result['code_from']);
                     unset($result['code_to']);
                     unset($result['bid']);
+                    // THBEX price bug workaround
+                    if('0xff71cb760666ab06aa73f34995b42dd4b85ea07b' === $address){
+                        if($result > 1){
+                            $result = 1/$result;
+                        }
+                    }
                     $rates[$address] = $result;
                     $this->oCache->save($cache, $rates);
                 }
