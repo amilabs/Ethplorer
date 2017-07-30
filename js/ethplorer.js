@@ -722,7 +722,7 @@ Ethplorer = {
             qrIcon = '<a style="float:right;position:relative;line-height:48px;" href="javascript:void(0)" onclick="Ethplorer.showQRCode(\'' + address + '\');"><i class="fa fa-qrcode"></i></a>';
             $('#address-token-details').show();
             var oToken = Ethplorer.prepareToken(data.token);
-            oToken.address = oToken.address;
+            // oToken.address = oToken.address;
             var ttype = (address.toLowerCase() !== "0x55d34b686aa8c04921397c5807db9ecedba00a4c") ? 'Token ' : 'Contract ';
             $('#ethplorer-path').html(qrIcon + ttype + oToken.name + '<br><small>' + Ethplorer.Utils.toChecksumAddress(oToken.address) + '</small>');
             titleAdd = ttype + oToken.name + (oToken.symbol ? (' [' + oToken.symbol + ']') : '' ) + ' Information';
@@ -739,6 +739,7 @@ Ethplorer = {
                     oToken.description = Ethplorer.Config.tokens[oToken.address].description;
                 }
             }
+            console.log(oToken);
             var showAlert = document.location.hash && (document.location.hash.indexOf('showAlert') > 0);
             if(oToken.alert && showAlert){
                 $('#ethplorer-alert').html(oToken.alert);

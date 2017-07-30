@@ -517,6 +517,23 @@ a.dashed {
     text-overflow: ellipsis
 }
 
+#ethplorer-alert {
+    display: none;
+    padding: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100vw;
+    background-color: white;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 22px;
+    margin-top: 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis
+}
+
+
 #token-history-grouped-widget {
     display: none;
     overflow: hidden;

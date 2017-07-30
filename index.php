@@ -198,7 +198,9 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                 <script type="text/javascript">
                     if(typeof(eWgs) === 'undefined'){ var eWgs = []; }
                 </script>
-                <div class="col-xs-12 col-sm-12" style="display: none;" id="ethplorer-alert"></div>
+                <div class="col-xs-12 col-sm-12">
+                    <h1 id="ethplorer-alert"></h1>
+                </div>
 
                 <div id="txDetails" class="content-page">
                     <div>
