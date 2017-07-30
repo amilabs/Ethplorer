@@ -739,6 +739,11 @@ Ethplorer = {
                     oToken.description = Ethplorer.Config.tokens[oToken.address].description;
                 }
             }
+            var showAlert = document.location.hash && (document.location.hash.indexOf('showAlert') > 0);
+            if(oToken.alert && showAlert){
+                $('#ethplorer-alert').html(oToken.alert);
+                $('#ethplorer-alert').show();
+            }
             if(oToken.description){
                 oToken.description = $('<span>').text(oToken.description).html();
                 oToken.description = oToken.description.replace(/http[s]?\:\/\/[^\s]*/g, '<a href="$&" target="_blank">$&</a>');
