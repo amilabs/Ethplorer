@@ -523,7 +523,8 @@ a.dashed {
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100vw;
-    background-color: white;
+    background-color: #f8f577;
+    color: red;
     border-radius: 8px;
     text-align: center;
     font-size: 22px;
@@ -531,6 +532,10 @@ a.dashed {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis
+}
+
+#ethplorer-alert a {
+    color: #ac0000 !important;
 }
 
 
