@@ -1545,12 +1545,13 @@ class Ethplorer {
     }
 
     public function getTokenPrice($address, $updateCache = FALSE){
+        if(isset($this->aSettings['hidePrice']) && in_array($address, $this->aSettings['hidePrice'])){
+            return FALSE;
+        }
         if(isset($this->aSettings['priceSource']) && isset($this->aSettings['priceSource'][$address])){
             $address = $this->aSettings['priceSource'][$address];
         }
         $result = false;
-        // Ethbits workaround
-        if('0x807b9487aaf00629b674bd6d02e4917453bc5939' === $address) return FALSE;
         $cache = 'rates';
         $rates = $this->oCache->get($cache, false, true);
         if($updateCache || (((FALSE === $rates) || (is_array($rates) && !isset($rates[$address]))) && isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates'])))){
@@ -1583,13 +1584,14 @@ class Ethplorer {
     }
 
     public function getTokenPriceHistory($address, $period = 0, $type = 'hourly', $updateCache = FALSE){
+        if(isset($this->aSettings['hidePrice']) && in_array($address, $this->aSettings['hidePrice'])){
+            return FALSE;
+        }
         if(isset($this->aSettings['priceSource']) && isset($this->aSettings['priceSource'][$address])){
             $address = $this->aSettings['priceSource'][$address];
         }
         evxProfiler::checkpoint('getTokenPriceHistory', 'START', 'address=' . $address . ', period=' . $period . ', type=' . $type);
         $result = false;
-        // Ethbits workaround
-        if('0x807b9487aaf00629b674bd6d02e4917453bc5939' === $address) return FALSE;
         $rates = array();
         $cache = 'rates-history-' . /*($period > 0 ? ('period-' . $period . '-') : '' ) . ($type != 'hourly' ? $type . '-' : '') .*/ $address;
         $result = $this->oCache->get($cache, false, true);
