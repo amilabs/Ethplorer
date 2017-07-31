@@ -1545,6 +1545,9 @@ class Ethplorer {
     }
 
     public function getTokenPrice($address, $updateCache = FALSE){
+        if(isset($this->aSettings['priceSource']) && isset($this->aSettings['priceSource'][$address])){
+            $address = $this->aSettings['priceSource'][$address];
+        }
         $result = false;
         // Ethbits workaround
         if('0x807b9487aaf00629b674bd6d02e4917453bc5939' === $address) return FALSE;
@@ -1580,6 +1583,9 @@ class Ethplorer {
     }
 
     public function getTokenPriceHistory($address, $period = 0, $type = 'hourly', $updateCache = FALSE){
+        if(isset($this->aSettings['priceSource']) && isset($this->aSettings['priceSource'][$address])){
+            $address = $this->aSettings['priceSource'][$address];
+        }
         evxProfiler::checkpoint('getTokenPriceHistory', 'START', 'address=' . $address . ', period=' . $period . ', type=' . $type);
         $result = false;
         // Ethbits workaround
