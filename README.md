@@ -16,12 +16,12 @@ Provides API, Widgets for websites.
 # Widgets for third-party websites
 ![alt tag](https://github.com/EverexIO/Ethplorer/blob/develop/images/augur-widget.png)
 
-[Samples and instructions for widget usage] (http://ethplorer.io/widgets)
+[Samples and instructions for widget usage](https://ethplorer.io/widgets)
 
 
 # API
 
-Documentation available at [WIKI pages ](https://github.com/EverexIO/Ethplorer/wiki/ethplorer-api).
+Documentation available at [WIKI pages](https://github.com/EverexIO/Ethplorer/wiki/ethplorer-api).
 
 
 # Installation
@@ -39,4 +39,4 @@ Make sure your web server supports .htaccess and mod_rewrite.
 
 # Configure
 
-Copy service/config.sample.php to service/config.php and specify service addresses.
+Copy `service/config.sample.php` to `service/config.php` and specify service addresses.
