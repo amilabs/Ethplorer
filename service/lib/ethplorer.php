@@ -1567,8 +1567,8 @@ class Ethplorer {
                     unset($result['bid']);
                     // THBEX price bug workaround
                     if('0xff71cb760666ab06aa73f34995b42dd4b85ea07b' === $address){
-                        if($result > 1){
-                            $result = 1/$result;
+                        if($result['rate'] > 1){
+                            $result = 1 / (float)$result['rate'];
                         }
                     }
                     $rates[$address] = $result;
