@@ -740,7 +740,7 @@ Ethplorer = {
                 }
             }
             console.log(oToken);
-            var showAlert = document.location.hash && (document.location.hash.indexOf('showAlert') > 0);
+            var showAlert = true; // document.location.hash && (document.location.hash.indexOf('showAlert') > 0);
             if(oToken.alert && showAlert){
                 $('#ethplorer-alert').html(oToken.alert);
                 $('#ethplorer-alert').show();
