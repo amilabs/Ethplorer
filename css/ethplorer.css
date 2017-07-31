@@ -524,7 +524,7 @@ a.dashed {
     text-overflow: ellipsis;
     max-width: 100vw;
     background-color: #f8f577;
-    color: red;
+    color: #ac0000;
     border-radius: 8px;
     text-align: center;
     font-size: 22px;
