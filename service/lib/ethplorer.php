@@ -1132,7 +1132,7 @@ class Ethplorer {
     public function getTokensTop($limit = 10, $updateCache = false){
         $cache = 'top_tokens';
         $result = $this->oCache->get($cache, false, true, 3600);
-        if(1 || $updateCache || (FALSE === $result)){
+        if($updateCache || (FALSE === $result)){
             $aTokens = $this->getTokens();
             $result = array();
             $total = 0;
