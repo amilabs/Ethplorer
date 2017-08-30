@@ -109,15 +109,26 @@ class evxMongo {
             // php version 5.6, 7.x use mongodb extension
             case 'mongodb':
                 $this->oMongo = new MongoDB\Driver\Manager($aSettings['server']);
-                $this->aDBs = array(
-                    'transactions' => $prefix . "eth.transactions",
-                    'blocks'       => $prefix . "eth.blocks",
-                    'contracts'    => $prefix . "eth.contracts",
-                    'tokens'       => $prefix . "erc20.contracts",
-                    'operations'   => $prefix . "erc20.operations",
-                    'balances'     => $prefix . "erc20.balances"
-                );
-                break;
+                if(isset($aSettings['newFormat']) && $aSettings['newFormat']){
+                    $this->aDBs = array(
+                        'transactions' => "transactions",
+                        'blocks'       => "blocks",
+                        'contracts'    => "contracts",
+                        'tokens'       => "tokens",
+                        'operations'   => "tokenOperations",
+                        'balances'     => "tokenBalances"
+                    );
+                }else{
+                    $this->aDBs = array(
+                        'transactions' => $prefix . "eth.transactions",
+                        'blocks'       => $prefix . "eth.blocks",
+                        'contracts'    => $prefix . "eth.contracts",
+                        'tokens'       => $prefix . "erc20.contracts",
+                        'operations'   => $prefix . "erc20.operations",
+                        'balances'     => $prefix . "erc20.balances"
+                    );
+                }
+                break;                
             default:
                 throw new \Exception('Unknown mongodb driver ' . $dbDriver);
         }

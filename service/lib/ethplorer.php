@@ -322,7 +322,8 @@ class Ethplorer {
     public function getTokenTotalInOut($address){
         evxProfiler::checkpoint('getTokenTotalInOut', 'START', 'address=' . $address);
         $result = array('totalIn' => 0, 'totalOut' => 0);
-        if($this->isValidAddress($address)){
+        // temporary off
+        if(false && $this->isValidAddress($address)){
             $aResult = $this->oMongo->aggregate('balances', array(
                 array('$match' => array("contract" => $address)),
                 array(

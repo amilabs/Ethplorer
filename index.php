@@ -500,14 +500,14 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                                 <td>Total Supply</td>
                                 <td id="address-token-totalSupply" class="list-field"></td>
                             </tr>
-                            <tr>
+                            <!--tr>
                                 <td>Total In</td>
                                 <td id="address-token-totalIn" class="list-field"></td>
                             </tr>
                             <tr>
                                 <td>Total Out</td>
                                 <td id="address-token-totalOut" class="list-field"></td>
-                            </tr>
+                            </tr-->
                             <tr>
                                 <td>Decimals</td>
                                 <td id="address-token-decimals" class="list-field"></td>
