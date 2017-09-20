@@ -397,7 +397,7 @@ class Ethplorer {
             $receipt = isset($tx['receipt']) ? $tx['receipt'] : false;
             $tx['gasLimit'] = $tx['gas'];
             $tx['gasUsed'] = $receipt ? $receipt['gasUsed'] : 0;
-            $toContract = !!$this->getContract($tx['to']);
+            // $toContract = !!$this->getContract($tx['to']);
             $result[] = array(
                 'timestamp' => $tx['timestamp'],
                 'from' => $tx['from'],
@@ -405,7 +405,7 @@ class Ethplorer {
                 'hash' => $tx['hash'],
                 'value' => $tx['value'],
                 'input' => $tx['input'],
-                'success' => (!$toContract || !in_array($tx['gasUsed'] < $tx['gasLimit']) || ($receipt && !empty($receipt['logs'])))
+                'success' => ((21000 == $tx['gasUsed']) || /*!$toContract ||*/ !in_array($tx['gasUsed'] < $tx['gasLimit']) || ($receipt && !empty($receipt['logs'])))
             );
         }
         return $result;
