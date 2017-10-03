@@ -1024,6 +1024,7 @@ Ethplorer = {
                     var date = Ethplorer.Utils.ts2date(tx.timestamp, false);
                     var value = Ethplorer.Utils.formatNum(qty, true, txToken.decimals, 2) + ' ' + txToken.symbol;
                     var token = Ethplorer.Utils.getEthplorerLink(tx.contract, txToken.name, false);
+                    address = address.toLowerCase();
                     var from = tx.from ? ((tx.from !== address) ? Ethplorer.Utils.getEthplorerLink(tx.from) : ('<span class="same-address">' + address + '</span>')) : false;
                     var to = tx.to ? ((tx.to !== address) ? Ethplorer.Utils.getEthplorerLink(tx.to) : ('<span class="same-address">' + address + '</span>')) : false;
                     var _address = (tx.address && (tx.address === address )) ? ('<span class="same-address">' + address + '</span>') : tx.address;
