@@ -58,7 +58,7 @@ if($error){
         die();
     }
 }
-$testWidget = false;
+$testWidget = true;
 if(isset($_GET['test'])){
     $testWidget = true;
 }
