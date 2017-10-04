@@ -1723,7 +1723,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
                     }
                 }
                 for(var token in aBalances){
-                    if(d.getTime() == fnDate.getTime() && ('undefined' !== typeof(widgetData['tokenPrices'][token]['rate']))){
+                    if(d.getTime() == fnDate.getTime() && ('undefined' !== typeof(widgetData['tokenPrices'][token]) && 'undefined' !== typeof(widgetData['tokenPrices'][token]['rate']))){
                         aPrices[token][volumeDate] = widgetData['tokenPrices'][token]['rate'];
                     }
                     if('undefined' !== typeof(aPrices[token]) && 'undefined' !== typeof(aPrices[token][volumeDate])){
