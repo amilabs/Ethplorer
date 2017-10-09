@@ -1987,7 +1987,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
 
     this.refreshWidget = function(obj){
         return function(data){
-            if(data && !data.error && data.history){
+            if(data && !data.error && data.history && !(('undefined' === typeof(data.history['volume']) && 'undefined' === typeof(data.history['txs'])))){
                 //console.log(data);
                 obj.widgetData = data.history;
                 obj.el.find('.txs-loading').remove();
@@ -1999,6 +1999,7 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
                 setTimeout(ethplorerWidget.fixTilda, 300);
             }else{
                 obj.el.find('.txs-loading').remove();
+                obj.el.remove();
             }
         };
     }(this);
