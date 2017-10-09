@@ -1998,8 +1998,10 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
                 }
                 setTimeout(ethplorerWidget.fixTilda, 300);
             }else{
-                obj.el.find('.txs-loading').remove();
-                obj.el.remove();
+                obj.el.find('.txs-loading').text('No data for chart');
+                $('.ethplorer-widget').css('min-height', '1px');
+                $('.txs-loading').css('min-height', '1px');
+                $('.txs-loading').css('padding-top', '10px');
             }
         };
     }(this);
