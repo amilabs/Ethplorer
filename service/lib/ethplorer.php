@@ -1153,6 +1153,7 @@ class Ethplorer {
                     $aToken['volume'] = 0;
                     $aToken['cap'] = 0;
                     $aToken['availableSupply'] = 0;
+                    $aToken['txsCount24'] = 0;
                     $aToken['price'] = $aPrice;
                     if(isset($aPrice['marketCapUsd'])){
                         $aToken['cap'] = $aPrice['marketCapUsd'];
@@ -1203,6 +1204,35 @@ class Ethplorer {
                             unset($aToken['vol-' . $period . 'd-previous']);
                         }
                     }
+
+                    // get tx's trends
+                    if($criteria == 'count'){
+                        foreach($aPeriods as $aPeriod){
+                            $period = $aPeriod['period'];
+                            $aToken['txsCount-' . $period . 'd-current'] = 0;
+                            $aToken['txsCount-' . $period . 'd-previous'] = 0;
+                        }
+                        $aHistoryCount = $this->getTokenHistoryGrouped(60, $address, 'hourly');
+                        if(is_array($aHistoryCount)){
+                            foreach($aHistoryCount as $aRecord){
+                                foreach($aPeriods as $aPeriod){
+                                    $period = $aPeriod['period'];
+                                    $aRecordDate = date("Y-m-d", $aRecord['ts']);
+                                    $inCurrentPeriod = ($aRecordDate > $aPeriod['currentPeriodStart']) || (($aRecordDate == $aPeriod['currentPeriodStart']) && ($aRecord['_id']->hour >= $curHour ));
+                                    $inPreviousPeriod = !$inCurrentPeriod && (($aRecordDate > $aPeriod['previousPeriodStart']) || (($aRecordDate == $aPeriod['previousPeriodStart']) && ($aRecord['_id']->hour >= $curHour)));
+                                    if($inCurrentPeriod){
+                                        $aToken['txsCount-' . $period . 'd-current'] += $aRecord['cnt'];
+                                        if(1 == $period){
+                                            $aToken['txsCount24'] += $aRecord['cnt'];
+                                        }
+                                    }else if($inPreviousPeriod){
+                                        $aToken['txsCount-' . $period . 'd-previous'] += $aRecord['cnt'];
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     $result[] = $aToken;
                 }
             }
@@ -1215,32 +1245,6 @@ class Ethplorer {
             foreach($result as $i => $item){
                 if($i < $limit){
                     // $item['percentage'] = round(($item['volume'] / $total) * 100);
-
-                    // get tx's trends
-                    if($criteria == 'count'){
-                        foreach($aPeriods as $aPeriod){
-                            $period = $aPeriod['period'];
-                            $item['txsCount-' . $period . 'd-current'] = 0;
-                            $item['txsCount-' . $period . 'd-previous'] = 0;
-                        }
-                        $aHistoryCount = $this->getTokenHistoryGrouped(60, $item['address'], 'hourly');
-                        if(is_array($aHistoryCount)){
-                            foreach($aHistoryCount as $aRecord){
-                                foreach($aPeriods as $aPeriod){
-                                    $period = $aPeriod['period'];
-                                    $aRecordDate = date("Y-m-d", $aRecord['ts']);
-                                    $inCurrentPeriod = ($aRecordDate > $aPeriod['currentPeriodStart']) || (($aRecordDate == $aPeriod['currentPeriodStart']) && ($aRecord['_id']->hour >= $curHour ));
-                                    $inPreviousPeriod = !$inCurrentPeriod && (($aRecordDate > $aPeriod['previousPeriodStart']) || (($aRecordDate == $aPeriod['previousPeriodStart']) && ($aRecord['_id']->hour >= $curHour)));
-                                    if($inCurrentPeriod){
-                                        $item['txsCount-' . $period . 'd-current'] += $aRecord['cnt'];
-                                    }else if($inPreviousPeriod){
-                                        $item['txsCount-' . $period . 'd-previous'] += $aRecord['cnt'];
-                                    }
-                                }
-                            }
-                        }
-                    }
-
                     $res[] = $item;
                 }
             }
@@ -1342,7 +1346,7 @@ class Ethplorer {
     }
 
     protected function _sortByTxCount($a, $b){
-        return ($a['txsCount'] == $b['txsCount']) ? 0 : (($a['txsCount'] > $b['txsCount']) ? -1 : 1);
+        return ($a['txsCount24'] == $b['txsCount24']) ? 0 : (($a['txsCount24'] > $b['txsCount24']) ? -1 : 1);
     }
 
     /**

@@ -15,7 +15,7 @@ ethplorerWidget = {
     chartWidgets: [],
     chartControlWidgets: [],
 
-    cssVersion: 8,
+    cssVersion: 9,
 
     // Widget initialization
     init: function(selector, type, options, templates){
@@ -920,7 +920,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             address: ethplorerWidget.Utils.link(data.address, data.address, data.address),
             name: ethplorerWidget.Utils.link(data.address, name, name, false, data.name ? "" : "tx-unknown"),
             name_symbol: ethplorerWidget.Utils.link(data.address, name + (symbol ? ' (' + symbol + ')' : ''), name + (symbol ? ' (' + symbol + ')' : ''), false, data.name ? "" : "tx-unknown"),
-            txsCount: data.txsCount,
+            txsCount: data.txsCount24,
             price: (data.price && data.price.rate) ? ('$ ' + ethplorerWidget.Utils.formatNum(data.price.rate, true, 2, false)) : '',
             volume: data.volume ? ('$ ' + ethplorerWidget.Utils.formatNum(data.volume, true, data.volume >= 1000 ? 0 : 2, true)) : '',
             cap: data.cap ? ('$ ' + ethplorerWidget.Utils.formatNum(data.cap, true, data.cap >= 1000 ? 0 : 2, true)) : '',
