@@ -956,7 +956,7 @@ class Ethplorer {
      * @param int $limit       Maximum number of records
      * @return array
      */
-    public function getAddressOperations($address, $limit = 10, $offset = false, array $aTypes = FALSE){
+    public function getAddressOperations($address, $limit = 10, $offset = false, array $aTypes = NULL){
         evxProfiler::checkpoint('getAddressOperations', 'START', 'address=' . $address . ', limit=' . $limit . ', offset=' . (int)$offset);
 
         $result = array();
@@ -977,7 +977,7 @@ class Ethplorer {
             );
         }
 
-        if((FALSE !== $aTypes) && is_array($aTypes) && count($aTypes)){
+        if($aTypes && is_array($aTypes) && count($aTypes)){
             $search['type'] = array('$in' => $aTypes);
         }
 
@@ -1124,11 +1124,12 @@ class Ethplorer {
      * Returns top tokens list (new).
      *
      * @param int $limit         Maximum records number
+     * @param string $criteria   Sort criteria
      * @param bool $updateCache  Force unexpired cache update
      * @return array
      */
-    public function getTokensTop($limit = 10, $updateCache = false){
-        $cache = 'top_tokens';
+    public function getTokensTop($limit = 10, $criteria = 'trade', $updateCache = false){
+        $cache = 'top_tokens_' . $criteria;
         $result = $this->oCache->get($cache, false, true, 3600);
         if($updateCache || (FALSE === $result)){
             $aTokens = $this->getTokens();
@@ -1141,8 +1142,8 @@ class Ethplorer {
             );
             foreach($aPeriods as $idx => $aPeriod){
                 $period = $aPeriod['period'];
-                $aPeriods[$idx]['currentPeriodStart'] = $f1a = date("Y-m-d", time() - $period * 24 * 3600);
-                $aPeriods[$idx]['previousPeriodStart'] = $f1a = date("Y-m-d", time() - $period * 48 * 3600);
+                $aPeriods[$idx]['currentPeriodStart'] = date("Y-m-d", time() - $period * 24 * 3600);
+                $aPeriods[$idx]['previousPeriodStart'] = date("Y-m-d", time() - $period * 48 * 3600);
             }
             foreach($aTokens as $aToken){
                 $address = $aToken['address'];
@@ -1150,13 +1151,25 @@ class Ethplorer {
                 $curHour = (int)date('H');
                 if($aPrice && $aToken['totalSupply']){
                     $aToken['volume'] = 0;
+                    $aToken['cap'] = 0;
+                    $aToken['availableSupply'] = 0;
                     $aToken['price'] = $aPrice;
+                    if(isset($aPrice['marketCapUsd'])){
+                        $aToken['cap'] = $aPrice['marketCapUsd'];
+                    }
+                    if(isset($aPrice['availableSupply'])){
+                        $aToken['availableSupply'] = $aPrice['availableSupply'];
+                    }
                     foreach($aPeriods as $aPeriod){
                         $period = $aPeriod['period'];
                         $aToken['volume-' . $period . 'd-current'] = 0;
                         $aToken['volume-' . $period . 'd-previous'] = 0;
+                        $aToken['vol-' . $period . 'd-current'] = 0;
+                        $aToken['vol-' . $period . 'd-previous'] = 0;
+                        $aToken['cap-' . $period . 'd-current'] = 0;
+                        $aToken['cap-' . $period . 'd-previous'] = 0;
                     }
-                    $aHistory = $this->getTokenPriceHistory($address, 60 * 24, 'hourly');
+                    $aHistory = $this->getTokenPriceHistory($address, 60, 'hourly');
                     if(is_array($aHistory)){
                         foreach($aHistory as $aRecord){
                             foreach($aPeriods as $aPeriod){
@@ -1165,28 +1178,73 @@ class Ethplorer {
                                 $inPreviousPeriod = !$inCurrentPeriod && (($aRecord['date'] > $aPeriod['previousPeriodStart']) || (($aRecord['date'] == $aPeriod['previousPeriodStart']) && ($aRecord['hour'] >= $curHour )));
                                 if($inCurrentPeriod){
                                     $aToken['volume-' . $period . 'd-current'] += $aRecord['volumeConverted'];
+                                    $aToken['vol-' . $period . 'd-current'] += $aRecord['volume'];
                                     if(1 == $period){
-                                        $aToken['volume'] += $aRecord['volumeConverted'];;
+                                        $aToken['volume'] += $aRecord['volumeConverted'];
                                     }
                                 }else if($inPreviousPeriod){
                                     $aToken['volume-' . $period . 'd-previous'] += $aRecord['volumeConverted'];
+                                    $aToken['vol-' . $period . 'd-previous'] += $aRecord['volume'];
                                 }
                             }
+                        }
+                        foreach($aPeriods as $aPeriod){
+                            $period = $aPeriod['period'];
+                            // get average price and cap
+                            if($aToken['vol-' . $period . 'd-current'] > 0 && $aToken['volume-' . $period . 'd-current'] > 0){
+                                $averagePrice = $aToken['volume-' . $period . 'd-current'] / $aToken['vol-' . $period . 'd-current'];
+                                $aToken['cap-' . $period . 'd-current'] = $aToken['availableSupply'] * $averagePrice;
+                            }
+                            if($aToken['vol-' . $period . 'd-previous'] > 0 && $aToken['volume-' . $period . 'd-previous'] > 0){
+                                $averagePrice = $aToken['volume-' . $period . 'd-previous'] / $aToken['vol-' . $period . 'd-previous'];
+                                $aToken['cap-' . $period . 'd-previous'] = $aToken['availableSupply'] * $averagePrice;
+                            }
+                            unset($aToken['vol-' . $period . 'd-current']);
+                            unset($aToken['vol-' . $period . 'd-previous']);
                         }
                     }
                     $result[] = $aToken;
                 }
-                usort($result, array($this, '_sortByVolume'));
-
-                $res = [];
-                foreach($result as $i => $item){
-                    if($i < $limit){
-                        // $item['percentage'] = round(($item['volume'] / $total) * 100);
-                        $res[] = $item;
-                    }
-                }
-                $result = $res;
             }
+            $sortMethod = '_sortByVolume';
+            if($criteria == 'cap') $sortMethod = '_sortByCap';
+            if($criteria == 'count') $sortMethod = '_sortByTxCount';
+            usort($result, array($this, $sortMethod));
+
+            $res = [];
+            foreach($result as $i => $item){
+                if($i < $limit){
+                    // $item['percentage'] = round(($item['volume'] / $total) * 100);
+
+                    // get tx's trends
+                    if($criteria == 'count'){
+                        foreach($aPeriods as $aPeriod){
+                            $period = $aPeriod['period'];
+                            $item['txsCount-' . $period . 'd-current'] = 0;
+                            $item['txsCount-' . $period . 'd-previous'] = 0;
+                        }
+                        $aHistoryCount = $this->getTokenHistoryGrouped(60, $item['address'], 'hourly');
+                        if(is_array($aHistoryCount)){
+                            foreach($aHistoryCount as $aRecord){
+                                foreach($aPeriods as $aPeriod){
+                                    $period = $aPeriod['period'];
+                                    $aRecordDate = date("Y-m-d", $aRecord['ts']);
+                                    $inCurrentPeriod = ($aRecordDate > $aPeriod['currentPeriodStart']) || (($aRecordDate == $aPeriod['currentPeriodStart']) && ($aRecord['_id']->hour >= $curHour ));
+                                    $inPreviousPeriod = !$inCurrentPeriod && (($aRecordDate > $aPeriod['previousPeriodStart']) || (($aRecordDate == $aPeriod['previousPeriodStart']) && ($aRecord['_id']->hour >= $curHour)));
+                                    if($inCurrentPeriod){
+                                        $item['txsCount-' . $period . 'd-current'] += $aRecord['cnt'];
+                                    }else if($inPreviousPeriod){
+                                        $item['txsCount-' . $period . 'd-previous'] += $aRecord['cnt'];
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    $res[] = $item;
+                }
+            }
+            $result = $res;
             $this->oCache->save($cache, $result);
         }
         return $result;
@@ -1279,6 +1337,14 @@ class Ethplorer {
         return ($a['volume'] == $b['volume']) ? 0 : (($a['volume'] > $b['volume']) ? -1 : 1);
     }
 
+    protected function _sortByCap($a, $b){
+        return ($a['cap'] == $b['cap']) ? 0 : (($a['cap'] > $b['cap']) ? -1 : 1);
+    }
+
+    protected function _sortByTxCount($a, $b){
+        return ($a['txsCount'] == $b['txsCount']) ? 0 : (($a['txsCount'] > $b['txsCount']) ? -1 : 1);
+    }
+
     /**
      * Returns transactions grouped by days.
      *
@@ -1286,8 +1352,8 @@ class Ethplorer {
      * @param string $address  Address
      * @return array
      */
-    public function getTokenHistoryGrouped($period = 30, $address = FALSE){
-        $cache = 'token_history_grouped-' . ($address ? ($address . '-') : '') . $period;
+    public function getTokenHistoryGrouped($period = 30, $address = FALSE, $type = 'daily'){
+        $cache = 'token_history_grouped-' . ($address ? ($address . '-') : '') . $period . (($type == 'hourly') ? '-hourly' : '');
         $result = $this->oCache->get($cache, false, true, 600);
         if(FALSE === $result){
             // Chainy
@@ -1299,17 +1365,21 @@ class Ethplorer {
             $aMatch = array("timestamp" => array('$gt' => $tsStart));
             if($address) $aMatch["contract"] = $address;
             $result = array();
+            $_id = array(
+                "year"  => array('$year' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                "month"  => array('$month' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
+                "day"  => array('$dayOfMonth' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
+            );
+            if($type == 'hourly'){
+                $_id['hour'] = array('$hour' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000)))));
+            }
             $dbData = $this->oMongo->aggregate(
                 'operations',
                 array(
                     array('$match' => $aMatch),
                     array(
                         '$group' => array(
-                            "_id" => array(
-                                "year"  => array('$year' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
-                                "month"  => array('$month' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
-                                "day"  => array( '$dayOfMonth' => array('$add' => array($this->oMongo->toDate(0), array('$multiply' => array('$timestamp', 1000))))),
-                            ),
+                            "_id" => $_id,
                             'ts' =>  array('$first' => '$timestamp'),
                             'cnt' => array('$sum' => 1)
                         )

@@ -702,44 +702,62 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
         criteria: {
             cap: {
                 rowHeader: '<tr>' +
-                        '<th class="tx-field">#</th>' +
-                        '<th class="tx-field">Token</th>' +
-                        '<th class="tx-field">Cap</th>' +
-                        '<th class="tx-field">Price</th>' +
-                        '<th class="tx-field">Trend(24h)</th>' +
-                        '<th class="tx-field">Trend(7d)</th>' +
-                        '<th class="tx-field">Trend(30d)</th>' +
-                   '</tr>',
+                    '<th class="tx-field">#</th>' +
+                    '<th class="tx-field">Token</th>' +
+                    '<th class="tx-field ewDiff">Cap</th>' +
+                    '<th class="tx-field ewDiff">Price</th>' +
+                    '<th class="tx-field ewDiff">Trend(24h)</th>' +
+                    '<th class="tx-field ewDiff">Trend(7d)</th>' +
+                    '<th class="tx-field ewDiff">Trend(30d)</th>' +
+                    '</tr>',
                 row: '<tr>' +
-                        '<td class="tx-field">%position%</td>' +
-                        '<td class="tx-field">%name_symbol%</td>' +
-                        '<td class="tx-field">%cap%</td>' +
-                        '<td class="tx-field">%price%</td>' +
-                        '<td class="tx-field">%trend_1d%</td>' +
-                        '<td class="tx-field">%trend_7d%</td>' +
-                        '<td class="tx-field">%trend_30d%</td>' +
-                   '</tr>'
+                    '<td class="tx-field">%position%</td>' +
+                    '<td class="tx-field">%name_symbol%</td>' +
+                    '<td class="tx-field">%cap%</td>' +
+                    '<td class="tx-field ewDiff">%price%</td>' +
+                    '<td class="tx-field ewDiff">%trend_1d%</td>' +
+                    '<td class="tx-field ewDiff">%trend_7d%</td>' +
+                    '<td class="tx-field ewDiff">%trend_30d%</td>' +
+                    '</tr>'
             },
             trade: {
                 rowHeader: '<tr>' +
-                        '<th class="tx-field">#</th>' +
-                        '<th class="tx-field">Token</th>' +
-                        '<th class="tx-field ewDiff">Volume (24h)</th>' +
-                        '<th class="tx-field ewDiff">Price</th>' +
-                        '<th class="tx-field ewDiff">Trend(24h)</th>' +
-                        '<th class="tx-field ewDiff">Trend(7d)</th>' +
-                        '<th class="tx-field ewDiff">Trend(30d)</th>' +
-                   '</tr>',
+                    '<th class="tx-field">#</th>' +
+                    '<th class="tx-field">Token</th>' +
+                    '<th class="tx-field ewDiff">Volume (24h)</th>' +
+                    '<th class="tx-field ewDiff">Price</th>' +
+                    '<th class="tx-field ewDiff">Trend(24h)</th>' +
+                    '<th class="tx-field ewDiff">Trend(7d)</th>' +
+                    '<th class="tx-field ewDiff">Trend(30d)</th>' +
+                    '</tr>',
                 row: '<tr>' +
-                        '<td class="tx-field">%position%</td>' +
-                        '<td class="tx-field">%name_symbol%</td>' +
-                        '<td class="tx-field">%volume%</td>' +
-                        '<td class="tx-field ewDiff">%price%</td>' +
-                        '<td class="tx-field ewDiff">%trend_1d%</td>' +
-                        '<td class="tx-field ewDiff">%trend_7d%</td>' +
-                        '<td class="tx-field ewDiff">%trend_30d%</td>' +
-                   '</tr>'
-           }
+                    '<td class="tx-field">%position%</td>' +
+                    '<td class="tx-field">%name_symbol%</td>' +
+                    '<td class="tx-field">%volume%</td>' +
+                    '<td class="tx-field ewDiff">%price%</td>' +
+                    '<td class="tx-field ewDiff">%trend_1d%</td>' +
+                    '<td class="tx-field ewDiff">%trend_7d%</td>' +
+                    '<td class="tx-field ewDiff">%trend_30d%</td>' +
+                    '</tr>'
+            },
+            count: {
+                rowHeader: '<tr>' +
+                    '<th class="tx-field">#</th>' +
+                    '<th class="tx-field">Token</th>' +
+                    '<th class="tx-field ewDiff">Operations (24h)</th>' +
+                    '<th class="tx-field ewDiff">Trend(24h)</th>' +
+                    '<th class="tx-field ewDiff">Trend(7d)</th>' +
+                    '<th class="tx-field ewDiff">Trend(30d)</th>' +
+                    '</tr>',
+                row: '<tr>' +
+                    '<td class="tx-field">%position%</td>' +
+                    '<td class="tx-field">%name_symbol%</td>' +
+                    '<td class="tx-field">%txsCount%</td>' +
+                    '<td class="tx-field ewDiff">%trend_1d%</td>' +
+                    '<td class="tx-field ewDiff">%trend_7d%</td>' +
+                    '<td class="tx-field ewDiff">%trend_30d%</td>' +
+                    '</tr>'
+            },
         }
     };
 
@@ -813,7 +831,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 var txTable = '<table class="txs">';
                 txTable += obj.templates.rowHeader;
                 for(var i=0; i<data.tokens.length; i++){
-                    var rowData = obj.prepareData(data.tokens[i]);
+                    var rowData = obj.prepareData(data.tokens[i], obj.options.criteria);
                     rowData['position'] = i+1;
                     txTable += ethplorerWidget.parseTemplate(obj.templates.row, rowData);
                 }
@@ -846,12 +864,35 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
         };
     }(this);
 
-    this.prepareData = function(data){
+    this.prepareData = function(data, criteria){
         var name = data.name ? data.name : data.address;
         var symbol = data.symbol ? data.symbol : '';
 
+        var data1dCurrent = data['volume-1d-current'],
+            data1dPrevious = data['volume-1d-previous'],
+            data7dCurrent = data['volume-7d-current'],
+            data7dPrevious = data['volume-7d-previous'],
+            data30dCurrent = data['volume-30d-current'],
+            data30dPrevious = data['volume-30d-previous'];
+        if(criteria == 'cap'){
+            data1dCurrent = data['cap-1d-current'],
+            data1dPrevious = data['cap-1d-previous'],
+            data7dCurrent = data['cap-7d-current'],
+            data7dPrevious = data['cap-7d-previous'],
+            data30dCurrent = data['cap-30d-current'],
+            data30dPrevious = data['cap-30d-previous'];
+        }
+        if(criteria == 'count'){
+            data1dCurrent = data['txsCount-1d-current'],
+            data1dPrevious = data['txsCount-1d-previous'],
+            data7dCurrent = data['txsCount-7d-current'],
+            data7dPrevious = data['txsCount-7d-previous'],
+            data30dCurrent = data['txsCount-30d-current'],
+            data30dPrevious = data['txsCount-30d-previous'];
+        }
+
         // @todo: remove code duplicate and "x"s
-        var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-1d-current'], data['volume-1d-previous'], true);
+        var ivdiff = ethplorerWidget.Utils.pdiff(data1dCurrent, data1dPrevious, true);
         if('x' === ivdiff){
             var trend_1d = '--';
         }else{
@@ -859,7 +900,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             var trend_1d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
         }
 
-        var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-7d-current'], data['volume-7d-previous'], true);
+        var ivdiff = ethplorerWidget.Utils.pdiff(data7dCurrent, data7dPrevious, true);
         if('x' === ivdiff){
             var trend_7d = '--';
         }else{
@@ -867,7 +908,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             var trend_7d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
         }
 
-        var ivdiff = ethplorerWidget.Utils.pdiff(data['volume-30d-current'], data['volume-30d-previous'], true);
+        var ivdiff = ethplorerWidget.Utils.pdiff(data30dCurrent, data30dPrevious, true);
         if('x' === ivdiff){
             var trend_30d = '--';
         }else{
@@ -879,9 +920,10 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             address: ethplorerWidget.Utils.link(data.address, data.address, data.address),
             name: ethplorerWidget.Utils.link(data.address, name, name, false, data.name ? "" : "tx-unknown"),
             name_symbol: ethplorerWidget.Utils.link(data.address, name + (symbol ? ' (' + symbol + ')' : ''), name + (symbol ? ' (' + symbol + ')' : ''), false, data.name ? "" : "tx-unknown"),
-            opCount: data.opCount,
+            txsCount: data.txsCount,
             price: (data.price && data.price.rate) ? ('$ ' + ethplorerWidget.Utils.formatNum(data.price.rate, true, 2, false)) : '',
             volume: data.volume ? ('$ ' + ethplorerWidget.Utils.formatNum(data.volume, true, data.volume >= 1000 ? 0 : 2, true)) : '',
+            cap: data.cap ? ('$ ' + ethplorerWidget.Utils.formatNum(data.cap, true, data.cap >= 1000 ? 0 : 2, true)) : '',
             trend_1d: trend_1d,
             trend_7d: trend_7d,
             trend_30d: trend_30d
