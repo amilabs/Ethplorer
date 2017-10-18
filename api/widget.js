@@ -696,8 +696,21 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
     this.api = ethplorerWidget.api + '/getTop';
 
     this.templates = {
-        header: '<div class="txs-header">Top tokens</div>' +
-                '<div style="text-align:center"><a data-criteria="trade">Trade</a> | <a data-criteria="cap">Cap</a> | <a data-criteria="count">Tx Count</a></div>',
+        header: '<div class="txs-header">' +
+                '<div class="widget-topTokens-tabs-row">' +
+                '<div class="widget-topTokens-tabs-wrapper">' +
+                '<div data-tab="trade" class="widget-topTokens-tab">' +
+                '<a data-criteria="trade"><div class="widget-topTokens-tab-title">Top tokens<br> by trade volume <br></div></a>' +
+                '</div>' +
+                '<div data-tab="cap" class="widget-topTokens-tab">' +
+                '<a data-criteria="cap"><div class="widget-topTokens-tab-title">Top tokens<br> by capitalization</div></a>' +
+                '</div>' +
+                '<div data-tab="count" class="widget-topTokens-tab">' +
+                '<a data-criteria="count"><div class="widget-topTokens-tab-title">Top token<br> by operations <br></div></a>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>',
         loader: '<div class="txs-loading">Loading...</div>',
         criteria: {
             cap: {
@@ -851,6 +864,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 }(obj))
 
                 obj.el.find('[data-criteria="' + obj.options.criteria + '"]').addClass('ewSelected');
+                obj.el.find('[data-tab="' + obj.options.criteria + '"]').removeClass('widget-topTokens-tab').addClass('widget-topTokens-tab-active');
 
                 if('undefined' === typeof(obj.onLoadFired)){
                     if('function' === typeof(obj.options.onLoad)){
