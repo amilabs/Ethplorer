@@ -697,19 +697,26 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
 
     this.templates = {
         header: '<div class="txs-header">' +
-                '<div class="widget-topTokens-tabs-row">' +
-                '<div class="widget-topTokens-tabs-wrapper">' +
-                '<div data-tab="trade" class="widget-topTokens-tab">' +
-                '<a data-criteria="trade"><div class="widget-topTokens-tab-title">Top tokens<br> by trade volume <br></div></a>' +
-                '</div>' +
-                '<div data-tab="cap" class="widget-topTokens-tab">' +
-                '<a data-criteria="cap"><div class="widget-topTokens-tab-title">Top tokens<br> by capitalization</div></a>' +
-                '</div>' +
-                '<div data-tab="count" class="widget-topTokens-tab">' +
-                '<a data-criteria="count"><div class="widget-topTokens-tab-title">Top token<br> by operations <br></div></a>' +
-                '</div>' +
-                '</div>' +
-                '</div>' +
+                    '<div class="widget-topTokens-tabs-row">' +
+                        '<div class="widget-topTokens-tabs-wrapper">' +
+                            '<div data-tab="trade" class="widget-topTokens-tab">' +
+                                '<a data-criteria="trade"><div class="widget-topTokens-tab-title">Top tokens<br> by trade volume <br></div></a>' +
+                            '</div>' +
+                            '<div data-tab="cap" class="widget-topTokens-tab">' +
+                                '<a data-criteria="cap"><div class="widget-topTokens-tab-title">Top tokens<br> by capitalization</div></a>' +
+                            '</div>' +
+                            '<div data-tab="count" class="widget-topTokens-tab">' +
+                                '<a data-criteria="count"><div class="widget-topTokens-tab-title">Top tokens<br> by operations <br></div></a>' +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="widget-topTokens-tabs-wrapper_mobile">' +
+                            '<select id="widgetTopTokensSelect" name="widgetTopTokensSelect" class="widget-topTokens-select">' +
+                                '<option value="trade">Top tokens by trade volume</option>' +
+                                '<option value="cap">Top tokens by capitalization</option>' +
+                                '<option value="count">Top tokens by operations </option>' +
+                            '</select>' +
+                        '</div>' +
+                    '</div>' +
                 '</div>',
         loader: '<div class="txs-loading" style="padding-top: 0px !important;">Loading...</div>',
         criteria: {
@@ -719,9 +726,9 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                     '<th class="tx-field">Token</th>' +
                     '<th class="tx-field ewDiff">Cap</th>' +
                     '<th class="tx-field ewDiff">Price</th>' +
-                    '<th class="tx-field ewDiff">Trend(24h)</th>' +
-                    '<th class="tx-field ewDiff">Trend(7d)</th>' +
-                    '<th class="tx-field ewDiff">Trend(30d)</th>' +
+                    '<th class="tx-field ewDiff">Trend (24h)</th>' +
+                    '<th class="tx-field ewDiff">Trend (7d)</th>' +
+                    '<th class="tx-field ewDiff">Trend (30d)</th>' +
                     '</tr>',
                 row: '<tr>' +
                     '<td class="tx-field">%position%</td>' +
@@ -731,7 +738,13 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                     '<td class="tx-field ewDiff">%trend_1d%</td>' +
                     '<td class="tx-field ewDiff">%trend_7d%</td>' +
                     '<td class="tx-field ewDiff">%trend_30d%</td>' +
-                    '</tr>'
+                    '</tr>',
+                rowMobile: '<tr><td class="tx-field">%position%</td><td class="tx-field" colspan="2">%name_symbol%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Cap:</td><td class="tx-field-mob">%cap%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Price:</td><td class="tx-field-mob ewDiff"><span class="tx-field-mob-price">%price%</span></td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Trend (24h):</td><td class="tx-field-mob ewDiff">%trend_1d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Trend (7d):</td><td class="tx-field-mob ewDiff">%trend_7d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Trend (30d):</td><td class="tx-field-mob ewDiff">%trend_30d%</td></tr>'
             },
             trade: {
                 rowHeader: '<tr>' +
@@ -739,9 +752,9 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                     '<th class="tx-field">Token</th>' +
                     '<th class="tx-field ewDiff">Volume (24h)</th>' +
                     '<th class="tx-field ewDiff">Price</th>' +
-                    '<th class="tx-field ewDiff">Trend(24h)</th>' +
-                    '<th class="tx-field ewDiff">Trend(7d)</th>' +
-                    '<th class="tx-field ewDiff">Trend(30d)</th>' +
+                    '<th class="tx-field ewDiff">Trend (24h)</th>' +
+                    '<th class="tx-field ewDiff">Trend (7d)</th>' +
+                    '<th class="tx-field ewDiff">Trend (30d)</th>' +
                     '</tr>',
                 row: '<tr>' +
                     '<td class="tx-field">%position%</td>' +
@@ -751,16 +764,22 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                     '<td class="tx-field ewDiff">%trend_1d%</td>' +
                     '<td class="tx-field ewDiff">%trend_7d%</td>' +
                     '<td class="tx-field ewDiff">%trend_30d%</td>' +
-                    '</tr>'
+                    '</tr>',
+                rowMobile: '<tr><td class="tx-field">%position%</td><td class="tx-field" colspan="2">%name_symbol%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Volume (24h):</td><td class="tx-field-mob">%volume%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Price:</td><td class="tx-field-mob ewDiff"><span class="tx-field-mob-price">%price%</span></td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Trend (24h):</td><td class="tx-field-mob ewDiff">%trend_1d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Trend (7d):</td><td class="tx-field-mob ewDiff">%trend_7d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Trend (30d):</td><td class="tx-field-mob ewDiff">%trend_30d%</td></tr>'
             },
             count: {
                 rowHeader: '<tr>' +
                     '<th class="tx-field">#</th>' +
                     '<th class="tx-field">Token</th>' +
                     '<th class="tx-field ewDiff">Operations (24h)</th>' +
-                    '<th class="tx-field ewDiff">Trend(24h)</th>' +
-                    '<th class="tx-field ewDiff">Trend(7d)</th>' +
-                    '<th class="tx-field ewDiff">Trend(30d)</th>' +
+                    '<th class="tx-field ewDiff">Trend (24h)</th>' +
+                    '<th class="tx-field ewDiff">Trend (7d)</th>' +
+                    '<th class="tx-field ewDiff">Trend (30d)</th>' +
                     '</tr>',
                 row: '<tr>' +
                     '<td class="tx-field">%position%</td>' +
@@ -769,7 +788,12 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                     '<td class="tx-field ewDiff">%trend_1d%</td>' +
                     '<td class="tx-field ewDiff">%trend_7d%</td>' +
                     '<td class="tx-field ewDiff">%trend_30d%</td>' +
-                    '</tr>'
+                    '</tr>',
+                rowMobile: '<tr><td class="tx-field">%position%</td><td class="tx-field" colspan="2">%name_symbol%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Operations (24h):</td><td class="tx-field-mob">%txsCount%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Trend (24h):</td><td class="tx-field-mob ewDiff">%trend_1d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Trend (7d):</td><td class="tx-field-mob ewDiff">%trend_7d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Trend (30d):</td><td class="tx-field-mob ewDiff">%trend_30d%</td></tr>'
             },
         }
     };
@@ -789,6 +813,9 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             }
             if(criteriaTpl.row){
                 this.templates.row = criteriaTpl.row;
+            }
+            if(criteriaTpl.rowMobile){
+                this.templates.rowMobile = criteriaTpl.rowMobile;
             }
             if(criteriaTpl.rowHeader){
                 this.templates.rowHeader = criteriaTpl.rowHeader;
@@ -841,15 +868,19 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                     obj.cache[obj.options.criteria] = data;
                 }
                 obj.el.find('.txs-loading, .txs').remove();
-                var txTable = '<table class="txs">';
+                var txTable = '<table class="txs txs-top-tokens">';
+                var txMobileTable = '<table class="txs txs-top-tokens-mobile">';
                 txTable += obj.templates.rowHeader;
                 for(var i=0; i<data.tokens.length; i++){
                     var rowData = obj.prepareData(data.tokens[i], obj.options.criteria);
                     rowData['position'] = i+1;
                     txTable += ethplorerWidget.parseTemplate(obj.templates.row, rowData);
+                    txMobileTable += ethplorerWidget.parseTemplate(obj.templates.rowMobile, rowData);
                 }
                 txTable += '</table>';
+                txMobileTable += '</table>';
                 obj.el.append(txTable);
+                obj.el.append(txMobileTable);
 
                 ethplorerWidget.appendEthplorerLink(obj);
                 obj.el.find('[data-criteria]').click(function(_obj){
@@ -858,13 +889,22 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                             _obj.el.find('.ewSelected').removeClass('ewSelected');
                             $(this).addClass('ewSelected');                            
                             _obj.options.criteria = $(this).attr('data-criteria');
+                            $('#widgetTopTokensSelect').val(_obj.options.criteria);
                             _obj.load();
                         }
                     };
                 }(obj))
-
+                obj.el.find('.widget-topTokens-select').change(function(_obj){
+                    return function(){
+                        _obj.el.find('.ewSelected').removeClass('ewSelected');
+                        _obj.options.criteria = $(this).val();
+                        $('#widgetTopTokensSelect').val(_obj.options.criteria);
+                        _obj.load();
+                    };
+                }(obj))
                 obj.el.find('[data-criteria="' + obj.options.criteria + '"]').addClass('ewSelected');
                 obj.el.find('[data-tab="' + obj.options.criteria + '"]').removeClass('widget-topTokens-tab').addClass('widget-topTokens-tab-active');
+                $('#widgetTopTokensSelect').val(obj.options.criteria);
 
                 if('undefined' === typeof(obj.onLoadFired)){
                     if('function' === typeof(obj.options.onLoad)){
