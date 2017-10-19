@@ -711,7 +711,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 '</div>' +
                 '</div>' +
                 '</div>',
-        loader: '<div class="txs-loading">Loading...</div>',
+        loader: '<div class="txs-loading" style="padding-top: 0px !important;">Loading...</div>',
         criteria: {
             cap: {
                 rowHeader: '<tr>' +
