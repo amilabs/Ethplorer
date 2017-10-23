@@ -90,11 +90,13 @@ ethplorerWidget = {
             for(var i=0; i<ethplorerWidget.chartControlWidgets.length; i++)
                     ethplorerWidget.chartControlWidgets[i].load();
     },
-    appendEthplorerLink: function(obj){
+    appendEthplorerLink: function(obj, link, style){
         var host = ethplorerWidget.url.split('//')[1];
-        var divLink = '<div style="text-align:center;font-size:11px;padding-top:10px;padding-bottom:4px;">';
+        if(!style) style = 'text-align:center;font-size:11px;padding-top:10px;padding-bottom:4px;';
+        var divLink = '<div style="' + style + '">';
         if((document.location.host !== host) && (document.location.host.indexOf("amilabs.cc") < 0)){
-            obj.el.append(divLink + '<a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a></a></div>');
+            if(!link) link = '<a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a>';
+            obj.el.append(divLink + link + '</div>');
         }else if('undefined' !== typeof(obj.options.getCode) && obj.options.getCode){
             var divLink = '<div style="text-align:center;font-size:16px;padding-top:10px;padding-bottom:4px;">';
             var popupId = obj.el.attr('id') + '-code';
@@ -899,10 +901,10 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 }
                 txTable += '</table>';
                 txMobileTable += '</table>';
+                ethplorerWidget.appendEthplorerLink(obj, 'source: <a class="tx-link" style="display:inline;" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a>', 'text-align:right;font-size:11px;padding-bottom:4px;padding-right:5px;margin-top:-10px;');
                 obj.el.append(txTable);
                 obj.el.append(txMobileTable);
 
-                ethplorerWidget.appendEthplorerLink(obj);
                 obj.el.find('[data-criteria]').click(function(_obj){
                     return function(){
                         if(!$(this).hasClass('ewSelected')){

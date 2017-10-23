@@ -375,6 +375,23 @@
     color: #D0D0D0;
 }
 
+.ethplorer-widget.widget-topTokens.theme-ethplorer {
+	max-width: 750px !important;
+}
+
+.ethplorer-widget.widget-topTokens.theme-ethplorer tr td:nth-child(1) {
+	color: white !important;
+}
+
+.ethplorer-widget.widget-topTokens.theme-ethplorer .tx-field-sort {
+	color: white !important;
+}
+
+.ethplorer-widget.widget-topTokens.theme-ethplorer .widget-topTokens-select {
+	color: white !important;
+	background-color: rgba(0, 0, 0, 0.4) !important;
+}
+
 .ethplorer-widget.theme-light {
     background-color: white;
 }
