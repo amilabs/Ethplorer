@@ -724,11 +724,11 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 rowHeader: '<tr>' +
                     '<th class="tx-field">#</th>' +
                     '<th class="tx-field">Token</th>' +
-                    '<th class="tx-field ewDiff">Cap</th>' +
+                    '<th class="tx-field ewDiff tx-field-sort">Cap</th>' +
                     '<th class="tx-field ewDiff">Price</th>' +
-                    '<th class="tx-field ewDiff">Trend (24h)</th>' +
-                    '<th class="tx-field ewDiff">Trend (7d)</th>' +
-                    '<th class="tx-field ewDiff">Trend (30d)</th>' +
+                    '<th class="tx-field ewDiff">Price (24h)</th>' +
+                    '<th class="tx-field ewDiff">Price (7d)</th>' +
+                    '<th class="tx-field ewDiff">Price (30d)</th>' +
                     '</tr>',
                 row: '<tr>' +
                     '<td class="tx-field">%position%</td>' +
@@ -741,17 +741,17 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                     '</tr>',
                 rowMobile: '<tr><td class="tx-field">%position%</td><td class="tx-field" colspan="2">%name_symbol%</td></tr>' +
                     '<tr><td></td><td class="tx-field-mob">Cap:</td><td class="tx-field-mob">%cap%</td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Price:</td><td class="tx-field-mob ewDiff"><span class="tx-field-mob-price">%price%</span></td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Trend (24h):</td><td class="tx-field-mob ewDiff">%trend_1d%</td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Trend (7d):</td><td class="tx-field-mob ewDiff">%trend_7d%</td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Trend (30d):</td><td class="tx-field-mob ewDiff">%trend_30d%</td></tr>'
+                    '<tr><td></td><td class="tx-field-mob">Price:</td><td class="tx-field-mob ewDiff"><span class="tx-field-price">%price%</span></td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Price (24h):</td><td class="tx-field-mob ewDiff">%trend_1d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Price (7d):</td><td class="tx-field-mob ewDiff">%trend_7d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Price (30d):</td><td class="tx-field-mob ewDiff">%trend_30d%</td></tr>'
             },
             trade: {
                 rowHeader: '<tr>' +
                     '<th class="tx-field">#</th>' +
                     '<th class="tx-field">Token</th>' +
-                    '<th class="tx-field ewDiff">Volume (24h)</th>' +
                     '<th class="tx-field ewDiff">Price</th>' +
+                    '<th class="tx-field ewDiff tx-field-sort">Volume (24h)</th>' +
                     '<th class="tx-field ewDiff">Trend (24h)</th>' +
                     '<th class="tx-field ewDiff">Trend (7d)</th>' +
                     '<th class="tx-field ewDiff">Trend (30d)</th>' +
@@ -759,15 +759,15 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 row: '<tr>' +
                     '<td class="tx-field">%position%</td>' +
                     '<td class="tx-field">%name_symbol%</td>' +
-                    '<td class="tx-field">%volume%</td>' +
-                    '<td class="tx-field ewDiff">%price%</td>' +
+                    '<td class="tx-field ewDiff"><span class="tx-field-price">%price%</span></td>' +
+                    '<td class="tx-field tx-field-sort">%volume%</td>' +
                     '<td class="tx-field ewDiff">%trend_1d%</td>' +
                     '<td class="tx-field ewDiff">%trend_7d%</td>' +
                     '<td class="tx-field ewDiff">%trend_30d%</td>' +
                     '</tr>',
                 rowMobile: '<tr><td class="tx-field">%position%</td><td class="tx-field" colspan="2">%name_symbol%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">Price:</td><td class="tx-field-mob ewDiff"><span class="tx-field-price">%price%</span></td></tr>' +
                     '<tr><td></td><td class="tx-field-mob">Volume (24h):</td><td class="tx-field-mob">%volume%</td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Price:</td><td class="tx-field-mob ewDiff"><span class="tx-field-mob-price">%price%</span></td></tr>' +
                     '<tr><td></td><td class="tx-field-mob">Trend (24h):</td><td class="tx-field-mob ewDiff">%trend_1d%</td></tr>' +
                     '<tr><td></td><td class="tx-field-mob">Trend (7d):</td><td class="tx-field-mob ewDiff">%trend_7d%</td></tr>' +
                     '<tr><td></td><td class="tx-field-mob">Trend (30d):</td><td class="tx-field-mob ewDiff">%trend_30d%</td></tr>'
@@ -776,7 +776,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 rowHeader: '<tr>' +
                     '<th class="tx-field">#</th>' +
                     '<th class="tx-field">Token</th>' +
-                    '<th class="tx-field ewDiff">Operations (24h)</th>' +
+                    '<th class="tx-field ewDiff tx-field-sort">Operations (24h)</th>' +
                     '<th class="tx-field ewDiff">Trend (24h)</th>' +
                     '<th class="tx-field ewDiff">Trend (7d)</th>' +
                     '<th class="tx-field ewDiff">Trend (30d)</th>' +
@@ -946,20 +946,28 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
         }
 
         // @todo: remove code duplicate and "x"s
-        var ivdiff = ethplorerWidget.Utils.pdiff(data1dCurrent, data1dPrevious, true);
-        if('x' === ivdiff){
-            var trend_1d = '--';
+        if(criteria == 'cap' && data.price && ('undefined' !== typeof(data.price.diff))){
+            var trend_1d = '<span class="ewDiff' + ((data.price.diff >= 0) ? 'Up' : 'Down') + '">' + data.price.diff + '%' + '</span>';
         }else{
-            var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
-            var trend_1d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
+            var ivdiff = ethplorerWidget.Utils.pdiff(data1dCurrent, data1dPrevious, true);
+            if('x' === ivdiff){
+                var trend_1d = '--';
+            }else{
+                var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
+                var trend_1d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + '%' + '</span>';
+            }
         }
 
-        var ivdiff = ethplorerWidget.Utils.pdiff(data7dCurrent, data7dPrevious, true);
-        if('x' === ivdiff){
-            var trend_7d = '--';
+        if(criteria == 'cap' && data.price && ('undefined' !== typeof(data.price.diff7d))){
+            var trend_7d = '<span class="ewDiff' + ((data.price.diff7d >= 0) ? 'Up' : 'Down') + '">' + data.price.diff7d + '%' + '</span>';
         }else{
-            var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
-            var trend_7d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
+            var ivdiff = ethplorerWidget.Utils.pdiff(data7dCurrent, data7dPrevious, true);
+            if('x' === ivdiff){
+                var trend_7d = '--';
+            }else{
+                var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
+                var trend_7d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + '%' + '</span>';
+            }
         }
 
         var ivdiff = ethplorerWidget.Utils.pdiff(data30dCurrent, data30dPrevious, true);
@@ -967,7 +975,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             var trend_30d = '--';
         }else{
             var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, 2, false);
-            var trend_30d = '<span class="ewDiff' + ((ivdiff > 0) ? 'Up' : 'Down') + '">' + ((ivdiff > 0) ? ('+' + vdiff) : vdiff) + '%' + '</span>';
+            var trend_30d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + '%' + '</span>';
         }
 
         return {
@@ -975,7 +983,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             name: ethplorerWidget.Utils.link(data.address, name, name, false, data.name ? "" : "tx-unknown"),
             name_symbol: ethplorerWidget.Utils.link(data.address, name + (symbol ? ' (' + symbol + ')' : ''), name + (symbol ? ' (' + symbol + ')' : ''), false, data.name ? "" : "tx-unknown"),
             txsCount: data.txsCount24,
-            price: (data.price && data.price.rate) ? ('$ ' + ethplorerWidget.Utils.formatNum(data.price.rate, true, 2, false)) : '',
+            price: (data.price && data.price.rate) ? ('$ ' + ethplorerWidget.Utils.formatNum(data.price.rate, true, 2, false)) : '$ 0.00',
             volume: data.volume ? ('$ ' + ethplorerWidget.Utils.formatNum(data.volume, true, data.volume >= 1000 ? 0 : 2, true)) : '',
             cap: data.cap ? ('$ ' + ethplorerWidget.Utils.formatNum(data.cap, true, data.cap >= 1000 ? 0 : 2, true)) : '',
             trend_1d: trend_1d,

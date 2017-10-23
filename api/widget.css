@@ -210,6 +210,11 @@
     color: #ae2525;
 }
 
+.ethplorer-widget.widget-topTokens .tx-field-sort {
+	text-align: right !important;
+	color: #dedede !important;
+}
+
 .widget-topTokens-tabs-row {
     margin: 0 auto;
     width: 100%;
@@ -286,7 +291,7 @@
     padding-left: 5px;
     padding-right: 5px;
 }
-.tx-field-mob-price{
+.tx-field-price{
 	color: #47C2FF !important;
 }
 @media screen and (max-width: 768px) {

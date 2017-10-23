@@ -1148,7 +1148,7 @@ class Ethplorer {
 
             $aTokensCount = array();
             if($criteria == 'count'){
-                $aTokensCountRes = $this->getTokensCountForLastDay();
+                $aTokensCountRes = $this->getTokensCountForLastDay($limit);
                 foreach($aTokensCountRes as $aTokensCountRecord){
                     $aTokensCount[$aTokensCountRecord['_id']] = $aTokensCountRecord['cnt'];
                 }
@@ -1167,7 +1167,7 @@ class Ethplorer {
                             $aToken['txsCount-' . $period . 'd-previous'] = 0;
                         }
                         //get tx's 1d trends
-                        $aHistoryCount = $this->getTokenHistoryGrouped(2, $address, 'hourly');
+                        $aHistoryCount = $this->getTokenHistoryGrouped(2, $address, 'hourly', 3600);
                         if(is_array($aHistoryCount)){
                             foreach($aHistoryCount as $aRecord){
                                 $aPeriod = $aPeriods[0];
@@ -1204,13 +1204,13 @@ class Ethplorer {
                         $period = $aPeriod['period'];
                         $aToken['volume-' . $period . 'd-current'] = 0;
                         $aToken['volume-' . $period . 'd-previous'] = 0;
-                        $aToken['vol-' . $period . 'd-current'] = 0;
                         $aToken['vol-' . $period . 'd-previous'] = 0;
-                        $aToken['cap-' . $period . 'd-current'] = 0;
+                        $aToken['cap-' . $period . 'd-current'] = $aPrice['rate'];
                         $aToken['cap-' . $period . 'd-previous'] = 0;
                     }
                     $aHistory = $this->getTokenPriceHistory($address, 60, 'hourly');
                     if(is_array($aHistory)){
+
                         foreach($aHistory as $aRecord){
                             foreach($aPeriods as $aPeriod){
                                 $period = $aPeriod['period'];
@@ -1218,7 +1218,6 @@ class Ethplorer {
                                 $inPreviousPeriod = !$inCurrentPeriod && (($aRecord['date'] > $aPeriod['previousPeriodStart']) || (($aRecord['date'] == $aPeriod['previousPeriodStart']) && ($aRecord['hour'] >= $curHour )));
                                 if($inCurrentPeriod){
                                     $aToken['volume-' . $period . 'd-current'] += $aRecord['volumeConverted'];
-                                    $aToken['vol-' . $period . 'd-current'] += $aRecord['volume'];
                                     if(1 == $period){
                                         $aToken['volume'] += $aRecord['volumeConverted'];
                                     }
@@ -1229,19 +1228,13 @@ class Ethplorer {
                             }
                         }
                         if($criteria == 'cap'){
+                            // if no data from coinmarketcap
                             foreach($aPeriods as $aPeriod){
                                 $period = $aPeriod['period'];
-                                // get average price and cap
-                                if($aToken['vol-' . $period . 'd-current'] > 0 && $aToken['volume-' . $period . 'd-current'] > 0){
-                                    $averagePrice = $aToken['volume-' . $period . 'd-current'] / $aToken['vol-' . $period . 'd-current'];
-                                    $aToken['cap-' . $period . 'd-current'] = $aToken['availableSupply'] * $averagePrice;
-                                }
                                 if($aToken['vol-' . $period . 'd-previous'] > 0 && $aToken['volume-' . $period . 'd-previous'] > 0){
-                                    $averagePrice = $aToken['volume-' . $period . 'd-previous'] / $aToken['vol-' . $period . 'd-previous'];
-                                    $aToken['cap-' . $period . 'd-previous'] = $aToken['availableSupply'] * $averagePrice;
+                                    $aToken['cap-' . $period . 'd-previous'] = $aToken['volume-' . $period . 'd-previous'] / $aToken['vol-' . $period . 'd-previous'];
+                                    unset($aToken['vol-' . $period . 'd-previous']);
                                 }
-                                unset($aToken['vol-' . $period . 'd-current']);
-                                unset($aToken['vol-' . $period . 'd-previous']);
                             }
                         }
                     }
@@ -1261,7 +1254,7 @@ class Ethplorer {
                     // get tx's other trends
                     if($criteria == 'count'){
                         unset($aPeriods[0]);
-                        $aHistoryCount = $this->getTokenHistoryGrouped(60, $item['address']);
+                        $aHistoryCount = $this->getTokenHistoryGrouped(60, $item['address'], 'daily', 3600);
                         if(is_array($aHistoryCount)){
                             foreach($aHistoryCount as $aRecord){
                                 foreach($aPeriods as $aPeriod){
@@ -1390,9 +1383,9 @@ class Ethplorer {
      * @param string $address  Address
      * @return array
      */
-    public function getTokenHistoryGrouped($period = 30, $address = FALSE, $type = 'daily'){
+    public function getTokenHistoryGrouped($period = 30, $address = FALSE, $type = 'daily', $cacheLifetime = 600){
         $cache = 'token_history_grouped-' . ($address ? ($address . '-') : '') . $period . (($type == 'hourly') ? '-hourly' : '');
-        $result = $this->oCache->get($cache, false, true, 600);
+        $result = $this->oCache->get($cache, false, true, $cacheLifetime);
         if(FALSE === $result){
             // Chainy
             if($address && ($address == self::ADDRESS_CHAINY)){
@@ -1442,9 +1435,9 @@ class Ethplorer {
      */
     public function getTokensCountForLastDay($limit = 30){
         $cache = 'tokens_count-' . $limit;
-        $result = $this->oCache->get($cache, false, true, 600);
+        $result = $this->oCache->get($cache, false, true, 3600);
         if(FALSE === $result){
-            $tsStart = gmmktime((int)gmdate('G'), 0, 0, date('n'), date('j') - 1, date('Y'));
+            $tsStart = gmmktime((int)date('G'), 0, 0, date('n'), date('j') - 1, date('Y'));
             $aMatch = array("timestamp" => array('$gte' => $tsStart));
             $result = array();
             $dbData = $this->oMongo->aggregate(
