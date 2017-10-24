@@ -703,11 +703,6 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
 
     this.cache = {};
 
-    /*if(window.location.hash.substr(1)){
-        this.options.criteria = window.location.hash.substr(1);
-    }else{
-        this.options.criteria = window.location.hash.substr(1) || (options.criteria || 'trade');
-    }*/
     this.options.criteria = window.location.hash.substr(1) || (options.criteria || 'trade');
     var aCriteries = ['trade', 'cap', 'count'];
     if(aCriteries.indexOf(this.options.criteria) < 0){
