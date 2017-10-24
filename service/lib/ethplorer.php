@@ -1138,6 +1138,8 @@ class Ethplorer {
      * @return array
      */
     public function getTokensTop($limit = 10, $criteria = 'trade', $updateCache = false){
+        $topLimit = 100;
+        if($limit > $topLimit) $limit = $topLimit;
         $cache = 'top_tokens_' . $criteria;
         $result = $this->oCache->get($cache, false, true, 3600);
         if($updateCache || (FALSE === $result)){
@@ -1157,7 +1159,7 @@ class Ethplorer {
 
             $aTokensCount = array();
             if($criteria == 'count'){
-                $aTokensCountRes = $this->getTokensCountForLastDay($limit);
+                $aTokensCountRes = $this->getTokensCountForLastDay($topLimit);
                 foreach($aTokensCountRes as $aTokensCountRecord){
                     $aTokensCount[$aTokensCountRecord['_id']] = $aTokensCountRecord['cnt'];
                 }
@@ -1213,7 +1215,6 @@ class Ethplorer {
                         $period = $aPeriod['period'];
                         $aToken['volume-' . $period . 'd-current'] = 0;
                         $aToken['volume-' . $period . 'd-previous'] = 0;
-                        //$aToken['vol-' . $period . 'd-previous'] = 0;
                         $aToken['cap-' . $period . 'd-current'] = $aPrice['rate'];
                         $aToken['cap-' . $period . 'd-previous'] = 0;
                         $aToken['cap-' . $period . 'd-previous-ts'] = 0;
@@ -1233,34 +1234,17 @@ class Ethplorer {
                                     }
                                 }else if($inPreviousPeriod){
                                     $aToken['volume-' . $period . 'd-previous'] += $aRecord['volumeConverted'];
-                                    //$aToken['vol-' . $period . 'd-previous'] += $aRecord['volume'];
 
                                     // if no data from coinmarketcap
                                     if(!$aToken['cap-' . $period . 'd-previous-ts'] || $aToken['cap-' . $period . 'd-previous-ts'] < $aRecord['ts']){
                                         if($aRecord['volumeConverted'] > 0 && $aRecord['volume'] > 0){
                                             $aToken['cap-' . $period . 'd-previous-ts'] = $aRecord['ts'];
                                             $aToken['cap-' . $period . 'd-previous'] = $aRecord['volumeConverted'] / $aRecord['volume'];
-                                            //$aToken['cap-' . $period . 'd-previous'] = $aToken['volume-' . $period . 'd-previous'] / $aToken['vol-' . $period . 'd-previous'];
-                                            /*$aToken['cap-' . $period . 'd-previous-data'] = array(
-                                                'volumeConverted' => $aToken['volume-' . $period . 'd-previous'],
-                                                'volume' => $aToken['vol-' . $period . 'd-previous'],
-                                                'price' => $aRecord
-                                            );*/
                                         }
                                     }
                                 }
                             }
                         }
-                        /*if($criteria == 'cap'){
-                            // if no data from coinmarketcap
-                            foreach($aPeriods as $aPeriod){
-                                $period = $aPeriod['period'];
-                                if($aToken['vol-' . $period . 'd-previous'] > 0 && $aToken['volume-' . $period . 'd-previous'] > 0){
-                                    $aToken['cap-' . $period . 'd-previous'] = $aToken['volume-' . $period . 'd-previous'] / $aToken['vol-' . $period . 'd-previous'];
-                                    unset($aToken['vol-' . $period . 'd-previous']);
-                                }
-                            }
-                        }*/
                     }
                     if(isset($aPrice['volume24h']) && $aPrice['volume24h'] > 0){
                         $aToken['volume'] = $aPrice['volume24h'];
