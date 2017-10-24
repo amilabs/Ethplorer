@@ -992,7 +992,7 @@ class Ethplorer {
 
         $cursor = $this->oMongo->find('operations', $search, array("timestamp" => -1), $limit, $offset);
         foreach($cursor as $transfer){
-            if(in_array($transfer['type'], $aTypes)){
+            if(is_null($aTypes) || in_array($transfer['type'], $aTypes)){
                 unset($transfer["_id"]);
                 $result[] = $transfer;
             }
