@@ -1259,7 +1259,7 @@ class Ethplorer {
 
             $res = [];
             foreach($result as $i => $item){
-                if($i < $limit){
+                if($i < $topLimit){
                     // $item['percentage'] = round(($item['volume'] / $total) * 100);
 
                     // get tx's other trends
@@ -1288,6 +1288,18 @@ class Ethplorer {
             }
             $result = $res;
             $this->oCache->save($cache, $result);
+        }
+
+        $res = [];
+        if($limit < $topLimit){
+            foreach($result as $i => $item){
+                if($i < $limit){
+                    $res[] = $item;
+                }else{
+                    break;
+                }
+            }
+            $result = $res;
         }
         return $result;
     }
