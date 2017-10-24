@@ -396,8 +396,14 @@ class Ethplorer {
         foreach($cursor as $tx){
             $receipt = isset($tx['receipt']) ? $tx['receipt'] : false;
             $tx['gasLimit'] = $tx['gas'];
-            $tx['gasUsed'] = $receipt ? $receipt['gasUsed'] : 0;
-            // $toContract = !!$this->getContract($tx['to']);
+            $tx['gasUsed'] = isset($tx['gasUsed']) ? $tx['gasUsed'] : ($receipt ? $receipt['gasUsed'] : 0);
+            // @todo: research
+            // $toContract = !!$tx['input'];
+            // $toContract = !!$this->getContract($tx['to']); // <-- too slow
+
+            $success = ((21000 == $tx['gasUsed']) || /*!$toContract ||*/ ($tx['gasUsed'] < $tx['gasLimit']) || ($receipt && !empty($receipt['logs'])));
+            $success = isset($tx['status']) ? !!$tx['status'] : $success;
+
             $result[] = array(
                 'timestamp' => $tx['timestamp'],
                 'from' => $tx['from'],
@@ -405,7 +411,7 @@ class Ethplorer {
                 'hash' => $tx['hash'],
                 'value' => $tx['value'],
                 'input' => $tx['input'],
-                'success' => ((21000 == $tx['gasUsed']) || /*!$toContract ||*/ !in_array($tx['gasUsed'] < $tx['gasLimit']) || ($receipt && !empty($receipt['logs'])))
+                'success' => $success
             );
         }
         return $result;
@@ -526,12 +532,13 @@ class Ethplorer {
         $result = count($cursor) ? current($cursor) : false;
         if($result){
             $receipt = isset($result['receipt']) ? $result['receipt'] : false;
-            unset($result["_id"]);
             $result['gasLimit'] = $result['gas'];
+            unset($result["_id"]);
             unset($result["gas"]);
-            $result['gasUsed'] = $receipt ? $receipt['gasUsed'] : 0;
-            $toContract = !!$this->getContract($result['to']);
-            $result['success'] = (!$toContract || ($result['gasUsed'] < $result['gasLimit']) || ($receipt && !empty($receipt['logs'])));
+            $result['gasUsed'] = isset($result['gasUsed']) ? $result['gasUsed'] : ($receipt ? $receipt['gasUsed'] : 0);
+
+            $success = ((21000 == $result['gasUsed']) || ($result['gasUsed'] < $result['gasLimit']) || ($receipt && !empty($receipt['logs'])));
+            $result['success'] = isset($result['status']) ? !!$result['status'] : $success;
         }
         evxProfiler::checkpoint('getTransaction', 'FINISH');
         return $result;
@@ -735,13 +742,15 @@ class Ethplorer {
                         }
                     }
                 }
-                $price = $this->getTokenPrice($address);
-                if(is_array($price)){
-                    $price['currency'] = 'USD';
-                }
-                $result['price'] = $price ? $price : false;
                 $this->oCache->save($cache, $result);
             }
+        }
+        if(is_array($result)){
+            $price = $this->getTokenPrice($address);
+            if(is_array($price)){
+                $price['currency'] = 'USD';
+            }
+            $result['price'] = $price ? $price : false;
         }
         return $result;
     }
@@ -925,7 +934,7 @@ class Ethplorer {
             $search['contract'] = $options['address'];
         }
         if(isset($options['address']) && isset($options['history'])){
-            $search['$or'] = array(array('from' => $options['address']), array('to' => $options['address']), array('address' => $options['address']));
+            $search['addresses'] = $options['address'];
         }
 
         if(isset($options['token']) && isset($options['history'])){
@@ -1788,6 +1797,12 @@ class Ethplorer {
                             }
                             if(isset($aPatch['ts-' . $result[$i]['ts']])){
                                 $result[$i] = array_merge($result[$i], $aPatch['ts-' . $result[$i]['ts']]);
+                            }
+                            // @temporary: EVX invalid history values fix
+                            if('0xf3db5fa2c66b7af3eb0c0b782510816cbe4813b8' == $address){
+                                if($result[$i]['high'] > 10){
+                                   $result[$i]['high'] = $result[$i]['low'] * 1.2;
+                                }
                             }
                         }
                     }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "160";
+$codeVersion = "164";
 
 $aConfig = require dirname(__FILE__) . '/service/config.php';
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
@@ -371,11 +371,11 @@ $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"
                                 </tr>
                                 <tr>
                                     <td>Gas Price</td>
-                                    <td id="transaction-tx-gasPrice" class="list-field" data-type="ether-full"></td>
-                                </tr>
-                                <tr>
-                                    <td>TX Fee</td>
-                                    <td id="transaction-tx-fee" class="list-field" data-type="ether-full"></td>
+                                    <td id="transaction-tx-gasPrice" class="list-field" data-type="ether"></td>
+                                 </tr>
+                                 <tr>
+                                    <td>Tx Cost</td>
+                                    <td id="transaction-tx-cost" class="list-field" data-type="ether-full"></td>
                                 </tr>
                                 <tr>
                                     <td>Nonce</td>

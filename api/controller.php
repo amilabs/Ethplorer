@@ -318,7 +318,7 @@ class ethplorerController {
             $this->sendError(104, 'Invalid address format');
         }
 
-        $maxLimit = is_array($this->defaults) && isset($this->defaults['maxLimit']) ? $this->defaults['maxLimit'] : 50;
+        $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 50;
         $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
         $showZeroValues = !!$this->getRequest('showZeroValues', FALSE);
         $result = $this->db->getTransactions($address, $limit, $showZeroValues);
