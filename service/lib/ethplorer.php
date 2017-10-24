@@ -1141,7 +1141,7 @@ class Ethplorer {
         $topLimit = 100;
         if($limit > $topLimit) $limit = $topLimit;
         $cache = 'top_tokens_' . $criteria;
-        $result = $this->oCache->get($cache, false, true, 3600);
+        $result = $this->oCache->get($cache, false, true);
         if($updateCache || (FALSE === $result)){
             $aTokens = $this->getTokens();
             $result = array();
