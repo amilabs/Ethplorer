@@ -15,7 +15,7 @@ ethplorerWidget = {
     chartWidgets: [],
     chartControlWidgets: [],
 
-    cssVersion: 10,
+    cssVersion: 11,
 
     // Widget initialization
     init: function(selector, type, options, templates){
