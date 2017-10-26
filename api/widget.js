@@ -988,7 +988,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             var ivdiff = ethplorerWidget.Utils.pdiff(data7dCurrent, data7dPrevious, true);
         }
         if('x' === ivdiff){
-            var trend_7d = '--';
+            var trend_7d = (trend_1d != '--') ? 0 : '--';
         }else{
             var numDec = Math.abs(ivdiff) > 99 ? 0 : 1;
             var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, numDec, false, true);
@@ -998,7 +998,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
         var ivdiff = ethplorerWidget.Utils.pdiff(data30dCurrent, data30dPrevious, true);
         var numDec = Math.abs(ivdiff) > 99 ? 0 : 1;
         if('x' === ivdiff){
-            var trend_30d = '--';
+            var trend_30d = (trend_7d != '--') ? 0 : '--';
         }else{
             var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, numDec, false, true);
             var trend_30d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + '%' + '</span>';
