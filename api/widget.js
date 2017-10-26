@@ -314,6 +314,9 @@ ethplorerWidget = {
             }else{
                 res = 0;
             }
+            if(x && (Math.abs(res) > 10000) && (b < 10)){
+                res = 'x';
+            }
             return res;
         }
     }
