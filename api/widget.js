@@ -972,7 +972,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             var trend_30d = '--';
         }else{
             var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, numDec, false, true);
-            var trend_30d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + '%' + '</span>';
+            var trend_30d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + ' %' + '</span>';
         }
 
         if(criteria == 'cap' && data.price && ('undefined' !== typeof(data.price.diff7d))){
@@ -981,11 +981,11 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             var ivdiff = ethplorerWidget.Utils.pdiff(data7dCurrent, data7dPrevious, true);
         }
         if('x' === ivdiff){
-            var trend_7d = (trend_30d != '--') ? '<span class="ewDiffUp">0%</span>' : '--';
+            var trend_7d = (trend_30d != '--') ? '<span class="ewDiffUp">0 %</span>' : '--';
         }else{
             var numDec = Math.abs(ivdiff) > 99 ? 0 : 1;
             var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, numDec, false, true);
-            var trend_7d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + '%' + '</span>';
+            var trend_7d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + ' %' + '</span>';
         }
 
         if(criteria == 'cap' && data.price && ('undefined' !== typeof(data.price.diff))){
@@ -994,11 +994,11 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
             var ivdiff = ethplorerWidget.Utils.pdiff(data1dCurrent, data1dPrevious, true);
         }
         if('x' === ivdiff){
-            var trend_1d = (trend_7d != '--') ? '<span class="ewDiffUp">0%</span>' : '--';
+            var trend_1d = (trend_7d != '--') ? '<span class="ewDiffUp">0 %</span>' : '--';
         }else{
             var numDec = Math.abs(ivdiff) > 99 ? 0 : 1;
             var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, numDec, false, true);
-            var trend_1d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + '%' + '</span>';
+            var trend_1d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + ' %' + '</span>';
         }
 
         return {
