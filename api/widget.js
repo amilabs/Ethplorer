@@ -694,7 +694,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
     this.el = element;
 
     this.options = {
-        limit: 10,
+        limit: 50,
         periods: [1, 7, 30]
     };
 
@@ -711,7 +711,6 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
     if(aCriteries.indexOf(this.options.criteria) < 0){
         this.options.criteria = 'trade';
     }
-    console.log(this.options.criteria);
 
     this.api = ethplorerWidget.api + '/getTop';
 
