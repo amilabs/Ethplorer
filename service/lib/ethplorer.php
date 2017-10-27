@@ -1137,7 +1137,7 @@ class Ethplorer {
      * @param bool $updateCache  Force unexpired cache update
      * @return array
      */
-    public function getTokensTop($limit = 10, $criteria = 'trade', $updateCache = false){
+    public function getTokensTop($limit = 50, $criteria = 'trade', $updateCache = false){
         $topLimit = 100;
         if($limit > $topLimit) $limit = $topLimit;
         $cache = 'top_tokens_' . $criteria;

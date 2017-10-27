@@ -15,7 +15,7 @@ ethplorerWidget = {
     chartWidgets: [],
     chartControlWidgets: [],
 
-    cssVersion: 10,
+    cssVersion: 11,
 
     // Widget initialization
     init: function(selector, type, options, templates){
@@ -313,6 +313,9 @@ ethplorerWidget = {
                 }
             }else{
                 res = 0;
+            }
+            if(x && (Math.abs(res) > 10000) && (b < 10)){
+                res = 'x';
             }
             return res;
         }
@@ -691,7 +694,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
     this.el = element;
 
     this.options = {
-        limit: 10,
+        limit: 50,
         periods: [1, 7, 30]
     };
 
@@ -708,7 +711,6 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
     if(aCriteries.indexOf(this.options.criteria) < 0){
         this.options.criteria = 'trade';
     }
-    console.log(this.options.criteria);
 
     this.api = ethplorerWidget.api + '/getTop';
 
@@ -964,41 +966,39 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
         }
 
         // @todo: remove code duplicate and "x"s
-        if(criteria == 'cap' && data.price && ('undefined' !== typeof(data.price.diff))){
-            //var trend_1d = '<span class="ewDiff' + ((data.price.diff >= 0) ? 'Up' : 'Down') + '">' + data.price.diff + '%' + '</span>';
-            var ivdiff = data.price.diff;
-        }else{
-            var ivdiff = ethplorerWidget.Utils.pdiff(data1dCurrent, data1dPrevious, true);
-        }
-        if('x' === ivdiff){
-            var trend_1d = '--';
-        }else{
-            var numDec = Math.abs(ivdiff) > 99 ? 0 : 1;
-            var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, numDec, false, true);
-            var trend_1d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + '%' + '</span>';
-        }
-
-        if(criteria == 'cap' && data.price && ('undefined' !== typeof(data.price.diff7d))){
-            //var trend_7d = '<span class="ewDiff' + ((data.price.diff7d >= 0) ? 'Up' : 'Down') + '">' + data.price.diff7d + '%' + '</span>';
-            ivdiff = data.price.diff7d;
-        }else{
-            var ivdiff = ethplorerWidget.Utils.pdiff(data7dCurrent, data7dPrevious, true);
-        }
-        if('x' === ivdiff){
-            var trend_7d = '--';
-        }else{
-            var numDec = Math.abs(ivdiff) > 99 ? 0 : 1;
-            var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, numDec, false, true);
-            var trend_7d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + '%' + '</span>';
-        }
-
         var ivdiff = ethplorerWidget.Utils.pdiff(data30dCurrent, data30dPrevious, true);
         var numDec = Math.abs(ivdiff) > 99 ? 0 : 1;
         if('x' === ivdiff){
             var trend_30d = '--';
         }else{
             var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, numDec, false, true);
-            var trend_30d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + '%' + '</span>';
+            var trend_30d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + ' %' + '</span>';
+        }
+
+        if(criteria == 'cap' && data.price && ('undefined' !== typeof(data.price.diff7d))){
+            ivdiff = data.price.diff7d;
+        }else{
+            var ivdiff = ethplorerWidget.Utils.pdiff(data7dCurrent, data7dPrevious, true);
+        }
+        if('x' === ivdiff){
+            var trend_7d = (trend_30d != '--') ? '<span class="ewDiffUp">0 %</span>' : '--';
+        }else{
+            var numDec = Math.abs(ivdiff) > 99 ? 0 : 1;
+            var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, numDec, false, true);
+            var trend_7d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + ' %' + '</span>';
+        }
+
+        if(criteria == 'cap' && data.price && ('undefined' !== typeof(data.price.diff))){
+            var ivdiff = data.price.diff;
+        }else{
+            var ivdiff = ethplorerWidget.Utils.pdiff(data1dCurrent, data1dPrevious, true);
+        }
+        if('x' === ivdiff){
+            var trend_1d = (trend_7d != '--') ? '<span class="ewDiffUp">0 %</span>' : '--';
+        }else{
+            var numDec = Math.abs(ivdiff) > 99 ? 0 : 1;
+            var vdiff = ethplorerWidget.Utils.formatNum(ivdiff, true, numDec, false, true);
+            var trend_1d = '<span class="ewDiff' + ((ivdiff >= 0) ? 'Up' : 'Down') + '">' + vdiff + ' %' + '</span>';
         }
 
         return {
