@@ -333,7 +333,7 @@ class ethplorerController {
      * @return array
      */
     public function getTop(){
-        $maxLimit = is_array($this->defaults) && isset($this->defaults['maxLimit']) ? $this->defaults['maxLimit'] : 50;
+        $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 50;
         $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
         $criteria = $this->getRequest('criteria', 'trade');
         $result = array('tokens' => $this->db->getTokensTop($limit, $criteria));
@@ -347,7 +347,7 @@ class ethplorerController {
      * @return array
      */
     public function getTopTokens(){
-        $maxLimit = is_array($this->defaults) && isset($this->defaults['maxLimit']) ? $this->defaults['maxLimit'] : 50;
+        $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 50;
         $maxPeriod = is_array($this->defaults) && isset($this->defaults['maxPeriod']) ? $this->defaults['maxPeriod'] : 90;
         $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
         $period = min(abs((int)$this->getRequest('period', 10)), $maxPeriod);
