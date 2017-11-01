@@ -319,7 +319,7 @@ class ethplorerController {
         }
 
         $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 50;
-        $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
+        $limit = max(min(abs((int)$this->getRequest('limit', 10)), $maxLimit), 1);
         $showZeroValues = !!$this->getRequest('showZeroValues', FALSE);
         $result = $this->db->getTransactions($address, $limit, $showZeroValues);
 
@@ -333,8 +333,8 @@ class ethplorerController {
      * @return array
      */
     public function getTop(){
-        $maxLimit = is_array($this->defaults) && isset($this->defaults['maxLimit']) ? $this->defaults['maxLimit'] : 100;
-        $limit = min(abs((int)$this->getRequest('limit', 50)), $maxLimit);
+        $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 100;
+        $limit = max(min(abs((int)$this->getRequest('limit', 50)), $maxLimit), 1);
         $criteria = $this->getRequest('criteria', 'trade');
         $result = array('tokens' => $this->db->getTokensTop($limit, $criteria));
         $this->sendResult($result);
@@ -347,10 +347,10 @@ class ethplorerController {
      * @return array
      */
     public function getTopTokens(){
-        $maxLimit = is_array($this->defaults) && isset($this->defaults['maxLimit']) ? $this->defaults['maxLimit'] : 50;
+        $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 50;
         $maxPeriod = is_array($this->defaults) && isset($this->defaults['maxPeriod']) ? $this->defaults['maxPeriod'] : 90;
-        $limit = min(abs((int)$this->getRequest('limit', 10)), $maxLimit);
-        $period = min(abs((int)$this->getRequest('period', 10)), $maxPeriod);
+        $limit = max(min(abs((int)$this->getRequest('limit', 10)), $maxLimit), 1);
+        $period = max(min(abs((int)$this->getRequest('period', 10)), $maxPeriod), 1);
         $criteria = $this->getRequest('criteria', 'opCount');
         $result = false;
         switch($criteria){
@@ -474,7 +474,7 @@ class ethplorerController {
         $maxLimit = is_array($this->defaults) && isset($this->defaults['limit']) ? $this->defaults['limit'] : 10;
         $options = array(
             'type'      => $this->getRequest('type', FALSE),
-            'limit'     => min(abs((int)$this->getRequest('limit', 10)), $maxLimit),
+            'limit'     => max(min(abs((int)$this->getRequest('limit', 10)), $maxLimit), 1),
         );
         if(FALSE !== $address){
             $options['address'] = $address;
