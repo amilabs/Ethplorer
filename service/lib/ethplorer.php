@@ -484,7 +484,7 @@ class Ethplorer {
             }
             $result['tx']['confirmations'] = $confirmations;
         }
-        if(is_array($result) && is_array($result['token'])){
+        if(is_array($result) && isset($result['token']) && is_array($result['token'])){
             $result['token'] = $this->getToken($result['token']['address']);
         }
         evxProfiler::checkpoint('getTransactionDetails', 'FINISH');
