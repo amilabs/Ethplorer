@@ -347,7 +347,7 @@ eWgs.push(function () {
         'tokenHistoryGrouped', // Widget type
         {
             // token address
-            'address': '0x48c80f1f4d53d5951e5d5438b54cba84f29f32a5',
+            'address': '0xe94327d07fc17907b4db788e5adf2ed424addff6',
             options: {
                 'title': 'Augur Rep Token Pulse',
                 'pointSize': 5,
@@ -492,7 +492,7 @@ eWgs.push(function () {
             '#token-txs-10', // Placeholder element
             'tokenHistory', // Widget type
             {
-                address: '0x48c80f1f4d53d5951e5d5438b54cba84f29f32a5', // keep empty to show all tokens
+                address: '0xe94327d07fc17907b4db788e5adf2ed424addff6', // keep empty to show all tokens
                 limit: 5, // Number of records to show
             }
 
@@ -554,7 +554,7 @@ eWgs.push(function () {
             '#token-txs-11', // Placeholder element
             'tokenHistory', // Widget type
             {
-                address: '0x48c80f1f4d53d5951e5d5438b54cba84f29f32a5', // keep empty to show all tokens
+                address: '0xe94327d07fc17907b4db788e5adf2ed424addff6', // keep empty to show all tokens
                 limit: 5, // Number of records to show
             },
             {
