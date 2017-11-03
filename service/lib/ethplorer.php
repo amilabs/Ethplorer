@@ -643,16 +643,24 @@ class Ethplorer {
 
     public function getTokenHoldersCount($address, $useFilter = TRUE){
         evxProfiler::checkpoint('getTokenHoldersCount', 'START', 'address=' . $address);
-        $search = array('contract' => $address, 'balance' => array('$gt' => 0));
+        $cache = 'getTokenHoldersCount-' . $address;
         if($useFilter && $this->filter){
-            $search = array(
-                '$and' => array(
-                    $search,
-                    array('address' => array('$regex' => $this->filter)),
-                )
-            );
+            $cache .= $this->filter;
         }
-        $result = $this->oMongo->count('balances', $search);
+        $result = $this->oCache->get($cache, false, true, 120);
+        if(FALSE === $result){
+            $search = array('contract' => $address, 'balance' => array('$gt' => 0));
+            if($useFilter && $this->filter){
+                $search = array(
+                    '$and' => array(
+                        $search,
+                        array('address' => array('$regex' => $this->filter)),
+                    )
+                );
+            }
+            $result = $this->oMongo->count('balances', $search);
+            $this->oCache->save($cache, $result);
+        }
         evxProfiler::checkpoint('getTokenHoldersCount', 'FINISH');
         return $result;
     }
@@ -909,7 +917,7 @@ class Ethplorer {
      */
     public function getAddressBalances($address, $withZero = true){
         evxProfiler::checkpoint('getAddressBalances', 'START', 'address=' . $address);
-        $cache = 'getAddressBalances-' . $address . '-txcnt';
+        $cache = 'getAddressBalances-' . $address;
         $result = $this->oCache->get($cache, false, true, 60);
         if(FALSE === $result){
             $search = array("address" => $address);
