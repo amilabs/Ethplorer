@@ -789,7 +789,6 @@ class Ethplorer {
         $aSearchFields = ($token) ? array('contract') : array('from', 'to', 'address');
         foreach($aSearchFields as $searchField){
             $search = array($searchField => $address);
-            $search['type'] = array('$ne' => array('approve'));
             if($useFilter && $this->filter){
                 $search = array(
                     '$and' => array(
@@ -806,6 +805,12 @@ class Ethplorer {
                 );
             }
             $result += $this->oMongo->count('operations', $search);
+
+            $search['type'] = array('$eq' => array('approve'));
+            $approves = $this->oMongo->count('operations', $search);
+            if($approves){
+                $result -= $approves;
+            }
         }
         evxProfiler::checkpoint('countOperations', 'FINISH');
         return $result;
