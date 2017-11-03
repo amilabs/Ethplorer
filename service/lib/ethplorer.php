@@ -484,7 +484,7 @@ class Ethplorer {
             }
             $result['tx']['confirmations'] = $confirmations;
         }
-        if(is_array($result) && is_array($result['token'])){
+        if(is_array($result) && isset($result['token']) && is_array($result['token'])){
             $result['token'] = $this->getToken($result['token']['address']);
         }
         evxProfiler::checkpoint('getTransactionDetails', 'FINISH');
@@ -1683,7 +1683,7 @@ class Ethplorer {
             if(!$showZero){
                 $search = array('$and' => array($search, array('value' => array('$gt' => 0))));
             }
-            $cursor = $this->oMongo->find('transactions', $search, array("timestamp" => 1), $limit);
+            $cursor = $this->oMongo->find('transactions', $search, array("timestamp" => 1)/*, $limit*/);
             foreach($cursor as $tx){
                 $receipt = isset($tx['receipt']) ? $tx['receipt'] : false;
                 $tx['gasLimit'] = $tx['gas'];
@@ -2041,7 +2041,7 @@ class Ethplorer {
                 continue;
             }
             $result['tokenPrices'][$token] = $this->getTokenPrice($token);
-            if($result['tokenPrices'][$token]['ts'] > $maxTs){
+            if(isset($result['tokenPrices'][$token]['ts']) && ($result['tokenPrices'][$token]['ts'] > $maxTs)){
                 $maxTs = $result['tokenPrices'][$token]['ts'];
             }
         }

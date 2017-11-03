@@ -514,14 +514,14 @@ Ethplorer = {
                     var valFloat = 0;
                     if('undefined' !== typeof(op.value)){
                         valFloat = parseFloat(Ethplorer.Utils.toBig(op.value).toString());
-                        valFloat =  valFloat / Math.pow(10, oToken.decimals)
+                        valFloat =  valFloat / Math.pow(10, opToken.decimals)
                         if(Ethplorer.Utils.isSafari()){
                             op.value = valFloat;
                         }else{
                             op.value = Ethplorer.Utils.toBig(op.value).div(Math.pow(10, opToken.decimals));
                         }
                         op.value = Ethplorer.Utils.formatNum(op.value, true, opToken.decimals, true, true);
-                        op.value = opToken.symbol ? (op.value + ' ' + opToken.symbol) : op.value;
+                        // op.value = opToken.symbol ? (op.value + ' ' + opToken.symbol) : op.value;
                         op.symbol = opToken.symbol;
                     }
 
