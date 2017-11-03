@@ -815,6 +815,7 @@ class Ethplorer {
                     $result -= $approves;
                 }
             }
+            $this->oCache->save($cache, $result);
         }
         evxProfiler::checkpoint('countOperations', 'FINISH');
         return $result;
@@ -908,16 +909,21 @@ class Ethplorer {
      */
     public function getAddressBalances($address, $withZero = true){
         evxProfiler::checkpoint('getAddressBalances', 'START', 'address=' . $address);
-        $search = array("address" => $address);
-        if(!$withZero){
-            $search['balance'] = array('$gt' => 0);
-        }
-        // $search['totalIn'] = array('$gt' => 0);
-        $cursor = $this->oMongo->find('balances', $search, array(), false, false, array('contract', 'balance', 'totalIn', 'totalOut'));
-        $result = array();
-        foreach($cursor as $balance){
-            unset($balance["_id"]);
-            $result[] = $balance;
+        $cache = 'getAddressBalances-' . $address . '-txcnt';
+        $result = $this->oCache->get($cache, false, true, 60);
+        if(FALSE === $result){
+            $search = array("address" => $address);
+            if(!$withZero){
+                $search['balance'] = array('$gt' => 0);
+            }
+            // $search['totalIn'] = array('$gt' => 0);
+            $cursor = $this->oMongo->find('balances', $search, array(), false, false, array('contract', 'balance', 'totalIn', 'totalOut'));
+            $result = array();
+            foreach($cursor as $balance){
+                unset($balance["_id"]);
+                $result[] = $balance;
+            }
+            $this->oCache->save($cache, $result);
         }
         evxProfiler::checkpoint('getAddressBalances', 'FINISH');
         return $result;
