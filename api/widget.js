@@ -745,9 +745,9 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                     '<th class="tx-field">Token</th>' +
                     '<th class="tx-field ewDiff tx-field-sort">Cap</th>' +
                     '<th class="tx-field ewDiff">Price</th>' +
-                    '<th class="tx-field ewDiff">Price (24h)</th>' +
-                    '<th class="tx-field ewDiff">Price (7d)</th>' +
-                    '<th class="tx-field ewDiff">Price (30d)</th>' +
+                    '<th class="tx-field ewDiff">24h</th>' +
+                    '<th class="tx-field ewDiff">7d</th>' +
+                    '<th class="tx-field ewDiff">30d</th>' +
                     '</tr>',
                 row: '<tr>' +
                     '<td class="tx-field">%position%</td>' +
@@ -761,9 +761,9 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 rowMobile: '<tr><td class="tx-field">%position%</td><td class="tx-field" colspan="2">%name_symbol%</td></tr>' +
                     '<tr><td></td><td class="tx-field-mob">Cap:</td><td class="tx-field-mob">%cap%</td></tr>' +
                     '<tr><td></td><td class="tx-field-mob">Price:</td><td class="tx-field-mob ewDiff"><span title="%price_full%" class="tx-field-price">%price%</span></td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Price (24h):</td><td class="tx-field-mob ewDiff">%trend_1d%</td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Price (7d):</td><td class="tx-field-mob ewDiff">%trend_7d%</td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Price (30d):</td><td class="tx-field-mob ewDiff">%trend_30d%</td></tr>'
+                    '<tr><td></td><td class="tx-field-mob">24h:</td><td class="tx-field-mob ewDiff">%trend_1d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">7d:</td><td class="tx-field-mob ewDiff">%trend_7d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">30d:</td><td class="tx-field-mob ewDiff">%trend_30d%</td></tr>'
             },
             trade: {
                 rowHeader: '<tr>' +
@@ -771,9 +771,9 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                     '<th class="tx-field">Token</th>' +
                     '<th class="tx-field ewDiff">Price</th>' +
                     '<th class="tx-field ewDiff tx-field-sort">Volume (24h)</th>' +
-                    '<th class="tx-field ewDiff">Trend (24h)</th>' +
-                    '<th class="tx-field ewDiff">Trend (7d)</th>' +
-                    '<th class="tx-field ewDiff">Trend (30d)</th>' +
+                    '<th class="tx-field ewDiff">24h</th>' +
+                    '<th class="tx-field ewDiff">7d</th>' +
+                    '<th class="tx-field ewDiff">30d</th>' +
                     '</tr>',
                 row: '<tr>' +
                     '<td class="tx-field">%position%</td>' +
@@ -787,18 +787,18 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 rowMobile: '<tr><td class="tx-field">%position%</td><td class="tx-field" colspan="2">%name_symbol%</td></tr>' +
                     '<tr><td></td><td class="tx-field-mob">Price:</td><td class="tx-field-mob ewDiff"><span title="%price_full%" class="tx-field-price">%price%</span></td></tr>' +
                     '<tr><td></td><td class="tx-field-mob">Volume (24h):</td><td class="tx-field-mob">%volume%</td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Trend (24h):</td><td class="tx-field-mob ewDiff">%trend_1d%</td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Trend (7d):</td><td class="tx-field-mob ewDiff">%trend_7d%</td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Trend (30d):</td><td class="tx-field-mob ewDiff">%trend_30d%</td></tr>'
+                    '<tr><td></td><td class="tx-field-mob">24h:</td><td class="tx-field-mob ewDiff">%trend_1d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">7d:</td><td class="tx-field-mob ewDiff">%trend_7d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">30d:</td><td class="tx-field-mob ewDiff">%trend_30d%</td></tr>'
             },
             count: {
                 rowHeader: '<tr>' +
                     '<th class="tx-field">#</th>' +
                     '<th class="tx-field">Token</th>' +
                     '<th class="tx-field ewDiff tx-field-sort">Operations (24h)</th>' +
-                    '<th class="tx-field ewDiff">Trend (24h)</th>' +
-                    '<th class="tx-field ewDiff">Trend (7d)</th>' +
-                    '<th class="tx-field ewDiff">Trend (30d)</th>' +
+                    '<th class="tx-field ewDiff">24h</th>' +
+                    '<th class="tx-field ewDiff">7d</th>' +
+                    '<th class="tx-field ewDiff">30d</th>' +
                     '</tr>',
                 row: '<tr>' +
                     '<td class="tx-field">%position%</td>' +
@@ -810,9 +810,9 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                     '</tr>',
                 rowMobile: '<tr><td class="tx-field">%position%</td><td class="tx-field" colspan="2">%name_symbol%</td></tr>' +
                     '<tr><td></td><td class="tx-field-mob">Operations (24h):</td><td class="tx-field-mob">%txsCount%</td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Trend (24h):</td><td class="tx-field-mob ewDiff">%trend_1d%</td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Trend (7d):</td><td class="tx-field-mob ewDiff">%trend_7d%</td></tr>' +
-                    '<tr><td></td><td class="tx-field-mob">Trend (30d):</td><td class="tx-field-mob ewDiff">%trend_30d%</td></tr>'
+                    '<tr><td></td><td class="tx-field-mob">24h:</td><td class="tx-field-mob ewDiff">%trend_1d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">7d:</td><td class="tx-field-mob ewDiff">%trend_7d%</td></tr>' +
+                    '<tr><td></td><td class="tx-field-mob">30d:</td><td class="tx-field-mob ewDiff">%trend_30d%</td></tr>'
             },
         }
     };
