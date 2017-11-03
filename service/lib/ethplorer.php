@@ -782,34 +782,38 @@ class Ethplorer {
      * @param string $address  Contract address
      * @return int
      */
-    public function countOperations($address, $useFilter = TRUE){
+    public function countOperations($address, $useFilter = TRUE){        
         evxProfiler::checkpoint('countOperations', 'START', 'address=' . $address . ', useFilter = ' . ($useFilter ? 'ON' : 'OFF'));
-        $result = 0;
-        $token = $this->getToken($address);
-        $aSearchFields = ($token) ? array('contract') : array('from', 'to', 'address');
-        foreach($aSearchFields as $searchField){
-            $search = array($searchField => $address);
-            if($useFilter && $this->filter){
-                $search = array(
-                    '$and' => array(
-                        $search,
-                        array(
-                            '$or' => array(
-                                array('from'                => array('$regex' => $this->filter)),
-                                array('to'                  => array('$regex' => $this->filter)),
-                                array('address'             => array('$regex' => $this->filter)),
-                                array('transactionHash'     => array('$regex' => $this->filter)),
+        $cache = 'countOperations-' . $address;
+        $result = $this->oCache->get($cache, false, true, 30);
+        if(FALSE === $result){
+            $result = 0;
+            $token = $this->getToken($address);
+            $aSearchFields = ($token) ? array('contract') : array('from', 'to', 'address');
+            foreach($aSearchFields as $searchField){
+                $search = array($searchField => $address);
+                if($useFilter && $this->filter){
+                    $search = array(
+                        '$and' => array(
+                            $search,
+                            array(
+                                '$or' => array(
+                                    array('from'                => array('$regex' => $this->filter)),
+                                    array('to'                  => array('$regex' => $this->filter)),
+                                    array('address'             => array('$regex' => $this->filter)),
+                                    array('transactionHash'     => array('$regex' => $this->filter)),
+                                )
                             )
                         )
-                    )
-                );
-            }
-            $result += $this->oMongo->count('operations', $search);
+                    );
+                }
+                $result += $this->oMongo->count('operations', $search);
 
-            $search['type'] = array('$eq' => array('approve'));
-            $approves = $this->oMongo->count('operations', $search);
-            if($approves){
-                $result -= $approves;
+                $search['type'] = array('$eq' => array('approve'));
+                $approves = $this->oMongo->count('operations', $search);
+                if($approves){
+                    $result -= $approves;
+                }
             }
         }
         evxProfiler::checkpoint('countOperations', 'FINISH');
