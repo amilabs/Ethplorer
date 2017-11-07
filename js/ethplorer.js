@@ -1882,10 +1882,12 @@ Ethplorer = {
             $('.list-field').parents('TR').show();
             $('.list-field:empty').parents('TR').hide();
             // Hide zero decimals
+            /*
             var decimals = parseInt($('#address-token-decimals').text());
             if(!decimals){
                 $('#address-token-decimals').parent().hide();
             }
+            */
         },
 
         ascii2hex: function(text){
