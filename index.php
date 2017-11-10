@@ -68,7 +68,10 @@ if(isset($_GET['debug']) && $_GET['debug']){
     $debugEnabled = true;
 }
 
-$csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"></i> Export...</span><span class="export-csv"><a class="download" rel="nofollow" target="_blank" href="/service/csv.php?data=' . $rParts[2] . '">Export as CSV</a></span>';
+$csvExport = '';
+if(is_array($rParts) && isset($rParts[2])){
+    $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"></i> Export...</span><span class="export-csv"><a class="download" rel="nofollow" target="_blank" href="/service/csv.php?data=' . $rParts[2] . '">Export as CSV</a></span>';
+}
 ?><!DOCTYPE html>
 <html>
 <head>
