@@ -771,11 +771,20 @@ class Ethplorer {
      */
     public function getContract($address, $calculateTransactions = TRUE){
         evxProfiler::checkpoint('getContract', 'START', 'address=' . $address);
+        $result = $this->oCache->get($cache, false, true, 30);        
         $cursor = $this->oMongo->find('contracts', array("address" => $address));
         $result = count($cursor) ? current($cursor) : false;
         if($result && $calculateTransactions){
             unset($result["_id"]);
-            $result['txsCount'] = $this->oMongo->count('transactions', array("to" => $address)) + 1;
+            if($calculateTransactions){
+                $cache = 'contractTransactionsCount-' . $address;
+                $count = $this->oCache->get($cache, false, true, 600);
+                if(FALSE === $count){
+                    $count = $this->oMongo->count('transactions', array("to" => $address)) + 1;
+                    $this->oCache->save($cache, $count);
+                }
+                $result['txsCount'] =  $count;
+            }
             if($this->isChainyAddress($address)){
                 $result['isChainy'] = true;
             }
