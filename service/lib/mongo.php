@@ -236,22 +236,31 @@ class evxMongo {
      * @param array $aSearch
      * @return int
      */
-    public function count($collection, array $aSearch = array()){
+    public function count($collection, array $aSearch = array(), $limit = FALSE){
         $result = false;
         $start = microtime(true);
+        $aOptions = array();
+        if(FALSE !== $limit){
+            $aOptions['limit'] = (int)$limit;
+        }
         switch($this->driver){
             case 'fake':
                 $result = 0;
                 break;
             case 'mongo':
-                $result = $this->aDBs[$collection]->count($aSearch);
+                $result = $this->aDBs[$collection]->count($aSearch, $aOptions);
                 break;
 
             case 'mongodb':
+                $query = new MongoDB\Driver\Query($aSearch, $aOptions);
+                $cursor = $this->oMongo->executeQuery($this->dbName . '.' . $this->aDBs[$collection], $query);
+                $result = iterator_count($cursor);
+                /*
                 $command = new MongoDB\Driver\Command(array("count" => $this->aDBs[$collection], "query" => $aSearch));
                 $count = $this->oMongo->executeCommand($this->dbName, $command);
                 $res = current($count->toArray());
                 $result = $res->n;
+                */
                 /*
                 $aOptions = array();
                 $query = new MongoDB\Driver\Query($aSearch, $aOptions);

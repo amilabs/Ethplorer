@@ -833,7 +833,8 @@ class Ethplorer {
         $cache = 'highloaded-address-' . $address;
         $result = $this->oCache->get($cache, false, true);
         if(FALSE === $result){
-            $count = $this->countTransactions($address);
+            // ).limit(10000).count({ applySkipLimit: true })
+            $count = $this->countTransactions($address, 10000);
             if($count >= 10000){
                 $result = true;
                 $this->oCache->save($cache, $result);
@@ -849,7 +850,7 @@ class Ethplorer {
      * @param string $address  Contract address
      * @return int
      */
-    public function countTransactions($address){
+    public function countTransactions($address, $limit = FALSE){
         $cache = 'address-' . $address . '-txcnt';
         $result = $this->oCache->get($cache, false, true, 3600);
         if(FALSE === $result){
@@ -863,7 +864,7 @@ class Ethplorer {
                 $result++; // One for contract creation
             }
             $this->oCache->save($cache, $result);
-            evxProfiler::checkpoint('countTransactions', 'FINISH');
+            evxProfiler::checkpoint('countTransactions', 'FINISH', $result . ' transactions');
         }
         return $result;
     }
