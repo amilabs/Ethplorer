@@ -1742,10 +1742,13 @@ class Ethplorer {
         if(isset($this->aSettings['priceSource']) && isset($this->aSettings['priceSource'][$address])){
             $address = $this->aSettings['priceSource'][$address];
         }
+        if(!isset($this->aSettings['updateRates']) || (FALSE === array_search($address, $this->aSettings['updateRates']))){
+            return FALSE;
+        }
         $result = false;
         $cache = 'rates';
         $rates = $this->oCache->get($cache, false, true);
-        if($updateCache || (((FALSE === $rates) || (is_array($rates) && !isset($rates[$address]))) && isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates'])))){
+        if($updateCache){
             if(!is_array($rates)){
                 $rates = array();
             }
