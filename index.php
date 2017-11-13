@@ -486,7 +486,7 @@ if(is_array($rParts) && isset($rParts[2])){
                             </table>
                         </div>
                         <div class="block" id="address-token-details">
-                            <div class="block-header"><h3>Token<span class="address-token-name"></span> Information</h3></div>
+                            <div class="block-header"><h3>Token <span class="address-token-name"></span> Information</h3></div>
                             <table class="table">
                             <tr>
                                 <td colspan="2" id="address-token-description" class="list-field"></td>

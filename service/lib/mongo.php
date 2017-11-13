@@ -266,7 +266,7 @@ class evxMongo {
                 $query = new MongoDB\Driver\Query($aSearch, $aOptions);
                 $cursor = $this->oMongo->executeQuery($this->aDBs[$collection], $query);
                 $result = iterator_count($cursor);
-                 */
+                */
                 break;
         }
         $finish = microtime(true);
