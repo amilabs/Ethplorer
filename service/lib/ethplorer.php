@@ -1281,7 +1281,7 @@ class Ethplorer {
                         }
                     }
                     if(isset($aPrice['volume24h']) && $aPrice['volume24h'] > 0){
-                        $aToken['volume'] = $aPrice['volume24h'];
+                        $aToken['volume'] = $aToken['volume-1d-current'] = $aPrice['volume24h'];
                     }
                     $result[] = $aToken;
                 }
