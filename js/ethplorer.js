@@ -754,7 +754,7 @@ Ethplorer = {
                 $('#address-token-details .block-header').find('img').remove();                
                 $('#address-token-details .block-header').prepend('<img src="' + oToken.image + '" class="token-logo" align="left">');
             }
-            $('.address-token-name').text(oToken.name);
+            $('.address-token-name').html(oToken.name);
             if(Ethplorer.Config.updateLink){
                 $('.address-token-name:eq(0)').append('<a href="' + Ethplorer.Config.updateLink + '" target="_blank" class="token-update">Update</a>')
             }

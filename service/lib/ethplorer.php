@@ -630,6 +630,12 @@ class Ethplorer {
                         $aResult[$address] = array_merge($aResult[$address], $aClientTokens[$address]);
                     }
                 }
+                if(isset($aResult[$address]['name'])){
+                    $aResult[$address]['name'] = htmlspecialchars($aResult[$address]['name']);
+                }
+                if(isset($aResult[$address]['symbol'])){
+                    $aResult[$address]['symbol'] = htmlspecialchars($aResult[$address]['symbol']);
+                }
             }
             if(isset($aResult['0x0000000000000000000000000000000000000000'])){
                 unset($aResult['0x0000000000000000000000000000000000000000']);
