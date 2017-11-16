@@ -1423,6 +1423,7 @@ Ethplorer = {
         if(!oToken.name){
             oToken.name = 'N/A';
         }
+        oToken.name = $('<span>').text(oToken.name).html();
         if(!oToken.owner || (oToken.owner && ('0x' === oToken.owner))){
             oToken.owner = '';
         }
