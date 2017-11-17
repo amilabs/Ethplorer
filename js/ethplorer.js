@@ -1846,7 +1846,9 @@ Ethplorer = {
             }
             var isTx = Ethplorer.Utils.isTx(data);
             //if(!isTx) text = Ethplorer.Utils.toChecksumAddress(text);
-            text = $('<span>').text(text).html();
+            if((text.indexOf('<') >= 0) || (text.indexOf('>') >= 0)){
+                text = $('<span>').text(text).html();
+            }
             var res = '<a href="/';
             res += (isTx ? 'tx' : 'address');
             res += ('/' + data + '"  class="local-link">' + text + '</a>');
