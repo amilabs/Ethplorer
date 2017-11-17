@@ -943,7 +943,7 @@ Ethplorer = {
         var address = Ethplorer.currentAddress;
         if(('undefined' !== typeof(ethplorerWidget)) && (true || !Ethplorer.isProd)){
             if(data.isContract && data.token){
-                var widgetTitle = (oToken && oToken.name) ? (oToken.name + ' token pulse') : '';
+                var widgetTitle = (oToken && oToken.name) ? ($('<textarea />').html(oToken.name).text() + ' token pulse') : '';
 
                 if(true){
                     $('#widget-block').show();
