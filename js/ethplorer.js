@@ -899,7 +899,9 @@ Ethplorer = {
             }else{
                 $('#address-balances-total').html('&nbsp;');
             }
-            $('#address-token-balances').show();
+            if($('#address-token-balances table tr').length){
+                $('#address-token-balances').show();
+            }
         }
 
         if(!data.isContract || !data.token){
