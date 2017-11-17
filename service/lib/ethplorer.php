@@ -297,7 +297,7 @@ class Ethplorer {
                 }
             }
             $result["balances"] = $aBalances;
-            $result["transfers"] = $this->getAddressOperations($address, $limit, $this->getOffset('transfers'));
+            $result["transfers"] = $this->getAddressOperations($address, $limit, $this->getOffset('transfers'), array('transfers'));
             $countOperations = $this->countOperations($address);
             $totalOperations = $this->filter ? $this->countOperations($address, FALSE) : $countOperations;
             $result['pager']['transfers'] = array(
