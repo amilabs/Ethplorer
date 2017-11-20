@@ -899,14 +899,21 @@ Ethplorer = {
             }else{
                 $('#address-balances-total').html('&nbsp;');
             }
-            if($('#address-token-balances table tr').length){
-                $('#address-token-balances').show();
-            }
         }
 
         if(!data.isContract || !data.token){
             $('.nav-tabs').hide();
             $('.filter-box').addClass('out-of-tabs');
+            if(!$('#address-token-balances table tr').length){
+                var row = $('<tr>');
+                var cell = $('<td>');
+                cell.html('No token balances found');
+                row.append(cell);
+                $('#address-token-balances table').append(row);
+                $('#address-token-balances table').show();
+                $('#address-balances-total').remove();
+            }
+            $('#address-token-balances').show();
         }else{
             $('.filter-box').addClass('in-tabs');
         }
