@@ -735,7 +735,7 @@ class Ethplorer {
      * @return array
      */
     public function getToken($address){
-        evxProfiler::checkpoint('getToken', 'START', 'address=' . $address);
+        // evxProfiler::checkpoint('getToken', 'START', 'address=' . $address);
         $cache = 'token-' . $address;
         $result = $this->oCache->get($cache, false, true, 30);
         if(FALSE === $result){
@@ -779,7 +779,7 @@ class Ethplorer {
             }
             $result['price'] = $price ? $price : false;
         }
-        evxProfiler::checkpoint('getToken', 'FINISH');
+        // evxProfiler::checkpoint('getToken', 'FINISH');
         return $result;
     }
 
@@ -1763,7 +1763,7 @@ class Ethplorer {
     }
 
     public function getTokenPrice($address, $updateCache = FALSE){
-        evxProfiler::checkpoint('getTokenPrice', 'START', 'address=' . $address . ', updateCache=' . ($updateCache ? 'TRUE' : 'FALSE'));
+        // evxProfiler::checkpoint('getTokenPrice', 'START', 'address=' . $address . ', updateCache=' . ($updateCache ? 'TRUE' : 'FALSE'));
         $result = FALSE;
         if(isset($this->aSettings['priceSource']) && isset($this->aSettings['priceSource'][$address])){
             $address = $this->aSettings['priceSource'][$address];
@@ -1801,7 +1801,7 @@ class Ethplorer {
                 $result = $rates[$address];
             }
         }
-        evxProfiler::checkpoint('getTokenPrice', 'FINISH');
+        // evxProfiler::checkpoint('getTokenPrice', 'FINISH');
         return $result;
     }
 
