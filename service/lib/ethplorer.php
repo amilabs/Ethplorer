@@ -790,7 +790,7 @@ class Ethplorer {
                     if($token = $this->getToken($address)){
                         $count = isset($token['txsCount']) ? $token['txsCount'] : 0;
                     }
-                    if(!$token || !$count)
+                    if(!$token || !$count){
                         $count = $this->oMongo->count('transactions', array("to" => $address)) + 1;
                     }
                     $this->oCache->save($cache, $count);
