@@ -74,7 +74,13 @@ class Ethplorer {
      * @var string
      */
     protected $filter = FALSE;
-    
+
+    /**
+     * Cache for getTokens
+     *
+     * @var array
+     */
+    protected $aTokens = FALSE;
     /**
      * Constructor.
      *
@@ -597,6 +603,9 @@ class Ethplorer {
      * @return array
      */
     public function getTokens($updateCache = false){
+        if(FALSE !== $this->aTokens){
+            return $this->aTokens;
+        }
         $aResult = $this->oCache->get('tokens', false, true);
         if($updateCache || (false === $aResult)){
             evxProfiler::checkpoint('getTokens', 'START');
@@ -645,6 +654,7 @@ class Ethplorer {
             $this->oCache->save('tokens', $aResult);
             evxProfiler::checkpoint('getTokens', 'FINISH');
         }
+        $this->aTokens = $aResult;
         return $aResult;
     }
 
