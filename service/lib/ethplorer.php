@@ -289,6 +289,7 @@ class Ethplorer {
             $result["tokens"] = array();
             $result["balances"] = $this->getAddressBalances($address);
             $aBalances = array();
+            evxProfiler::checkpoint('getTokenLoop', 'START');
             foreach($result["balances"] as $balance){
                 $balanceToken = $this->getToken($balance["contract"]);
                 if($balanceToken){
@@ -296,6 +297,7 @@ class Ethplorer {
                     $aBalances[] = $balance;
                 }
             }
+            evxProfiler::checkpoint('getTokenLoop', 'FINISH');
             $result["balances"] = $aBalances;
             $result["transfers"] = $this->getAddressOperations($address, $limit, $this->getOffset('transfers'), array('transfer'));
             $countOperations = $this->countOperations($address);
