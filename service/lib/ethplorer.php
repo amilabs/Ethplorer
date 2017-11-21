@@ -1754,43 +1754,42 @@ class Ethplorer {
 
     public function getTokenPrice($address, $updateCache = FALSE){
         evxProfiler::checkpoint('getTokenPrice', 'START', 'address=' . $address . ', updateCache=' . ($updateCache ? 'TRUE' : 'FALSE'));
-        if(isset($this->aSettings['hidePrice']) && in_array($address, $this->aSettings['hidePrice'])){
-            return FALSE;
-        }
+        $result = FALSE;
         if(isset($this->aSettings['priceSource']) && isset($this->aSettings['priceSource'][$address])){
             $address = $this->aSettings['priceSource'][$address];
         }
-        if(!isset($this->aSettings['updateRates']) || (FALSE === array_search($address, $this->aSettings['updateRates']))){
-            return FALSE;
-        }
-        $result = false;
-        $cache = 'rates';
-        $rates = $this->oCache->get($cache, false, true);
-        if($updateCache){
-            if(!is_array($rates)){
-                $rates = array();
-            }
-            if(isset($this->aSettings['currency'])){
-                $method = 'getCurrencyCurrent';
-                $params = array($address, 'USD');
-                $result = $this->_jsonrpcall($this->aSettings['currency'], $method, $params);
-                if($result){
-                    unset($result['code_from']);
-                    unset($result['code_to']);
-                    unset($result['bid']);
-                    // THBEX price bug workaround
-                    if('0xff71cb760666ab06aa73f34995b42dd4b85ea07b' === $address){
-                        if($result['rate'] > 1){
-                            $result = 1 / (float)$result['rate'];
+        $isHidden = isset($this->aSettings['hidePrice']) && in_array($address, $this->aSettings['hidePrice']);
+        $knownPrice = isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates']));
+
+        if(!$isHidden && $knownPrice){
+            $cache = 'rates';
+            $rates = $this->oCache->get($cache, false, true);
+            if($updateCache){
+                if(!is_array($rates)){
+                    $rates = array();
+                }
+                if(isset($this->aSettings['currency'])){
+                    $method = 'getCurrencyCurrent';
+                    $params = array($address, 'USD');
+                    $result = $this->_jsonrpcall($this->aSettings['currency'], $method, $params);
+                    if($result){
+                        unset($result['code_from']);
+                        unset($result['code_to']);
+                        unset($result['bid']);
+                        // THBEX price bug workaround
+                        if('0xff71cb760666ab06aa73f34995b42dd4b85ea07b' === $address){
+                            if($result['rate'] > 1){
+                                $result = 1 / (float)$result['rate'];
+                            }
                         }
+                        $rates[$address] = $result;
+                        $this->oCache->save($cache, $rates);
                     }
-                    $rates[$address] = $result;
-                    $this->oCache->save($cache, $rates);
                 }
             }
-        }
-        if(is_array($rates) && isset($rates[$address])){
-            $result = $rates[$address];
+            if(is_array($rates) && isset($rates[$address])){
+                $result = $rates[$address];
+            }
         }
         evxProfiler::checkpoint('getTokenPrice', 'FINISH');
         return $result;
