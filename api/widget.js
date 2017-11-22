@@ -1809,6 +1809,13 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             aData.push(['Day', 'Balance', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Transfers', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}, 'Volume', {role: 'style'}, {type: 'string', role: 'tooltip', 'p': {'html': true}}]);
         }
 
+        if('undefined' === typeof(widgetData['firstDate'])){
+            for(var t in widgetData['txs']){
+                widgetData['firstDate'] = t;
+                break;
+            }
+        }
+
         var rangeStart = null,
             rangeEnd,
             curDate = new Date(),
