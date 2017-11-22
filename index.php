@@ -68,6 +68,8 @@ if(isset($_GET['debug']) && $_GET['debug']){
     $debugEnabled = true;
 }
 
+$hasNotes = isset($aConfig['adv']) && count($aConfig['adv']);
+
 $csvExport = '';
 if(is_array($rParts) && isset($rParts[2])){
     $csvExport = ' <span class="export-csv-spinner"><i class="fa fa-spinner fa-spin"></i> Export...</span><span class="export-csv"><a class="download" rel="nofollow" target="_blank" href="/service/csv.php?data=' . $rParts[2] . '">Export as CSV</a></span>';
@@ -94,7 +96,7 @@ if(is_array($rParts) && isset($rParts[2])){
     <script src="/js/bignumber.js"></script>
     <script src="/js/ethplorer.js?v=<?=$codeVersion?>"></script>
     <script src="/js/ethplorer-search.js?v=<?=$codeVersion?>"></script>
-    <script src="/js/ethplorer-note.js?v=<?=$codeVersion?>"></script>
+    <?php if($hasNotes):?><script src="/js/ethplorer-note.js?v=<?=$codeVersion?>"></script><?php endif; ?>
     <script src="/js/config.js"></script>
     <script src="/js/md5.min.js"></script>
     <script src="/js/sha3.min.js"></script>
