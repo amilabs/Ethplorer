@@ -103,12 +103,14 @@ class Ethplorer {
     }
 
     public function __destruct(){
+        // Todo: profiler config
         evxProfiler::checkpoint('Ethplorer', 'FINISH');
         $total = evxProfiler::getTotalTime();
         if(isset($this->aSettings['debugId']) && $this->aSettings['debugId']){
             evxProfiler::log($this->aSettings['logsDir'] . 'profiler-' . /* time() . '-' . */ md5($this->aSettings['debugId']) . '.log');
         }
-        if(($total > 10) && (php_sapi_name() !== 'cli')){
+        $slowQueryTime = isset($this->aSettings['slowQueryTime']) ? (int)$this->aSettings['slowQueryTime'] : 10;
+        if(($total > $slowQueryTime) && (php_sapi_name() !== 'cli')){
             evxProfiler::log($this->aSettings['logsDir'] . 'profiler-long-queries.log');
         }
     }
