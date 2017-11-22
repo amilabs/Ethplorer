@@ -745,6 +745,7 @@ class Ethplorer {
             $result = isset($aTokens[$address]) ? $aTokens[$address] : false;
             if($result){
                 unset($result["_id"]);
+                $result += array('txsCount' => 0, 'transfersCount' => 0, 'issuancesCount' => 0, 'holdersCount' => 0, "symbol" => "");
                 if(!isset($result['decimals']) || !intval($result['decimals'])){
                     $result['decimals'] = 0;
                     if(isset($result['totalSupply']) && ((float)$result['totalSupply'] > 1e+18)){
@@ -752,13 +753,17 @@ class Ethplorer {
                         $result['estimatedDecimals'] = true;
                     }
                 }
-                if(!isset($result['symbol'])){
-                    $result['symbol'] = "";
+
+                // Ask DB for fresh counts
+                $cursor = $this->oMongo->find('tokens', array('address' => $address), array(), false, false, array('txsCount', 'transfersCount'));
+                $token = ($cursor && count($cursor)) ? current($cursor) : false;
+                if($token){
+                    $result['txsCount'] = $token['txsCount'];
+                    $result['transfersCount'] = $token['transfersCount'];
                 }
-                if(isset($result['txsCount'])){
-                    $result['txsCount'] = (int)$result['txsCount'] + 1;
-                }
-                $result += array('transfersCount' => 0, 'issuancesCount' => 0, 'holdersCount' => 0);
+                
+                $result['txsCount'] = (int)$result['txsCount'] + 1; // Contract creation tx
+                
                 if(isset($this->aSettings['client']) && isset($this->aSettings['client']['tokens'])){
                     $aClientTokens = $this->aSettings['client']['tokens'];
                     if(isset($aClientTokens[$address])){
@@ -797,6 +802,7 @@ class Ethplorer {
         $result = count($cursor) ? current($cursor) : false;
         if($result && $calculateTransactions){
             unset($result["_id"]);
+            unset($result["code"]);
             if($calculateTransactions){
                 evxProfiler::checkpoint('getContract CalculateTransactions', 'START', 'address=' . $address);
                 $cache = 'contractTransactionsCount-' . $address;
