@@ -1578,8 +1578,13 @@ class Ethplorer {
             foreach(array('from', 'to', 'address', 'transactionHash') as $field){
                 $result += $this->oMongo->count('operations', array_merge($search, array($field => array('$regex' => $this->filter))));
             }
+        }else{
+            if(('transfer' === $type) && ($aToken = $this->getToken($address))){
+                $result = isset($aToken['transfersCount']) ? $aToken['transfersCount'] : 0;
+            } else {            
+                $result = $this->oMongo->count('operations', $search);
+            }
         }
-        $result += $this->oMongo->count('operations', $search);
         evxProfiler::checkpoint('getContractOperationCount', 'FINISH');
         return $result;
     }
