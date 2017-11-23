@@ -843,7 +843,7 @@ class Ethplorer {
             if($token = $this->getToken($address)){
                 $result = $this->getContractOperationCount('transfer', $address, $useFilter);
             }else{
-                $cursor = $this->oMongo->find('cacheAddressData', array("address" => $address));
+                $cursor = $this->oMongo->find('addressCache', array("address" => $address));
                 $aCachedData = count($cursor) ? current($cursor) : false;
                 if(false !== $aCachedData){
                     evxProfiler::checkpoint('countTransfersFromCache', 'START', 'address=' . $address);
@@ -915,7 +915,7 @@ class Ethplorer {
                 $result = $token['txsCount'];
                 $result++; // One for contract creation
             } else { 
-                $cursor = $this->oMongo->find('cacheAddressData', array("address" => $address));
+                $cursor = $this->oMongo->find('addressCache', array("address" => $address));
                 $aCachedData = count($cursor) ? current($cursor) : false;
                 if(false !== $aCachedData){
                     evxProfiler::checkpoint('countTransactionsFromCache', 'START', 'address=' . $address);
