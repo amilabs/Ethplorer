@@ -829,7 +829,7 @@ class Ethplorer {
     }
 
     /**
-     * Returns total number of token operations for the address.
+     * Returns total number of token transfers for the address.
      *
      * @param string $address  Contract address
      * @return int
@@ -840,31 +840,42 @@ class Ethplorer {
         $result = $this->oCache->get($cache, false, true, 30);
         if(FALSE === $result){
             $result = 0;
-            $token = $this->getToken($address);
-            $aSearchFields = ($token) ? array('contract') : array('from', 'to', 'address');
-            foreach($aSearchFields as $searchField){
-                $search = array($searchField => $address);
-                if($useFilter && $this->filter){
-                    $search = array(
-                        '$and' => array(
-                            $search,
-                            array(
-                                '$or' => array(
-                                    array('from'                => array('$regex' => $this->filter)),
-                                    array('to'                  => array('$regex' => $this->filter)),
-                                    array('address'             => array('$regex' => $this->filter)),
-                                    array('transactionHash'     => array('$regex' => $this->filter)),
+            if($token = $this->getToken($address)){
+                $result = $this->getContractOperationCount('transfer', $address, $useFilter);
+            }else{
+                $cursor = $this->oMongo->find('cacheAddressData', array("address" => $address));
+                $aCachedData = count($cursor) ? current($cursor) : false;
+                if(false !== $aCachedData){
+                    evxProfiler::checkpoint('countTransfersFromCache', 'START', 'address=' . $address);
+                    $result = $aCachedData['transfersCount'];
+                    evxProfiler::checkpoint('countTransfersFromCache', 'FINISH', 'count=' . $result);
+                }else{
+                    $aSearchFields = array('from', 'to', 'address');
+                    foreach($aSearchFields as $searchField){
+                        $search = array($searchField => $address);
+                        if($useFilter && $this->filter){
+                            $search = array(
+                                '$and' => array(
+                                    $search,
+                                    array(
+                                        '$or' => array(
+                                            array('from'                => array('$regex' => $this->filter)),
+                                            array('to'                  => array('$regex' => $this->filter)),
+                                            array('address'             => array('$regex' => $this->filter)),
+                                            array('transactionHash'     => array('$regex' => $this->filter)),
+                                        )
+                                    )
                                 )
-                            )
-                        )
-                    );
-                }
-                $result += $this->oMongo->count('operations', $search);
+                            );
+                        }
+                        $result += $this->oMongo->count('operations', $search);
 
-                $search['type'] = array('$eq' => array('approve'));
-                $approves = $this->oMongo->count('operations', $search);
-                if($approves){
-                    $result -= $approves;
+                        $search['type'] = array('$eq' => array('approve'));
+                        $approves = $this->oMongo->count('operations', $search);
+                        if($approves){
+                            $result -= $approves;
+                        }
+                    }
                 }
             }
             $this->oCache->save($cache, $result);
@@ -896,16 +907,26 @@ class Ethplorer {
      */
     public function countTransactions($address, $limit = FALSE){
         $cache = 'address-' . $address . '-txcnt';
-        $result = $this->oCache->get($cache, false, true, 3600);
+        $result = $this->oCache->get($cache, false, true, 30);
         if(FALSE === $result){
             evxProfiler::checkpoint('countTransactions', 'START', 'address=' . $address);
             $result = 0;
-            foreach(array('from', 'to') as $where){
-                $search = array($where => $address);
-                $result += $this->oMongo->count('transactions', $search);
-            }
-            if($this->getToken($address)/* || $this->getContract($address, FALSE) */){
+            if($token = $this->getToken($address)){
+                $result = $token['txsCount'];
                 $result++; // One for contract creation
+            } else { 
+                $cursor = $this->oMongo->find('cacheAddressData', array("address" => $address));
+                $aCachedData = count($cursor) ? current($cursor) : false;
+                if(false !== $aCachedData){
+                    evxProfiler::checkpoint('countTransactionsFromCache', 'START', 'address=' . $address);
+                    $result = $aCachedData['txsCount'];
+                    evxProfiler::checkpoint('countTransactionsFromCache', 'FINISH', 'count=' . $result);
+                }else{
+                    foreach(array('from', 'to') as $where){
+                        $search = array($where => $address);
+                        $result += $this->oMongo->count('transactions', $search);
+                    }
+                }
             }
             $this->oCache->save($cache, $result);
             evxProfiler::checkpoint('countTransactions', 'FINISH', $result . ' transactions');
