@@ -191,6 +191,11 @@ tr.odd {
     background: #202020;
 }
 
+#address-token-balances .table tr td.text-right {
+    max-width: 250px;
+    overflow: hidden;
+}
+
 .content-page .table tr.blue {
     background-color: #1396e2 !important;
 }
