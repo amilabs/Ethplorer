@@ -112,6 +112,7 @@ class evxCache {
      * @param mixed   $data       Data to store
      */
     public function save($entryName, $data){
+        $saveRes = false;
         $this->store($entryName, $data);
         switch($this->driver){
             case 'memcached':
@@ -130,9 +131,10 @@ class evxCache {
             case 'file':
                 $filename = $this->path . '/' . $entryName . ".tmp";
                 $json = json_encode($data, JSON_PRETTY_PRINT);
-                file_put_contents($filename, $json);
+                $saveRes = !!file_put_contents($filename, $json);
                 break;
         }
+        return $saveRes;
     }
 
     /**
