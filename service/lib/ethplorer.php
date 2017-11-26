@@ -1840,18 +1840,19 @@ class Ethplorer {
     }
 
     public function getTokenPriceHistory($address, $period = 0, $type = 'hourly', $updateCache = FALSE){
-        if(isset($this->aSettings['hidePrice']) && in_array($address, $this->aSettings['hidePrice'])){
-            return FALSE;
-        }
         if(isset($this->aSettings['priceSource']) && isset($this->aSettings['priceSource'][$address])){
             $address = $this->aSettings['priceSource'][$address];
         }
+        $isHidden = isset($this->aSettings['hidePrice']) && in_array($address, $this->aSettings['hidePrice']);
+        $knownPrice = isset($this->aSettings['updateRates']) && in_array($address, $this->aSettings['updateRates']);
+        if($isHidden || !$knownPrice){
+            return FALSE;
+        }
         evxProfiler::checkpoint('getTokenPriceHistory', 'START', 'address=' . $address . ', period=' . $period . ', type=' . $type);
-        $result = false;
         $rates = array();
         $cache = 'rates-history-' . /*($period > 0 ? ('period-' . $period . '-') : '' ) . ($type != 'hourly' ? $type . '-' : '') .*/ $address;
         $result = $this->oCache->get($cache, false, true);
-        if($updateCache || ((FALSE === $result) && isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates'])))){
+        if($updateCache || (FALSE === $result)){
             if(isset($this->aSettings['currency'])){
                 $method = 'getCurrencyHistory';
                 $params = array($address, 'USD');
