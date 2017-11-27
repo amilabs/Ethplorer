@@ -1965,10 +1965,10 @@ class Ethplorer {
                     }
                     if($lastRecord){
                         // If volume goes up more than 10 mln times, we suppose it was a bug
-                        if($prevVol && (($aDailyRecord['volume'] / $prevVol) > 10000000)){
+                        if($prevVol && (($aDailyRecord['volume'] / $prevVol) > 1000000)){
                             $aDailyRecord['volume'] = $prevVol;
                         }
-                        if($prevVolC && (($aDailyRecord['volumeConverted'] / $prevVolC) > 10000000)){
+                        if($prevVolC && (($aDailyRecord['volumeConverted'] / $prevVolC) > 1000000)){
                             $aDailyRecord['volumeConverted'] = $prevVolC;
                         }
                         $aDailyRecord['average'] = $aDailyRecord['volume'] ? ($aDailyRecord['volumeConverted'] / $aDailyRecord['volume']) : 0;
