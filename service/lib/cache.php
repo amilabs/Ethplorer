@@ -124,7 +124,7 @@ class evxCache {
                     $lifetime = time() + 12 * evxCache::MONTH + 5;
                 }
                 $saveRes = $this->oDriver->set($entryName, $data, $lifetime);
-                if(!in_array($entryName, array('tokens', 'rates'))){
+                if(!in_array($entryName, array('tokens', 'rates')) && (0 !== strpos($entryName, 'rates-history-'))){
                     break;
                 }
             case 'file':
@@ -165,7 +165,7 @@ class evxCache {
             if('memcached' === $this->driver){
                 $result = $this->oDriver->get($entryName);
                 // @todo: move hardcode to controller
-                if(!$result && in_array($entryName, array('tokens', 'rates'))){
+                if(!$result && (in_array($entryName, array('tokens', 'rates') || (0 === strpos($entryName, 'rates-history-'))))){
                     $file = TRUE;
                 }
             }
