@@ -1936,6 +1936,8 @@ class Ethplorer {
                 $aPriceHistoryDaily = array();
                 $aDailyRecord = array();
                 $curDate = '';
+                $prevVol = 0;
+                $prevVolC = 0;
                 for($i = 0; $i < count($aPriceHistory); $i++){
                     $firstRecord = false;
                     $lastRecord = false;
@@ -1959,10 +1961,20 @@ class Ethplorer {
                         }
                         $aDailyRecord['volume'] += $aPriceHistory[$i]['volume'];
                         $aDailyRecord['volumeConverted'] += $aPriceHistory[$i]['volumeConverted'];
-                        $aDailyRecord['average'] = $aDailyRecord['volume'] ? ($aDailyRecord['volumeConverted'] / $aDailyRecord['volume']) : 0;
+                        // $aDailyRecord['average'] = $aDailyRecord['volume'] ? ($aDailyRecord['volumeConverted'] / $aDailyRecord['volume']) : 0;
                     }
                     if($lastRecord){
+                        // If volume goes up more than 10 mln times, we suppose it was a bug
+                        if($prevVol && (($aDailyRecord['volume'] / $prevVol) > 10000000)){
+                            $aDailyRecord['volume'] = $prevVol;
+                        }
+                        if($prevVolC && (($aDailyRecord['volumeConverted'] / $prevVolC) > 10000000)){
+                            $aDailyRecord['volumeConverted'] = $prevVolC;
+                        }
+                        $aDailyRecord['average'] = $aDailyRecord['volume'] ? ($aDailyRecord['volumeConverted'] / $aDailyRecord['volume']) : 0;
                         $aPriceHistoryDaily[] = $aDailyRecord;
+                        $prevVol = $aDailyRecord['volume'];
+                        $prevVolC = $aDailyRecord['volumeConverted'];                        
                     }
                     $curDate = $aPriceHistory[$i]['date'];
                 }
