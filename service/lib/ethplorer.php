@@ -709,15 +709,18 @@ class Ethplorer {
             $cursor = $this->oMongo->find('balances', $search, array('balance' => -1), $limit, $offset);
             if($cursor){
                 $total = 0;
+                $aBalances = [];
                 foreach($cursor as $balance){
+                    $aBalances[] = $balance;
+                }                
+                foreach($aBalances as $balance){
                     $total += floatval($balance['balance']);
                 }
                 if($total > 0){
                     if(isset($token['totalSupply']) && ($total < $token['totalSupply'])){
                         $total = $token['totalSupply'];
                     }
-                    $cursor->reset();
-                    foreach($cursor as $balance){
+                    foreach($aBalances as $balance){
                         $result[] = array(
                             'address' => $balance['address'],
                             'balance' => floatval($balance['balance']),
