@@ -1836,6 +1836,9 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
             var volume = 0;
             if(!noPrice && 'undefined' !== typeof(widgetData['volume'][volumeDate])){
                 for(var token in widgetData['volume'][volumeDate]){
+                    if('undefined' === typeof(widgetData['tokenPrices'][token])){
+                        continue;
+                    }
                     if(d.getTime() == fnDate.getTime() && ('undefined' !== typeof(widgetData['tokenPrices'][token]['rate']))){
                         aPrices[token][volumeDate] = widgetData['tokenPrices'][token]['rate'];
                     }
