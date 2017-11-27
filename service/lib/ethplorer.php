@@ -716,6 +716,7 @@ class Ethplorer {
                     if(isset($token['totalSupply']) && ($total < $token['totalSupply'])){
                         $total = $token['totalSupply'];
                     }
+                    $cursor->reset();
                     foreach($cursor as $balance){
                         $result[] = array(
                             'address' => $balance['address'],
