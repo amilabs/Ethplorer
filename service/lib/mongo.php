@@ -116,7 +116,8 @@ class evxMongo {
                         'contracts'    => "contracts",
                         'tokens'       => "tokens",
                         'operations'   => "tokenOperations",
-                        'balances'     => "tokenBalances"
+                        'balances'     => "tokenBalances",
+                        'addressCache' => "cacheAddressData"
                     );
                 }else{
                     $this->aDBs = array(
