@@ -217,9 +217,15 @@ class evxMongo {
                 }
                 $query = new MongoDB\Driver\Query($aSearch, $aOptions);
                 $cursor = $this->oMongo->executeQuery($this->dbName . '.' . $this->aDBs[$collection], $query);
+
+                $cursor->setTypeMap(['root' => 'array', 'document' => 'array', 'array' => 'array']);
+                $aResult = new \IteratorIterator($cursor);
+                $aResult->rewind();
+                /*
                 $cursor = MongoDB\BSON\fromPHP($cursor->toArray());
                 $cursor = json_decode(MongoDB\BSON\toJSON($cursor), true);
                 $aResult = $cursor;
+                 */
                 break;
         }
         $finish = microtime(true);
