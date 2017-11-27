@@ -539,7 +539,7 @@ class Ethplorer {
     public function getTransaction($tx){
         evxProfiler::checkpoint('getTransaction', 'START', 'hash=' . $tx);
         $cursor = $this->oMongo->find('transactions', array("hash" => $tx));
-        $result = count($cursor) ? current($cursor) : false;
+        $result = iterator_count($cursor) ? current($cursor) : false;
         if($result){
             $receipt = isset($result['receipt']) ? $result['receipt'] : false;
             $result['gasLimit'] = $result['gas'];
@@ -760,7 +760,7 @@ class Ethplorer {
 
                 // Ask DB for fresh counts
                 $cursor = $this->oMongo->find('tokens', array('address' => $address), array(), false, false, array('txsCount', 'transfersCount'));
-                $token = ($cursor && count($cursor)) ? current($cursor) : false;
+                $token = ($cursor && iterator_count($cursor)) ? current($cursor) : false;
                 if($token){
                     $result['txsCount'] = $token['txsCount'];
                     $result['transfersCount'] = $token['transfersCount'];
@@ -803,7 +803,7 @@ class Ethplorer {
     public function getContract($address, $calculateTransactions = TRUE){
         evxProfiler::checkpoint('getContract', 'START', 'address=' . $address);
         $cursor = $this->oMongo->find('contracts', array("address" => $address));
-        $result = count($cursor) ? current($cursor) : false;
+        $result = iterator_count($cursor) ? current($cursor) : false;
         if($result && $calculateTransactions){
             unset($result["_id"]);
             unset($result["code"]);
@@ -848,7 +848,7 @@ class Ethplorer {
                 $result = $this->getContractOperationCount('transfer', $address, $useFilter);
             }else{
                 $cursor = $this->oMongo->find('addressCache', array("address" => $address));
-                $aCachedData = count($cursor) ? current($cursor) : false;
+                $aCachedData = iterator_count($cursor) ? current($cursor) : false;
                 if(false !== $aCachedData){
                     evxProfiler::checkpoint('countTransfersFromCache', 'START', 'address=' . $address);
                     $result = $aCachedData['transfersCount'];
@@ -920,7 +920,7 @@ class Ethplorer {
                 $result++; // One for contract creation
             } else { 
                 $cursor = $this->oMongo->find('addressCache', array("address" => $address));
-                $aCachedData = count($cursor) ? current($cursor) : false;
+                $aCachedData = iterator_count($cursor) ? current($cursor) : false;
                 if(false !== $aCachedData){
                     evxProfiler::checkpoint('countTransactionsFromCache', 'START', 'address=' . $address);
                     $result = $aCachedData['txsCount'];
@@ -970,7 +970,7 @@ class Ethplorer {
         $lastblock = $this->oCache->get('lastBlock', false, true, 300);
         if($updateCache || (false === $lastblock)){
             $cursor = $this->oMongo->find('blocks', array(), array('number' => -1), 1, false, array('number'));
-            $block = ($cursor && count($cursor)) ? current($cursor) : false;
+            $block = ($cursor && iterator_count($cursor)) ? current($cursor) : false;
             $lastblock = $block && isset($block['number']) ? $block['number'] : false;
             $this->oCache->save('lastBlock', $lastblock);
         }
