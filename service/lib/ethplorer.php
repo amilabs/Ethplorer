@@ -2110,7 +2110,9 @@ class Ethplorer {
                             foreach($aAddressBalances as $addressBalance){
                                 if($addressBalance["contract"] == $contract){
                                     $balance = Decimal::create($addressBalance["balance"]);
-                                    $balance = $balance->div($ten->pow($dec));
+                                    if($dec){
+                                        $balance = $balance->div($ten->pow($dec));
+                                    }
                                     break;
                                 }
                             }
