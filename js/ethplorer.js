@@ -399,14 +399,31 @@ Ethplorer = {
                 ascii: Ethplorer.Utils.hex2ascii(oTx.input)
             };
             var obj = Ethplorer.Utils.parseJData(oTx.input);
+            // CryptoKitties test
+            // @todo: remove address hardcode
+            var ckImage = false;
+            var ckContract = '0x06012c8cf97bead5deae237070f9587f8e7a266d';
+            if(oTx.to && (ckContract === oTx.to)){
+                var log = oTx.receipt && oTx.receipt.logs && oTx.receipt.logs.length ? oTx.receipt.logs[0] : false;
+                if(log && log.topics && log.topics.length && (0 === log.topics[0].indexOf("0x0a5311bd"))){ // Birth
+                    try {
+                        var data = log.data.slice(194).replace(/0+$/, '');
+                        var id = false;
+                        try{
+                            id = parseInt(log.data.substr(110, 18), 16);
+                            ckImage = "https://storage.googleapis.com/ck-kitty-image/" + ckContract + "/" + id + ".svg";
+                        }catch(e){}
+                    }catch(e){}
+                }                
+            }
             var isChainy = false;
             if(oTx.to && ('0xf3763c30dd6986b53402d41a8552b8f7f6a6089b' === oTx.to)){
                 var input = Ethplorer.Utils.hex2ascii(oTx.input.substring(136).replace(/0+$/, ''));
                 try {
                     obj = JSON.parse(input);
                 }catch(e){
-//                  console.log(e.message);
-//                  console.log(input);
+                    // console.log(e.message);
+                    // console.log(input);
                 }
                 Ethplorer.dataFields['transaction-tx-input']['ascii'] = input;
                 if(('undefined' !== typeof(obj['id'])) && ('CHAINY' === obj['id'])){
@@ -656,6 +673,10 @@ Ethplorer = {
         $("table").find("tr:visible:odd").addClass("odd");
         $("table").find("tr:visible:even").addClass("even");
         $("table").find("tr:visible:last").addClass("last");
+        var ckEnabled = document.location.hash && (document.location.hash.indexOf('ckEnabled') > 0);
+        if(ckEnabled && ckImage){
+            $('#tx-details-block').before($('<div class="text-center"><img src="' + ckImage + '" height="200"></div>'));
+        }
     },
 
     getAddressDetails: function(address){

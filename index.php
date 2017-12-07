@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "173";
+$codeVersion = "174";
 
 $aConfig = require dirname(__FILE__) . '/service/config.php';
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
