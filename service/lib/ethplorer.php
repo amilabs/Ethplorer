@@ -550,6 +550,16 @@ class Ethplorer {
 
             $success = ((21000 == $result['gasUsed']) || ($result['gasUsed'] < $result['gasLimit']) || ($receipt && !empty($receipt['logs'])));
             $result['success'] = isset($result['status']) ? !!$result['status'] : $success;
+            $methodsFile = dirname(__FILE__) . "/../methods.sha3.php";
+            if(file_exists($methodsFile)){
+                if($result['input']){
+                    $methods = require($methodsFile);
+                    $cmd = substr($result['input'], 2, 8);
+                    if(isset($methods[$cmd])){
+                        $result['method'] = $methods[$cmd];
+                    }
+                }
+            }
         }
         evxProfiler::checkpoint('getTransaction', 'FINISH');
         return $result;
