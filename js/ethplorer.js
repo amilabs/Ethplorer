@@ -480,7 +480,7 @@ Ethplorer = {
             txData.tx.gasPrice = parseFloat(Ethplorer.Utils.toBig(txData.tx.gasPrice).toString());            
             txData.tx.cost =  txData.tx.gasUsed ? txData.tx.gasPrice * txData.tx.gasUsed : 0;
         }
-        Ethplorer.fillValues('transaction', txData, ['tx', 'tx.from', 'tx.to', 'tx.creates', 'tx.value', 'tx.timestamp', 'tx.gasLimit', 'tx.gasUsed', 'tx.gasPrice', 'tx.fee', 'tx.nonce', 'tx.blockNumber', 'tx.confirmations', 'tx.input', 'tx.cost']);
+        Ethplorer.fillValues('transaction', txData, ['tx', 'tx.from', 'tx.to', 'tx.creates', 'tx.value', 'tx.timestamp', 'tx.gasLimit', 'tx.gasUsed', 'tx.gasPrice', 'tx.fee', 'tx.nonce', 'tx.blockNumber', 'tx.confirmations', 'tx.input', 'tx.cost', 'tx.method']);
 
         if(txData.token){
             var oToken = Ethplorer.prepareToken(txData.token);

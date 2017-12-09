@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-$codeVersion = "174";
+$codeVersion = "175";
 
 $aConfig = require dirname(__FILE__) . '/service/config.php';
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
@@ -385,6 +385,10 @@ if(is_array($rParts) && isset($rParts[2])){
                                 <tr>
                                     <td>Nonce</td>
                                     <td id="transaction-tx-nonce" class="list-field"></td>
+                                </tr>
+                                <tr id="tx-method">
+                                    <td>Method</td>
+                                    <td style="font-family: monospace;color:#f8f577;" id="transaction-tx-method" class="list-field text-left"></td>
                                 </tr>
                                 <tr id="tx-parsed">
                                     <td>Parsed Data</td>
