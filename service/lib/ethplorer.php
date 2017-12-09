@@ -493,6 +493,18 @@ class Ethplorer {
                 }
             }
             $result['tx']['confirmations'] = $confirmations;
+
+            // Temporary
+            $methodsFile = dirname(__FILE__) . "/../methods.sha3.php";
+            if(file_exists($methodsFile)){
+                if($result['tx']['input']){
+                    $methods = require($methodsFile);
+                    $cmd = substr($result['tx']['input'], 2, 8);
+                    if(isset($methods[$cmd])){
+                        $result['tx']['method'] = $methods[$cmd];
+                    }
+                }
+            }
         }
         if(is_array($result) && isset($result['token']) && is_array($result['token'])){
             $result['token'] = $this->getToken($result['token']['address']);
@@ -550,6 +562,7 @@ class Ethplorer {
 
             $success = ((21000 == $result['gasUsed']) || ($result['gasUsed'] < $result['gasLimit']) || ($receipt && !empty($receipt['logs'])));
             $result['success'] = isset($result['status']) ? !!$result['status'] : $success;
+
             $methodsFile = dirname(__FILE__) . "/../methods.sha3.php";
             if(file_exists($methodsFile)){
                 if($result['input']){
@@ -560,6 +573,7 @@ class Ethplorer {
                     }
                 }
             }
+
         }
         evxProfiler::checkpoint('getTransaction', 'FINISH');
         return $result;
