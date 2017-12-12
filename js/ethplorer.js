@@ -1005,53 +1005,54 @@ Ethplorer = {
             if(data.isContract && data.token){
                 var widgetTitle = (oToken && oToken.name) ? ($('<textarea />').html(oToken.name).text() + ' token pulse') : '';
 
-                if(true){
+                $('#widget-block').show();
+                $('#token-price-history-grouped-widget').show();
+                ethplorerWidget.init(
+                    '#token-price-history-grouped-widget',
+                    'tokenPriceHistoryGrouped',
+                    {
+                        theme: 'dark',
+                        getCode: true,
+                        address: address,
+                        options: {title: widgetTitle}
+                    }
+                );
+                //ethplorerWidget.loadScript("https://www.google.com/jsapi", ethplorerWidget.loadGoogleControlCharts);
+                ethplorerWidget.loadGoogleControlCharts();
+
+                /*$('#token-history-grouped-widget').show();
+                ethplorerWidget.init(
+                    '#token-history-grouped-widget',
+                    'tokenHistoryGrouped',
+                    {
+                        theme: 'dark',
+                        getCode: true,
+                        address: address,
+                        options: {title: widgetTitle, vAxis: {title: 'Token operations'}, hAxis: {title: '30 days token operations chart'}}
+                    }
+                );
+                ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);*/
+
+            }else{
+                if(testWidget){
                     $('#widget-block').show();
                     $('#token-price-history-grouped-widget').show();
-                    ethplorerWidget.init(
-                        '#token-price-history-grouped-widget',
-                        'tokenPriceHistoryGrouped',
-                        {
-                            theme: 'dark',
-                            getCode: true,
-                            address: address,
-                            options: {title: widgetTitle}
-                        }
-                    );
-                    ethplorerWidget.loadScript("https://www.google.com/jsapi", ethplorerWidget.loadGoogleControlCharts);
                 }else{
-                    $('#token-history-grouped-widget').show();
-                    ethplorerWidget.init(
-                        '#token-history-grouped-widget',
-                        'tokenHistoryGrouped',
-                        {
-                            theme: 'dark',
-                            getCode: true,
-                            address: address,
-                            options: {title: widgetTitle, vAxis: {title: 'Token operations'}, hAxis: {title: '30 days token operations chart'}}
-                        }
-                    );
-                    ethplorerWidget.loadScript("https://www.gstatic.com/charts/loader.js", ethplorerWidget.loadGoogleCharts);
+                    $('#widget-block').hide();
+                    $('#token-price-history-grouped-widget').hide();
                 }
-            }else if(true){
-                    if(testWidget){
-                        $('#widget-block').show();
-                        $('#token-price-history-grouped-widget').show();
-                    }else{
-                        $('#widget-block').hide();
-                        $('#token-price-history-grouped-widget').hide();
+                ethplorerWidget.init(
+                    '#token-price-history-grouped-widget',
+                    'addressPriceHistoryGrouped',
+                    {
+                        theme: 'dark',
+                        getCode: true,
+                        address: address,
+                        //options: {title: widgetTitle}
                     }
-                    ethplorerWidget.init(
-                        '#token-price-history-grouped-widget',
-                        'addressPriceHistoryGrouped',
-                        {
-                            theme: 'dark',
-                            getCode: true,
-                            address: address,
-                            //options: {title: widgetTitle}
-                        }
-                    );
-                    ethplorerWidget.loadScript("https://www.google.com/jsapi", ethplorerWidget.loadGoogleControlCharts);
+                );
+                //ethplorerWidget.loadScript("https://www.google.com/jsapi", ethplorerWidget.loadGoogleControlCharts);
+                ethplorerWidget.loadGoogleControlCharts();
             }
         }else{
             // Wait 3 seconds and retry
