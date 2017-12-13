@@ -24,6 +24,9 @@ Ethplorer = {
     ethPrice: {rate: 0, diff: 0},
     searchCache: {},
     saveData: function(){},
+    Config: {testnet: false},
+    Extensions: {},
+    handlers: {},
     init: function(){
         if('undefined' !== typeof(ethplorerConfig)){
             Ethplorer.Config = ethplorerConfig;
@@ -157,13 +160,22 @@ Ethplorer = {
         }
 
         // @see ethplorer-search.js
+        // @todo extension
         if('undefined' !== typeof(EthplorerSearch)){
             EthplorerSearch.init($('#search-form'), $('#search'), Ethplorer.search);
         }
 
         // @see ethplorer-adv.js
+        // @todo extension
         if('undefined' !== typeof(EthplorerNote)){
             EthplorerNote.init($('#ethplorer-note'));
+        }
+
+        // Initialize extensions
+        if(Ethplorer.Extensions){
+            for(var ext in Ethplorer.Extensions){
+                Ethplorer.Extensions[ext].init();
+            }
         }
 
         // implement save to file function
@@ -501,7 +513,6 @@ Ethplorer = {
                 $('#transfer-tx-message').html($('#transaction-tx-message').html());
                 $('#transaction-tx-message').html('')
             }
-            var ckImage = false;
             if(txData.operations && txData.operations.length){
                 txData.operation = txData.operations[txData.operations.length - 1];
                 var multiop = txData.operations.length > 1;
@@ -600,59 +611,8 @@ Ethplorer = {
                     $('#operation-status').addClass(oOperation.success ? 'green' : 'red');
                 }
             }else{
-                // CryptoKitties test
-                // @todo: remove address hardcode
-                var ckContract = '0x06012c8cf97bead5deae237070f9587f8e7a266d';
-                if(oTx.to && (ckContract === oTx.to) && oTx.method){
-                    var log = oTx.receipt && oTx.receipt.logs && oTx.receipt.logs.length ? oTx.receipt.logs[0] : false;
-                    var p = oTx.method.replace('(', ' ').replace(',', ' ').replace(')', '').split(' ');
-                    var cmd = p[0] + ' Operation';
-                    var ckImgPath = "https://storage.googleapis.com/ck-kitty-image/";
-                    titleAdd += cmd;
-                    $('.token-operation-type').text(cmd);                   
-                    if('giveBirth' == p[0]){
-                        var data = oTx.input.slice(8).replace(/^0+/, '');
-                        var id = false;
-                        try{
-                            id = parseInt(data, 16);
-                            ckImage = ckImgPath + ckContract + "/" + id + ".svg";
-                        }catch(e){}
-                        if(ckImage){
-                            $('#token-information-block').addClass('text-center');
-                            $('#token-information-block').html($('<img src="' + ckImage + '" height="200">'));
-                        }
-                    }
-                    if('breedWithAuto' == p[0]){
-                        var data1 = oTx.input.slice(8).substr(0,64).replace(/^0+/, '');
-                        var data2 = oTx.input.slice(8).substr(64,64).replace(/^0+/, '');
-                        var image1 = false;
-                        var image2 = false;
-                        try{
-                            image1 = ckImgPath + ckContract + "/" + parseInt(data1, 16) + ".svg";
-                            image2 = ckImgPath + ckContract + "/" + parseInt(data2, 16) + ".svg";
-                        }catch(e){}
-                        if(image1 && image2){
-                            $('#token-information-block').addClass('text-center');
-                            $('#token-information-block').empty();
-                            $('#token-information-block').append('<img src="' + image1 + '" height="200">');
-                            $('#token-information-block').append('<span style="color:red; font-size:64px;">❤</span>');
-                            $('#token-information-block').append('<img src="' + image2 + '" height="200">');
-                        }
-                    }
-                    if(log && log.topics && log.topics.length && (0 === log.topics[0].indexOf("0x0a5311bd"))){ // Birth
-                        try {
-                            var data = log.data.slice(194).replace(/0+$/, '');
-                            var id = false;
-                            try{
-                                id = parseInt(log.data.substr(110, 18), 16);
-                                ckImage = "https://storage.googleapis.com/ck-kitty-image/" + ckContract + "/" + id + ".svg";
-                            }catch(e){}
-                        }catch(e){}
-                    }                
-                }else{
-                    titleAdd += 'Operation';
-                    $('.token-operation-type').text('Operation');
-                }
+                titleAdd += 'Operation';
+                $('.token-operation-type').text('Operation');
                 if(oTx.receipt && oTx.receipt.logs && oTx.receipt.logs.length){
                     for(var i=0; i<oTx.receipt.logs.length; i++){
                         var log = oTx.receipt.logs[i];
@@ -700,6 +660,7 @@ Ethplorer = {
             Ethplorer.showOpDetails(oTx, txData.operations[0]);
         }
 
+        Ethplorer.Events.fire('ethp_showTxDetails_finish', txData);
         Ethplorer.Utils.hideEmptyFields();
         Ethplorer.hideLoader();
         $('#disqus_thread').show();
@@ -950,6 +911,7 @@ Ethplorer = {
             }else{
                 $('#address-balances-total').html('&nbsp;');
             }
+            Ethplorer.Events.fire('ethp_showAddressDetails_finish', data);
         }
 
         if(!data.isContract || !data.token){
@@ -1702,6 +1664,36 @@ Ethplorer = {
             correctLevel : QRCode.CorrectLevel.L
         });
         $("#qr-code-popup").dialog('open');
+    },
+    Events: {
+        handlers: [],
+        addHandler: function(event, callback){
+            if('undefined' === typeof(Ethplorer.Events.handlers[event])){
+                Ethplorer.Events.handlers[event] = [];
+            }
+            Ethplorer.Events.handlers[event].push(callback);
+            return Ethplorer.Events.handlers[event].length - 1;
+        },
+        delHandler: function(event, handlerIndex){
+            if(('undefined' !== typeof(Ethplorer.Events.handlers[event])) && ('undefined' !== typeof(Ethplorer.Events.handlers[event][handlerIndex]))){
+                delete Ethplorer.Events.handlers[event][handlerIndex];
+            }
+        },
+        fire: function(event, data){
+            if('undefined' !== typeof(Ethplorer.Events.handlers[event]) && Ethplorer.Events.handlers[event].length){
+                for(var i=0; i<Ethplorer.Events.handlers[event].length; i++){
+                    var res = true;
+                    if('undefined' !== typeof(data)){
+                        res = Ethplorer.Events.handlers[event][i](data);
+                    }else{
+                        res = Ethplorer.Events.handlers[event][i]();
+                    }
+                    if(false === res){
+                        break;
+                    }
+                }
+            }
+        }
     },
     Nav: {
         data: {},

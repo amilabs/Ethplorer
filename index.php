@@ -14,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-$codeVersion = "175";
-
 $aConfig = require dirname(__FILE__) . '/service/config.php';
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $es = Ethplorer::db(array());
+
+$codeVersion = isset($aConfig['codeVersion']) ? $aConfig['codeVersion'] : "175";
 
 $error = TRUE;
 $header = "";
@@ -97,7 +96,15 @@ if(is_array($rParts) && isset($rParts[2])){
     <script src="/js/ethplorer.js?v=<?=$codeVersion?>"></script>
     <script src="/js/ethplorer-search.js?v=<?=$codeVersion?>"></script>
     <?php if($hasNotes):?><script src="/js/ethplorer-note.js?v=<?=$codeVersion?>"></script><?php endif; ?>
-    <script src="/js/config.js"></script>
+    <?php if(isset($aConfig['extensions']) && is_array($aConfig['extensions'])): ?>
+        <?php foreach($aConfig['extensions'] as $extName => $aExtension): ?>
+            <?php $cv = isset($aExtension['version']) ? (int)$aExtension['version'] : false; ?>
+            <?php if(isset($aExtension['js']) && file_exists(dirname(__FILE__) . "/extensions/" . $extName . "/js/" . $aExtension['js'])): ?>
+                <script src="/extensions/<?php echo $extName; ?>/js/<?php echo $aExtension['js'];?><?php if($cv): ?>?v=<?=$cv?><?php endif;?>"></script>
+            <?php endif; ?>
+        <?php endforeach; ?>
+    <?php endif; ?>
+    <script>Ethplorer.Config.updateLink = "<?php echo $aConfig["client"]["updateLink"];?>";</script>
     <script src="/js/md5.min.js"></script>
     <script src="/js/sha3.min.js"></script>
     <script src="/js/qrcode.min.js"></script>
@@ -287,7 +294,7 @@ if(is_array($rParts) && isset($rParts[2])){
                                 <a class="tx-details-link">Transaction details</a>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-md-6 token-related">
+                        <div class="col-xs-12 col-md-6 token-related" id="token-information-block">
                             <div class="block">
                                 <div class="block-header"><h3>Token <span class="token-name"></span> Information</h3></div>
                                 <table class="table">
