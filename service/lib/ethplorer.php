@@ -291,6 +291,16 @@ class Ethplorer {
                     );
                 }
             }
+        }else{
+            // @todo: move to extension
+            $ck = '0x06012c8cf97bead5deae237070f9587f8e7a266d';
+            $cursor = $this->oMongo->find('transactions', array('from' => $address, 'to' => $ck));
+            if($cursor){
+                foreach($cursor as $token){
+                    $result['cryptokitties'] = true;
+                    break;
+                }
+            }            
         }
         if(!isset($result['token']) && !isset($result['pager'])){
             // Get balances
