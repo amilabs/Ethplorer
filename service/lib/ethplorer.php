@@ -291,6 +291,11 @@ class Ethplorer {
                     );
                 }
             }
+            // @todo: move to extension
+            $ck = '0x06012c8cf97bead5deae237070f9587f8e7a266d';
+            if($address == $ck){
+                $result['cryptokitties'] = true;
+            }
         }else{
             // @todo: move to extension
             $ck = '0x06012c8cf97bead5deae237070f9587f8e7a266d';
