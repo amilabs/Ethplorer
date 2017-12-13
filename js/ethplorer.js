@@ -911,7 +911,6 @@ Ethplorer = {
             }else{
                 $('#address-balances-total').html('&nbsp;');
             }
-            Ethplorer.Events.fire('ethp_showAddressDetails_finish', data);
         }
 
         if(!data.isContract || !data.token){
@@ -938,6 +937,8 @@ Ethplorer = {
         document.title = 'Ethplorer';
         document.title += (': ' + (titleAdd ? (titleAdd + ' -') : ''));
         document.title += ((data.isContract ? ' Ethereum contract ' : ' Ethereum address ') + Ethplorer.currentAddress);
+
+        Ethplorer.Events.fire('ethp_showAddressDetails_finish', data);
 
         $('.local-time-offset').text(Ethplorer.Utils.getTZOffset());
         Ethplorer.Utils.hideEmptyFields();
