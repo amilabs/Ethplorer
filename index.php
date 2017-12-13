@@ -18,7 +18,7 @@ $aConfig = require dirname(__FILE__) . '/service/config.php';
 require dirname(__FILE__) . '/service/lib/ethplorer.php';
 $es = Ethplorer::db(array());
 
-$codeVersion = isset($aConfig['codeVersion']) ? $aConfig['codeVersion'] : "175";
+$codeVersion = isset($aConfig['codeVersion']) ? $aConfig['codeVersion'] : "177";
 
 $error = TRUE;
 $header = "";
@@ -91,6 +91,7 @@ if(is_array($rParts) && isset($rParts[2])){
     <link rel="icon" type="image/png" href="/favicon-16x16.png" sizes="16x16">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+    <script src="https://www.google.com/jsapi"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="/js/bignumber.js"></script>
     <script src="/js/ethplorer.js?v=<?=$codeVersion?>"></script>
@@ -108,6 +109,16 @@ if(is_array($rParts) && isset($rParts[2])){
     <script src="/js/md5.min.js"></script>
     <script src="/js/sha3.min.js"></script>
     <script src="/js/qrcode.min.js"></script>
+    <?php if(isset($address)){ ?>
+        <script>
+        var ethplorerWidgetPreload = [
+            {
+                method: "getPriceHistoryGrouped",
+                options: {address: '<?php echo $address; ?>'}
+            }
+        ];
+        </script>
+    <?php } ?>
     <script src="/api/widget.js?v=<?=$codeVersion?>"></script>
 </head>
 <body>

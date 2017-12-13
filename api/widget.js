@@ -14,6 +14,7 @@ ethplorerWidget = {
 
     chartWidgets: [],
     chartControlWidgets: [],
+    preloadPriceHistory: {},
 
     cssVersion: 11,
 
@@ -89,6 +90,34 @@ ethplorerWidget = {
         if(ethplorerWidget.chartControlWidgets && ethplorerWidget.chartControlWidgets.length)
             for(var i=0; i<ethplorerWidget.chartControlWidgets.length; i++)
                     ethplorerWidget.chartControlWidgets[i].load();
+    },
+    preloadData: function(methods){
+        for(var i=0; i<methods.length; i++){
+            var preloadMethod = methods[i];
+
+            var api = ethplorerWidget.api + '/' + preloadMethod.method,
+                address;
+            if(preloadMethod.options && preloadMethod.options.address){
+                address = preloadMethod.options.address.toString().toLowerCase();
+                api += ('/' + address);
+            }
+            var params = {
+                apiKey: 'ethplorer.widget',
+                domain: document.location.href
+            };
+
+            $.getJSON(api, params, function(_address){
+                return function(data){
+                    if(data && !data.error && data.history){
+                        //console.log(_address);
+                        //console.log(data);
+                        ethplorerWidget.preloadPriceHistory[_address] = data;
+                    }else{
+                        console.log('Preloading: No data for chart.');
+                    }
+                };}(address)
+            );
+        }
     },
     appendEthplorerLink: function(obj, link, style){
         var host = ethplorerWidget.url.split('//')[1];
@@ -1266,7 +1295,16 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
     };
 
     this.load = function(){
-        $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
+        var address;
+        if(options && options.address){
+            address = options.address.toString().toLowerCase();
+        }
+        if(address && ethplorerWidget.preloadPriceHistory && ethplorerWidget.preloadPriceHistory[address]){
+            //console.log(ethplorerWidget.preloadPriceHistory[address]);
+            this.refreshWidget(ethplorerWidget.preloadPriceHistory[address]);
+        }else{
+            $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
+        }
     };
 
     this.getTooltip = function(noPrice, date, low, open, close, high, operations, volume, convertedVolume){
@@ -1747,7 +1785,16 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
     };
 
     this.load = function(){
-        $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
+        var address;
+        if(options && options.address){
+            address = options.address.toString().toLowerCase();
+        }
+        if(address && ethplorerWidget.preloadPriceHistory && ethplorerWidget.preloadPriceHistory[address]){
+            //console.log(ethplorerWidget.preloadPriceHistory[address]);
+            this.refreshWidget(ethplorerWidget.preloadPriceHistory[address]);
+        }else{
+            $.getJSON(this.api, this.getRequestParams(), this.refreshWidget);
+        }
     };
 
     this.getTooltip = function(noPrice, date, balance, volume, txs, dteUpdated){
@@ -2165,6 +2212,10 @@ ethplorerWidget.Type['addressPriceHistoryGrouped'] = function(element, options, 
     this.init();
     ethplorerWidget.chartControlWidgets.push(this);
 };
+
+if('undefined' !== typeof(ethplorerWidgetPreload)){
+    ethplorerWidget.preloadData(ethplorerWidgetPreload);
+}
 
 /**
  * Document on ready widgets initialization.
