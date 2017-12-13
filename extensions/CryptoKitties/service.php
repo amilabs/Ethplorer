@@ -15,7 +15,6 @@ if(isset($_GET["action"]) && ("getKitty" === $_GET["action"])){
         if(!$result){
             $result = file_get_contents($api . "/" . $id);
             $oCache->save($cacheId, $result);
-            $result['cache'] = false;
         }
         if($result){
             echo $result;
@@ -32,7 +31,6 @@ if(isset($_GET["action"]) && ("getAddress" === $_GET["action"])){
         if(!$result){
             $result = file_get_contents($api . "?owner_wallet_address=" . $address . '&limit=20');
             $oCache->save($cacheId, $result);
-            $result['cache'] = false;
         }
         if($result){
             echo $result;
