@@ -1,7 +1,7 @@
 <?php
 
 require dirname(__FILE__) . '/../../service/lib/ethplorer.php';
-$es = Ethplorer::db(array());
+$es = Ethplorer::db(array('cacheDriver' => 'memcached'));
 
 $oCache = $es->getCache();
 
