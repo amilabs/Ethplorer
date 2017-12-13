@@ -34,7 +34,7 @@ Ethplorer.Extensions.CryptoKitties = {
                     $('#token-information-block').append('<div id="ck-2" style="' + ckStyle + '"></div>');
                     Ethplorer.Extensions.CryptoKitties.showKitty('ck-1', id1);
                     Ethplorer.Extensions.CryptoKitties.showKitty('ck-2', id2);
-                    $("#ck-symbol").html(('bidOnSiringAuction' == p[0]) ? '?' : 'X');
+                    $("#ck-symbol").html(('bidOnSiringAuction' == p[0]) ? '?' : '❤');
                 }
             }
             $('[data-toggle="tooltip"]').tooltip(); 
