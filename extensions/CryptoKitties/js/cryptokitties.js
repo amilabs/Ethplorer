@@ -11,14 +11,14 @@ Ethplorer.Extensions.CryptoKitties = {
         if(!addrData.cryptokitties) return;
         var limit = 2;
         var address = addrData.address.toLowerCase();
-        $('#address-token-balances').after('<div id="ck-loading" class="text-center">Loading CryptoKitties...</div>');
-        $('.filter-box').before('<div class="col-xs-12" id="ck-full" style="display:none;"><div class="block"><div class="block-header"><h3>CryptoKitties</h3><div class="ck-full-close">&times;</div></div><table class="table"><tbody><tr class="even last"><td></td></tr></tbody></table></div></div>')
+        $('#address-token-balances').parent().append('<div id="ck-loading" class="text-center">Loading CryptoKitties...</div>');
+        $('#address-token-balances').parent().after('<div class="col-xs-12" id="ck-full" style="display:none;"><div class="block"><div class="block-header"><h3>CryptoKitties</h3><div class="ck-full-close">&times;</div></div><table class="table"><tbody><tr class="even last"><td></td></tr></tbody></table></div></div>')
         $.getJSON('/extensions/CryptoKitties/service.php', {action:"getAddress", address:address}, function(data){
             $('#ck-loading').hide();
             $('#ck-address-block tr.last td').empty();
             if(data && data.total){
                 Ethplorer.Extensions.CryptoKitties.data = data;
-                $('#address-token-balances').after('<div class="block" id="ck-address-block"><div class="block-header"><h3>CryptoKitties</h3></div><table class="table"><tbody><tr class="even last"><td></td></tr></tbody></table></div>');
+                $('#address-token-balances').parent().append('<div class="block" id="ck-address-block"><div class="block-header"><h3>CryptoKitties</h3></div><table class="table"><tbody><tr class="even last"><td></td></tr></tbody></table></div>');
                 for(var i=0; i< data.kitties.length; i++){
                     if(i<limit){
                         $('#ck-address-block tr.last td').append("<div id='ck-" + i + "' class='ck-kitty'></div>");
@@ -38,7 +38,7 @@ Ethplorer.Extensions.CryptoKitties = {
                         $('#ck-full').hide();
                     });
                     if(data.total > 20){
-                           $('#ck-full table').after("<div class='text-center' style='color:white;margin-top:-16px;'><small>Last 20 of " + data.total + " kitties shown</small></div>");
+                           $('#ck-full table').after("<div class='text-center' style='color:white;margin-top:-16px;margin-bottom:20px;'><small>Last 20 of " + data.total + " kitties shown</small></div>");
                     }
 // <div style="text-align:center;font-size:16px;padding-top:10px;padding-bottom:4px;"><a class="widget-code-link">Show more Kitties</a></div>
                 }
