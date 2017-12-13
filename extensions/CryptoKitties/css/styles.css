@@ -1,0 +1,43 @@
+.ck-kitty {
+    display:inline-block;
+    vertical-align:top;
+    height:200px;
+    width:200px;
+    border:1px solid white;
+    border-radius:6px;
+    color:white;
+    text-align:center;
+    margin-bottom:32px;
+}
+
+#ck-symbol {
+    display:inline-block;
+    vertical-align:top;
+    width:70px;
+    height:200px;
+    line-height:200px;
+    color:white;
+    font-size:64px;
+}
+
+.ck-show-small {
+    display:none;
+}
+
+@media screen and (min-width: 992px) and (max-width: 1200px) {
+    .ck-has-kitties {
+        clear: left !important;
+        width: 100% !important;   
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .ck-show-small {
+        display:inline;
+    }
+
+    #ck-symbol {
+        height:72px;
+        line-height:64px;
+    }
+}

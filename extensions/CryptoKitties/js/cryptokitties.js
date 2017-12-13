@@ -1,10 +1,10 @@
 Ethplorer.Extensions.CryptoKitties = {
     contract: '0x06012c8cf97bead5deae237070f9587f8e7a266d',
+    show: false,
     init: function(){
         Ethplorer.Events.addHandler("ethp_showTxDetails_finish", Ethplorer.Extensions.CryptoKitties.onTxDetails);
     },
     onTxDetails: function(txData){
-        var ckStyle = "display:inline-block;vartical-align:top;height:200px;width:200px;border:1px solid white;border-radius:6px;color:white;text-align:center;";
         var oTx = txData.tx;
         if(oTx.to && (Ethplorer.Extensions.CryptoKitties.contract === oTx.to) && oTx.method){
             var p = oTx.method.replace('(', ' ').replace(',', ' ').replace(')', '').split(' ');
@@ -16,7 +16,7 @@ Ethplorer.Extensions.CryptoKitties = {
                 var id = parseInt(data, 16);
                 if(id){
                     $('#token-information-block').addClass('text-center');
-                    $('#token-information-block').html('<div id="ck-1" style="' + ckStyle + '"></div>');
+                    $('#token-information-block').html('<div class="ck-kitty" id="ck-1"></div>');
                     Ethplorer.Extensions.CryptoKitties.showKitty('ck-1', id);
                 }
             }
@@ -29,18 +29,26 @@ Ethplorer.Extensions.CryptoKitties = {
                 if(id1 && id2){
                     $('#token-information-block').addClass('text-center');
                     $('#token-information-block').empty();
-                    $('#token-information-block').append('<div id="ck-1" style="' + ckStyle + '"></div>');
-                    $('#token-information-block').append('<div style="display:inline-block;vertical-align:top;width:70px;height:200px;line-height:200px;color:white;font-size:64px;" id="ck-symbol"></div>');
-                    $('#token-information-block').append('<div id="ck-2" style="' + ckStyle + '"></div>');
+                    $('#token-information-block').append('<div class="ck-kitty" id="ck-1"></div><br class="ck-show-small" />');
+                    $('#token-information-block').append('<div id="ck-symbol"></div><br class="ck-show-small" />');
+                    $('#token-information-block').append('<div class="ck-kitty" id="ck-2"></div><br class="ck-show-small" />');
                     Ethplorer.Extensions.CryptoKitties.showKitty('ck-1', id1);
                     Ethplorer.Extensions.CryptoKitties.showKitty('ck-2', id2);
-                    $("#ck-symbol").html(('bidOnSiringAuction' == p[0]) ? '?' : '❤');
+                    var symbol = '?';
+                    if('breedWithAuto' == p[0]){
+                        $("#ck-symbol").css('color', 'red');
+                        symbol = '❤';
+                    }
+                    $("#ck-symbol").html(symbol);
                 }
             }
-            $('[data-toggle="tooltip"]').tooltip(); 
+            if(Ethplorer.Extensions.CryptoKitties.show){
+                $('#token-information-block, #token-operation-block').addClass('ck-has-kitties');
+            }
         }
     },
     showKitty: function(containerId, id){
+        Ethplorer.Extensions.CryptoKitties.show = true;
         $('#' + containerId).html("Loading...");
         $.getJSON('/extensions/CryptoKitties/service.php', {action:"getKitty", id:id}, function(data){
             var bgColors = {
@@ -62,11 +70,12 @@ Ethplorer.Extensions.CryptoKitties = {
             if(data["color"] && bgColors[data["color"]]){
                 $('#' + containerId).css("background-color", bgColors[data["color"]]);
             }
-            var img = $('<img data-toggle="tooltip" src="' + data["image_url"] + '" height="200">');
-            img.attr("title", data["bio"] ? data["bio"] : "");
+            var img = $('<img src="' + data["image_url"] + '" height="200">');
+            img.attr("data-tip", data["bio"] ? data["bio"] : "");
+            img.addClass('tip');
             $('#' + containerId).html(img);
             $('#' + containerId).append("<span style='color:white;'>Kitty " +  data["id"] + " - Gen " + data["generation"] + "</span>");
-            // $('#' + containerId).append("<span style='color:white;'>[#" +  data["id"] + "] " + (data["name"] ? data["name"] : "") + "(gen " + data["generation"] + ")</span>");
+            $('.tip').tipr();
         });
     }
 };

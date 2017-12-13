@@ -81,6 +81,22 @@ if(is_array($rParts) && isset($rParts[2])){
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css">
     <link rel="stylesheet" href="/css/ethplorer.css?v=<?=$codeVersion?>">
+<?php
+    // Load extensions CSS
+    if(isset($aConfig['extensions']) && is_array($aConfig['extensions'])){
+        foreach($aConfig['extensions'] as $extName => $aExtension){
+            $cv = isset($aExtension['version']) ? (int)$aExtension['version'] : false;
+            if(isset($aExtension['css'])){
+                $aExtension['js'] = (array)$aExtension['js'];
+                foreach($aExtension['css'] as $js){
+                    $jsf = "/extensions/" . $extName . "/" . $js;
+                    if(file_exists(dirname(__FILE__) . $jsf)){
+                        echo '    <link rel="stylesheet" href="' . $jsf . ($cv ? ("?v=" . $cv) : "") . '">' . "\n";
+                    }
+                }
+            }
+        }
+    } ?>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="referrer" content="never" />
@@ -96,15 +112,23 @@ if(is_array($rParts) && isset($rParts[2])){
     <script src="/js/bignumber.js"></script>
     <script src="/js/ethplorer.js?v=<?=$codeVersion?>"></script>
     <script src="/js/ethplorer-search.js?v=<?=$codeVersion?>"></script>
-    <?php if($hasNotes):?><script src="/js/ethplorer-note.js?v=<?=$codeVersion?>"></script><?php endif; ?>
-    <?php if(isset($aConfig['extensions']) && is_array($aConfig['extensions'])): ?>
-        <?php foreach($aConfig['extensions'] as $extName => $aExtension): ?>
-            <?php $cv = isset($aExtension['version']) ? (int)$aExtension['version'] : false; ?>
-            <?php if(isset($aExtension['js']) && file_exists(dirname(__FILE__) . "/extensions/" . $extName . "/js/" . $aExtension['js'])): ?>
-                <script src="/extensions/<?php echo $extName; ?>/js/<?php echo $aExtension['js'];?><?php if($cv): ?>?v=<?=$cv?><?php endif;?>"></script>
-            <?php endif; ?>
-        <?php endforeach; ?>
-    <?php endif; ?>
+<?php if($hasNotes):?><script src="/js/ethplorer-note.js?v=<?=$codeVersion?>"></script><?php endif; ?>
+<?php
+    // Load extensions JS
+    if(isset($aConfig['extensions']) && is_array($aConfig['extensions'])){
+        foreach($aConfig['extensions'] as $extName => $aExtension){
+            $cv = isset($aExtension['version']) ? (int)$aExtension['version'] : false;
+            if(isset($aExtension['js'])){
+                $aExtension['js'] = (array)$aExtension['js'];
+                foreach($aExtension['js'] as $js){
+                    $jsf = "/extensions/" . $extName . "/" . $js;
+                    if(file_exists(dirname(__FILE__) . $jsf)){
+                        echo '    <script src="' . $jsf . ($cv ? ("?v=" . $cv) : "") . '"></script>' . "\n";
+                    }
+                }
+            }
+        }
+    } ?>
     <script>Ethplorer.Config.updateLink = "<?php echo $aConfig["client"]["updateLink"];?>";</script>
     <script src="/js/md5.min.js"></script>
     <script src="/js/sha3.min.js"></script>
@@ -271,7 +295,7 @@ if(is_array($rParts) && isset($rParts[2])){
                                 <a class="tx-details-link">Transaction details</a>
                             </div>
                         </div>
-                        <div class="col-xs-12 col-md-6 token-related">
+                        <div class="col-xs-12 col-md-6 token-related" id="token-operation-block">
                             <div class="block">
                                 <div class="block-header"><h3><span class="token-name"></span> <span class="token-operation-type"></span></h3></div>
                                 <table class="table">
