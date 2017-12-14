@@ -105,6 +105,10 @@ class evxCache {
         $this->aData[$entryName] = $data;
     }
 
+    public function clearLocalCache(){
+        $this->aData = array();
+    }
+
     /**
      * Saves data to file.
      *
