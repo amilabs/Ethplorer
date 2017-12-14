@@ -689,6 +689,13 @@ class Ethplorer {
                 if(isset($aResult[$address]['symbol'])){
                     $aResult[$address]['symbol'] = htmlspecialchars($aResult[$address]['symbol']);
                 }
+
+                $cursor = $this->oMongo->find('addressCache', array("address" => $address));
+                $aCachedData = false;
+                foreach($cursor as $aCachedData) break;
+                if(false !== $aCachedData){
+                    $aResult[$address]['txsCount'] = $aCachedData['txsCount'];
+                }
             }
             if(isset($aResult['0x0000000000000000000000000000000000000000'])){
                 unset($aResult['0x0000000000000000000000000000000000000000']);
