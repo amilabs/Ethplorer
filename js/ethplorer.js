@@ -1979,7 +1979,7 @@ Ethplorer = {
             var str = Ethplorer.Utils.hex2ascii(hex.slice(8)).replace('{{', '{').replace(/^[^{]+/, '');
             var res = false;
             var i1 = str.indexOf('{');
-            var i2 = str.indexOf('}');
+            var i2 = str.lastIndexOf('}');
             if(i1 >= 0 && i2 >= 0 && i1 < i2){
                 var jstr = str.substr(i1, i2 - i1 + 1);
                 try {
