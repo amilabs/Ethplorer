@@ -94,7 +94,6 @@ Ethplorer.Extensions.CryptoKitties = {
                         case "0x241ea03ca20251805084d27d4440371c34a0b85ff108f6bb5611248f73818b80":
                             var infoTR = $("<tr><td></td><td></td></tr>");
                             var block = parseInt(oLog.data.substr(64 * 3 + 2), 16);
-                            var matronId = parseInt(oLog.data.substr(64 + 2, 64), 16);
                             var currentBlock = oTx.blockNumber + oTx.confirmations;
                             var blocksTillBirth = block - currentBlock;
                             var msg = "";
@@ -109,9 +108,31 @@ Ethplorer.Extensions.CryptoKitties = {
                                         cnt--;
                                         $('.ck-counter').text(cnt);
                                     }
-                                }, 17000);
+                                }, 15000);
                             }else{
-                                msg = "Kitty born on block " + block;
+                                var matronId = parseInt(oLog.data.substr(64 + 2, 64), 16);
+                                var sireId = parseInt(oLog.data.substr(64 * 2 + 2, 64), 16);
+                                var matron = Ethplorer.Extensions.CryptoKitties.data[matronId];
+                                Ethplorer.Extensions.CryptoKitties.i = setInterval(function(_m, _s){
+                                    return function(){
+                                        if(Ethplorer.Extensions.CryptoKitties.data[_m] && Ethplorer.Extensions.CryptoKitties.data[_s]){
+                                            clearInterval(Ethplorer.Extensions.CryptoKitties.i);
+                                            var matron = Ethplorer.Extensions.CryptoKitties.data[_m];
+                                            if(matron && matron.children && matron.children.length){
+                                                var kitty = false;
+                                                if(1 === matron.children.length){
+                                                    kitty = matron.children[0];
+                                                }
+                                                if(kitty){
+                                                    $('#token-information-block').append('<br><div class="ck-kitty ck-kitty-dashed text-center" id="ck-3"></div>');
+                                                    Ethplorer.Extensions.CryptoKitties.showKittyData('ck-3', kitty, false);
+                                                    $('#ck-3 span').append('<br>born on block ' + $('.ck-block').text());
+                                                }
+                                            }
+                                        }
+                                    }
+                                }(matronId, sireId), 1000);
+                                msg = "Kitty born on block <span class='ck-block'>" + block + '</span>';
                             }
                             $('#operation-status').before(infoTR);
                             infoTR.find("td:eq(1)").html(msg);
