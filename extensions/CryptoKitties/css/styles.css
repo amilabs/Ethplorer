@@ -10,6 +10,10 @@
     margin-bottom:32px;
 }
 
+.ck-kitty-dashed {
+    border-style: dashed;
+}
+
 #ck-symbol {
     display:inline-block;
     vertical-align:top;

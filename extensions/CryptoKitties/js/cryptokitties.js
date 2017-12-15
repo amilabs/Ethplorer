@@ -40,7 +40,6 @@ Ethplorer.Extensions.CryptoKitties = {
                     if(data.total > 20){
                            $('#ck-full table').after("<div class='text-center' style='color:white;margin-top:-16px;margin-bottom:20px;'><small>Last 20 of " + data.total + " kitties shown</small></div>");
                     }
-// <div style="text-align:center;font-size:16px;padding-top:10px;padding-bottom:4px;"><a class="widget-code-link">Show more Kitties</a></div>
                 }
             }
         });
@@ -72,7 +71,7 @@ Ethplorer.Extensions.CryptoKitties = {
                     $('#token-information-block').empty();
                     $('#token-information-block').append('<div class="ck-kitty" id="ck-1"></div><br class="ck-show-small" />');
                     $('#token-information-block').append('<div id="ck-symbol"></div><br class="ck-show-small" />');
-                    $('#token-information-block').append('<div class="ck-kitty" id="ck-2"></div><br class="ck-show-small" />');
+                    $('#token-information-block').append('<div class="ck-kitty" id="ck-2"></div>');
                     Ethplorer.Extensions.CryptoKitties.showKitty('ck-1', id1);
                     Ethplorer.Extensions.CryptoKitties.showKitty('ck-2', id2);
                     var symbol = '?';
@@ -86,12 +85,40 @@ Ethplorer.Extensions.CryptoKitties = {
             if(Ethplorer.Extensions.CryptoKitties.show){
                 $('#token-information-block, #token-operation-block').addClass('ck-has-kitties');
             }
+            if(oTx.receipt && oTx.receipt.logs && oTx.receipt.logs.length){
+                for(var i=0; i<oTx.receipt.logs.length; i++){
+                    var oLog = oTx.receipt.logs[i];
+                    var topic = oLog.topics && oLog.topics.length ? oLog.topics[0] : false;
+                    switch(topic){
+                        // Birth
+                        case "0x241ea03ca20251805084d27d4440371c34a0b85ff108f6bb5611248f73818b80":
+                            var infoTR = $("<tr><td></td><td></td></tr>");
+                            var block = parseInt(oLog.data.substr(64 * 3 + 2), 16);
+                            var matronId = parseInt(oLog.data.substr(64 + 2, 64), 16);
+                            var currentBlock = oTx.blockNumber + oTx.confirmations;
+                            var blocksTillBirth = block - currentBlock;
+                            var msg = "";
+                            if(blocksTillBirth > 0){
+                                msg = "A new kitty should be born in " + blocksTillBirth + " blocks";
+                                $('#token-information-block').append('<br><div class="ck-kitty ck-kitty-dashed text-center" id="ck-3"></div>');
+                                $("#ck-3").html("<img src='/extensions/CryptoKitties/img/stroller.png' style='margin-top:35px;' height=110>");
+                                $('#ck-3').append("<div style='color:white;padding-top:10px;'>" + msg + "</div>");
+                            }else{
+                                msg = "Kitty born on block " + block;
+                            }
+                            $('#operation-status').before(infoTR);
+                            infoTR.find("td:eq(1)").html(msg);
+                            break;
+                    }
+                }
+            }
         }
     },
     showKitty: function(containerId, id){
         Ethplorer.Extensions.CryptoKitties.show = true;
         $('#' + containerId).html("Loading...");
         $.getJSON('/extensions/CryptoKitties/service.php', {action:"getKitty", id:id}, function(data){
+            Ethplorer.Extensions.CryptoKitties.data[id] = data;
             Ethplorer.Extensions.CryptoKitties.showKittyData(containerId, data, true);
         });
     },
