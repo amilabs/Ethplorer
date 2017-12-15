@@ -129,7 +129,7 @@ if(is_array($rParts) && isset($rParts[2])){
             }
         }
     } ?>
-    <script>Ethplorer.Config.updateLink = "<?php echo $aConfig["client"]["updateLink"];?>";</script>
+    <script src="/js/config.js"></script>
     <script src="/js/md5.min.js"></script>
     <script src="/js/sha3.min.js"></script>
     <script src="/js/qrcode.min.js"></script>

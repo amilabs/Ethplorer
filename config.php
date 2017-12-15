@@ -3,6 +3,7 @@
 header('Content-Type: application/javascript');
 
 $esCfg = require_once dirname(__FILE__) . '/service/config.php';
+unset($esCfg['client']['tokens']);
 
 // Remove client-side unwanted options
 foreach(array('ethereum', 'mongo', 'apiKeys', 'redirects') as $key) unset($esCfg[$key]);
