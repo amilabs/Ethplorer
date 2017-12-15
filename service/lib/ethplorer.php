@@ -1863,7 +1863,7 @@ class Ethplorer {
             $address = $this->aSettings['priceSource'][$address];
         }
         $isHidden = isset($this->aSettings['hidePrice']) && in_array($address, $this->aSettings['hidePrice']);
-        $knownPrice = isset($this->aSettings['updateRates']) && (FALSE !== array_search($address, $this->aSettings['updateRates']));
+        $knownPrice = isset($this->aSettings['updateRates']) && in_array($address, $this->aSettings['updateRates']);
 
         if(!$isHidden && $knownPrice){
             $cache = 'rates';
