@@ -419,13 +419,11 @@ class ethplorerController {
             $this->sendResult($result);
             return;
         }
-        if($contract = $this->db->getContract($address, FALSE)){
-            if($token = $this->db->getToken($address)){
-                $this->getTokenPriceHistoryGrouped();
-                return;
-            }
+        if($token = $this->db->getToken($address)){
+            $this->getTokenPriceHistoryGrouped();
+        }else{
+            $this->getAddressPriceHistoryGrouped();
         }
-        $this->getAddressPriceHistoryGrouped();
     }
 
     /**

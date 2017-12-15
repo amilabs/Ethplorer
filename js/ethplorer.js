@@ -965,7 +965,7 @@ Ethplorer = {
         var oToken = Ethplorer.prepareToken(data.token);
         var address = Ethplorer.currentAddress;
         if(('undefined' !== typeof(ethplorerWidget)) && (true || !Ethplorer.isProd)){
-            if(data.isContract && data.token){
+            if(data.token){
                 var widgetTitle = (oToken && oToken.name) ? ($('<textarea />').html(oToken.name).text() + ' token pulse') : '';
 
                 $('#widget-block').show();
