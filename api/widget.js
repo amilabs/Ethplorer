@@ -1341,16 +1341,21 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         var aData = [];
 
         if(aTxData.length){
-            var firstMonth = aTxData[0]._id.month,
-                firstDay = aTxData[0]._id.day;
-            if(firstMonth < 10) firstMonth = '0' + firstMonth;
-            if(firstDay < 10) firstDay = '0' + firstDay;
-            var strFirstDate = aTxData[0]._id.year + '-' + firstMonth + '-' + firstDay + 'T00:00:00Z';
-
             if(widgetPriceData && widgetPriceData.length){
                 var strLastPriceDate = widgetPriceData[widgetPriceData.length - 1].date + 'T00:00:00Z';
+                var strFirstDate = strLastPriceDate;
+            }else{
+                var firstMonth = aTxData[0]._id.month,
+                    firstDay = aTxData[0]._id.day;
+                if(firstMonth < 10) firstMonth = '0' + firstMonth;
+                if(firstDay < 10) firstDay = '0' + firstDay;
+                var strFirstDate = aTxData[0]._id.year + '-' + firstMonth + '-' + firstDay + 'T00:00:00Z';
             }
-            if(new Date(strLastPriceDate) > new Date(strFirstDate)){
+
+            /*if(widgetPriceData && widgetPriceData.length){
+                var strLastPriceDate = widgetPriceData[widgetPriceData.length - 1].date + 'T00:00:00Z';
+            }*/
+            if(strLastPriceDate && (new Date(strLastPriceDate) > new Date(strFirstDate))){
                 strFirstDate = strLastPriceDate;
             }
         }else{
