@@ -21,5 +21,5 @@ $aConfig = require_once dirname(__FILE__) . '/../service/config.php';
 $es = Ethplorer::db($aConfig);
 foreach($aConfig['updateRates'] as $address){
     $es->getCache()->clearLocalCache();
-    $es->getTokenPrice($address, TRUE);
+    $es->getTokenPriceHistory($address, 0, 'hourly', TRUE);
 }
