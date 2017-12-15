@@ -99,10 +99,17 @@ Ethplorer.Extensions.CryptoKitties = {
                             var blocksTillBirth = block - currentBlock;
                             var msg = "";
                             if(blocksTillBirth > 0){
-                                msg = "A new kitty should be born in " + blocksTillBirth + " blocks";
+                                msg = "A new kitty should be born in <span class='ck-counter'>" + blocksTillBirth + "</span> blocks";
                                 $('#token-information-block').append('<br><div class="ck-kitty ck-kitty-dashed text-center" id="ck-3"></div>');
                                 $("#ck-3").html("<img src='/extensions/CryptoKitties/img/stroller.png' style='margin-top:35px;' height=110>");
                                 $('#ck-3').append("<div style='color:white;padding-top:10px;'>" + msg + "</div>");
+                                setInterval(function(){
+                                    var cnt = parseInt($('.ck-counter:eq(0)').text());
+                                    if(cnt > 0){
+                                        cnt--;
+                                        $('.ck-counter').text(cnt);
+                                    }
+                                }, 17000);
                             }else{
                                 msg = "Kitty born on block " + block;
                             }
