@@ -1543,11 +1543,11 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         var series = {
             0: {
                 type: 'candlesticks',
-                targetAxisIndex: 0
+                targetAxisIndex: 1
             },
             1: {
                 type: 'line',
-                targetAxisIndex: 1
+                targetAxisIndex: 0
             },
             2: {
                 type: 'bars',
@@ -1555,12 +1555,12 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             },
         };
         var vAxes = {
-            0: {
+            1: {
                 title: 'Price',
                 format: '$ #,##0.00##'
                 //format: 'currency'
             },
-            1: {
+            0: {
                 title: 'Token operations',
                 format: 'decimal',
             },
