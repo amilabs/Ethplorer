@@ -1307,7 +1307,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         }
     };
 
-    this.getTooltip = function(noPrice, date, low, open, close, high, operations, volume, convertedVolume){
+    this.getTooltip = function(noPrice, date, low, open, close, high, operations, volume, convertedVolume, rate){
         var tooltipDateFormatter = new google.visualization.DateFormat({ 
             pattern: "MMM dd, yyyy '+UTC'"
         });
@@ -1327,21 +1327,49 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         }else{
             if(volume > 0) var avg = convertedVolume / volume;
             else var avg = (open + close) / 2;
-            tooltip += '<span class="tooltipRow"><b>Average:</b> ' + avgFormatter.formatValue(avg) + ' USD</span><br/>' +
+            if(rate && rate > 0){
+                tooltip += '<span class="tooltipRow"><b>Price:</b> ' + avgFormatter.formatValue(rate) + ' USD</span><br/>';
+            }else{
+                tooltip += '<span class="tooltipRow"><b>Average:</b> ' + avgFormatter.formatValue(avg) + ' USD</span><br/>' +
                 '<span class="tooltipRow"><b>Open:</b> ' + currencyFormatter.formatValue(open) + ' <b>Close:</b> ' + currencyFormatter.formatValue(close) + '</span><br/>' +
-                '<span class="tooltipRow"><b>High:</b> ' + currencyFormatter.formatValue(high) + ' <b>Low:</b> ' + currencyFormatter.formatValue(low) + '</span><br/>' +
-                '<span class="tooltipRow"><b>Token operations:</b> ' + numFormatter.formatValue(operations) + '</span><br/>' +
+                '<span class="tooltipRow"><b>High:</b> ' + currencyFormatter.formatValue(high) + ' <b>Low:</b> ' + currencyFormatter.formatValue(low) + '</span><br/>';
+            }
+            tooltip += '<span class="tooltipRow"><b>Token operations:</b> ' + numFormatter.formatValue(operations) + '</span><br/>' +
                 '<span class="tooltipRow"><b>Volume:</b> ' + numFormatter.formatValue(volume.toFixed(0)) + ' (' + numFormatter.formatValue(convertedVolume.toFixed(2)) + ' USD)</span>';
         }
         tooltip += '</div>';
         return tooltip;
     }
 
-    this.drawChart = function(aTxData, widgetPriceData){
+    this.drawChart = function(aTxData, widgetPriceData, currentPrice){
         var aData = [];
 
         if(aTxData.length){
             if(widgetPriceData && widgetPriceData.length){
+                if(currentPrice){
+                    var currentDate = new Date();
+                    var currentDatePriceKey = currentDate.getFullYear() + '-' + (currentDate.getMonth() < 9 ? '0' : '') + (currentDate.getMonth() + 1) + '-' + (currentDate.getDate() < 10 ? '0' : '') + currentDate.getDate();
+
+                    if(widgetPriceData[widgetPriceData.length - 1].date != currentDatePriceKey){
+                        var currentOpen = (widgetPriceData.length > 1) ? widgetPriceData[widgetPriceData.length - 2].close : parseFloat(currentPrice.rate);
+                        if(currentPrice.rate && (currentPrice.rate > 0) && currentPrice.volume24h && currentPrice.ts){
+                            widgetPriceData.push({
+                                ts: currentPrice.ts,
+                                date: currentDatePriceKey,
+                                hour: 0,
+                                open: currentOpen,
+                                close: parseFloat(currentPrice.rate),
+                                high: 0,
+                                low: 0,
+                                average: 0,
+                                rate: currentPrice.rate,
+                                volumeConverted: parseFloat(currentPrice.volume24h),
+                                volume: currentPrice.volume24h / currentPrice.rate,
+                            });
+                        }
+                    }
+                }
+
                 var strLastPriceDate = widgetPriceData[widgetPriceData.length - 1].date + 'T00:00:00Z';
                 var strFirstDate = strLastPriceDate;
             }else{
@@ -1434,7 +1462,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             //console.log(keyPrice);
 
             // 'Low', 'Open', 'Close', 'High'
-            var low = 0, open = 0, high = 0, close = 0, volume = 0, volumeConverted = 0;
+            var low = 0, open = 0, high = 0, close = 0, volume = 0, volumeConverted = 0, rate = 0;
             if('undefined' !== typeof(aPriceData[keyPrice])){
                 low = aPriceData[keyPrice]['low'];
                 open = aPriceData[keyPrice]['open'];
@@ -1442,6 +1470,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 high = aPriceData[keyPrice]['high'];
                 volume = ('undefined' !== typeof(aPriceData[keyPrice]['volume'])) ? aPriceData[keyPrice]['volume'] : 0;
                 volumeConverted = ('undefined' !== typeof(aPriceData[keyPrice]['volumeConverted'])) ? aPriceData[keyPrice]['volumeConverted'] : 0;
+                rate = ('undefined' !== typeof(aPriceData[keyPrice]['rate'])) ? aPriceData[keyPrice]['rate'] : 0;
             }
 
             var chartMonth = d.getMonth() + 1;
@@ -1450,7 +1479,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             if(chartDay < 10) chartDay = '0' + chartDay;
             var strChartDate = d.getFullYear() + '-' + chartMonth + '-' + chartDay + 'T00:00:00Z';
 
-            var tooltip = this.getTooltip(noPrice, new Date(strChartDate), low, open, close, high, cnt, volume, volumeConverted);
+            var tooltip = this.getTooltip(noPrice, new Date(strChartDate), low, open, close, high, cnt, volume, volumeConverted, rate);
             if(noPrice){
                 aData.push([new Date(strChartDate), cnt, 'opacity: 0.5', tooltip]);
             }else{
@@ -1710,7 +1739,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 if(!obj.widgetData.length){
                     obj.el.hide();
                 }else{
-                    obj.drawChart(data.history.countTxs, data.history.prices);
+                    obj.drawChart(data.history.countTxs, data.history.prices, data.history.current);
                     ethplorerWidget.appendEthplorerLink(obj);
                     if('function' === typeof(obj.options.onLoad)){
                         obj.options.onLoad();
