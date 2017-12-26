@@ -1307,7 +1307,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         }
     };
 
-    this.getTooltip = function(noPrice, date, low, open, close, high, operations, volume, convertedVolume, rate, diff){
+    this.getTooltip = function(noPrice, date, low, open, close, high, operations, volume, convertedVolume, rate, diff, prevClose){
         var tooltipDateFormatter = new google.visualization.DateFormat({ 
             pattern: "MMM dd, yyyy '+UTC'"
         });
@@ -1327,11 +1327,23 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         }else{
             if(volume > 0) var avg = convertedVolume / volume;
             else var avg = (open + close) / 2;
+            var diffHtml = ' <span style="color:' + (diff >= 0 ? '#1E8C1E' : '#AE2525') + ';">(' + diff + '%)</span>';
+
             if(rate && rate > 0){
-                var diffHtml = ' <span style="color:' + (diff >= 0 ? '#1E8C1E' : '#AE2525') + ';">(' + diff + '%)</span>';
                 tooltip += '<span class="tooltipRow"><b>Price:</b> ' + avgFormatter.formatValue(rate) + ' USD' + diffHtml + '</span><br/>';
             }else{
-                tooltip += '<span class="tooltipRow"><b>Average:</b> ' + avgFormatter.formatValue(avg) + ' USD</span><br/>' +
+                diffHtml = '';
+                if(prevClose){
+                    var diff = ethplorerWidget.Utils.pdiff(avg, prevClose, true);
+                    if('x' === diff){
+                        var pdiff = 0;
+                    }else{
+                        var numDec = Math.abs(diff) > 99 ? 0 : 2;
+                        var pdiff = ethplorerWidget.Utils.formatNum(diff, true, numDec, false, true);
+                    }
+                    var diffHtml = ' <span style="color:' + (pdiff >= 0 ? '#1E8C1E' : '#AE2525') + ';">(' + pdiff + '%)</span>';
+                }
+                tooltip += '<span class="tooltipRow"><b>Average:</b> ' + avgFormatter.formatValue(avg) + ' USD' + diffHtml + '</span><br/>' +
                 '<span class="tooltipRow"><b>Open:</b> ' + currencyFormatter.formatValue(open) + ' <b>Close:</b> ' + currencyFormatter.formatValue(close) + '</span><br/>' +
                 '<span class="tooltipRow"><b>High:</b> ' + currencyFormatter.formatValue(high) + ' <b>Low:</b> ' + currencyFormatter.formatValue(low) + '</span><br/>';
             }
@@ -1414,7 +1426,8 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
         }
         var noPrice = true,
             startPriceDate = new Date(),
-            priceNotFound = true;
+            priceNotFound = true,
+            prevClose = 0;
         if(widgetPriceData && widgetPriceData.length){
             for(var i = 0; i < widgetPriceData.length; i++){
                 var aDayPriceData = widgetPriceData[i],
@@ -1427,7 +1440,11 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 if((numZeroes >= 3) && priceNotFound){
                     continue;
                 }else{
+                    if(prevClose && ('undefined' === typeof(aDayPriceData.diff))){
+                        aDayPriceData.prevClose = prevClose;
+                    }
                     aPriceData[aDayPriceData.date] = aDayPriceData;
+                    prevClose = aDayPriceData.close;
                     if(priceNotFound){
                         var strPriceDate = aDayPriceData.date.substring(0, 4) + '-' + aDayPriceData.date.substring(5, 7) + '-' + aDayPriceData.date.substring(8) + 'T00:00:00Z';
                         startPriceDate = new Date(strPriceDate);
@@ -1480,6 +1497,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
                 volumeConverted = ('undefined' !== typeof(aPriceData[keyPrice]['volumeConverted'])) ? aPriceData[keyPrice]['volumeConverted'] : 0;
                 rate = ('undefined' !== typeof(aPriceData[keyPrice]['rate'])) ? aPriceData[keyPrice]['rate'] : 0;
                 diff = ('undefined' !== typeof(aPriceData[keyPrice]['diff'])) ? aPriceData[keyPrice]['diff'] : 0;
+                prevClose = ('undefined' !== typeof(aPriceData[keyPrice]['prevClose'])) ? aPriceData[keyPrice]['prevClose'] : 0;
             }
 
             var chartMonth = d.getMonth() + 1;
@@ -1488,7 +1506,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             if(chartDay < 10) chartDay = '0' + chartDay;
             var strChartDate = d.getFullYear() + '-' + chartMonth + '-' + chartDay + 'T00:00:00Z';
 
-            var tooltip = this.getTooltip(noPrice, new Date(strChartDate), low, open, close, high, cnt, volume, volumeConverted, rate, diff);
+            var tooltip = this.getTooltip(noPrice, new Date(strChartDate), low, open, close, high, cnt, volume, volumeConverted, rate, diff, prevClose);
             if(noPrice){
                 aData.push([new Date(strChartDate), cnt, 'opacity: 0.5', tooltip]);
             }else{
