@@ -1328,7 +1328,7 @@ ethplorerWidget.Type['tokenPriceHistoryGrouped'] = function(element, options, te
             if(volume > 0) var avg = convertedVolume / volume;
             else var avg = (open + close) / 2;
             if(rate && rate > 0){
-                var diffHtml = ' <span style="color:' + (diff >= 0 ? '#177217' : '#951717') + ';">(' + diff + '%)</span>';
+                var diffHtml = ' <span style="color:' + (diff >= 0 ? '#1E8C1E' : '#AE2525') + ';">(' + diff + '%)</span>';
                 tooltip += '<span class="tooltipRow"><b>Price:</b> ' + avgFormatter.formatValue(rate) + ' USD' + diffHtml + '</span><br/>';
             }else{
                 tooltip += '<span class="tooltipRow"><b>Average:</b> ' + avgFormatter.formatValue(avg) + ' USD</span><br/>' +
