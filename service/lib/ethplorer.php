@@ -2041,6 +2041,10 @@ class Ethplorer {
     public function getTokenPriceHistoryGrouped($address, $period = 365, $type = 'daily', $updateCache = FALSE){
         $aResult = array();
 
+        $aCurrent = $this->getTokenPrice($address);
+        $aResult['current'] = $aCurrent;
+        unset($aCurrent);
+
         $aHistoryCount = $this->getTokenHistoryGrouped($period, $address);
         $aResult['countTxs'] = $aHistoryCount;
         unset($aHistoryCount);
