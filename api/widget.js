@@ -687,7 +687,7 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
                 obj.el.append(txTable);
             }else{
                 obj.el.find('.txs-loading').remove();
-                var noDataMessage = '<div id="ethpNoData">No data...<div>';
+                var noDataMessage = '<div id="ethpNoData" class="txs-loading">No data...<div>';
                 if(!document.getElementById('ethpNoData')) obj.el.append(noDataMessage);
             }
             if('function' === typeof(obj.options.onLoad)){
@@ -936,7 +936,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 obj.el.append(txMobileTable);
             }else{
                 obj.el.find('.txs-loading, .txs').remove();
-                var noDataMessage = '<div id="ethpNoData">No data...<div>';
+                var noDataMessage = '<div id="ethpNoData" class="txs-loading">No data...<div>';
                 if(!document.getElementById('ethpNoData')) obj.el.append(noDataMessage);
             }
 
