@@ -690,6 +690,8 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
                     obj.options.onLoad();
                 }
                 setTimeout(ethplorerWidget.fixTilda, 300);
+            }else{
+                obj.el.find('.txs-loading').text('No data...');
             }
         };
     }(this);
@@ -963,6 +965,8 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 }
 
                 setTimeout(ethplorerWidget.fixTilda, 300);
+            }else{
+                obj.el.find('.txs-loading').text('No data...');
             }
         };
     }(this);
