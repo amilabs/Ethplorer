@@ -124,8 +124,10 @@ ethplorerWidget = {
         if(!style) style = 'text-align:center;font-size:11px;padding-top:10px;padding-bottom:4px;';
         var divLink = '<div style="' + style + '">';
         if((document.location.host !== host) && (document.location.host.indexOf("amilabs.cc") < 0)){
-            if(!link) link = '<a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a>';
-            obj.el.append(divLink + link + '</div>');
+            if(!document.getElementById('ethpLink')){
+                if(!link) link = '<a id="ethpLink" class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a>';
+                obj.el.append(divLink + link + '</div>');
+            }
         }else if('undefined' !== typeof(obj.options.getCode) && obj.options.getCode){
             var divLink = '<div style="text-align:center;font-size:16px;padding-top:10px;padding-bottom:4px;">';
             var popupId = obj.el.attr('id') + '-code';
@@ -683,16 +685,16 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
                 }
                 txTable += '</table>';
                 obj.el.append(txTable);
-
-                ethplorerWidget.appendEthplorerLink(obj);
-
-                if('function' === typeof(obj.options.onLoad)){
-                    obj.options.onLoad();
-                }
-                setTimeout(ethplorerWidget.fixTilda, 300);
             }else{
-                obj.el.find('.txs-loading').text('No data...');
+                obj.el.find('.txs-loading').remove();
+                var noDataMessage = '<div id="ethpNoData">No data...<div>';
+                if(!document.getElementById('ethpNoData')) obj.el.append(noDataMessage);
             }
+            if('function' === typeof(obj.options.onLoad)){
+                obj.options.onLoad();
+            }
+            setTimeout(ethplorerWidget.fixTilda, 300);
+            ethplorerWidget.appendEthplorerLink(obj);
         };
     }(this);
 
@@ -913,6 +915,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
 
     this.refreshWidget = function(obj){
         return function(data){
+            ethplorerWidget.appendEthplorerLink(obj, 'source: <a id="ethpLink" class="tx-link" style="display:inline;" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a>', 'text-align:right;font-size:11px;padding-bottom:4px;padding-right:5px;margin-top:-10px;');
             if(data && !data.error && data.tokens && data.tokens.length){
                 if('undefined' === typeof(obj.cache[obj.options.criteria])){
                     obj.cache[obj.options.criteria] = data;
@@ -932,11 +935,12 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 obj.el.append(txTable);
                 obj.el.append(txMobileTable);
             }else{
-                obj.el.find('.txs-loading').text('No data...');
+                obj.el.find('.txs-loading, .txs').remove();
+                var noDataMessage = '<div id="ethpNoData">No data...<div>';
+                if(!document.getElementById('ethpNoData')) obj.el.append(noDataMessage);
             }
 
             setTimeout(ethplorerWidget.fixTilda, 300);
-            ethplorerWidget.appendEthplorerLink(obj, 'source: <a class="tx-link" style="display:inline;" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a>', 'text-align:right;font-size:11px;padding-bottom:4px;padding-right:5px;margin-top:-10px;');
 
             obj.el.find('[data-criteria]').click(function(_obj){
                 return function(){
