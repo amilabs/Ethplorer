@@ -929,44 +929,44 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 }
                 txTable += '</table>';
                 txMobileTable += '</table>';
-                ethplorerWidget.appendEthplorerLink(obj, 'source: <a class="tx-link" style="display:inline;" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a>', 'text-align:right;font-size:11px;padding-bottom:4px;padding-right:5px;margin-top:-10px;');
                 obj.el.append(txTable);
                 obj.el.append(txMobileTable);
-
-                obj.el.find('[data-criteria]').click(function(_obj){
-                    return function(){
-                        if(!$(this).hasClass('ewSelected')){
-                            _obj.el.find('.ewSelected').removeClass('ewSelected');
-                            $(this).addClass('ewSelected');                            
-                            _obj.options.criteria = $(this).attr('data-criteria');
-                            $('#widgetTopTokensSelect').val(_obj.options.criteria);
-                            _obj.load();
-                        }
-                    };
-                }(obj))
-                obj.el.find('.widget-topTokens-select').change(function(_obj){
-                    return function(){
-                        _obj.el.find('.ewSelected').removeClass('ewSelected');
-                        _obj.options.criteria = $(this).val();
-                        $('#widgetTopTokensSelect').val(_obj.options.criteria);
-                        _obj.load();
-                    };
-                }(obj))
-                window.location.hash = obj.options.criteria;
-                obj.el.find('[data-criteria="' + obj.options.criteria + '"]').addClass('ewSelected');
-                obj.el.find('[data-tab="' + obj.options.criteria + '"]').removeClass('widget-topTokens-tab').addClass('widget-topTokens-tab-active');
-                $('#widgetTopTokensSelect').val(obj.options.criteria);
-
-                if('undefined' === typeof(obj.onLoadFired)){
-                    if('function' === typeof(obj.options.onLoad)){
-                        obj.options.onLoad();
-                    }
-                    obj.onLoadFired = true;
-                }
-
-                setTimeout(ethplorerWidget.fixTilda, 300);
             }else{
                 obj.el.find('.txs-loading').text('No data...');
+            }
+
+            setTimeout(ethplorerWidget.fixTilda, 300);
+            ethplorerWidget.appendEthplorerLink(obj, 'source: <a class="tx-link" style="display:inline;" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a>', 'text-align:right;font-size:11px;padding-bottom:4px;padding-right:5px;margin-top:-10px;');
+
+            obj.el.find('[data-criteria]').click(function(_obj){
+                return function(){
+                    if(!$(this).hasClass('ewSelected')){
+                        _obj.el.find('.ewSelected').removeClass('ewSelected');
+                        $(this).addClass('ewSelected');                            
+                        _obj.options.criteria = $(this).attr('data-criteria');
+                        $('#widgetTopTokensSelect').val(_obj.options.criteria);
+                        _obj.load();
+                    }
+                };
+            }(obj))
+            obj.el.find('.widget-topTokens-select').change(function(_obj){
+                return function(){
+                    _obj.el.find('.ewSelected').removeClass('ewSelected');
+                    _obj.options.criteria = $(this).val();
+                    $('#widgetTopTokensSelect').val(_obj.options.criteria);
+                    _obj.load();
+                };
+            }(obj))
+            window.location.hash = obj.options.criteria;
+            obj.el.find('[data-criteria="' + obj.options.criteria + '"]').addClass('ewSelected');
+            obj.el.find('[data-tab="' + obj.options.criteria + '"]').removeClass('widget-topTokens-tab').addClass('widget-topTokens-tab-active');
+            $('#widgetTopTokensSelect').val(obj.options.criteria);
+
+            if('undefined' === typeof(obj.onLoadFired)){
+                if('function' === typeof(obj.options.onLoad)){
+                    obj.options.onLoad();
+                }
+                obj.onLoadFired = true;
             }
         };
     }(this);
