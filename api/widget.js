@@ -124,8 +124,10 @@ ethplorerWidget = {
         if(!style) style = 'text-align:center;font-size:11px;padding-top:10px;padding-bottom:4px;';
         var divLink = '<div style="' + style + '">';
         if((document.location.host !== host) && (document.location.host.indexOf("amilabs.cc") < 0)){
-            if(!link) link = '<a class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a>';
-            obj.el.append(divLink + link + '</div>');
+            if(!document.getElementById('ethpLink')){
+                if(!link) link = '<a id="ethpLink" class="tx-link" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a>';
+                obj.el.append(divLink + link + '</div>');
+            }
         }else if('undefined' !== typeof(obj.options.getCode) && obj.options.getCode){
             var divLink = '<div style="text-align:center;font-size:16px;padding-top:10px;padding-bottom:4px;">';
             var popupId = obj.el.attr('id') + '-code';
@@ -683,14 +685,16 @@ ethplorerWidget.Type['topTokens'] = function(element, options, templates){
                 }
                 txTable += '</table>';
                 obj.el.append(txTable);
-
-                ethplorerWidget.appendEthplorerLink(obj);
-
-                if('function' === typeof(obj.options.onLoad)){
-                    obj.options.onLoad();
-                }
-                setTimeout(ethplorerWidget.fixTilda, 300);
+            }else{
+                obj.el.find('.txs-loading').remove();
+                var noDataMessage = '<div id="ethpNoData">No data...<div>';
+                if(!document.getElementById('ethpNoData')) obj.el.append(noDataMessage);
             }
+            if('function' === typeof(obj.options.onLoad)){
+                obj.options.onLoad();
+            }
+            setTimeout(ethplorerWidget.fixTilda, 300);
+            ethplorerWidget.appendEthplorerLink(obj);
         };
     }(this);
 
@@ -748,20 +752,20 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                     '<div class="widget-topTokens-tabs-row">' +
                         '<div class="widget-topTokens-tabs-wrapper">' +
                             '<div data-tab="trade" class="widget-topTokens-tab">' +
-                                '<a data-criteria="trade"><div class="widget-topTokens-tab-title">Top tokens<br> by trade volume <br></div></a>' +
+                                '<a data-criteria="trade"><div class="widget-topTokens-tab-title">By<br>Trade Volume<br></div></a>' +
                             '</div>' +
                             '<div data-tab="cap" class="widget-topTokens-tab">' +
-                                '<a data-criteria="cap"><div class="widget-topTokens-tab-title">Top tokens<br> by capitalization</div></a>' +
+                                '<a data-criteria="cap"><div class="widget-topTokens-tab-title">By<br>Capitalization</div></a>' +
                             '</div>' +
                             '<div data-tab="count" class="widget-topTokens-tab">' +
-                                '<a data-criteria="count"><div class="widget-topTokens-tab-title">Top tokens<br> by operations <br></div></a>' +
+                                '<a data-criteria="count"><div class="widget-topTokens-tab-title">By<br>Operations<br></div></a>' +
                             '</div>' +
                         '</div>' +
                         '<div class="widget-topTokens-tabs-wrapper_mobile">' +
                             '<select id="widgetTopTokensSelect" name="widgetTopTokensSelect" class="widget-topTokens-select">' +
-                                '<option value="trade">Top tokens by trade volume</option>' +
-                                '<option value="cap">Top tokens by capitalization</option>' +
-                                '<option value="count">Top tokens by operations </option>' +
+                                '<option value="trade">By Trade Volume</option>' +
+                                '<option value="cap">By Capitalization</option>' +
+                                '<option value="count">By Operations</option>' +
                             '</select>' +
                         '</div>' +
                     '</div>' +
@@ -911,6 +915,7 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
 
     this.refreshWidget = function(obj){
         return function(data){
+            ethplorerWidget.appendEthplorerLink(obj, 'source: <a id="ethpLink" class="tx-link" style="display:inline;" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a>', 'text-align:right;font-size:11px;padding-bottom:4px;padding-right:5px;margin-top:-10px;');
             if(data && !data.error && data.tokens && data.tokens.length){
                 if('undefined' === typeof(obj.cache[obj.options.criteria])){
                     obj.cache[obj.options.criteria] = data;
@@ -927,42 +932,45 @@ ethplorerWidget.Type['top'] = function(element, options, templates){
                 }
                 txTable += '</table>';
                 txMobileTable += '</table>';
-                ethplorerWidget.appendEthplorerLink(obj, 'source: <a class="tx-link" style="display:inline;" href="https://ethplorer.io/widgets" target="_blank">Ethplorer.io</a>', 'text-align:right;font-size:11px;padding-bottom:4px;padding-right:5px;margin-top:-10px;');
                 obj.el.append(txTable);
                 obj.el.append(txMobileTable);
+            }else{
+                obj.el.find('.txs-loading, .txs').remove();
+                var noDataMessage = '<div id="ethpNoData">No data...<div>';
+                if(!document.getElementById('ethpNoData')) obj.el.append(noDataMessage);
+            }
 
-                obj.el.find('[data-criteria]').click(function(_obj){
-                    return function(){
-                        if(!$(this).hasClass('ewSelected')){
-                            _obj.el.find('.ewSelected').removeClass('ewSelected');
-                            $(this).addClass('ewSelected');                            
-                            _obj.options.criteria = $(this).attr('data-criteria');
-                            $('#widgetTopTokensSelect').val(_obj.options.criteria);
-                            _obj.load();
-                        }
-                    };
-                }(obj))
-                obj.el.find('.widget-topTokens-select').change(function(_obj){
-                    return function(){
+            setTimeout(ethplorerWidget.fixTilda, 300);
+
+            obj.el.find('[data-criteria]').click(function(_obj){
+                return function(){
+                    if(!$(this).hasClass('ewSelected')){
                         _obj.el.find('.ewSelected').removeClass('ewSelected');
-                        _obj.options.criteria = $(this).val();
+                        $(this).addClass('ewSelected');                            
+                        _obj.options.criteria = $(this).attr('data-criteria');
                         $('#widgetTopTokensSelect').val(_obj.options.criteria);
                         _obj.load();
-                    };
-                }(obj))
-                window.location.hash = obj.options.criteria;
-                obj.el.find('[data-criteria="' + obj.options.criteria + '"]').addClass('ewSelected');
-                obj.el.find('[data-tab="' + obj.options.criteria + '"]').removeClass('widget-topTokens-tab').addClass('widget-topTokens-tab-active');
-                $('#widgetTopTokensSelect').val(obj.options.criteria);
-
-                if('undefined' === typeof(obj.onLoadFired)){
-                    if('function' === typeof(obj.options.onLoad)){
-                        obj.options.onLoad();
                     }
-                    obj.onLoadFired = true;
-                }
+                };
+            }(obj))
+            obj.el.find('.widget-topTokens-select').change(function(_obj){
+                return function(){
+                    _obj.el.find('.ewSelected').removeClass('ewSelected');
+                    _obj.options.criteria = $(this).val();
+                    $('#widgetTopTokensSelect').val(_obj.options.criteria);
+                    _obj.load();
+                };
+            }(obj))
+            window.location.hash = obj.options.criteria;
+            obj.el.find('[data-criteria="' + obj.options.criteria + '"]').addClass('ewSelected');
+            obj.el.find('[data-tab="' + obj.options.criteria + '"]').removeClass('widget-topTokens-tab').addClass('widget-topTokens-tab-active');
+            $('#widgetTopTokensSelect').val(obj.options.criteria);
 
-                setTimeout(ethplorerWidget.fixTilda, 300);
+            if('undefined' === typeof(obj.onLoadFired)){
+                if('function' === typeof(obj.options.onLoad)){
+                    obj.options.onLoad();
+                }
+                obj.onLoadFired = true;
             }
         };
     }(this);
