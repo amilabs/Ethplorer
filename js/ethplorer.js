@@ -1579,21 +1579,29 @@ Ethplorer = {
                 }
                 break;
             case 'ether':
-                value = Ethplorer.Utils.formatNum(value, true, 18, true) + ' ETHER';
+                if(value < 0){
+                    value = "N/A";
+                }else{
+                    value = Ethplorer.Utils.formatNum(value, true, 18, true) + ' ETHER';
+                }
                 break;
             case 'ether-full':
-                var res = Ethplorer.Utils.formatNum(value, true, 18, true) + ' ETHER';
-                if(value){
-                    var price = Ethplorer.Utils.formatNum(Ethplorer.ethPrice.rate * value, true, 4, true);
-                    if(true || ('0.00' != price)){
-                        var change = Ethplorer.ethPrice.diff;
-                        var cls = change > 0 ? 'diff-up' : 'diff-down';
-                        var diff = "";
-                        // var diff = change ? (' <span class="' + cls + '">(' + Ethplorer.Utils.round(change, 2) + '%)</span>') : '';
-                        res = res + '<br /><span class="transfer-usd">$ ' + price + diff + '</span>';
+                if(value < 0){
+                    value = "N/A";
+                }else{                
+                    var res = Ethplorer.Utils.formatNum(value, true, 18, true) + ' ETHER';
+                    if(value){
+                        var price = Ethplorer.Utils.formatNum(Ethplorer.ethPrice.rate * value, true, 4, true);
+                        if(true || ('0.00' != price)){
+                            var change = Ethplorer.ethPrice.diff;
+                            var cls = change > 0 ? 'diff-up' : 'diff-down';
+                            var diff = "";
+                            // var diff = change ? (' <span class="' + cls + '">(' + Ethplorer.Utils.round(change, 2) + '%)</span>') : '';
+                            res = res + '<br /><span class="transfer-usd">$ ' + price + diff + '</span>';
+                        }
                     }
+                    value = res;
                 }
-                value = res;
                 break;
             case 'ethplorer':
                 if(false !== value){

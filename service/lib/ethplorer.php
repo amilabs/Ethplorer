@@ -546,7 +546,7 @@ class Ethplorer {
                 $this->oCache->save($cacheId, $balance);
             }else{
                 file_put_contents(__DIR__ . '/../log/parity.log', '[' . date('Y-m-d H:i:s') . '] - get balance for ' . $address . " failed\n", FILE_APPEND);
-                $this->oCache->save($cacheId, 0);
+                $this->oCache->save($cacheId, -1);
             }
         }
         $qTime = microtime(true) - $time;
