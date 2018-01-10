@@ -690,7 +690,6 @@ if(is_array($rParts) && isset($rParts[2])){
                     <a href="#"><img src="/images/ethplorerlogowhite400.png" style="max-width: 140px;" alt=""></a>
                     <div>
                         <div style="color:#eeeeee;">© 2016-2017 <a href="https://everex.one/" target="_blank" class="small-link">Everex</a>
-                            <br><a href="mailto:support@ethplorer.io" class="small-link">support@ethplorer.io</a>
                             <br><a href="/privacy" class="small-link">Privacy &amp; Terms</a><br>
                         </div>
                     </div>
@@ -706,10 +705,10 @@ if(is_array($rParts) && isset($rParts[2])){
                 </div>
                 <div class="col-xs-5 col-sm-2 col-md-3 footer-links">
                     <ul>
-                        <li><a href="https://ethplorer.io/#contact">Contact</a></li>
+                        <li><a href="http://bit.ly/ethp-contact" target="_blank">Contact</a></li>
                         <li><a href="https://ethplorer.io/#subscribe">Subscribe</a></li>
                         <li><a href="https://www.reddit.com/r/ethplorer/">Discuss at Reddit</a></li>
-                        <li><a href="https://docs.google.com/forms/d/e/1FAIpQLSemDE0-vqUnJ7ToRdt1qR95iTbaMfq0FRXt7INMMJrm1IO4dQ/viewform?c=0&w=1">Update your Token info</a></li>
+                        <li><a href="http://bit.ly/ethp-contact" target="_blank">Update your Token info</a></li>
                     </ul>
                 </div>
                 <div class="col-xs-7 col-sm-5 col-md-4 footer-donation">
