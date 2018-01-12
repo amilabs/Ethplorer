@@ -18,7 +18,9 @@
 require dirname(__FILE__) . '/../service/lib/ethplorer.php';
 $aConfig = require_once dirname(__FILE__) . '/../service/config.php';
 
+$es = Ethplorer::db($aConfig);
+$es->createProcessLock('topTokens.lock');
 $aCriteries = array('trade', 'cap', 'count');
 foreach($aCriteries as $criteria){
-    Ethplorer::db($aConfig)->getTokensTop(100, $criteria, TRUE);
+    $es->getTokensTop(100, $criteria, TRUE);
 }
