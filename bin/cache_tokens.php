@@ -18,6 +18,9 @@
 require dirname(__FILE__) . '/../service/lib/ethplorer.php';
 $aConfig = require_once dirname(__FILE__) . '/../service/config.php';
 
-Ethplorer::db($aConfig)->getTokens(true);
-Ethplorer::db($aConfig)->getTopTokens(10, 90);
-Ethplorer::db($aConfig)->getTopTokens(50, 90);
+$es = Ethplorer::db($aConfig);
+$es->createProcessLock('tokens.lock');
+
+$es->getTokens(true);
+$es->getTopTokens(10, 90);
+$es->getTopTokens(50, 90);
