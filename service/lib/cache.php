@@ -30,6 +30,11 @@ class evxCache {
     const MONTH = 30 * 24 * 3600;
 
     /**
+     * Cache locks ttl in seconds
+     */
+    const LOCK_TTL = 60;
+
+    /**
      * Cache storage.
      *
      * @var array
@@ -128,7 +133,9 @@ class evxCache {
                     // 365 days if cache lifetime is not set
                     $lifetime = time() + 12 * evxCache::MONTH + 5;
                 }
-                $saveRes = $this->oDriver->set($entryName, $data, $lifetime);
+                //$saveRes = $this->oDriver->set($entryName, $data, $lifetime);
+                $aMemcachedData = array('lifetime' => $lifetime, 'data' => $data);
+                $saveRes = $this->oDriver->set($entryName, $aMemcachedData);
                 if(!in_array($entryName, array('tokens', 'rates')) && (0 !== strpos($entryName, 'rates-history-'))){
                     break;
                 }
@@ -139,6 +146,20 @@ class evxCache {
                 break;
         }
         return $saveRes;
+    }
+
+    /**
+     * Adds cache lock.
+     *
+     * @param string  $entryName  Cache entry name
+     * @return boolean
+     */
+    public function addLock($entryName){
+        if('memcached' === $this->driver){
+            return $this->oDriver->add($entryName . '-lock', TRUE, evxCache::LOCK_TTL);
+        }else{
+            // @todo: create file lock
+        }
     }
 
     /**
@@ -170,6 +191,17 @@ class evxCache {
         }elseif($loadIfNeeded){
             if('memcached' === $this->driver){
                 $result = $this->oDriver->get($entryName);
+                if($result && isset($result['lifetime']) && isset($result['data'])){
+                    // checking data is not expired
+                    if($result['lifetime'] < time()){
+                        // try to create cache lock
+                        $lock = $this->addLock($entryName);
+                        if($lock){
+                            return FALSE;
+                        }
+                    }
+                    return $result['data'];
+                }
                 // @todo: move hardcode to controller
                 if(!$result || (in_array($entryName, array('tokens', 'rates')) || (0 === strpos($entryName, 'rates-history-')))){
                     $file = TRUE;
@@ -182,8 +214,12 @@ class evxCache {
                         $fileTime = filemtime($filename);
                         $gmtZero = gmmktime(0, 0, 0);
                         if((($gmtZero > $fileTime) && ($cacheLifetime > evxCache::HOUR)) || ((time() - $fileTime) > $cacheLifetime)){
-                            @unlink($filename);
-                            return $result;
+                            $lock = $this->addLock($entryName);
+                            if($lock){
+                                return FALSE;
+                            }
+                            //@unlink($filename);
+                            //return $result;
                         }
                     }
                     $contents = @file_get_contents($filename);
